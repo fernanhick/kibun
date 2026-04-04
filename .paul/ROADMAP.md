@@ -8,7 +8,7 @@ Kibun ships in one milestone (v0.1 MVP) covering nine phases: from project found
 
 **v0.1 MVP** (v0.1.0)
 Status: In progress
-Phases: 3 of 9 complete
+Phases: 4 of 9 complete
 
 ## Phases
 
@@ -17,8 +17,8 @@ Phases: 3 of 9 complete
 | 1 | Foundation & UI Primitives | 5 | Complete | 2026-04-03 |
 | 2 | Onboarding | 3 | Complete | 2026-04-04 |
 | 3 | Paywall & Auth | 3 | Complete | 2026-04-04 |
-| 4 | Mood Check-in | TBD | Not started | - |
-| 5 | Main App Screens | TBD | Not started | - |
+| 4 | Mood Check-in | 1 | Complete | 2026-04-04 |
+| 5 | Main App Screens | 1 | In Progress | - |
 | 6 | Notifications | TBD | Not started | - |
 | 7 | On-Device Insights | TBD | Not started | - |
 | 8 | Cloud AI Layer | TBD | Not started | - |
@@ -85,22 +85,21 @@ Phases: 3 of 9 complete
 - [x] 03-02: RegistrationScreen UI, anonymous banner, auth stubs
 - [x] 03-03: Real Supabase auth handlers (email updateUser, Google + Apple web OAuth via linkIdentity)
 
-### Phase 4: Mood Check-in
+### Phase 4: Mood Check-in ✓ (Complete — 2026-04-04)
 
-**Goal:** Full mood check-in experience — bubble UI, note field, Supabase save, offline support
+**Goal:** Full mood check-in experience — bubble UI, note field, Supabase save, local persistence
 **Depends on:** Phase 3 (user has auth state before saving entries)
 **Research:** Unlikely (established RN patterns)
 
 **Scope:**
-- MoodSelectionScreen — 14 color-coded mood bubbles, grid layout
-- MoodConfirmScreen — optional note field, submit, mascot confirmation animation
-- Mood entry saved to Supabase (registered) or AsyncStorage (anonymous)
-- Offline queue: entries saved locally when offline, synced when connection restored
-- Check-in modal accessible from HomeScreen CTA and notification tap
+- MoodSelectionScreen — 14 color-coded mood bubbles, grouped grid layout
+- MoodConfirmScreen — optional note field, Shiba reaction, submit
+- Mood entry saved to AsyncStorage (always) + Supabase (registered users, fire-and-forget)
+- Check-in slot auto-detection (morning/afternoon/night/pre_sleep)
+- Check-in modal accessible from HomeScreen CTA
 
 **Plans:**
-- [ ] 04-01: Mood bubble UI, color system, MoodSelectionScreen
-- [ ] 04-02: MoodConfirmScreen, entry save (Supabase + AsyncStorage), offline queue
+- [x] 04-01: Full check-in flow (selection grid + confirm + note + save + Supabase sync + slot detection)
 
 ### Phase 5: Main App Screens
 
@@ -115,8 +114,7 @@ Phases: 3 of 9 complete
 - Navigation between tabs and into modal check-in flow
 
 **Plans:**
-- [ ] 05-01: HomeScreen with live data (today's entries, streak)
-- [ ] 05-02: HistoryScreen calendar + DayDetailScreen
+- [ ] 05-01: HomeScreen (today entries, streak, mood-aware Shiba) + HistoryScreen (calendar grid) + DayDetailScreen
 
 ### Phase 6: Notifications
 

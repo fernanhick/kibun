@@ -36,3 +36,15 @@ export interface PickerOption {
   label: string;
   value: string;
 }
+
+// ─── Mood Entries ───────────────────────────────────────────────────────────
+
+export type { MoodId } from '@constants/moods';
+
+export interface MoodEntry {
+  id: string;           // client-generated, for local AsyncStorage indexing
+  moodId: string;       // MoodId value — stored as string for serialization
+  note: string | null;  // optional user note
+  slot: MoodSlot;       // auto-detected from time of day
+  loggedAt: string;     // ISO 8601 timestamp
+}

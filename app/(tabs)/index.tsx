@@ -1,7 +1,9 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { useSessionStore } from '@store/index';
+import { useRouter, Href } from 'expo-router';
+import { useSessionStore, useMoodEntryStore } from '@store/index';
+import { Button } from '@components/index';
+import { Shiba } from '@components/Shiba';
 import { colors, spacing, typography } from '@constants/theme';
 
 export default function HomeScreen() {
@@ -9,6 +11,10 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { session } = useSessionStore();
   const isAnonymous = !session || session.authStatus === 'anonymous';
+  const today = new Date().toISOString().split('T')[0];
+  const todayCount = useMoodEntryStore((s) =>
+    s.entries.filter((e) => e.loggedAt.startsWith(today)).length
+  );
 
   return (
     <View style={styles.container}>
@@ -27,8 +33,19 @@ export default function HomeScreen() {
         </Pressable>
       )}
 
-      <View style={styles.placeholder}>
-        <Text style={styles.label}>Home</Text>
+      <View style={styles.ctaArea}>
+        <Shiba variant="happy" size={160} />
+        <Text style={styles.greeting}>How are you feeling?</Text>
+        <Button
+          label="Log mood"
+          onPress={() => router.push('/check-in' as Href)}
+          fullWidth
+        />
+        {todayCount > 0 && (
+          <Text style={styles.todayCount}>
+            You've logged {todayCount} mood{todayCount !== 1 ? 's' : ''} today
+          </Text>
+        )}
       </View>
     </View>
   );
@@ -54,13 +71,22 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.semibold,
     color: colors.primary,
   },
-  placeholder: {
+  ctaArea: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
+    gap: spacing.md,
   },
-  label: {
-    fontSize: 18,
+  greeting: {
+    fontSize: typography.sizes.xl,
+    fontWeight: typography.weights.bold,
     color: colors.text,
+    textAlign: 'center',
+  },
+  todayCount: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
 });

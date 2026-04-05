@@ -307,7 +307,7 @@ def export_onnx(model: nn.Module, path: Path):
                                    providers=['CPUExecutionProvider'])
     ort_out = sess.run(None, {'input_ids': test_ids.numpy()})[0]
     max_diff = float(np.abs(pt_out - ort_out).max())
-    print(f"PyTorch ↔ ONNX max abs diff: {max_diff:.6f}")
+    print(f"PyTorch <> ONNX max abs diff: {max_diff:.6f}")
     assert max_diff < 1e-4, f"ONNX output mismatch ({max_diff})"
 
     # Int8 dynamic quantization → smaller model, negligible accuracy delta
@@ -318,7 +318,34 @@ def export_onnx(model: nn.Module, path: Path):
     size_kb = path.stat().st_size / 1024
     print(f"ONNX model saved: {path}  ({size_kb:.0f} KB)")
 
+WEIGHTS_PATH = OUT_DIR / "weights.json"
+
 # ─── Main ─────────────────────────────────────────────────────────────────────
+
+def export_weights_json(model: nn.Module, path: Path):
+    """
+    Export model weights as base64-encoded float32 arrays in a JSON file.
+    Used by the pure-JS inference engine in src/lib/sentiment.ts.
+    Total size: ~1.7 MB (dominated by the 5000×64 embedding matrix).
+    """
+    import base64
+
+    def to_b64(tensor) -> str:
+        arr = tensor.detach().cpu().numpy().astype(np.float32)
+        return base64.b64encode(arr.tobytes()).decode('ascii')
+
+    data = {
+        "emb":   to_b64(model.embedding.weight),  # [vocab_size, EMBED_DIM]
+        "fc1_w": to_b64(model.dense1.weight),      # [HIDDEN_DIM, EMBED_DIM]
+        "fc1_b": to_b64(model.dense1.bias),        # [HIDDEN_DIM]
+        "fc2_w": to_b64(model.dense2.weight),      # [NUM_CLASSES, HIDDEN_DIM]
+        "fc2_b": to_b64(model.dense2.bias),        # [NUM_CLASSES]
+    }
+    with open(path, "w", encoding="ascii") as f:
+        json.dump(data, f, separators=(",", ":"), ensure_ascii=True)  # compact, ASCII-safe
+    size_kb = path.stat().st_size / 1024
+    print(f"Weights saved:    {path}  ({size_kb:.0f} KB)")
+
 
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -337,11 +364,12 @@ def main():
 
     model = train(texts, labels, vocab)
     export_onnx(model, MODEL_PATH)
+    export_weights_json(model, WEIGHTS_PATH)
 
     print("\nDone. Add to git:")
-    print(f"  git add {MODEL_PATH} {VOCAB_PATH}")
-    print("\nTo integrate with kibun, rebuild the native app:")
-    print("  eas build --profile development --platform android")
+    print(f"  git add {MODEL_PATH} {VOCAB_PATH} {WEIGHTS_PATH}")
+    print("\nTo run the app:")
+    print("  npx expo run:android")
 
 
 if __name__ == "__main__":

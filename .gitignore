@@ -33,4 +33,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+## Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
 ## PAUL framework runtime (keep .paul/ tracked — it is project state)

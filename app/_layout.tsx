@@ -6,6 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
 import { initPurchases } from '@lib/revenuecat';
+import { configureNotificationHandler, scheduleSlotNotifications } from '@lib/notifications';
+import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 
 // Keep the native splash screen visible until auth is resolved.
 // Without this, the OS auto-dismisses the splash before React is ready,
@@ -22,6 +24,11 @@ try {
     console.error('[kibun:rc] initPurchases() failed at module init:', error);
   }
 }
+
+// Configure notification handler at module level so it's active before any
+// notification arrives during app foregrounding — same pattern as SplashScreen
+// and initPurchases above.
+configureNotificationHandler();
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 // Catches unhandled render errors in the navigation tree.
@@ -74,6 +81,30 @@ class ErrorBoundary extends React.Component<
 export default function RootLayout() {
   const { isReady } = useAuth();
   const [splashDone, setSplashDone] = useState(false);
+
+  // Reschedule notifications from persisted preferences on every app launch.
+  // Must wait for AsyncStorage hydration before reading store state.
+  useEffect(() => {
+    const reschedule = async () => {
+      const { permissionGranted, selectedSlots, streakNudgeEnabled } = useNotificationPrefsStore.getState();
+      if (permissionGranted && (selectedSlots.length > 0 || streakNudgeEnabled)) {
+        try {
+          await scheduleSlotNotifications(selectedSlots, streakNudgeEnabled);
+        } catch (error) {
+          if (__DEV__) {
+            console.error('[kibun:notif] Scheduling failed on launch:', error);
+          }
+        }
+      }
+    };
+
+    if (useNotificationPrefsStore.persist.hasHydrated()) {
+      reschedule();
+    } else {
+      const unsubscribe = useNotificationPrefsStore.persist.onFinishHydration(reschedule);
+      return () => { unsubscribe(); };
+    }
+  }, []);
 
   // Delay native splash hide until BOTH auth resolves AND animation has played once.
   // Without splashDone, hideAsync fires when isReady=true, React immediately re-renders

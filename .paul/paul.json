@@ -9,7 +9,7 @@
   "phase": {
     "number": 6,
     "name": "notifications",
-    "status": "not_started"
+    "status": "in_progress"
   },
   "loop": {
     "plan": null,

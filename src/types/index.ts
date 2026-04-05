@@ -2,6 +2,10 @@
 
 export type MoodSlot = 'morning' | 'afternoon' | 'night' | 'pre_sleep';
 
+// Notification slots are user-facing (from onboarding picker), separate from MoodSlot.
+// Different naming: 'evening' vs 'night', 'pre-sleep' vs 'pre_sleep'.
+export type NotificationSlot = 'morning' | 'afternoon' | 'evening' | 'pre-sleep';
+
 export type AuthStatus = 'anonymous' | 'registered';
 
 export type SubscriptionStatus = 'trial' | 'active' | 'expired' | 'none';

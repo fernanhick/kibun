@@ -8,7 +8,7 @@ Kibun ships in one milestone (v0.1 MVP) covering nine phases: from project found
 
 **v0.1 MVP** (v0.1.0)
 Status: In progress
-Phases: 5 of 9 complete
+Phases: 6 of 9 complete
 
 ## Phases
 
@@ -19,7 +19,7 @@ Phases: 5 of 9 complete
 | 3 | Paywall & Auth | 3 | Complete | 2026-04-04 |
 | 4 | Mood Check-in | 1 | Complete | 2026-04-04 |
 | 5 | Main App Screens | 1 | Complete | 2026-04-05 |
-| 6 | Notifications | TBD | Not started | - |
+| 6 | Notifications | 2 | Complete | 2026-04-05 |
 | 7 | On-Device Insights | TBD | Not started | - |
 | 8 | Cloud AI Layer | TBD | Not started | - |
 | 9 | Settings & Polish | TBD | Not started | - |
@@ -116,7 +116,7 @@ Phases: 5 of 9 complete
 **Plans:**
 - [x] 05-01: HomeScreen (today entries, streak, mood-aware Shiba) + HistoryScreen (calendar grid) + DayDetailScreen
 
-### Phase 6: Notifications
+### Phase 6: Notifications ✓ (Complete — 2026-04-05)
 
 **Goal:** Local scheduled check-in reminders and streak nudges configured from onboarding preferences
 **Depends on:** Phase 5 (app screens exist; preferences stored from onboarding)
@@ -130,8 +130,8 @@ Phases: 5 of 9 complete
 - Permission decline handled gracefully with in-app fallback prompts
 
 **Plans:**
-- [ ] 06-01: Expo Notifications setup, local scheduling from preferences
-- [ ] 06-02: Streak nudge logic, NotificationSetupScreen, permission decline handling
+- [x] 06-01: Notification prefs store + scheduling service + onboarding/launch wiring
+- [x] 06-02: Streak nudge logic, NotificationSetupScreen, permission decline handling
 
 ### Phase 7: On-Device Insights
 
@@ -185,4 +185,4 @@ Phases: 5 of 9 complete
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-05*
+*Last updated: 2026-04-05 — Phase 6 complete*

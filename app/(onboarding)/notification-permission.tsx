@@ -4,6 +4,9 @@ import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { Screen, Button } from '@components/index';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
+import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
+import { scheduleSlotNotifications } from '@lib/notifications';
+import { NotificationSlot } from '@models/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
 interface SlotOption {
@@ -39,9 +42,17 @@ export default function NotificationPermissionScreen() {
     if (requesting) return;
     setRequesting(true);
     setComplete();
+
+    const slots = selectedSlots as NotificationSlot[];
+    const { setSlots, setPermissionGranted } = useNotificationPrefsStore.getState();
+    setSlots(slots);
+
     try {
-      await Notifications.requestPermissionsAsync();
-      // TODO Phase 6: schedule local notifications for selectedSlots using granted status
+      const result = await Notifications.requestPermissionsAsync();
+      setPermissionGranted(result.granted);
+      if (result.granted) {
+        await scheduleSlotNotifications(slots, false);
+      }
     } catch {
       // Permission API failure — proceed to main app regardless
     }

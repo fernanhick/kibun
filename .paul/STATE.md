@@ -2,29 +2,29 @@
 
 ## Project Reference
 
-See: .paul/PROJECT.md (updated 2026-04-02)
+See: .paul/PROJECT.md (updated 2026-04-05)
 
 **Core value:** A person who wants to understand their emotional patterns gets a frictionless daily check-in habit and AI-driven insights that reveal patterns they wouldn't notice themselves.
-**Current focus:** Phase 5 — Main App Screens (HomeScreen data + HistoryScreen calendar + DayDetailScreen)
+**Current focus:** Phase 6 — Notifications (local scheduled check-in reminders + streak nudges)
 
 ## Current Position
 
 Milestone: v0.1 MVP (v0.1.0)
-Phase: 5 of 9 (Main App Screens) — Planning
-Plan: 05-01 created + audited, awaiting approval
-Status: AUDIT complete — ready for APPLY
-Last activity: 2026-04-04 — Audited 05-01-PLAN.md. Applied M1 (MOOD_MAP MoodId cast + null guard in calendar cells) + S1 (date param regex validation) + S2 (useWindowDimensions for cell sizing) + S3 (useMemo for grid computation). Deferred 3. Verdict: Conditionally Acceptable → Ready.
+Phase: 6 of 9 (Notifications)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-04-05 — Phase 5 complete, transitioned to Phase 6
 
 Progress:
-- Milestone: [█████░░░░░] 44%
-- Phase 5:   [░░░░░░░░░░] 0%
+- Milestone: [██████░░░░] 56%
+- Phase 6:   [░░░░░░░░░░] 0%
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ○        ○     [Plan created, awaiting audit/approval]
+  ○        ○        ○     [Idle — ready for next PLAN]
 ```
 
 ## Accumulated Context
@@ -32,6 +32,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 ### Decisions
 
 | Decision | Phase | Impact |
+|----------|-------|--------|
+| 2026-04-05: Plan 05-01 APPLY — HomeScreen (entries, streak, Shiba), HistoryScreen (calendar grid with color-coded days), DayDetailScreen. Zustand stable-selector pattern established (s.entries + useMemo). Custom calendar grid (no library). Zero TS errors. | Phase 5, Plan 01 | Three data-driven screens ship; stable selector pattern required for all future store reads |
 |----------|-------|--------|
 | 2026-04-04: Enterprise audit on 04-01-PLAN.md. Applied 1 must-have (Supabase insert explicit field mapping: user_id, mood→moodId, mood_color from MOOD_MAP, check_in_slot, logged_at) + 2 strongly-recommended (invalid moodId guard on MoodConfirmScreen; submitting state prevents double-tap). Deferred 3. Verdict: Conditionally Acceptable → Ready. | Phase 4, Plan 01 | Supabase inserts will succeed; no runtime crash on bad params; no duplicate entries |
 |----------|-------|--------|
@@ -93,10 +95,10 @@ PLAN ──▶ APPLY ──▶ UNIFY
 
 ## Session Continuity
 
-Last session: 2026-04-04
-Stopped at: Plan 05-01 created
-Next action: Approve audited plan, then run /paul:apply .paul/phases/05-main-app-screens/05-01-PLAN.md
-Resume file: .paul/phases/05-main-app-screens/05-01-PLAN.md
+Last session: 2026-04-05
+Stopped at: Phase 5 complete, ready to plan Phase 6
+Next action: /paul:plan for Phase 6 (Notifications)
+Resume file: .paul/ROADMAP.md
 
 ---
 *STATE.md — Updated after every significant action*

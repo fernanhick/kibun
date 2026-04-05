@@ -15,7 +15,7 @@ A person who wants to understand their emotional patterns gets a frictionless da
 | Type | Application |
 | Version | 0.0.0 |
 | Status | In Progress |
-| Last Updated | 2026-04-04 |
+| Last Updated | 2026-04-05 |
 
 ## Requirements
 
@@ -32,13 +32,13 @@ A person who wants to understand their emotional patterns gets a frictionless da
 - ✓ Phase 1: Project foundation, navigation, design tokens, MoodBubble, Lottie/Shiba — Phase 1
 - ✓ Phase 2: Onboarding flow (first mood, profile collection, notification permission, gate) — Phase 2
 - ✓ Phase 3: Paywall (RevenueCat trial), RegistrationScreen (email + Google + Apple OAuth), anonymous banner — Phase 3
+- ✓ Phase 4: Core mood check-in experience (bubble grid, note, Supabase sync, slot detection) — Phase 4
+- ✓ Phase 5: Main app screens (HomeScreen data + HistoryScreen calendar + DayDetailScreen) — Phase 5
 
 ### Active (In Progress)
-- Phase 4: Core mood check-in experience
+- Phase 6: Notifications (local + server-triggered)
 
 ### Planned (Next)
-- Phase 5: Main app screens (Home, History, Calendar)
-- Phase 6: Notifications (local + server-triggered)
 - Phase 7: Insights and on-device AI
 - Phase 8: Cloud AI layer (OpenAI + Supabase Edge Functions)
 - Phase 9: Settings, polish, and quality gates
@@ -101,6 +101,8 @@ React Native + Expo (SDK 52+) with Expo Router for file-based navigation. Supaba
 | Hybrid AI (on-device + cloud) | Privacy-first for anonymous users; cloud depth for subscribers; aligns cost with revenue | 2026-04-02 | Active |
 | Shiba Inu mascot | Japanese dog breed matches app name (kibun = 気分); expressive, beloved globally; ready-made Lottie assets available on LottieFiles — no custom commission needed | 2026-04-02 | Active |
 | Apple Sign In via web OAuth (not native SDK) | Native expo-apple-authentication too complex to configure; Supabase web OAuth is identical UX to Google flow; works cross-platform; preserves anonymous userId via linkIdentity | 2026-04-04 | Active |
+| Zustand selectors must return stable refs | .filter()/.map() in selectors creates new refs each render → useSyncExternalStore infinite loop. Select s.entries, derive via useMemo. | 2026-04-05 | Active |
+| Custom calendar grid (no library) | 14 moods x tintColor unique to kibun; library overhead not justified; full control over mood-color rendering | 2026-04-05 | Active |
 
 ## Success Metrics
 
@@ -150,4 +152,4 @@ Quick Reference:
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-04-04 after Phase 3*
+*Last updated: 2026-04-05 after Phase 5*

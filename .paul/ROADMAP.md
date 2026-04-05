@@ -8,7 +8,7 @@ Kibun ships in one milestone (v0.1 MVP) covering nine phases: from project found
 
 **v0.1 MVP** (v0.1.0)
 Status: In progress
-Phases: 4 of 9 complete
+Phases: 5 of 9 complete
 
 ## Phases
 
@@ -18,7 +18,7 @@ Phases: 4 of 9 complete
 | 2 | Onboarding | 3 | Complete | 2026-04-04 |
 | 3 | Paywall & Auth | 3 | Complete | 2026-04-04 |
 | 4 | Mood Check-in | 1 | Complete | 2026-04-04 |
-| 5 | Main App Screens | 1 | In Progress | - |
+| 5 | Main App Screens | 1 | Complete | 2026-04-05 |
 | 6 | Notifications | TBD | Not started | - |
 | 7 | On-Device Insights | TBD | Not started | - |
 | 8 | Cloud AI Layer | TBD | Not started | - |
@@ -101,7 +101,7 @@ Phases: 4 of 9 complete
 **Plans:**
 - [x] 04-01: Full check-in flow (selection grid + confirm + note + save + Supabase sync + slot detection)
 
-### Phase 5: Main App Screens
+### Phase 5: Main App Screens ✓ (Complete — 2026-04-05)
 
 **Goal:** HomeScreen, HistoryScreen, DayDetailScreen, and bottom tab navigation wired to real data
 **Depends on:** Phase 4 (real mood entries needed to populate screens)
@@ -114,7 +114,7 @@ Phases: 4 of 9 complete
 - Navigation between tabs and into modal check-in flow
 
 **Plans:**
-- [ ] 05-01: HomeScreen (today entries, streak, mood-aware Shiba) + HistoryScreen (calendar grid) + DayDetailScreen
+- [x] 05-01: HomeScreen (today entries, streak, mood-aware Shiba) + HistoryScreen (calendar grid) + DayDetailScreen
 
 ### Phase 6: Notifications
 
@@ -185,4 +185,4 @@ Phases: 4 of 9 complete
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-04*
+*Last updated: 2026-04-05*

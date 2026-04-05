@@ -102,6 +102,7 @@ export default function RootLayout() {
           <Stack.Screen name="register" options={{ headerShown: false }} />
           <Stack.Screen name="check-in" options={{ headerShown: false, presentation: 'modal' }} />
           <Stack.Screen name="mood-confirm" options={{ headerShown: false }} />
+          <Stack.Screen name="day-detail" options={{ headerShown: false }} />
         </Stack>
       </ErrorBoundary>
     </SafeAreaProvider>

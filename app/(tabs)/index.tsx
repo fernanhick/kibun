@@ -1,10 +1,41 @@
+import { useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, Href } from 'expo-router';
 import { useSessionStore, useMoodEntryStore } from '@store/index';
-import { Button } from '@components/index';
+import { Button, Card, MoodBubble, Screen } from '@components/index';
 import { Shiba } from '@components/Shiba';
+import type { ShibaVariant } from '@components/Shiba';
+import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { colors, spacing, typography } from '@constants/theme';
+import type { MoodSlot } from '@models/index';
+
+const SLOT_LABELS: Record<MoodSlot, string> = {
+  morning: 'Morning',
+  afternoon: 'Afternoon',
+  night: 'Evening',
+  pre_sleep: 'Night',
+};
+
+const SHIBA_MAP: Record<MoodGroup, ShibaVariant> = {
+  green: 'happy',
+  neutral: 'neutral',
+  'red-orange': 'sad',
+  blue: 'sad',
+};
+
+function formatTime(isoString: string): string {
+  const date = new Date(isoString);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour <= 11) return 'Good morning';
+  if (hour >= 12 && hour <= 16) return 'Good afternoon';
+  if (hour >= 17 && hour <= 20) return 'Good evening';
+  return 'Time to wind down';
+}
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -12,9 +43,33 @@ export default function HomeScreen() {
   const { session } = useSessionStore();
   const isAnonymous = !session || session.authStatus === 'anonymous';
   const today = new Date().toISOString().split('T')[0];
-  const todayCount = useMoodEntryStore((s) =>
-    s.entries.filter((e) => e.loggedAt.startsWith(today)).length
+
+  // Select stable reference (entries array), derive outside selector to avoid
+  // infinite loop: .filter() creates a new array each call, breaking useSyncExternalStore.
+  const entries = useMoodEntryStore((s) => s.entries);
+
+  const todayEntries = useMemo(
+    () => entries.filter((e) => e.loggedAt.startsWith(today)),
+    [entries, today]
   );
+
+  const streak = useMemo(() => {
+    if (entries.length === 0) return 0;
+    const daysWithEntries = new Set(entries.map((e) => e.loggedAt.split('T')[0]));
+    let count = 0;
+    const d = new Date();
+    while (true) {
+      const dateStr = d.toISOString().split('T')[0];
+      if (!daysWithEntries.has(dateStr)) break;
+      count++;
+      d.setDate(d.getDate() - 1);
+    }
+    return count;
+  }, [entries]);
+
+  const mostRecent = todayEntries[0];
+  const mood = mostRecent ? MOOD_MAP[mostRecent.moodId as MoodId] : null;
+  const shibaVariant: ShibaVariant = mood ? SHIBA_MAP[mood.group] : 'neutral';
 
   return (
     <View style={styles.container}>
@@ -33,20 +88,77 @@ export default function HomeScreen() {
         </Pressable>
       )}
 
-      <View style={styles.ctaArea}>
-        <Shiba variant="happy" size={160} />
-        <Text style={styles.greeting}>How are you feeling?</Text>
-        <Button
-          label="Log mood"
-          onPress={() => router.push('/check-in' as Href)}
-          fullWidth
-        />
-        {todayCount > 0 && (
-          <Text style={styles.todayCount}>
-            You've logged {todayCount} mood{todayCount !== 1 ? 's' : ''} today
+      <Screen scrollable={true}>
+        <View style={styles.greetingSection}>
+          <Shiba variant={shibaVariant} size={140} />
+          <Text style={styles.greeting}>{getGreeting()}</Text>
+          {streak > 0 && (
+            <Text
+              style={styles.streakBadge}
+              accessibilityLabel={`Current streak: ${streak} days`}
+            >
+              {streak} day streak 🔥
+            </Text>
+          )}
+        </View>
+
+        <View style={styles.ctaSection}>
+          <Button
+            label="Log mood"
+            onPress={() => router.push('/check-in' as Href)}
+            fullWidth
+          />
+        </View>
+
+        <View style={styles.todaySection}>
+          <Text
+            style={styles.sectionHeader}
+            accessibilityRole="header"
+          >
+            Today{todayEntries.length > 0 ? ` (${todayEntries.length})` : ''}
           </Text>
-        )}
-      </View>
+
+          {todayEntries.length === 0 ? (
+            <Text style={styles.emptyText}>
+              No moods logged yet. How are you feeling?
+            </Text>
+          ) : (
+            todayEntries.map((entry) => {
+              const entryMood = MOOD_MAP[entry.moodId as MoodId];
+              return (
+                <View
+                  key={entry.id}
+                  accessibilityLabel={`${entryMood?.label ?? entry.moodId} at ${formatTime(entry.loggedAt)}`}
+                >
+                  <Card style={styles.entryCard}>
+                    <View style={styles.entryRow}>
+                      {entryMood && (
+                        <MoodBubble mood={entryMood} size="sm" />
+                      )}
+                      <View style={styles.entryInfo}>
+                        <Text style={styles.entryMoodLabel}>
+                          {entryMood?.label ?? entry.moodId}
+                        </Text>
+                        <Text style={styles.entryTime}>
+                          {formatTime(entry.loggedAt)}
+                        </Text>
+                      </View>
+                    </View>
+                    {entry.note && (
+                      <Text style={styles.entryNote} numberOfLines={2}>
+                        {entry.note}
+                      </Text>
+                    )}
+                    <Text style={styles.entrySlot}>
+                      {SLOT_LABELS[entry.slot]}
+                    </Text>
+                  </Card>
+                </View>
+              );
+            })
+          )}
+        </View>
+      </Screen>
     </View>
   );
 }
@@ -71,12 +183,11 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.semibold,
     color: colors.primary,
   },
-  ctaArea: {
-    flex: 1,
+  greetingSection: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
-    gap: spacing.md,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.md,
+    gap: spacing.sm,
   },
   greeting: {
     fontSize: typography.sizes.xl,
@@ -84,9 +195,66 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: 'center',
   },
-  todayCount: {
-    fontSize: typography.sizes.sm,
+  streakBadge: {
+    fontSize: typography.sizes.md,
+    fontWeight: typography.weights.semibold,
+    color: colors.primary,
+    textAlign: 'center',
+  },
+  ctaSection: {
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.lg,
+  },
+  todaySection: {
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.xl,
+    gap: spacing.sm,
+  },
+  sectionHeader: {
+    fontSize: typography.sizes.lg,
+    fontWeight: typography.weights.semibold,
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  emptyText: {
+    fontSize: typography.sizes.md,
     color: colors.textSecondary,
     textAlign: 'center',
+    paddingVertical: spacing.lg,
+  },
+  entryCard: {
+    marginBottom: spacing.xs,
+  },
+  entryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  entryInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  entryMoodLabel: {
+    fontSize: typography.sizes.body,
+    fontWeight: typography.weights.semibold,
+    color: colors.text,
+  },
+  entryTime: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+  },
+  entryNote: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+    marginLeft: 48 + spacing.sm,
+  },
+  entrySlot: {
+    fontSize: typography.sizes.xs,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+    marginLeft: 48 + spacing.sm,
   },
 });

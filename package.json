@@ -31,6 +31,7 @@
     "expo-system-ui": "~55.0.13",
     "expo-web-browser": "~55.0.12",
     "lottie-react-native": "~7.3.4",
+    "onnxruntime-react-native": "^1.24.3",
     "react": "19.2.0",
     "react-native": "0.83.4",
     "react-native-gifted-charts": "^1.4.76",

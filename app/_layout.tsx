@@ -11,6 +11,7 @@ import { configureNotificationHandler, scheduleSlotNotifications } from '@lib/no
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
 import { registerPushToken } from '@lib/pushTokens';
+import { prewarmSentimentModel } from '@lib/sentiment';
 
 // Keep the native splash screen visible until auth is resolved.
 // Without this, the OS auto-dismisses the splash before React is ready,
@@ -32,6 +33,10 @@ try {
 // notification arrives during app foregrounding — same pattern as SplashScreen
 // and initPurchases above.
 configureNotificationHandler();
+
+// Pre-warm the on-device ONNX sentiment model so the first inference in
+// MoodConfirmScreen is fast. Silently no-ops if model asset is not yet present.
+prewarmSentimentModel();
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 // Catches unhandled render errors in the navigation tree.

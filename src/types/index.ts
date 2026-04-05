@@ -45,12 +45,16 @@ export interface PickerOption {
 
 export type { MoodId } from '@constants/moods';
 
+export type SentimentLabel = 'positive' | 'neutral' | 'negative';
+
 export interface MoodEntry {
-  id: string;           // client-generated, for local AsyncStorage indexing
-  moodId: string;       // MoodId value — stored as string for serialization
-  note: string | null;  // optional user note
-  slot: MoodSlot;       // auto-detected from time of day
-  loggedAt: string;     // ISO 8601 timestamp
+  id: string;                          // client-generated, for local AsyncStorage indexing
+  moodId: string;                      // MoodId value — stored as string for serialization
+  note: string | null;                 // optional user note
+  slot: MoodSlot;                      // auto-detected from time of day
+  loggedAt: string;                    // ISO 8601 timestamp
+  sentimentLabel?: SentimentLabel;     // ONNX-inferred note sentiment (undefined when no note)
+  sentimentScore?: number;             // confidence 0–1 for the sentiment label
 }
 
 // ─── AI Reports ───────────────────────────────────────────────────────────────

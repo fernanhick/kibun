@@ -5,26 +5,26 @@
 See: .paul/PROJECT.md (updated 2026-04-05)
 
 **Core value:** A person who wants to understand their emotional patterns gets a frictionless daily check-in habit and AI-driven insights that reveal patterns they wouldn't notice themselves.
-**Current focus:** Phase 7 — On-Device Insights (trend charts, streak stats, basic pattern detection)
+**Current focus:** Phase 8 — Cloud AI Layer (Supabase Edge Functions + OpenAI reports)
 
 ## Current Position
 
 Milestone: v0.1 MVP (v0.1.0)
-Phase: 7 of 9 (On-Device Insights) — Not started
+Phase: 8 of 9 (Cloud AI Layer) — Not started
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-04-05 — Phase 6 complete, transitioned to Phase 7
+Last activity: 2026-04-05 — Phase 7 complete, transitioned to Phase 8
 
 Progress:
-- Milestone: [███████░░░] 67%
-- Phase 7:   [░░░░░░░░░░] 0%
+- Milestone: [████████░░] 78%
+- Phase 8:   [░░░░░░░░░░] 0%
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○     [Ready to plan]
+  ○        ○        ○     [Ready to plan Phase 8]
 ```
 
 ## Accumulated Context
@@ -32,6 +32,12 @@ PLAN ──▶ APPLY ──▶ UNIFY
 ### Decisions
 
 | Decision | Phase | Impact |
+|----------|-------|--------|
+| 2026-04-05: Plan 07-01 APPLY — InsightsScreen with BarChart (top 6 moods, bubbleColor), LineChart (daily mood score 1-4, curved area), streak + check-in stats, 7d/30d toggle, empty state. react-native-gifted-charts installed. Pure insights.ts utilities. UTC-consistent filtering. Zero TS errors. | Phase 7, Plan 01 | InsightsScreen ships; utilities ready for 07-02 pattern detection |
+|----------|-------|--------|
+| 2026-04-05: Audit 07-02 — Applied 2 must-have (division-by-zero guard on day/slot frequency denominators; sort entries ascending before trend split) + 1 strongly-recommended (SLOT_LABELS typed Record<MoodSlot, string>). Deferred 1 (cross-platform emoji). Verdict: Ready. | Phase 7, Plan 02 | Pattern detection plan hardened against false positives and inverted trends |
+|----------|-------|--------|
+| 2026-04-05: Enterprise audit on 07-01-PLAN.md. Applied 1 must-have (filterEntriesByDays UTC-consistent date comparison — no local midnight setHours) + 3 strongly-recommended (chart width from useWindowDimensions; 30-day LineChart label abbreviation every 5th day; gifted-charts TS type fallback). Deferred 3. Verdict: Conditionally Acceptable -> Ready. | Phase 7, Plan 01 | Date filtering correct across timezones; charts size to screen; labels readable at 30d |
 |----------|-------|--------|
 | 2026-04-05: Plan 06-02 — streakNudgeEnabled in store, streak nudge at 20:00, NotificationSetupScreen replaces settings stub, useFocusEffect for permission re-check, 300ms debounced reschedule. | Phase 6, Plan 02 | Phase 6 complete — full notification system with settings UI |
 |----------|-------|--------|
@@ -65,8 +71,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 ## Session Continuity
 
 Last session: 2026-04-05
-Stopped at: Phase 6 complete, ready to plan Phase 7
-Next action: /paul:plan for Phase 7
+Stopped at: Phase 7 complete, ready to plan Phase 8
+Next action: /paul:plan for Phase 8
 Resume file: .paul/ROADMAP.md
 
 ---

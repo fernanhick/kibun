@@ -35,12 +35,11 @@ A person who wants to understand their emotional patterns gets a frictionless da
 - ✓ Phase 4: Core mood check-in experience (bubble grid, note, Supabase sync, slot detection) — Phase 4
 - ✓ Phase 5: Main app screens (HomeScreen data + HistoryScreen calendar + DayDetailScreen) — Phase 5
 - ✓ Phase 6: Local notifications (4-slot scheduling, streak nudge, NotificationSetupScreen, permission handling) — Phase 6
+- ✓ Phase 7: On-device insights (InsightsScreen with charts, stats, pattern detection flags) — Phase 7
 
 ### Active (In Progress)
-- Phase 7: Insights and on-device AI
-
-### Planned (Next)
 - Phase 8: Cloud AI layer (OpenAI + Supabase Edge Functions)
+
 - Phase 9: Settings, polish, and quality gates
 
 ### Out of Scope (V1)
@@ -105,6 +104,8 @@ React Native + Expo (SDK 52+) with Expo Router for file-based navigation. Supaba
 | Custom calendar grid (no library) | 14 moods x tintColor unique to kibun; library overhead not justified; full control over mood-color rendering | 2026-04-05 | Active |
 | useFocusEffect for OS Settings round-trip | useEffect doesn't re-run when returning from Linking.openSettings(); useFocusEffect from expo-router fires on every screen focus | 2026-04-05 | Active |
 | Streak nudge as simple daily timer | Not a smart nudge that checks entries — would require background task; simple timer sufficient for v1 | 2026-04-05 | Active |
+| react-native-gifted-charts over Victory Native v41+ | Gifted-charts uses react-native-svg (already installed); Victory v41+ requires @shopify/react-native-skia — heavier dep | 2026-04-05 | Active |
+| Simple ratio-based pattern detection (no ML) | 1.5x frequency threshold + min 3 occurrences sufficient for MVP; no TensorFlow/ML Kit dependency | 2026-04-05 | Active |
 
 ## Success Metrics
 
@@ -125,7 +126,7 @@ React Native + Expo (SDK 52+) with Expo Router for file-based navigation. Supaba
 | Navigation | Expo Router (file-based) | Tab + stack + modal |
 | Backend | Supabase | PostgreSQL, Auth, Edge Functions, Realtime |
 | AI Cloud | OpenAI API (GPT-4o-mini / GPT-4o) | Via Supabase Edge Function |
-| AI On-device | TensorFlow Lite / ML Kit | Basic trend detection |
+| AI On-device | Pure JS ratio analysis | No ML deps — simple frequency/trend detection |
 | Subscriptions | RevenueCat | iOS + Android IAP |
 | Notifications | Expo Push Notifications | Local + server-triggered |
 | Animations | React Native Reanimated + Lottie | Mascot animations |
@@ -154,4 +155,4 @@ Quick Reference:
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-04-05 after Phase 6*
+*Last updated: 2026-04-05 after Phase 7*

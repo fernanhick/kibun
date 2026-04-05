@@ -8,7 +8,7 @@ Kibun ships in one milestone (v0.1 MVP) covering nine phases: from project found
 
 **v0.1 MVP** (v0.1.0)
 Status: In progress
-Phases: 6 of 9 complete
+Phases: 7 of 9 complete
 
 ## Phases
 
@@ -20,7 +20,7 @@ Phases: 6 of 9 complete
 | 4 | Mood Check-in | 1 | Complete | 2026-04-04 |
 | 5 | Main App Screens | 1 | Complete | 2026-04-05 |
 | 6 | Notifications | 2 | Complete | 2026-04-05 |
-| 7 | On-Device Insights | TBD | Not started | - |
+| 7 | On-Device Insights | 2 | Complete | 2026-04-05 |
 | 8 | Cloud AI Layer | TBD | Not started | - |
 | 9 | Settings & Polish | TBD | Not started | - |
 
@@ -185,4 +185,4 @@ Phases: 6 of 9 complete
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-05 — Phase 6 complete*
+*Last updated: 2026-04-05 — Phase 7 complete*

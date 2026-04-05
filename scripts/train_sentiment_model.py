@@ -214,29 +214,106 @@ def train(texts, labels, vocab):
 # ─── ONNX Export ──────────────────────────────────────────────────────────────
 
 def export_onnx(model: nn.Module, path: Path):
+    """
+    Build ONNX graph manually from model weights.
+    Avoids torch.onnx.export (which requires onnxscript in torch >= 2.6).
+    Only needs the `onnx` and `onnxruntime` packages.
+    """
     import onnx
+    from onnx import helper, TensorProto, numpy_helper
     from onnxruntime.quantization import quantize_dynamic, QuantType
 
     model.eval()
-    dummy = torch.zeros(1, MAX_SEQ_LEN, dtype=torch.int32)
-    tmp_path = path.with_suffix(".tmp.onnx")
+    with torch.no_grad():
+        emb_w = model.embedding.weight.detach().cpu().numpy().astype(np.float32)  # [V,E]
+        fc1_w = model.dense1.weight.detach().cpu().numpy().astype(np.float32)     # [H,E]
+        fc1_b = model.dense1.bias.detach().cpu().numpy().astype(np.float32)       # [H]
+        fc2_w = model.dense2.weight.detach().cpu().numpy().astype(np.float32)     # [C,H]
+        fc2_b = model.dense2.bias.detach().cpu().numpy().astype(np.float32)       # [C]
 
-    torch.onnx.export(
-        model,
-        dummy,
-        str(tmp_path),
-        opset_version=17,
-        input_names=["input_ids"],
-        output_names=["output"],
-        dynamic_axes={"input_ids": {0: "batch_size"}},
-    )
+    # ── Initializers (weights + scalar constants) ─────────────────────────────
+    inits = [
+        numpy_helper.from_array(emb_w,  name='emb_w'),
+        numpy_helper.from_array(fc1_w,  name='fc1_w'),
+        numpy_helper.from_array(fc1_b,  name='fc1_b'),
+        numpy_helper.from_array(fc2_w,  name='fc2_w'),
+        numpy_helper.from_array(fc2_b,  name='fc2_b'),
+        # Constants
+        numpy_helper.from_array(np.array(0,    dtype=np.int32),   name='c_zero_i32'),
+        numpy_helper.from_array(np.array([1],  dtype=np.int64),   name='seq_axis'),   # ReduceSum axis
+        numpy_helper.from_array(np.array([2],  dtype=np.int64),   name='ax2'),        # Unsqueeze axis
+        numpy_helper.from_array(np.array([1.0],dtype=np.float32), name='c_one_f'),   # clamp & GELU
+        numpy_helper.from_array(np.array([1.4142135623730951], dtype=np.float32), name='c_sqrt2'),
+        numpy_helper.from_array(np.array([0.5],dtype=np.float32), name='c_half'),
+    ]
 
-    # Int8 dynamic quantization — reduces size ~4×, negligible accuracy loss
-    quantize_dynamic(
-        str(tmp_path),
-        str(path),
-        weight_type=QuantType.QInt8,
+    # ── Nodes ─────────────────────────────────────────────────────────────────
+    # Forward pass mirrors TinySentimentModel.forward():
+    #   mask = (input_ids != 0).float().unsqueeze(-1)      [B,L,1]
+    #   emb  = embedding(input_ids)                        [B,L,E]
+    #   pooled = (emb * mask).sum(1) / mask.sum(1).clamp(1)  [B,E]
+    #   out  = dense2(gelu(dense1(pooled)))                [B,C]
+    nodes = [
+        # Padding mask  [B,L] → [B,L,1] float
+        helper.make_node('Equal',     ['input_ids', 'c_zero_i32'], ['is_pad']),
+        helper.make_node('Not',       ['is_pad'],                   ['not_pad']),
+        helper.make_node('Cast',      ['not_pad'],                  ['mask_2d'], to=TensorProto.FLOAT),
+        helper.make_node('Unsqueeze', ['mask_2d', 'ax2'],           ['mask_3d']),  # opset13+: axes as input
+
+        # Embedding lookup  [B,L,E]  (cast to int64 for Gather portability)
+        helper.make_node('Cast',   ['input_ids'],             ['ids_i64'],    to=TensorProto.INT64),
+        helper.make_node('Gather', ['emb_w', 'ids_i64'],      ['emb'],        axis=0),
+
+        # Masked mean pool  [B,E]
+        helper.make_node('Mul',       ['emb', 'mask_3d'],          ['masked_emb']),
+        helper.make_node('ReduceSum', ['masked_emb', 'seq_axis'],   ['sum_emb'],  keepdims=0),
+        helper.make_node('ReduceSum', ['mask_3d',    'seq_axis'],   ['sum_mask'], keepdims=0),
+        helper.make_node('Max',       ['sum_mask', 'c_one_f'],      ['clamp_mask']),
+        helper.make_node('Div',       ['sum_emb',  'clamp_mask'],   ['pooled']),
+
+        # Dense1 (nn.Linear weight is [out,in] → transB=1 gives X @ W^T)
+        helper.make_node('Gemm', ['pooled',   'fc1_w', 'fc1_b'], ['fc1_out'], transB=1),
+
+        # GELU(x) = 0.5 * x * (1 + erf(x / sqrt(2)))
+        helper.make_node('Div', ['fc1_out', 'c_sqrt2'], ['g_div']),
+        helper.make_node('Erf', ['g_div'],               ['g_erf']),
+        helper.make_node('Add', ['g_erf', 'c_one_f'],   ['g_add']),
+        helper.make_node('Mul', ['fc1_out', 'g_add'],   ['g_mul']),
+        helper.make_node('Mul', ['g_mul',   'c_half'],  ['gelu_out']),
+
+        # Dense2 (no dropout at inference)
+        helper.make_node('Gemm', ['gelu_out', 'fc2_w', 'fc2_b'], ['output'], transB=1),
+    ]
+
+    # ── Graph / Model ─────────────────────────────────────────────────────────
+    graph = helper.make_graph(
+        nodes,
+        'kibun_sentiment',
+        [helper.make_tensor_value_info('input_ids', TensorProto.INT32, [1, MAX_SEQ_LEN])],
+        [helper.make_tensor_value_info('output',    TensorProto.FLOAT, [1, NUM_CLASSES])],
+        initializer=inits,
     )
+    model_proto = helper.make_model(graph, opset_imports=[helper.make_opsetid('', 17)])
+    model_proto.ir_version = 8
+    onnx.checker.check_model(model_proto)
+
+    # Sanity-check: compare ONNX output vs PyTorch on a test input
+    import onnxruntime as ort
+    test_ids = torch.zeros(1, MAX_SEQ_LEN, dtype=torch.int32)
+    test_ids[0, :5] = torch.tensor([2, 3, 4, 5, 6], dtype=torch.int32)
+    with torch.no_grad():
+        pt_out  = model(test_ids).numpy()
+    sess    = ort.InferenceSession(model_proto.SerializeToString(),
+                                   providers=['CPUExecutionProvider'])
+    ort_out = sess.run(None, {'input_ids': test_ids.numpy()})[0]
+    max_diff = float(np.abs(pt_out - ort_out).max())
+    print(f"PyTorch ↔ ONNX max abs diff: {max_diff:.6f}")
+    assert max_diff < 1e-4, f"ONNX output mismatch ({max_diff})"
+
+    # Int8 dynamic quantization → smaller model, negligible accuracy delta
+    tmp_path = path.with_suffix('.tmp.onnx')
+    onnx.save(model_proto, str(tmp_path))
+    quantize_dynamic(str(tmp_path), str(path), weight_type=QuantType.QInt8)
     os.remove(tmp_path)
     size_kb = path.stat().st_size / 1024
     print(f"ONNX model saved: {path}  ({size_kb:.0f} KB)")

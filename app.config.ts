@@ -12,19 +12,21 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   splash: {
     image: './assets/splash.png',
     resizeMode: 'contain',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#6C63FF',
   },
   assetBundlePatterns: ['**/*'],
   ios: {
     supportsTablet: false,
     bundleIdentifier: 'com.kibun.app',
+    buildNumber: '1',
   },
   android: {
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#ffffff',
+      backgroundColor: '#6C63FF',
     },
     package: 'com.kibun.app',
+    versionCode: 1,
   },
   web: {
     bundler: 'metro',
@@ -47,7 +49,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         image: './assets/splash.png',
         resizeMode: 'contain',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#6C63FF',
       },
     ],
   ],

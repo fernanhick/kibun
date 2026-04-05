@@ -5,26 +5,26 @@
 See: .paul/PROJECT.md (updated 2026-04-05)
 
 **Core value:** A person who wants to understand their emotional patterns gets a frictionless daily check-in habit and AI-driven insights that reveal patterns they wouldn't notice themselves.
-**Current focus:** Phase 8 — Cloud AI Layer (Supabase Edge Functions + OpenAI reports)
+**Current focus:** Phase 9 — Settings & Polish
 
 ## Current Position
 
 Milestone: v0.1 MVP (v0.1.0)
-Phase: 8 of 9 (Cloud AI Layer) — Not started
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-04-05 — Phase 7 complete, transitioned to Phase 8
+Phase: 9 of 9 (Settings & Polish) — Active
+Plan: 09-01 complete — ready to plan 09-02
+Status: Phase 9 in progress; 09-01 loop closed
+Last activity: 2026-04-05 — Closed loop for .paul/phases/09-settings-polish/09-01-PLAN.md
 
 Progress:
-- Milestone: [████████░░] 78%
-- Phase 8:   [░░░░░░░░░░] 0%
+- Milestone: [█████████░] 94%
+- Phase 9:   [█████░░░░░] 50%
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○     [Ready to plan Phase 8]
+  ✓        ✓        ✓     [09-01 loop closed — ready for 09-02]
 ```
 
 ## Accumulated Context
@@ -33,11 +33,19 @@ PLAN ──▶ APPLY ──▶ UNIFY
 
 | Decision | Phase | Impact |
 |----------|-------|--------|
+| 2026-04-05: Plan 09-01 APPLY — uiPrefsStore (banner timestamp). AccountScreen (anonymous/registered/sign-out). SettingsScreen hub (Account + About sections). Dismissible banner (7-day reappear). Notification deep link (_layout.tsx). Auto-fixed: '/account' as Href cast. Resolved Phase 8 D-3 (push token revocation) + D-4 (deep link). | Phase 9, Plan 01 | Settings area complete; sign-out flow complete; two Phase 8 deferred items resolved |
+|----------|-------|--------|
+| 2026-04-05: Plan 08-02 APPLY — AIReportScreen (5-state machine, subscription gate, weekly/monthly toggle). Push tokens in user_metadata. Edge Function push notification fire-and-forget. InsightsScreen AI Report CTA. Auto-fixed: Button label= prop; Constants.easConfig cast removed. | Phase 8, Plan 02 | Phase 8 complete; full cloud AI loop delivered |
+|----------|-------|--------|
+| 2026-04-05: Audit 08-02 — Applied 1 must-have (accessibilityLiveRegion on View not Text — TS2322) + 3 strongly-recommended (remove redundant content accessibilityLabel; loadReport catch logging; push API response status check). Deferred 3 (Constants.easConfig cast; client-side-only subscription gate; no token revocation on sign-out). Verdict: Ready. | Phase 8, Plan 02 | AIReportScreen a11y correct; push monitoring improved |
+|----------|-------|--------|
+| 2026-04-05: Plan 08-01 APPLY — Edge Function with JWT auth extraction, Deno.serve() natively, duplicate report prevention, OpenAI GPT-4o-mini, sanitized errors. Client service with requestReport/getReports/getLatestReport. tsconfig exclude supabase/. | Phase 8, Plan 01 | Backend AI pipeline ready; client service ready for 08-02 AIReportScreen |
+|----------|-------|--------|
+| 2026-04-05: Audit 08-01 — Applied 3 must-have (JWT auth extraction not client user_id; Deno.serve() natively; sanitized error responses) + 2 strongly-recommended (duplicate report prevention; invoke() response handling). Deferred 2 (prompt injection, content moderation). Verdict: Ready. | Phase 8, Plan 01 | Edge Function secured against auth bypass and cost abuse |
+|----------|-------|--------|
 | 2026-04-05: Plan 07-01 APPLY — InsightsScreen with BarChart (top 6 moods, bubbleColor), LineChart (daily mood score 1-4, curved area), streak + check-in stats, 7d/30d toggle, empty state. react-native-gifted-charts installed. Pure insights.ts utilities. UTC-consistent filtering. Zero TS errors. | Phase 7, Plan 01 | InsightsScreen ships; utilities ready for 07-02 pattern detection |
 |----------|-------|--------|
-| 2026-04-05: Audit 07-02 — Applied 2 must-have (division-by-zero guard on day/slot frequency denominators; sort entries ascending before trend split) + 1 strongly-recommended (SLOT_LABELS typed Record<MoodSlot, string>). Deferred 1 (cross-platform emoji). Verdict: Ready. | Phase 7, Plan 02 | Pattern detection plan hardened against false positives and inverted trends |
-|----------|-------|--------|
-| 2026-04-05: Enterprise audit on 07-01-PLAN.md. Applied 1 must-have (filterEntriesByDays UTC-consistent date comparison — no local midnight setHours) + 3 strongly-recommended (chart width from useWindowDimensions; 30-day LineChart label abbreviation every 5th day; gifted-charts TS type fallback). Deferred 3. Verdict: Conditionally Acceptable -> Ready. | Phase 7, Plan 01 | Date filtering correct across timezones; charts size to screen; labels readable at 30d |
+| 2026-04-05: Plan 07-02 APPLY — Pattern detection: detectDayOfWeekPatterns, detectTimeOfDayPatterns, detectTrendPattern. 1.5x ratio + min 3, sort ascending before trend split, div-by-zero guards. PatternFlag cards on InsightsScreen. | Phase 7, Plan 02 | Pattern detection complete; on-device insights fully shipped |
 |----------|-------|--------|
 | 2026-04-05: Plan 06-02 — streakNudgeEnabled in store, streak nudge at 20:00, NotificationSetupScreen replaces settings stub, useFocusEffect for permission re-check, 300ms debounced reschedule. | Phase 6, Plan 02 | Phase 6 complete — full notification system with settings UI |
 |----------|-------|--------|
@@ -59,6 +67,12 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Issue | From Plan | Resolution Path |
 |-------|-----------|-----------------|
 | Shiba anxious + tired variants — no confirmed LottieFiles assets | 01-05 | Source before Phase 2 APPLY; add to ANIMATIONS map + ShibaVariant union |
+| Prompt injection mitigation for OpenAI reports | 08-01 audit D-1 | Phase 9 polish — validate/sanitize user notes before including in prompt |
+| Content moderation for AI-generated report text | 08-01 audit D-2 | Phase 9 polish — add OpenAI moderation endpoint check |
+| Constants.easConfig fallback for push token — removed due to TS2339 | 08-02 audit D-1 | Phase 9 — add typed fallback when EAS projectId is confirmed |
+| Subscription gate is client-side only — Edge Function accepts any authenticated JWT | 08-02 audit D-2 | Phase 9 — RevenueCat webhook → Supabase subscription_status column |
+| PRIVACY_POLICY_URL placeholder in settings.tsx | 09-01 SR-1 | Phase 9 Plan 02 store prep — replace with real URL before App Store submission |
+| Cold-start notification routing edge case | 09-01 audit D-1 | Phase 9 Plan 02 quality gate — verify on real device; guard router.push behind isReady if broken |
 
 ### Blockers/Concerns
 
@@ -67,13 +81,14 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | .env not configured with real Supabase credentials | Auth runtime verification pending | Set EXPO_PUBLIC_SUPABASE_URL + EXPO_PUBLIC_SUPABASE_ANON_KEY in .env before simulator testing |
 | expo-secure-store + lottie-react-native require native rebuild | Cannot test SecureStore or Lottie in Expo Go | Run `npx expo prebuild` and use custom dev client for full verification |
 | Shiba Anxious + Tired variants have no confirmed assets | Phase 2 FirstMoodScreen / MoodResponseScreen need all 6 variants | Source style-matched assets before Phase 2 APPLY begins |
+| Edge Function requires Supabase CLI deployment + secrets | generate-report not auto-deployed | Run `supabase functions deploy generate-report` + set OPENAI_API_KEY secret |
 
 ## Session Continuity
 
 Last session: 2026-04-05
-Stopped at: Phase 7 complete, ready to plan Phase 8
-Next action: /paul:plan for Phase 8
-Resume file: .paul/ROADMAP.md
+Stopped at: Phase 9 Plan 09-01 UNIFY done
+Next action: Run /paul:plan for Phase 9 Plan 02 (quality gate, app icon, splash screen, store prep)
+Resume file: .paul/phases/09-settings-polish/09-01-SUMMARY.md
 
 ---
 *STATE.md — Updated after every significant action*

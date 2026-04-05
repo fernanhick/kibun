@@ -1,12 +1,18 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, Switch, Pressable, StyleSheet, Linking } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '@components/index';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
+import { useSessionStore } from '@store/sessionStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
 import type { NotificationSlot } from '@models/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
+
+// TODO: replace with real URL before App Store submission
+const PRIVACY_POLICY_URL = 'https://kibun.app/privacy';
 
 interface SlotRow {
   slot: NotificationSlot;
@@ -22,12 +28,18 @@ const SLOT_ROWS: SlotRow[] = [
 ];
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const [permissionStatus, setPermissionStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const session = useSessionStore((s) => s.session);
+  const isAnonymous = !session || session.authStatus === 'anonymous';
 
   const selectedSlots = useNotificationPrefsStore((s) => s.selectedSlots);
   const streakNudgeEnabled = useNotificationPrefsStore((s) => s.streakNudgeEnabled);
   const { setSlots, setStreakNudgeEnabled, setPermissionGranted } = useNotificationPrefsStore.getState();
+
+  const appVersion = Constants.expoConfig?.version ?? '—';
 
   // Re-check permission on every screen focus — critical for detecting changes
   // after user returns from OS Settings via Linking.openSettings().
@@ -74,9 +86,31 @@ export default function SettingsScreen() {
   return (
     <Screen scrollable={true}>
       <Text style={styles.screenTitle} accessibilityRole="header">
-        Notifications
+        Settings
       </Text>
 
+      {/* ── Account section ─────────────────────────────────────────── */}
+      <Text style={styles.sectionHeader} accessibilityRole="header">
+        ACCOUNT
+      </Text>
+      <View style={styles.section}>
+        <Pressable
+          style={styles.row}
+          onPress={() => router.push('/account' as Href)}
+          accessibilityRole="button"
+          accessibilityLabel="Manage account"
+        >
+          <View style={styles.rowText}>
+            <Text style={styles.rowLabel}>Account</Text>
+            <Text style={styles.rowHint}>
+              {isAnonymous ? 'Not signed in' : 'Manage account and subscription'}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+        </Pressable>
+      </View>
+
+      {/* ── Notification permission banner ──────────────────────────── */}
       {isDisabled && (
         <Pressable
           style={styles.permissionBanner}
@@ -91,6 +125,7 @@ export default function SettingsScreen() {
         </Pressable>
       )}
 
+      {/* ── Notification sections ────────────────────────────────────── */}
       <Text style={styles.sectionHeader} accessibilityRole="header">
         REMINDER TIMES
       </Text>
@@ -143,6 +178,26 @@ export default function SettingsScreen() {
           />
         </View>
       </View>
+
+      {/* ── About section ────────────────────────────────────────────── */}
+      <Text style={styles.sectionHeader} accessibilityRole="header">
+        ABOUT
+      </Text>
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <Text style={styles.rowLabel}>Version</Text>
+          <Text style={styles.rowHint}>{appVersion}</Text>
+        </View>
+        <Pressable
+          style={styles.row}
+          onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
+          accessibilityRole="link"
+          accessibilityLabel="Privacy Policy"
+        >
+          <Text style={styles.rowLabel}>Privacy Policy</Text>
+          <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+        </Pressable>
+      </View>
     </Screen>
   );
 }
@@ -161,6 +216,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     borderRadius: radius.md,
     marginBottom: spacing.lg,
+    marginTop: spacing.sm,
   },
   bannerText: {
     fontSize: typography.sizes.sm,

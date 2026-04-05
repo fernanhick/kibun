@@ -2,13 +2,17 @@ import { useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, Href } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useSessionStore, useMoodEntryStore } from '@store/index';
+import { useUiPrefsStore } from '@store/uiPrefsStore';
 import { Button, Card, MoodBubble, Screen } from '@components/index';
 import { Shiba } from '@components/Shiba';
 import type { ShibaVariant } from '@components/Shiba';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { colors, spacing, typography } from '@constants/theme';
 import type { MoodSlot } from '@models/index';
+
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
 const SLOT_LABELS: Record<MoodSlot, string> = {
   morning: 'Morning',
@@ -42,6 +46,9 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { session } = useSessionStore();
   const isAnonymous = !session || session.authStatus === 'anonymous';
+  const bannerDismissedAt = useUiPrefsStore((s) => s.bannerDismissedAt);
+  const dismissBanner = useUiPrefsStore((s) => s.dismissBanner);
+  const showBanner = isAnonymous && (bannerDismissedAt === null || Date.now() - bannerDismissedAt > SEVEN_DAYS_MS);
   const today = new Date().toISOString().split('T')[0];
 
   // Select stable reference (entries array), derive outside selector to avoid
@@ -73,19 +80,30 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      {isAnonymous && (
-        <Pressable
-          style={[styles.anonBanner, { paddingTop: insets.top + spacing.sm }]}
-          onPress={() => router.push('/register')}
-          accessibilityRole="button"
-          accessibilityLabel="Sign up to save your data"
-          accessibilityHint="Your mood data is stored on this device only. Tap to create an account."
-        >
-          <Text style={styles.anonBannerText}>
-            Your data is on this device only.{' '}
-            <Text style={styles.anonBannerLink}>Sign up to sync it →</Text>
-          </Text>
-        </Pressable>
+      {showBanner && (
+        <View style={[styles.anonBanner, { paddingTop: insets.top + spacing.sm }]}>
+          <Pressable
+            style={styles.anonBannerContent}
+            onPress={() => router.push('/register')}
+            accessibilityRole="button"
+            accessibilityLabel="Sign up to save your data"
+            accessibilityHint="Your mood data is stored on this device only. Tap to create an account."
+          >
+            <Text style={styles.anonBannerText}>
+              Your data is on this device only.{' '}
+              <Text style={styles.anonBannerLink}>Sign up to sync it →</Text>
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={dismissBanner}
+            accessibilityRole="button"
+            accessibilityLabel="Dismiss banner"
+            hitSlop={12}
+            style={styles.anonBannerDismiss}
+          >
+            <Ionicons name="close" size={16} color={colors.textSecondary} />
+          </Pressable>
+        </View>
       )}
 
       <Screen scrollable={true}>
@@ -169,11 +187,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   anonBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.primaryLight,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+  },
+  anonBannerContent: {
+    flex: 1,
+  },
+  anonBannerDismiss: {
+    paddingLeft: spacing.sm,
   },
   anonBannerText: {
     fontSize: typography.sizes.sm,

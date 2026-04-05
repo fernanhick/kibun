@@ -4,12 +4,12 @@
   "milestone": {
     "name": "v0.1 MVP",
     "version": "0.1.0",
-    "status": "in_progress"
+    "status": "complete"
   },
   "phase": {
-    "number": 6,
-    "name": "notifications",
-    "status": "in_progress"
+    "number": 9,
+    "name": "settings-polish",
+    "status": "complete"
   },
   "loop": {
     "plan": null,

@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen, Card } from '@components/index';
 import { useMoodEntryStore } from '@store/index';
 import { filterEntriesByDays, getMoodFrequency, getDailyMoodScores } from '@lib/insights';
@@ -11,6 +13,7 @@ type Period = 7 | 30;
 
 export default function InsightsScreen() {
   const [period, setPeriod] = useState<Period>(7);
+  const router = useRouter();
   const { width: screenWidth } = useWindowDimensions();
   const chartWidth = screenWidth - spacing.screenPadding * 2 - 40;
 
@@ -196,6 +199,28 @@ export default function InsightsScreen() {
           <Text style={styles.patternHint}>Log more check-ins to see patterns</Text>
         </View>
       )}
+
+      {filtered.length > 0 && (
+        <View>
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            AI Report
+          </Text>
+          <Pressable
+            onPress={() => router.push('/ai-report')}
+            accessibilityRole="button"
+            accessibilityLabel="View AI Report — get personalised mood insights"
+          >
+            <Card style={styles.aiReportCard}>
+              <Text style={styles.aiReportIcon}>{'\u2728'}</Text>
+              <View style={styles.aiReportInfo}>
+                <Text style={styles.aiReportTitle}>Personalised insights</Text>
+                <Text style={styles.aiReportSubtitle}>Weekly and monthly AI mood analysis</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+            </Card>
+          </Pressable>
+        </View>
+      )}
     </Screen>
   );
 }
@@ -336,5 +361,26 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
     paddingVertical: spacing.md,
+  },
+  aiReportCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  aiReportIcon: {
+    fontSize: typography.sizes.xl,
+  },
+  aiReportInfo: {
+    flex: 1,
+  },
+  aiReportTitle: {
+    fontSize: typography.sizes.body,
+    fontWeight: typography.weights.semibold,
+    color: colors.text,
+  },
+  aiReportSubtitle: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    marginTop: 2,
   },
 });

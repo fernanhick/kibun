@@ -36,9 +36,10 @@ A person who wants to understand their emotional patterns gets a frictionless da
 - ✓ Phase 5: Main app screens (HomeScreen data + HistoryScreen calendar + DayDetailScreen) — Phase 5
 - ✓ Phase 6: Local notifications (4-slot scheduling, streak nudge, NotificationSetupScreen, permission handling) — Phase 6
 - ✓ Phase 7: On-device insights (InsightsScreen with charts, stats, pattern detection flags) — Phase 7
+- ✓ Phase 8: Cloud AI layer (Edge Function + OpenAI reports + AIReportScreen + push notifications) — Phase 8
 
 ### Active (In Progress)
-- Phase 8: Cloud AI layer (OpenAI + Supabase Edge Functions)
+- Phase 9: Settings, polish, and quality gates
 
 - Phase 9: Settings, polish, and quality gates
 
@@ -155,4 +156,4 @@ Quick Reference:
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-04-05 after Phase 7*
+*Last updated: 2026-04-05 after Phase 8*

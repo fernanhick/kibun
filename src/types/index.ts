@@ -52,3 +52,20 @@ export interface MoodEntry {
   slot: MoodSlot;       // auto-detected from time of day
   loggedAt: string;     // ISO 8601 timestamp
 }
+
+// ─── AI Reports ───────────────────────────────────────────────────────────────
+
+export interface AIReport {
+  id: string;
+  userId: string;
+  reportType: 'weekly' | 'monthly';
+  periodStart: string;     // ISO date (YYYY-MM-DD)
+  periodEnd: string;       // ISO date (YYYY-MM-DD)
+  content: string;         // narrative text from OpenAI
+  moodSummary: {
+    totalEntries: number;
+    topMoods: { moodId: string; count: number }[];
+    avgEntriesPerDay: number;
+  } | null;
+  createdAt: string;       // ISO timestamp
+}

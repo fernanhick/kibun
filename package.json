@@ -31,7 +31,7 @@
     "expo-system-ui": "~55.0.13",
     "expo-web-browser": "~55.0.12",
     "lottie-react-native": "~7.3.4",
-    "react": "19.2.0",
+    "react": "19.2.4",
     "react-native": "0.83.4",
     "react-native-gifted-charts": "^1.4.76",
     "react-native-linear-gradient": "^2.8.3",

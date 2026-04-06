@@ -19,6 +19,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: false,
     bundleIdentifier: 'com.kibun.app',
     buildNumber: '1',
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
   },
   android: {
     adaptiveIcon: {

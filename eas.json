@@ -31,8 +31,10 @@
         "appleTeamId": "C57BZKN2VW"
       },
       "android": {
-        "serviceAccountKeyPath": "./google-services-key.json",
-        "track": "internal"
+        "serviceAccountKeyPath": "./api-project-146169649450-a4493526d571.json",
+        "track": "internal",
+        "releaseStatus": "draft",
+        "changesNotSentForReview": true
       }
     }
   }

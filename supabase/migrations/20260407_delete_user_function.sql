@@ -14,6 +14,12 @@ begin
     raise exception 'Not authenticated';
   end if;
 
+  -- Delete app data first in case some tables don't have ON DELETE CASCADE.
+  delete from public.mood_entries where user_id = auth.uid();
+  delete from public.ai_reports where user_id = auth.uid();
+  delete from public.profiles where user_id = auth.uid();
+  delete from public.notification_preferences where user_id = auth.uid();
+
   delete from auth.users where id = auth.uid();
 end;
 $$;

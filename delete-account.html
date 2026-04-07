@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://esm.sh; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; img-src 'self' data: https:; base-uri 'self'; form-action 'self';">
     <title>Delete Account - Kibun</title>
     <style>
         body {
@@ -23,6 +24,70 @@
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
+        .form-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 14px;
+        }
+        label {
+            font-weight: 600;
+            color: #202124;
+            font-size: 14px;
+        }
+        input, select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 12px;
+            border-radius: 8px;
+            border: 1px solid #D0D7DE;
+            font-size: 14px;
+            margin-top: 6px;
+        }
+        input:focus, select:focus {
+            outline: 2px solid #6C63FF33;
+            border-color: #6C63FF;
+        }
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 6px;
+        }
+        .btn {
+            appearance: none;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-primary {
+            background: #6C63FF;
+            color: #fff;
+        }
+        .btn-danger {
+            background: #F44336;
+            color: #fff;
+        }
+        .helper {
+            color: #666;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .status {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .status.info { background: #EEF3FF; color: #1E3A8A; }
+        .status.error { background: #FFEBEE; color: #B71C1C; }
+        .status.success { background: #E8F5E9; color: #1B5E20; }
         .warning {
             background: #FFEBEE;
             border-left: 4px solid #F44336;
@@ -54,11 +119,42 @@
     <h1>Delete Your Kibun Account or Data</h1>
 
     <div class="section">
-        <p>Kibun offers two options in the <strong>Danger Zone</strong> of your Account settings:</p>
-        <ul>
-            <li><strong>Delete My Data</strong> — removes all mood history, AI reports, and profile info. Your account remains active and you can start fresh.</li>
-            <li><strong>Delete Account</strong> — permanently deletes your account and all associated data. This cannot be undone.</li>
-        </ul>
+        <h2>Start Deletion Request</h2>
+        <p>
+            Use this page to request deletion with email verification. We send a one-time code to your email,
+            then execute your selected action after successful verification.
+        </p>
+        <div class="warning">
+            <strong>Important:</strong> Your email must match an existing Kibun account.
+            For security, deletion is only executed after OTP verification.
+        </div>
+        <div class="form-grid">
+            <div>
+                <label for="email">Account Email</label>
+                <input id="email" type="email" autocomplete="email" placeholder="you@example.com" />
+            </div>
+            <div>
+                <label for="action">Deletion Type</label>
+                <select id="action">
+                    <option value="data">Delete My Data (keep account)</option>
+                    <option value="account">Delete Account (remove account + all data)</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button id="sendCodeBtn" class="btn btn-primary" type="button">Send Verification Code</button>
+            </div>
+            <div>
+                <label for="otp">Verification Code</label>
+                <input id="otp" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit code" />
+                <div class="helper">Enter the code sent to your email, then confirm deletion.</div>
+            </div>
+            <div class="btn-row">
+                <button id="confirmBtn" class="btn btn-danger" type="button">Verify Code and Delete</button>
+            </div>
+        </div>
+        <div id="status" class="status info" role="status" aria-live="polite">
+            Configure Supabase URL and anon key in this file before using this form.
+        </div>
     </div>
 
     <div class="section">
@@ -125,5 +221,117 @@
             © 2026 Kibun. All rights reserved.
         </p>
     </div>
+
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+        // TODO: Set these from your Supabase project settings.
+        // Project Settings -> API -> Project URL / anon public key.
+        const SUPABASE_URL = '';
+        const SUPABASE_ANON_KEY = '';
+
+        const emailEl = document.getElementById('email');
+        const actionEl = document.getElementById('action');
+        const otpEl = document.getElementById('otp');
+        const sendCodeBtn = document.getElementById('sendCodeBtn');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const statusEl = document.getElementById('status');
+
+        const setStatus = (type, text) => {
+            statusEl.className = 'status ' + type;
+            statusEl.textContent = text;
+        };
+
+        const withLoading = (btn, isLoading) => {
+            btn.disabled = isLoading;
+            btn.dataset.label = btn.dataset.label || btn.textContent;
+            btn.textContent = isLoading ? 'Please wait...' : btn.dataset.label;
+        };
+
+        if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+            setStatus('error', 'Supabase is not configured yet. Fill SUPABASE_URL and SUPABASE_ANON_KEY in this page.');
+            sendCodeBtn.disabled = true;
+            confirmBtn.disabled = true;
+        } else {
+            const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            sendCodeBtn.addEventListener('click', async () => {
+                const email = emailEl.value.trim();
+                if (!email) {
+                    setStatus('error', 'Enter your account email first.');
+                    return;
+                }
+
+                withLoading(sendCodeBtn, true);
+                setStatus('info', 'Sending verification code...');
+                try {
+                    const { error } = await supabase.auth.signInWithOtp({
+                        email,
+                        options: {
+                            shouldCreateUser: false,
+                        },
+                    });
+
+                    if (error) {
+                        setStatus('error', error.message);
+                        return;
+                    }
+
+                    setStatus('success', 'Verification code sent. Check your email and enter the 6-digit code.');
+                } catch (err) {
+                    setStatus('error', 'Could not send verification code. Try again.');
+                } finally {
+                    withLoading(sendCodeBtn, false);
+                }
+            });
+
+            confirmBtn.addEventListener('click', async () => {
+                const email = emailEl.value.trim();
+                const otp = otpEl.value.trim();
+                const action = actionEl.value;
+
+                if (!email || !otp) {
+                    setStatus('error', 'Enter email and verification code.');
+                    return;
+                }
+
+                withLoading(confirmBtn, true);
+                setStatus('info', 'Verifying code...');
+                try {
+                    const { error: verifyError } = await supabase.auth.verifyOtp({
+                        email,
+                        token: otp,
+                        type: 'email',
+                    });
+
+                    if (verifyError) {
+                        setStatus('error', verifyError.message);
+                        return;
+                    }
+
+                    setStatus('info', action === 'account' ? 'Verified. Deleting account...' : 'Verified. Deleting data...');
+
+                    const rpcName = action === 'account' ? 'delete_user' : 'delete_user_data';
+                    const { error: rpcError } = await supabase.rpc(rpcName);
+
+                    if (rpcError) {
+                        setStatus('error', rpcError.message);
+                        return;
+                    }
+
+                    if (action === 'account') {
+                        await supabase.auth.signOut();
+                        setStatus('success', 'Your account and all data were permanently deleted.');
+                    } else {
+                        setStatus('success', 'Your data was permanently deleted. Your account remains active.');
+                    }
+                } catch (err) {
+                    setStatus('error', 'Deletion failed. Please retry or contact privacy@kibun.app.');
+                } finally {
+                    withLoading(confirmBtn, false);
+                }
+            });
+        }
+    </script>
 </body>
 </html>

@@ -17,6 +17,7 @@ export default function AccountScreen() {
   const [email, setEmail] = useState<string | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [deletingData, setDeletingData] = useState(false);
 
   // Load email for registered users
   useEffect(() => {
@@ -25,6 +26,34 @@ export default function AccountScreen() {
       setEmail(data.user?.email ?? null);
     });
   }, [isAnonymous]);
+
+  const handleDeleteData = () => {
+    Alert.alert(
+      'Delete My Data',
+      'This will permanently delete all your mood entries, AI reports, and profile information. Your account will remain active. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Data',
+          style: 'destructive',
+          onPress: async () => {
+            if (!supabase || deletingData) return;
+            setDeletingData(true);
+            try {
+              const { error } = await supabase.rpc('delete_user_data');
+              if (error) throw error;
+              useOnboardingGateStore.setState({ complete: false, paywallSeen: false });
+              router.replace('/(onboarding)/first-mood');
+            } catch (err) {
+              if (__DEV__) console.error('[kibun:account] Delete data failed:', err);
+              Alert.alert('Error', 'Failed to delete data. Please try again.');
+              setDeletingData(false);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const handleDeleteAccount = () => {
     Alert.alert(
@@ -174,8 +203,26 @@ export default function AccountScreen() {
             <View style={styles.dangerCard}>
               <Pressable
                 style={styles.deleteRow}
+                onPress={handleDeleteData}
+                disabled={deletingData || deleting}
+                accessibilityRole="button"
+                accessibilityLabel="Delete my data"
+              >
+                <View style={styles.deleteTextGroup}>
+                  <Text style={styles.deleteTitle}>
+                    {deletingData ? 'Deleting data...' : 'Delete My Data'}
+                  </Text>
+                  <Text style={styles.deleteSubtitle}>Removes mood history and profile, keeps account</Text>
+                </View>
+                {deletingData
+                  ? <ActivityIndicator size="small" color={colors.error} />
+                  : <Ionicons name="document-text-outline" size={20} color={colors.error} />}
+              </Pressable>
+              <View style={styles.dangerDivider} />
+              <Pressable
+                style={styles.deleteRow}
                 onPress={handleDeleteAccount}
-                disabled={deleting}
+                disabled={deleting || deletingData}
                 accessibilityRole="button"
                 accessibilityLabel="Delete account"
               >
@@ -183,7 +230,7 @@ export default function AccountScreen() {
                   <Text style={styles.deleteTitle}>
                     {deleting ? 'Deleting...' : 'Delete Account'}
                   </Text>
-                  <Text style={styles.deleteSubtitle}>Permanently removes all your data</Text>
+                  <Text style={styles.deleteSubtitle}>Permanently removes account and all data</Text>
                 </View>
                 {deleting
                   ? <ActivityIndicator size="small" color={colors.error} />
@@ -373,6 +420,11 @@ const styles = StyleSheet.create({
   deleteSubtitle: {
     fontSize: typography.sizes.sm,
     color: colors.error + 'aa',
+  },
+  dangerDivider: {
+    height: 1,
+    backgroundColor: colors.error + '33',
+    marginHorizontal: spacing.md,
   },
   signOutSection: {
     marginTop: spacing.lg,

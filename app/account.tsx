@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button } from '@components/index';
@@ -16,6 +16,7 @@ export default function AccountScreen() {
 
   const [email, setEmail] = useState<string | null>(null);
   const [signingOut, setSigningOut] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Load email for registered users
   useEffect(() => {
@@ -24,6 +25,35 @@ export default function AccountScreen() {
       setEmail(data.user?.email ?? null);
     });
   }, [isAnonymous]);
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'This will permanently delete your account and all your mood data. This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            if (!supabase || deleting) return;
+            setDeleting(true);
+            try {
+              const { error } = await supabase.rpc('delete_user');
+              if (error) throw error;
+              await supabase.auth.signOut();
+              useOnboardingGateStore.setState({ complete: false, paywallSeen: false });
+              router.replace('/(onboarding)/first-mood');
+            } catch (err) {
+              if (__DEV__) console.error('[kibun:account] Delete account failed:', err);
+              Alert.alert('Error', 'Failed to delete account. Please try again.');
+              setDeleting(false);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const handleSignOut = async () => {
     if (signingOut) return;
@@ -131,12 +161,35 @@ export default function AccountScreen() {
               label={signingOut ? 'Signing out...' : 'Sign out'}
               onPress={handleSignOut}
               variant="ghost"
-              disabled={signingOut}
+              disabled={signingOut || deleting}
               fullWidth
             />
             <Text style={styles.signOutHint}>
               Signing out will end your session. Your mood data will remain on this device.
             </Text>
+          </View>
+
+          <View style={styles.dangerSection}>
+            <Text style={styles.dangerHeader} accessibilityRole="header">DANGER ZONE</Text>
+            <View style={styles.dangerCard}>
+              <Pressable
+                style={styles.deleteRow}
+                onPress={handleDeleteAccount}
+                disabled={deleting}
+                accessibilityRole="button"
+                accessibilityLabel="Delete account"
+              >
+                <View style={styles.deleteTextGroup}>
+                  <Text style={styles.deleteTitle}>
+                    {deleting ? 'Deleting...' : 'Delete Account'}
+                  </Text>
+                  <Text style={styles.deleteSubtitle}>Permanently removes all your data</Text>
+                </View>
+                {deleting
+                  ? <ActivityIndicator size="small" color={colors.error} />
+                  : <Ionicons name="trash-outline" size={20} color={colors.error} />}
+              </Pressable>
+            </View>
           </View>
         </View>
       )}
@@ -284,6 +337,43 @@ const styles = StyleSheet.create({
   // None: bordered surface
   badgeNone:     { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   badgeNoneText: { color: colors.textSecondary },
+  dangerSection: {
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  dangerHeader: {
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.semibold,
+    color: colors.error,
+    letterSpacing: 0.5,
+  },
+  dangerCard: {
+    backgroundColor: colors.errorLight,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.error + '33',
+    overflow: 'hidden',
+  },
+  deleteRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  deleteTextGroup: {
+    flex: 1,
+    gap: 2,
+  },
+  deleteTitle: {
+    fontSize: typography.sizes.body,
+    fontWeight: typography.weights.semibold,
+    color: colors.error,
+  },
+  deleteSubtitle: {
+    fontSize: typography.sizes.sm,
+    color: colors.error + 'aa',
+  },
   signOutSection: {
     marginTop: spacing.lg,
     gap: spacing.sm,

@@ -11,8 +11,7 @@ import { scheduleSlotNotifications } from '@lib/notifications';
 import type { NotificationSlot } from '@models/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
-// TODO: replace with real URL before App Store submission
-const PRIVACY_POLICY_URL = 'https://kibun.app/privacy';
+const PRIVACY_POLICY_URL = 'https://fernanhick.github.io/kibun/privacy-policy.html';
 
 interface SlotRow {
   slot: NotificationSlot;

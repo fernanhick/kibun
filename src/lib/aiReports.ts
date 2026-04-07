@@ -18,6 +18,8 @@ export async function requestReport(params: {
   reportType: 'weekly' | 'monthly';
   profile?: Partial<OnboardingProfile>;
 }): Promise<AIReport | null> {
+  if (!supabase) return null;
+
   const { data, error } = await supabase.functions.invoke('generate-report', {
     body: {
       report_type: params.reportType,
@@ -40,6 +42,8 @@ export async function requestReport(params: {
 }
 
 export async function getReports(userId: string): Promise<AIReport[]> {
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('ai_reports')
     .select('*')
@@ -61,6 +65,8 @@ export async function getLatestReport(
   userId: string,
   reportType: 'weekly' | 'monthly',
 ): Promise<AIReport | null> {
+  if (!supabase) return null;
+
   const { data, error } = await supabase
     .from('ai_reports')
     .select('*')

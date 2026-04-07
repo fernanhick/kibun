@@ -24,7 +24,7 @@ export const useMoodEntryStore = create<MoodEntryState>()(
 
         // 2. Fire-and-forget Supabase sync for registered users
         const session = useSessionStore.getState().session;
-        if (session?.authStatus === 'registered') {
+        if (session?.authStatus === 'registered' && supabase) {
           const mood = MOOD_MAP[entry.moodId as MoodId];
           supabase
             .from('mood_entries')

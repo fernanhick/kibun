@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@lib/supabase';
+import { isSupabaseConfigured, supabase } from '@lib/supabase';
 import { useSessionStore } from '@store/index';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
@@ -18,7 +18,15 @@ export function useAuth() {
   const { setSession, clearSession } = useSessionStore();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    if (!isSupabaseConfigured || !supabase) {
+      clearSession();
+      setIsReady(true);
+      return;
+    }
+
+    const client = supabase;
+
+    const { data: { subscription } } = client.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null) => {
         if (event === 'INITIAL_SESSION') {
           if (session) {
@@ -31,7 +39,7 @@ export function useAuth() {
             setIsReady(true);
           } else {
             // No session — create anonymous identity
-            const { error } = await supabase.auth.signInAnonymously();
+            const { error } = await client.auth.signInAnonymously();
             if (error) {
               console.error('[kibun:auth]', { event: 'anon_sign_in_failed', error });
               // App must not hang — allow render even if auth failed

@@ -19,7 +19,7 @@ export default function AccountScreen() {
 
   // Load email for registered users
   useEffect(() => {
-    if (isAnonymous) return;
+    if (isAnonymous || !supabase) return;
     supabase.auth.getUser().then(({ data }) => {
       setEmail(data.user?.email ?? null);
     });
@@ -27,6 +27,7 @@ export default function AccountScreen() {
 
   const handleSignOut = async () => {
     if (signingOut) return;
+    if (!supabase) return;
     setSigningOut(true);
     try {
       // 1. Revoke push token (fire-and-forget — resolves deferred D-3 from 08-02)

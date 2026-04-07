@@ -20,6 +20,10 @@ export default function RegistrationScreen() {
   // Converts the anonymous session to a registered email/password account.
   // supabase.auth.updateUser preserves the anonymous userId — same user, now registered.
   const handleEmail = async () => {
+    if (!supabase) {
+      setError('Configuration error: Supabase is not set for this build.');
+      return;
+    }
     if (!email.trim() || !password.trim() || submitting) return;
     setSubmitting(true);
     setError(null);
@@ -42,6 +46,10 @@ export default function RegistrationScreen() {
   // linkIdentity links Google to the existing anonymous user, preserving the userId.
   // skipBrowserRedirect: true lets us open the OAuth URL manually via WebBrowser.
   const handleGoogle = async () => {
+    if (!supabase) {
+      setError('Configuration error: Supabase is not set for this build.');
+      return;
+    }
     setError(null);
     const redirectTo = makeRedirectUri({ scheme: 'kibun', path: 'auth/callback' });
     const { data, error: authError } = await supabase.auth.linkIdentity({
@@ -70,6 +78,10 @@ export default function RegistrationScreen() {
   // linkIdentity links Apple to the existing anonymous user via web-based OAuth,
   // preserving the userId. Same pattern as Google — Supabase handles nonce server-side.
   const handleApple = async () => {
+    if (!supabase) {
+      setError('Configuration error: Supabase is not set for this build.');
+      return;
+    }
     setError(null);
     const redirectTo = makeRedirectUri({ scheme: 'kibun', path: 'auth/callback' });
     const { data, error: authError } = await supabase.auth.linkIdentity({

@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
 
 // ─── SecureStore Adapter ──────────────────────────────────────────────────────
@@ -17,23 +17,23 @@ const ExpoSecureStoreAdapter = {
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl) {
-  throw new Error(
-    '[kibun] Missing EXPO_PUBLIC_SUPABASE_URL. Add it to your .env file (see .env.example).'
-  );
-}
-if (!supabaseAnonKey) {
-  throw new Error(
-    '[kibun] Missing EXPO_PUBLIC_SUPABASE_ANON_KEY. Add it to your .env file (see .env.example).'
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+if (!isSupabaseConfigured) {
+  console.error(
+    '[kibun] Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and ' +
+    'EXPO_PUBLIC_SUPABASE_ANON_KEY for EAS build profiles.'
   );
 }
 
 // ─── Supabase Client ──────────────────────────────────────────────────────────
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: ExpoSecureStoreAdapter,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false, // Required for React Native — no URL-based session detection
-  },
-});
+export const supabase: SupabaseClient | null = isSupabaseConfigured
+  ? createClient(supabaseUrl!, supabaseAnonKey!, {
+      auth: {
+        storage: ExpoSecureStoreAdapter,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false, // Required for React Native — no URL-based session detection
+      },
+    })
+  : null;

@@ -29,7 +29,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: '#6C63FF',
     },
     package: 'com.kibun.app',
-    versionCode: 1,
   },
   web: {
     bundler: 'metro',

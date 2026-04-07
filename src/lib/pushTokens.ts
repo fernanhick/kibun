@@ -3,6 +3,8 @@ import Constants from 'expo-constants';
 import { supabase } from '@lib/supabase';
 
 export async function registerPushToken(): Promise<void> {
+  if (!supabase) return;
+
   // Only register if permission already granted — don't prompt here
   const { status } = await Notifications.getPermissionsAsync();
   if (status !== 'granted') return;

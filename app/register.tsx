@@ -44,8 +44,9 @@ export default function RegistrationScreen() {
     router.replace('/(tabs)');
   };
 
-  // linkIdentity links Google to the existing anonymous user, preserving the userId.
-  // skipBrowserRedirect: true lets us open the OAuth URL manually via WebBrowser.
+  // handleGoogle: First-time users use linkIdentity() to link OAuth to their anonymous account.
+  // Returning users (identity already linked) use signInWithOAuth() to sign in.
+  // Both flows open the OAuth URL in a browser and let Supabase handle the session automatically.
   const handleGoogle = async () => {
     if (!supabase) {
       setError('Configuration error: Supabase is not set for this build.');
@@ -53,31 +54,42 @@ export default function RegistrationScreen() {
     }
     setError(null);
     const redirectTo = makeRedirectUri({ scheme: 'kibun', path: 'auth/callback' });
-    const { data, error: authError } = await supabase.auth.linkIdentity({
+    
+    // Try linking first (first-time users) — this links OAuth identity to anonymous user
+    let { data, error: authError } = await supabase.auth.linkIdentity({
       provider: 'google',
       options: { redirectTo, skipBrowserRedirect: true },
     });
+    
+    // If already linked, use signInWithOAuth to sign in with existing identity
+    if (authError?.message?.includes('identity_already_exists')) {
+      const result = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo, skipBrowserRedirect: true },
+      });
+      data = result.data;
+      authError = result.error;
+    }
+    
     if (authError || !data?.url) {
       setError(authError?.message ?? 'Google sign in unavailable');
       return;
     }
+
     try {
+      // Open the OAuth URL in browser — Supabase handles session exchange automatically
       const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
       if (result.type !== 'success') return; // Cancelled — no error shown, stays on screen
-      const { error: sessionError } = await supabase.auth.exchangeCodeForSession(result.url);
-      if (sessionError) {
-        setError(sessionError.message);
-        return;
-      }
-      // onAuthStateChange SIGNED_IN fires → setSession({ authStatus: 'registered' })
+      // Session is already established by Supabase — onAuthStateChange SIGNED_IN fires automatically
       router.replace('/(tabs)');
     } catch {
       setError('Google sign in failed. Please try again.');
     }
   };
 
-  // linkIdentity links Apple to the existing anonymous user via web-based OAuth,
-  // preserving the userId. Same pattern as Google — Supabase handles nonce server-side.
+  // handleApple: First-time users use linkIdentity() to link OAuth to their anonymous account.
+  // Returning users (identity already linked) use signInWithOAuth() to sign in.
+  // Both flows open the OAuth URL in a browser and let Supabase handle the session automatically.
   const handleApple = async () => {
     if (!supabase) {
       setError('Configuration error: Supabase is not set for this build.');
@@ -85,23 +97,33 @@ export default function RegistrationScreen() {
     }
     setError(null);
     const redirectTo = makeRedirectUri({ scheme: 'kibun', path: 'auth/callback' });
-    const { data, error: authError } = await supabase.auth.linkIdentity({
+    
+    // Try linking first (first-time users) — this links OAuth identity to anonymous user
+    let { data, error: authError } = await supabase.auth.linkIdentity({
       provider: 'apple',
       options: { redirectTo, skipBrowserRedirect: true },
     });
+    
+    // If already linked, use signInWithOAuth to sign in with existing identity
+    if (authError?.message?.includes('identity_already_exists')) {
+      const result = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: { redirectTo, skipBrowserRedirect: true },
+      });
+      data = result.data;
+      authError = result.error;
+    }
+    
     if (authError || !data?.url) {
       setError(authError?.message ?? 'Apple sign in unavailable');
       return;
     }
+
     try {
+      // Open the OAuth URL in browser — Supabase handles session exchange automatically
       const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
       if (result.type !== 'success') return; // Cancelled — no error shown, stays on screen
-      const { error: sessionError } = await supabase.auth.exchangeCodeForSession(result.url);
-      if (sessionError) {
-        setError(sessionError.message);
-        return;
-      }
-      // onAuthStateChange SIGNED_IN fires → setSession({ authStatus: 'registered' })
+      // Session is already established by Supabase — onAuthStateChange SIGNED_IN fires automatically
       router.replace('/(tabs)');
     } catch {
       setError('Apple sign in failed. Please try again.');

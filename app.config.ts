@@ -1,5 +1,16 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
 
+const linkingConfig = {
+  prefixes: ['kibun://', 'https://kibun.app'],
+  config: {
+    screens: {
+      '(tabs)': '(tabs)',
+      'auth/callback': 'auth/callback',
+      '*': '*',
+    },
+  },
+};
+
 export default ({ config }: ConfigContext) => ({
   ...config,
   name: 'kibun',
@@ -15,6 +26,7 @@ export default ({ config }: ConfigContext) => ({
     backgroundColor: '#6C63FF',
   },
   assetBundlePatterns: ['**/*'],
+  linking: linkingConfig as any,
   ios: {
     supportsTablet: false,
     bundleIdentifier: 'com.kibun.app',

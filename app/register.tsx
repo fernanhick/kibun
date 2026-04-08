@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri } from 'expo-auth-session';
+import * as Linking from 'expo-linking';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { supabase } from '@lib/supabase';
@@ -17,9 +17,9 @@ export default function RegistrationScreen() {
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<'register' | 'login'>('register');
 
-  // Converts the anonymous session to a registered email/password account.
-  // supabase.auth.updateUser preserves the anonymous userId — same user, now registered.
+  // Email/password: register (updateUser to upgrade anonymous) or login (signInWithPassword).
   const handleEmail = async () => {
     if (!supabase) {
       setError('Configuration error: Supabase is not set for this build.');
@@ -28,105 +28,111 @@ export default function RegistrationScreen() {
     if (!email.trim() || !password.trim() || submitting) return;
     setSubmitting(true);
     setError(null);
-    const { error: authError } = await supabase.auth.updateUser({
-      email: email.trim(),
-      password: password.trim(),
-    });
-    if (authError) {
-      setError(authError.message);
-      setSubmitting(false);
-      return;
+
+    if (mode === 'register') {
+      const { error: authError } = await supabase.auth.updateUser({
+        email: email.trim(),
+        password: password.trim(),
+      });
+      if (authError) {
+        setError(authError.message);
+        setSubmitting(false);
+        return;
+      }
+    } else {
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password.trim(),
+      });
+      if (authError) {
+        setError(authError.message);
+        setSubmitting(false);
+        return;
+      }
     }
-    // updateUser dispatches a confirmation email.
-    // If email confirmation is disabled in Supabase dashboard: session upgrades immediately.
-    // If enabled: onAuthStateChange fires when the user clicks the confirmation link.
-    // Navigate to tabs in both cases — the banner disappears once the session upgrades.
+
     router.replace('/(tabs)');
   };
 
-  // handleGoogle: First-time users use linkIdentity() to link OAuth to their anonymous account.
-  // Returning users (identity already linked) use signInWithOAuth() to sign in.
-  // Both flows open the OAuth URL in a browser and let Supabase handle the session automatically.
-  const handleGoogle = async () => {
+  // Shared OAuth handler for Google/Apple.
+  // Uses signInWithOAuth for both login and signup — Supabase auto-creates users on first OAuth login.
+  // Does NOT use linkIdentity (unreliable with PKCE + skipBrowserRedirect on mobile).
+  const handleOAuth = async (provider: 'google' | 'apple') => {
     if (!supabase) {
       setError('Configuration error: Supabase is not set for this build.');
       return;
     }
     setError(null);
-    const redirectTo = makeRedirectUri({ scheme: 'kibun', path: 'auth/callback' });
-    
-    // Try linking first (first-time users) — this links OAuth identity to anonymous user
-    let { data, error: authError } = await supabase.auth.linkIdentity({
-      provider: 'google',
-      options: { redirectTo, skipBrowserRedirect: true },
+
+    const redirectUrl = Linking.createURL('auth/callback');
+    if (__DEV__) console.log('[kibun:oauth] redirectUrl:', redirectUrl);
+
+    const { data, error: authError } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: redirectUrl,
+        skipBrowserRedirect: true,
+      },
     });
-    
-    // If already linked, use signInWithOAuth to sign in with existing identity
-    if (authError?.message?.includes('identity_already_exists')) {
-      const result = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo, skipBrowserRedirect: true },
-      });
-      data = result.data;
-      authError = result.error;
-    }
-    
+
     if (authError || !data?.url) {
-      setError(authError?.message ?? 'Google sign in unavailable');
+      setError(authError?.message ?? `${provider} sign in unavailable`);
       return;
     }
 
     try {
-      // Open the OAuth URL in browser — Supabase handles session exchange automatically
-      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
-      if (result.type !== 'success') return; // Cancelled — no error shown, stays on screen
-      // Session is already established by Supabase — onAuthStateChange SIGNED_IN fires automatically
-      router.replace('/(tabs)');
-    } catch {
-      setError('Google sign in failed. Please try again.');
-    }
-  };
+      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+      if (__DEV__) console.log('[kibun:oauth] browser result:', JSON.stringify(result));
 
-  // handleApple: First-time users use linkIdentity() to link OAuth to their anonymous account.
-  // Returning users (identity already linked) use signInWithOAuth() to sign in.
-  // Both flows open the OAuth URL in a browser and let Supabase handle the session automatically.
-  const handleApple = async () => {
-    if (!supabase) {
-      setError('Configuration error: Supabase is not set for this build.');
-      return;
-    }
-    setError(null);
-    const redirectTo = makeRedirectUri({ scheme: 'kibun', path: 'auth/callback' });
-    
-    // Try linking first (first-time users) — this links OAuth identity to anonymous user
-    let { data, error: authError } = await supabase.auth.linkIdentity({
-      provider: 'apple',
-      options: { redirectTo, skipBrowserRedirect: true },
-    });
-    
-    // If already linked, use signInWithOAuth to sign in with existing identity
-    if (authError?.message?.includes('identity_already_exists')) {
-      const result = await supabase.auth.signInWithOAuth({
-        provider: 'apple',
-        options: { redirectTo, skipBrowserRedirect: true },
-      });
-      data = result.data;
-      authError = result.error;
-    }
-    
-    if (authError || !data?.url) {
-      setError(authError?.message ?? 'Apple sign in unavailable');
-      return;
-    }
+      if (result.type !== 'success' || !result.url) return;
 
-    try {
-      // Open the OAuth URL in browser — Supabase handles session exchange automatically
-      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
-      if (result.type !== 'success') return; // Cancelled — no error shown, stays on screen
-      // Session is already established by Supabase — onAuthStateChange SIGNED_IN fires automatically
-      router.replace('/(tabs)');
-    } catch {
-      setError('Apple sign in failed. Please try again.');
+      // Parse the callback URL for tokens or code
+      const url = result.url;
+
+      // Try PKCE code from query params
+      const codeMatch = url.match(/[?&]code=([^&#]+)/);
+      if (codeMatch) {
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(codeMatch[1]);
+        if (exchangeError) {
+          if (__DEV__) console.error('[kibun:oauth] code exchange failed:', exchangeError);
+          setError(exchangeError.message);
+          return;
+        }
+        router.replace('/(tabs)');
+        return;
+      }
+
+      // Try implicit flow tokens from hash fragment
+      const hashParams = url.includes('#') ? new URLSearchParams(url.split('#')[1]) : null;
+      const accessToken = hashParams?.get('access_token');
+      const refreshToken = hashParams?.get('refresh_token');
+
+      if (accessToken && refreshToken) {
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (sessionError) {
+          if (__DEV__) console.error('[kibun:oauth] setSession failed:', sessionError);
+          setError(sessionError.message);
+          return;
+        }
+        router.replace('/(tabs)');
+        return;
+      }
+
+      // If neither worked, try refreshing the session — the OAuth might have completed server-side
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData?.session && !sessionData.session.user.is_anonymous) {
+        router.replace('/(tabs)');
+        return;
+      }
+
+      if (__DEV__) console.warn('[kibun:oauth] No tokens in redirect URL:', url);
+      setError('Sign in could not be completed. Please try again.');
+    } catch (e) {
+      if (__DEV__) console.error('[kibun:oauth] exception:', e);
+      setError(`${provider === 'google' ? 'Google' : 'Apple'} sign in failed. Please try again.`);
     }
   };
 
@@ -142,9 +148,13 @@ export default function RegistrationScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <Text style={styles.title}>Create your account</Text>
+        <Text style={styles.title}>
+          {mode === 'register' ? 'Create your account' : 'Welcome back!'}
+        </Text>
         <Text style={styles.subtitle}>
-          Link your data to an account so you never lose it
+          {mode === 'register'
+            ? 'Link your data to an account so you never lose it'
+            : 'Sign in to pick up where you left off'}
         </Text>
       </LinearGradient>
 
@@ -153,18 +163,18 @@ export default function RegistrationScreen() {
         <View style={styles.socialGroup}>
           <Pressable
             style={({ pressed }) => [styles.appleButton, pressed && styles.pressed]}
-            onPress={handleApple}
+            onPress={() => handleOAuth('apple')}
             accessibilityRole="button"
-            accessibilityLabel="Sign in with Apple"
+            accessibilityLabel="Continue with Apple"
           >
             <Text style={styles.appleButtonText}>Continue with Apple</Text>
           </Pressable>
 
           <Pressable
             style={({ pressed }) => [styles.googleButton, pressed && styles.pressed]}
-            onPress={handleGoogle}
+            onPress={() => handleOAuth('google')}
             accessibilityRole="button"
-            accessibilityLabel="Sign in with Google"
+            accessibilityLabel="Continue with Google"
           >
             <Text style={styles.googleButtonText}>Continue with Google</Text>
           </Pressable>
@@ -201,15 +211,15 @@ export default function RegistrationScreen() {
               value={password}
               onChangeText={(text) => { setPassword(text); setError(null); }}
               secureTextEntry={true}
-              autoComplete="new-password"
+              autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
               accessibilityLabel="Password"
-              placeholder="Min. 8 characters"
+              placeholder={mode === 'register' ? 'Min. 8 characters' : 'Your password'}
               placeholderTextColor={colors.textDisabled}
             />
           </View>
 
           <Button
-            label="Create account"
+            label={mode === 'register' ? 'Create account' : 'Sign in'}
             onPress={handleEmail}
             variant="sunrise"
             disabled={!email.trim() || !password.trim()}
@@ -217,6 +227,21 @@ export default function RegistrationScreen() {
             fullWidth
           />
         </View>
+
+        {/* Toggle login/register */}
+        <Pressable
+          onPress={() => { setMode(mode === 'register' ? 'login' : 'register'); setError(null); }}
+          style={styles.toggleRow}
+        >
+          <Text style={styles.toggleText}>
+            {mode === 'register'
+              ? 'Already have an account? '
+              : "Don't have an account? "}
+          </Text>
+          <Text style={styles.toggleLink}>
+            {mode === 'register' ? 'Sign in' : 'Create one'}
+          </Text>
+        </Pressable>
       </View>
 
       {/* Inline error display */}
@@ -343,6 +368,20 @@ const styles = StyleSheet.create({
     color: colors.error,
     textAlign: 'center',
     paddingHorizontal: spacing.sm,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingTop: spacing.xs,
+  },
+  toggleText: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+  },
+  toggleLink: {
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.semibold,
+    color: colors.primary,
   },
   skipRow: {
     marginTop: spacing.sm,

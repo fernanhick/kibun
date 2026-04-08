@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import Purchases from 'react-native-purchases';
+import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 
 // ─── RevenueCat SDK Initializer ───────────────────────────────────────────────
 // Called once at app startup from _layout.tsx (module level, before React mounts).
@@ -14,11 +14,14 @@ import Purchases from 'react-native-purchases';
 // entitlement ID configured in the RevenueCat dashboard.
 
 export function initPurchases(): void {
-  const apiKey = Platform.select({
+  const prodKey = Platform.select({
     ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY,
     android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY,
     default: undefined,
   });
+  const apiKey = (__DEV__ && process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY)
+    ? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY
+    : prodKey;
 
   if (!apiKey) {
     if (__DEV__) {
@@ -28,6 +31,10 @@ export function initPurchases(): void {
       );
     }
     return;
+  }
+
+  if (__DEV__) {
+    Purchases.setLogLevel(LOG_LEVEL.DEBUG);
   }
 
   Purchases.configure({ apiKey });

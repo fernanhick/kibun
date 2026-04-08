@@ -19,43 +19,49 @@ export default function PaywallScreen() {
   const { setPaywallSeen } = useOnboardingGateStore();
   const { setSubscriptionStatus } = useSessionStore();
   const [purchasing, setPurchasing] = useState(false);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
   const handlePurchase = async () => {
     if (purchasing) return;
     setPurchasing(true);
-    let purchased = false;
+    setPurchaseError(null);
     try {
       const offerings = await Purchases.getOfferings();
       const pkg = offerings.current?.availablePackages[0];
       if (!pkg) {
-        if (__DEV__) {
-          console.warn('[kibun:rc] No offerings found. Configure products in RevenueCat dashboard.');
-        }
-        // No products — fall through to tabs (dev fallback, not a real purchase)
-      } else {
-        const { customerInfo } = await Purchases.purchasePackage(pkg);
-        const active = customerInfo.entitlements.active['premium'];
-        if (active) {
-          setSubscriptionStatus(active.periodType === 'TRIAL' ? 'trial' : 'active');
-          purchased = true; // Only set on confirmed entitlement
-        }
-      }
-    } catch (error: unknown) {
-      const rcError = error as { code?: string };
-      if (rcError?.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
-        // User cancelled native IAP dialog — stay on paywall, re-enable button
-        // Do NOT set paywallSeen. Do NOT navigate away.
+        setPurchaseError('No subscription products found. Please try again later.');
         setPurchasing(false);
         return;
       }
-      // All other errors (network, RC not configured, etc.) — log and fall through
-      if (__DEV__) {
-        console.warn('[kibun:rc] Purchase failed (non-cancel):', error);
+      const { customerInfo } = await Purchases.purchasePackage(pkg);
+      const active = customerInfo.entitlements.active['premium'];
+      if (active) {
+        setSubscriptionStatus(active.periodType === 'TRIAL' ? 'trial' : 'active');
+        setPaywallSeen();
+        router.replace('/register');
+      } else {
+        setPurchaseError('Purchase completed but entitlement not found. Please contact support.');
+        setPurchasing(false);
       }
+    } catch (error: unknown) {
+      const rcError = error as { code?: string; message?: string };
+      if (rcError?.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
+        // User cancelled — stay on screen silently
+        setPurchasing(false);
+        return;
+      }
+      // Store or billing unavailable on this device/region
+      if (rcError?.code === PURCHASES_ERROR_CODE.STORE_PROBLEM_ERROR ||
+          rcError?.message?.toLowerCase().includes('billing')) {
+        setPurchaseError('In-app purchases are not available on this device. Make sure you are signed into Google Play.');
+      } else {
+        setPurchaseError('Something went wrong. Please try again.');
+      }
+      if (__DEV__) {
+        console.warn('[kibun:rc] Purchase failed:', error);
+      }
+      setPurchasing(false);
     }
-    setPaywallSeen();
-    // Successful purchase → registration; dev/error fallback → tabs directly
-    router.replace(purchased ? '/register' : '/(tabs)');
   };
 
   const handleSkip = () => {
@@ -106,6 +112,9 @@ export default function PaywallScreen() {
           fullWidth
           accessibilityHint="Begins your free trial. No charge for 7 days."
         />
+        {purchaseError && (
+          <Text style={styles.errorText}>{purchaseError}</Text>
+        )}
         <View style={styles.skipRow}>
           <Button
             label="Maybe later"
@@ -198,5 +207,11 @@ const styles = StyleSheet.create({
   },
   skipRow: {
     marginTop: spacing.xs,
+  },
+  errorText: {
+    fontSize: typography.sizes.sm,
+    color: colors.error ?? '#E53E3E',
+    textAlign: 'center',
+    marginTop: spacing.sm,
   },
 });

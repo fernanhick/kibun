@@ -34,6 +34,7 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: false, // Required for React Native — no URL-based session detection
+        flowType: 'pkce', // PKCE sends tokens as ?code= query params — Android strips # fragments
       },
     })
   : null;

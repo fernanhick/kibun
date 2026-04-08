@@ -1,7 +1,8 @@
 import { useRef, useEffect } from 'react';
 import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Animated, View, StyleSheet } from 'react-native';
+import { Animated, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, shadows, typography } from '@constants/theme';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 
@@ -68,23 +69,29 @@ function AnimatedTabIcon({
     if (focused) {
       Animated.sequence([
         Animated.spring(bounceAnim, {
-          toValue: 1.28,
+          toValue: 1.35,
           useNativeDriver: true,
-          speed: 60,
-          bounciness: 14,
+          speed: 70,
+          bounciness: 16,
         }),
         Animated.spring(bounceAnim, {
           toValue: 1,
           useNativeDriver: true,
-          speed: 40,
-          bounciness: 8,
+          speed: 45,
+          bounciness: 10,
         }),
       ]).start();
     }
   }, [focused]);
 
   return (
-    <Animated.View style={{ transform: [{ scale: bounceAnim }] }}>
+    <Animated.View 
+      style={{ 
+        transform: [{ scale: bounceAnim }],
+        width: '100%',
+        alignItems: 'center',
+      }}
+    >
       <View
         style={[
           styles.iconBubble,
@@ -93,7 +100,7 @@ function AnimatedTabIcon({
       >
         <Ionicons
           name={focused ? tab.iconFocused : tab.icon}
-          size={focused ? size + 1 : size}
+          size={focused ? size + 3 : size}
           color={focused ? colors.textInverse : color}
         />
       </View>
@@ -102,15 +109,19 @@ function AnimatedTabIcon({
 }
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
   // Three-layer gate — renders null while AsyncStorage hydrates to prevent flash-redirect
   // for returning users. Once hydrated:
-  //   1. Onboarding incomplete → redirect to first-mood
+  //   1. Onboarding incomplete → redirect to medical disclaimer
   //   2. Paywall not yet seen → redirect to paywall (shown once after onboarding)
   //   3. All clear → render Tabs
   const { complete, paywallSeen, _hasHydrated } = useOnboardingGateStore();
   if (!_hasHydrated) return null;
-  if (!complete) return <Redirect href="/(onboarding)/first-mood" />;
+  if (!complete) return <Redirect href="/(onboarding)/disclaimer" />;
   if (!paywallSeen) return <Redirect href="/paywall" />;
+
+  // Safe area bottom for 3-button navigation (Android) — minimum 12pt above nav buttons
+  const safeBottom = Math.max(insets.bottom, 12);
 
   return (
     <Tabs
@@ -119,21 +130,28 @@ export default function TabLayout() {
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           position: 'absolute',
-          left: 14,
-          right: 14,
-          bottom: 12,
-          height: 64,
-          paddingTop: 8,
+          left: 12,
+          right: 12,
+          bottom: safeBottom + 12,
+          height: 72,
+          paddingVertical: 8,
+          paddingHorizontal: 8,
           backgroundColor: colors.surfaceElevated,
           borderTopWidth: 0,
-          borderRadius: 22,
-          ...shadows.md,
+          borderRadius: 24,
+          ...shadows.lg,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontFamily: typography.fonts.ui,
+          fontWeight: '600',
+          marginTop: 4,
         },
         headerShown: false,
+        tabBarItemStyle: {
+          paddingVertical: 6,
+          paddingHorizontal: 4,
+        },
       }}
     >
       {TABS.map((tab) => (
@@ -155,15 +173,20 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   iconBubble: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 48,
+    height: 48,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.5)',
+    borderWidth: 0,
+    borderColor: 'rgba(255,255,255,0.4)',
+    shadowColor: 'rgba(0,0,0,0.1)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 3,
   },
   iconBubbleIdle: {
-    backgroundColor: 'rgba(74, 134, 255, 0.08)',
+    backgroundColor: 'rgba(74, 134, 255, 0.06)',
   },
 });

@@ -21,7 +21,7 @@ export default ({ config }: ConfigContext) => ({
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
   splash: {
-    image: './assets/splash.png',
+    image: './assets/splash-preview2.png',
     resizeMode: 'contain',
     backgroundColor: '#6C63FF',
   },
@@ -31,15 +31,13 @@ export default ({ config }: ConfigContext) => ({
     supportsTablet: false,
     bundleIdentifier: 'com.kibun.app',
     buildNumber: '1',
+    icon: './assets/icon.png',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
   },
   android: {
-    adaptiveIcon: {
-      foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#6C63FF',
-    },
+    icon: './assets/icon.png',
     package: 'com.kibun.app',
   },
   web: {
@@ -61,7 +59,7 @@ export default ({ config }: ConfigContext) => ({
     [
       'expo-splash-screen',
       {
-        image: './assets/splash.png',
+        image: './assets/splash-preview2.png',
         resizeMode: 'contain',
         backgroundColor: '#6C63FF',
       },

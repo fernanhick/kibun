@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
+import { useOnboardingStore } from '@store/onboardingStore';
+import { useMoodEntryStore } from '@store/moodEntryStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
+import { getCheckInSlot } from '@lib/checkInSlot';
 import { NotificationSlot } from '@models/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
@@ -30,9 +34,23 @@ function toggleSlot(prev: string[], value: string): string[] {
 
 export default function NotificationPermissionScreen() {
   const { setComplete } = useOnboardingGateStore();
+  const firstMoodId = useOnboardingStore((s) => s.firstMoodId);
+  const resetOnboarding = useOnboardingStore((s) => s.resetProfile);
   const [selectedSlots, setSelectedSlots] = useState<string[]>(['morning', 'evening']);
   const [requesting, setRequesting] = useState(false);
   const router = useRouter();
+
+  const maybeLogFirstMood = () => {
+    if (!firstMoodId) return;
+    const entry = {
+      id: Date.now().toString(36) + Math.random().toString(36).substring(2, 9),
+      moodId: firstMoodId,
+      note: null,
+      slot: getCheckInSlot(),
+      loggedAt: new Date().toISOString(),
+    };
+    useMoodEntryStore.getState().addEntry(entry);
+  };
 
   const handleSlotToggle = (value: string) => {
     setSelectedSlots((prev) => toggleSlot(prev, value));
@@ -41,7 +59,9 @@ export default function NotificationPermissionScreen() {
   const handleEnable = async () => {
     if (requesting) return;
     setRequesting(true);
+    maybeLogFirstMood();
     setComplete();
+    resetOnboarding();
 
     const slots = selectedSlots as NotificationSlot[];
     const { setSlots, setPermissionGranted } = useNotificationPrefsStore.getState();
@@ -60,45 +80,57 @@ export default function NotificationPermissionScreen() {
   };
 
   const handleSkip = () => {
+    maybeLogFirstMood();
     setComplete();
+    resetOnboarding();
     router.replace('/(tabs)');
   };
 
   return (
     <Screen scrollable={true} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Stay on track</Text>
-      <Text style={styles.subtitle}>
-        Kibun works best with daily check-ins. Pick your reminder times.
-      </Text>
+      <LinearGradient
+        colors={[colors.skyStart, colors.skyEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.heroCard}
+      >
+        <Text style={styles.title}>Stay on track</Text>
+        <Text style={styles.subtitle}>
+          Kibun works best with daily check-ins. Pick your reminder times.
+        </Text>
+      </LinearGradient>
 
-      <Text style={styles.groupLabel}>Reminder times</Text>
-      <View style={styles.chipsRow}>
-        {SLOT_OPTIONS.map((option) => {
-          const isSelected = selectedSlots.includes(option.value);
-          return (
-            <Pressable
-              key={option.value}
-              onPress={() => handleSlotToggle(option.value)}
-              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-              style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: isSelected }}
-              accessibilityLabel={`${option.label} reminder, ${option.hint}`}
-            >
-              <Text style={[styles.chipLabel, isSelected ? styles.chipLabelSelected : styles.chipLabelUnselected]}>
-                {option.label}
-              </Text>
-              <Text style={[styles.chipHint, isSelected ? styles.chipHintSelected : styles.chipHintUnselected]}>
-                {option.hint}
-              </Text>
-            </Pressable>
-          );
-        })}
+      <View style={styles.sectionCard}>
+        <Text style={styles.groupLabel}>Reminder times</Text>
+        <View style={styles.chipsRow}>
+          {SLOT_OPTIONS.map((option) => {
+            const isSelected = selectedSlots.includes(option.value);
+            return (
+              <Pressable
+                key={option.value}
+                onPress={() => handleSlotToggle(option.value)}
+                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: isSelected }}
+                accessibilityLabel={`${option.label} reminder, ${option.hint}`}
+              >
+                <Text style={[styles.chipLabel, isSelected ? styles.chipLabelSelected : styles.chipLabelUnselected]}>
+                  {option.label}
+                </Text>
+                <Text style={[styles.chipHint, isSelected ? styles.chipHintSelected : styles.chipHintUnselected]}>
+                  {option.hint}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
       <Button
         label="Enable reminders"
         onPress={handleEnable}
+        variant="sunrise"
         loading={requesting}
         fullWidth
       />
@@ -118,21 +150,36 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
   },
+  heroCard: {
+    borderRadius: 28,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
+    marginBottom: spacing.lg,
+  },
   title: {
-    fontSize: typography.sizes.xl,
+    fontSize: typography.sizes.xxl,
     fontWeight: typography.weights.semibold,
-    color: colors.text,
+    color: colors.textInverse,
     marginBottom: spacing.xs,
   },
   subtitle: {
-    fontSize: typography.sizes.sm,
-    color: colors.textSecondary,
+    fontSize: typography.sizes.body,
+    color: colors.sparkle,
+  },
+  sectionCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    padding: spacing.md,
     marginBottom: spacing.lg,
   },
   groupLabel: {
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.semibold,
-    color: colors.text,
+    color: colors.primaryDark,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
     marginBottom: spacing.sm,
   },
   chipsRow: {
@@ -148,12 +195,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   chipSelected: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.warmCtaStart,
+    borderWidth: 1,
+    borderColor: colors.warmCtaEnd,
   },
   chipUnselected: {
-    backgroundColor: colors.surface,
-    borderWidth: 1.5,
-    borderColor: colors.border,
+    backgroundColor: colors.chipSurface,
+    borderWidth: 1,
+    borderColor: colors.chipBorder,
   },
   chipLabel: {
     fontSize: typography.sizes.sm,

@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { MoodBubble } from '@components/MoodBubble';
 import { Shiba, ShibaVariant } from '@components/Shiba';
+import { SparkleOverlay } from '@components/SparkleOverlay';
 import { MOOD_MAP, MoodId, MoodGroup } from '@constants/moods';
 import { colors, typography, spacing, radius } from '@constants/theme';
 import { useMoodEntryStore } from '@store/index';
@@ -92,14 +95,29 @@ export default function MoodConfirmScreen() {
 
   return (
     <Screen scrollable={true} contentContainerStyle={styles.content}>
-      <View style={styles.moodDisplay}>
-        <MoodBubble mood={mood} size="lg" />
-        <Text style={styles.moodLabel}>{mood.label}</Text>
-      </View>
+      <LinearGradient
+        colors={[colors.skyStart, colors.skyEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.heroCard}
+      >
+        <SparkleOverlay count={20} />
+        <View style={styles.heroBadge}>
+          <Ionicons name="sparkles" size={12} color={colors.textInverse} />
+          <Text style={styles.heroBadgeText}>Your vibe today</Text>
+        </View>
+        <View style={styles.moodDisplay}>
+          <MoodBubble mood={mood} size="lg" />
+          <View style={styles.titleColumn}>
+            <Text style={styles.moodLabel}>{mood.label}</Text>
+            <Text style={styles.moodSubLabel}>This feeling matters. Let us log it.</Text>
+          </View>
+        </View>
 
-      <View style={styles.shibaContainer}>
-        <Shiba variant={shibaVariant} size={140} />
-      </View>
+        <View style={styles.shibaContainer}>
+          <Shiba variant={shibaVariant} size={124} floating />
+        </View>
+      </LinearGradient>
 
       <View style={styles.noteSection}>
         <Text style={styles.noteLabel}>Add a note</Text>
@@ -141,6 +159,7 @@ export default function MoodConfirmScreen() {
         <Button
           label="Save"
           onPress={handleSave}
+          variant="sunrise"
           loading={submitting}
           disabled={submitting}
           fullWidth
@@ -158,39 +177,86 @@ export default function MoodConfirmScreen() {
 
 const styles = StyleSheet.create({
   content: {
-    paddingTop: spacing.xxl,
+    paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
     gap: spacing.lg,
   },
+  heroCard: {
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.md,
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.4)',
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+  },
+  heroBadgeText: {
+    color: colors.textInverse,
+    fontSize: typography.sizes.xs,
+    fontWeight: typography.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
+  },
   moodDisplay: {
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     gap: spacing.sm,
   },
+  titleColumn: {
+    flex: 1,
+    marginLeft: spacing.sm,
+    gap: spacing.xs,
+  },
   moodLabel: {
-    fontSize: typography.sizes.xl,
-    fontWeight: typography.weights.bold,
-    color: colors.text,
+    fontSize: typography.sizes.xxl,
+    fontFamily: typography.fonts.display,
+    color: colors.textInverse,
+  },
+  moodSubLabel: {
+    fontSize: typography.sizes.sm,
+    color: colors.sparkle,
+    lineHeight: 20,
   },
   shibaContainer: {
     alignItems: 'center',
   },
   noteSection: {
     gap: spacing.xs,
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderRadius: 22,
+    padding: spacing.md,
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
   },
   noteLabel: {
     fontSize: typography.sizes.sm,
-    fontWeight: typography.weights.semibold,
-    color: colors.text,
+    fontFamily: typography.fonts.ui,
+    color: colors.primaryDark,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
   },
   noteInput: {
     borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: radius.md,
+    borderColor: '#C8DCFF',
+    borderRadius: radius.lg,
     paddingVertical: 12,
     paddingHorizontal: spacing.md,
     fontSize: typography.sizes.md,
     color: colors.text,
-    backgroundColor: colors.background,
+    backgroundColor: '#F7FBFF',
     minHeight: 100,
   },
   actions: {

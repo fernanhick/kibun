@@ -30,7 +30,7 @@ export function MoodBubble({
 
   useEffect(() => {
     const animation = Animated.spring(scaleAnim, {
-      toValue: selected ? 1.08 : 1,
+      toValue: selected ? 1.12 : 1,
       useNativeDriver: true,
       tension: 300,
       friction: 10,
@@ -44,7 +44,19 @@ export function MoodBubble({
   const fontSizeStyle = { fontSize: FONT_SIZES[size] };
 
   return (
-    <Animated.View style={[styles.wrapper, { transform: [{ scale: scaleAnim }] }]}>
+    <Animated.View
+      style={[
+        styles.wrapper,
+        selected && {
+          shadowColor: mood.bubbleColor,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.75,
+          shadowRadius: 10,
+          elevation: 10,
+        },
+        { transform: [{ scale: scaleAnim }] },
+      ]}
+    >
       <Pressable
         onPress={disabled ? undefined : () => onPress?.(mood)}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -75,10 +87,13 @@ const styles = StyleSheet.create({
   bubble: {
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.8)',
     ...shadows.sm,
   },
   selected: {
     ...shadows.md, // Elevated shadow replaces sm — do not stack
+    borderColor: colors.primary,
   },
   pressed: {
     opacity: 0.82,

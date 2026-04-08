@@ -10,12 +10,19 @@
 // For error text: use colors.text (#1A1A2E) on colors.errorLight (#FFEBEE) instead.
 export const colors = {
   // Brand
-  primary: '#6C63FF',
-  primaryLight: '#EAE9FF',
-  primaryDark: '#4B44CC',
+  primary: '#4A86FF',
+  primaryLight: '#EAF2FF',
+  primaryDark: '#2F57C8',
+  skyStart: '#3F83F8',
+  skyEnd: '#63CCFF',
+  sparkle: '#F4F9FF',
+  warmCtaStart: '#FFB22E',
+  warmCtaEnd: '#FFD959',
+  chipSurface: 'rgba(255, 255, 255, 0.95)',
+  chipBorder: 'rgba(74, 134, 255, 0.22)',
   // Background
-  background: '#FFFFFF',
-  surface: '#F8F8FC',
+  background: '#E6F4FF',
+  surface: '#FFFDFB',
   surfaceElevated: '#FFFFFF',
   // Text
   text: '#1A1A2E',
@@ -23,8 +30,8 @@ export const colors = {
   textDisabled: '#AEAEBC', // Intentionally low contrast — disabled elements are WCAG-exempt
   textInverse: '#FFFFFF',
   // Border
-  border: '#E5E5EF',
-  borderLight: '#F0F0F8',
+  border: '#E7E5F5',
+  borderLight: '#F1EEFF',
   // Status (icons/borders/fills only — see annotation above)
   success: '#4CAF50',
   warning: '#FF9800',
@@ -36,6 +43,11 @@ export const colors = {
 
 // ─── Typography ───────────────────────────────────────────────────────────────
 export const typography = {
+  fonts: {
+    display: 'Fredoka_700Bold',
+    ui: 'Fredoka_600SemiBold',
+    body: 'Fredoka_500Medium',
+  },
   sizes: {
     xs: 11,
     sm: 13,
@@ -87,13 +99,13 @@ export const radius = {
   none: 0,
   sm: 4,
   md: 8,
-  lg: 12,
-  xl: 16,
-  xxl: 24,
+  lg: 14,
+  xl: 18,
+  xxl: 26,
   full: 9999,
   // Specific UI patterns
-  button: 12,
-  card: 16,
+  button: 16,
+  card: 22,
   bubble: 9999,
 } as const;
 
@@ -112,16 +124,16 @@ export const shadows = {
   sm: {
     shadowColor: '#1A1A2E',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
   },
   md: {
     shadowColor: '#1A1A2E',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.10,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
   },
   lg: {
     shadowColor: '#1A1A2E',

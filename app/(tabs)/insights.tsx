@@ -2,7 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Card } from '@components/index';
+import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useMoodEntryStore } from '@store/index';
 import { filterEntriesByDays, getMoodFrequency, getDailyMoodScores } from '@lib/insights';
 import { detectPatterns } from '@lib/patterns';
@@ -67,10 +69,19 @@ export default function InsightsScreen() {
   if (filtered.length === 0) {
     return (
       <Screen scrollable={true}>
-        <Text style={styles.screenTitle} accessibilityRole="header">
-          Insights
-        </Text>
-        <PeriodToggle period={period} onSelect={setPeriod} />
+        <LinearGradient
+          colors={[colors.skyStart, colors.skyEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.heroCard}
+        >
+          <SparkleOverlay />
+          <Text style={styles.screenTitle} accessibilityRole="header">
+            Insights
+          </Text>
+          <Text style={styles.heroSubtitle}>Track your mood patterns over time</Text>
+          <PeriodToggle period={period} onSelect={setPeriod} />
+        </LinearGradient>
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyTitle}>No moods logged yet</Text>
           <Text style={styles.emptySubtitle}>
@@ -83,11 +94,23 @@ export default function InsightsScreen() {
 
   return (
     <Screen scrollable={true}>
-      <Text style={styles.screenTitle} accessibilityRole="header">
-        Insights
-      </Text>
-
-      <PeriodToggle period={period} onSelect={setPeriod} />
+      <LinearGradient
+        colors={[colors.skyStart, colors.skyEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.heroCard}
+      >
+        <SparkleOverlay count={20} />
+        <View style={styles.badgeRow}>
+          <Ionicons name="sparkles" size={12} color={colors.textInverse} />
+          <Text style={styles.badgeText}>Mood Story</Text>
+        </View>
+        <Text style={styles.screenTitle} accessibilityRole="header">
+          Insights
+        </Text>
+        <Text style={styles.heroSubtitle}>Track your mood patterns over time</Text>
+        <PeriodToggle period={period} onSelect={setPeriod} />
+      </LinearGradient>
 
       <View style={styles.statsRow}>
         <Card style={styles.statCard}>
@@ -256,17 +279,48 @@ function PeriodToggle({
 }
 
 const styles = StyleSheet.create({
+  heroCard: {
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
+    marginTop: spacing.md,
+    marginBottom: spacing.lg,
+    gap: spacing.sm,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.36)',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  badgeText: {
+    fontSize: typography.sizes.xs,
+    fontWeight: typography.weights.semibold,
+    color: colors.textInverse,
+    letterSpacing: 0.7,
+    textTransform: 'uppercase',
+  },
   screenTitle: {
-    fontSize: typography.sizes.xl,
-    fontWeight: typography.weights.bold,
-    color: colors.text,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
+    fontSize: typography.sizes.xxl,
+    fontFamily: typography.fonts.display,
+    color: colors.textInverse,
+  },
+  heroSubtitle: {
+    fontSize: typography.sizes.body,
+    color: colors.sparkle,
   },
   toggleRow: {
     flexDirection: 'row',
     gap: spacing.sm,
-    marginBottom: spacing.lg,
+    marginTop: spacing.sm,
   },
   togglePill: {
     paddingVertical: spacing.sm,
@@ -274,12 +328,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   toggleSelected: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.warmCtaStart,
   },
   toggleUnselected: {
-    backgroundColor: colors.surface,
+    backgroundColor: 'rgba(255, 255, 255, 0.22)',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255, 255, 255, 0.36)',
   },
   toggleText: {
     fontSize: typography.sizes.sm,
@@ -289,16 +343,19 @@ const styles = StyleSheet.create({
     color: colors.textInverse,
   },
   toggleTextUnselected: {
-    color: colors.text,
+    color: colors.textInverse,
   },
   statsRow: {
     flexDirection: 'row',
     gap: spacing.sm,
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
   },
   statCard: {
     flex: 1,
     alignItems: 'center',
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    backgroundColor: 'rgba(255,255,255,0.96)',
   },
   statValue: {
     fontSize: typography.sizes.xxl,
@@ -312,13 +369,19 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     fontSize: typography.sizes.lg,
-    fontWeight: typography.weights.semibold,
-    color: colors.text,
+    fontFamily: typography.fonts.ui,
+    color: colors.primaryDark,
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
   },
   chartContainer: {
     marginTop: spacing.sm,
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderRadius: 22,
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.md,
     overflow: 'hidden',
   },
   axisText: {
@@ -330,6 +393,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing.xxl,
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    borderRadius: 22,
   },
   emptyTitle: {
     fontSize: typography.sizes.lg,
@@ -347,6 +414,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     marginBottom: spacing.sm,
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    backgroundColor: 'rgba(255,255,255,0.96)',
   },
   patternIcon: {
     fontSize: typography.sizes.lg,
@@ -366,6 +436,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    backgroundColor: 'rgba(255,255,255,0.96)',
   },
   aiReportIcon: {
     fontSize: typography.sizes.xl,

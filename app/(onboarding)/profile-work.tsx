@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button, OptionPicker } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing } from '@constants/theme';
@@ -60,44 +61,54 @@ export default function ProfileWorkScreen() {
   return (
     <Screen scrollable={true}>
       <View style={styles.content}>
-        <Text style={styles.title}>How do you work?</Text>
-        <Text style={styles.subtitle}>Your work style can shape your mood patterns.</Text>
+        <LinearGradient
+          colors={[colors.skyStart, colors.skyEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.heroCard}
+        >
+          <Text style={styles.title}>How do you work?</Text>
+          <Text style={styles.subtitle}>Your work style can shape your mood patterns.</Text>
+        </LinearGradient>
 
-        <View style={styles.pickerGroup}>
-          <OptionPicker
-            label="Employment"
-            options={EMPLOYMENT_OPTIONS}
-            selected={employment}
-            onSelect={handleEmploymentSelect}
-          />
+        <View style={styles.sectionCard}>
+          <View style={styles.pickerGroup}>
+            <OptionPicker
+              label="Employment"
+              options={EMPLOYMENT_OPTIONS}
+              selected={employment}
+              onSelect={handleEmploymentSelect}
+            />
+          </View>
+
+          {showWorkDetail && (
+            <>
+              <View style={styles.pickerGroup}>
+                <OptionPicker
+                  label="Work setting"
+                  options={WORK_SETTING_OPTIONS}
+                  selected={workSetting}
+                  onSelect={setWorkSetting}
+                />
+              </View>
+
+              <View style={styles.pickerGroup}>
+                <OptionPicker
+                  label="Hours per week (optional)"
+                  options={HOURS_OPTIONS}
+                  selected={workHours}
+                  onSelect={setWorkHours}
+                />
+              </View>
+            </>
+          )}
         </View>
-
-        {showWorkDetail && (
-          <>
-            <View style={styles.pickerGroup}>
-              <OptionPicker
-                label="Work setting"
-                options={WORK_SETTING_OPTIONS}
-                selected={workSetting}
-                onSelect={setWorkSetting}
-              />
-            </View>
-
-            <View style={styles.pickerGroup}>
-              <OptionPicker
-                label="Hours per week (optional)"
-                options={HOURS_OPTIONS}
-                selected={workHours}
-                onSelect={setWorkHours}
-              />
-            </View>
-          </>
-        )}
 
         <View style={styles.cta}>
           <Button
             label="Continue"
             onPress={handleContinue}
+            variant="sunrise"
             disabled={!canContinue}
             fullWidth
           />
@@ -111,15 +122,28 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
   },
+  heroCard: {
+    borderRadius: 28,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
+    marginBottom: spacing.lg,
+  },
   title: {
-    fontSize: typography.sizes.xl,
+    fontSize: typography.sizes.xxl,
     fontWeight: typography.weights.semibold,
-    color: colors.text,
+    color: colors.textInverse,
     marginBottom: spacing.xs,
   },
   subtitle: {
-    fontSize: typography.sizes.sm,
-    color: colors.textSecondary,
+    fontSize: typography.sizes.body,
+    color: colors.sparkle,
+  },
+  sectionCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    padding: spacing.md,
     marginBottom: spacing.lg,
   },
   pickerGroup: {

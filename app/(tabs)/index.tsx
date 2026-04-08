@@ -3,10 +3,12 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSessionStore, useMoodEntryStore } from '@store/index';
 import { useUiPrefsStore } from '@store/uiPrefsStore';
 import { Button, Card, MoodBubble, Screen } from '@components/index';
 import { Shiba } from '@components/Shiba';
+import { SparkleOverlay } from '@components/SparkleOverlay';
 import type { ShibaVariant } from '@components/Shiba';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { colors, spacing, typography } from '@constants/theme';
@@ -107,34 +109,51 @@ export default function HomeScreen() {
       )}
 
       <Screen scrollable={true}>
-        <View style={styles.greetingSection}>
-          <Shiba variant={shibaVariant} size={140} />
-          <Text style={styles.greeting}>{getGreeting()}</Text>
-          {streak > 0 && (
-            <Text
-              style={styles.streakBadge}
-              accessibilityLabel={`Current streak: ${streak} days`}
-            >
-              {streak} day streak 🔥
-            </Text>
-          )}
-        </View>
+        <LinearGradient
+          colors={[colors.skyStart, colors.skyEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.heroCard}
+        >
+          <SparkleOverlay count={20} />
+          <View style={styles.sparkleRow}>
+            <Text style={styles.sparkleText}>sparkly check-in</Text>
+            <Ionicons name="heart" size={14} color={colors.textInverse} />
+          </View>
+          <View style={styles.greetingSection}>
+            <Shiba variant={shibaVariant} size={120} floating />
+            <Text style={styles.greeting}>{getGreeting()}</Text>
+            <Text style={styles.greetingSub}>How is your energy right now?</Text>
+            <Text style={styles.greetingHint}>Tiny steps, big feelings, you got this.</Text>
+            {streak > 0 && (
+              <Text
+                style={styles.streakBadge}
+                accessibilityLabel={`Current streak: ${streak} days`}
+              >
+                {streak} day streak 🔥
+              </Text>
+            )}
+          </View>
 
-        <View style={styles.ctaSection}>
-          <Button
-            label="Log mood"
-            onPress={() => router.push('/check-in' as Href)}
-            fullWidth
-          />
-        </View>
+          <View style={styles.ctaSection}>
+            <Button
+              label="Log mood"
+              onPress={() => router.push('/check-in' as Href)}
+              variant="sunrise"
+              fullWidth
+            />
+          </View>
+        </LinearGradient>
 
         <View style={styles.todaySection}>
-          <Text
-            style={styles.sectionHeader}
-            accessibilityRole="header"
-          >
-            Today{todayEntries.length > 0 ? ` (${todayEntries.length})` : ''}
-          </Text>
+          <View style={styles.sectionHeaderChip}>
+            <Text
+              style={styles.sectionHeader}
+              accessibilityRole="header"
+            >
+              Today{todayEntries.length > 0 ? ` (${todayEntries.length})` : ''}
+            </Text>
+          </View>
 
           {todayEntries.length === 0 ? (
             <Text style={styles.emptyText}>
@@ -149,14 +168,20 @@ export default function HomeScreen() {
                   accessibilityLabel={`${entryMood?.label ?? entry.moodId} at ${formatTime(entry.loggedAt)}`}
                 >
                   <Card style={styles.entryCard}>
+                    <Text style={styles.entryStarDecal}>
+                      {['✦','✧','✶','★','✴'][entry.id.charCodeAt(0) % 5]}
+                    </Text>
                     <View style={styles.entryRow}>
                       {entryMood && (
                         <MoodBubble mood={entryMood} size="sm" />
                       )}
                       <View style={styles.entryInfo}>
-                        <Text style={styles.entryMoodLabel}>
-                          {entryMood?.label ?? entry.moodId}
-                        </Text>
+                        <View style={styles.entryMoodChip}>
+                          <Ionicons name="sparkles" size={12} color={colors.primaryDark} />
+                          <Text style={styles.entryMoodLabel}>
+                            {entryMood?.label ?? entry.moodId}
+                          </Text>
+                        </View>
                         <Text style={styles.entryTime}>
                           {formatTime(entry.loggedAt)}
                         </Text>
@@ -211,45 +236,117 @@ const styles = StyleSheet.create({
   },
   greetingSection: {
     alignItems: 'center',
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-    gap: spacing.sm,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
+    gap: spacing.xs,
+  },
+  heroCard: {
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.32)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
+    marginTop: spacing.md,
+    marginHorizontal: spacing.md,
+  },
+  sparkleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.34)',
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
+  sparkleText: {
+    fontSize: typography.sizes.xs,
+    color: colors.textInverse,
+    fontWeight: typography.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
   },
   greeting: {
-    fontSize: typography.sizes.xl,
-    fontWeight: typography.weights.bold,
-    color: colors.text,
+    fontSize: typography.sizes.xxl,
+    fontFamily: typography.fonts.display,
+    color: colors.textInverse,
+    textAlign: 'center',
+  },
+  greetingSub: {
+    fontSize: typography.sizes.body,
+    color: colors.sparkle,
+    textAlign: 'center',
+  },
+  greetingHint: {
+    fontSize: typography.sizes.sm,
+    color: colors.textInverse,
+    opacity: 0.9,
     textAlign: 'center',
   },
   streakBadge: {
     fontSize: typography.sizes.md,
     fontWeight: typography.weights.semibold,
-    color: colors.primary,
+    color: colors.textInverse,
     textAlign: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.24)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    borderRadius: 999,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
   },
   ctaSection: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.sm,
+    paddingTop: spacing.sm,
   },
   todaySection: {
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.xl,
-    gap: spacing.sm,
+    gap: spacing.md,
+    marginTop: spacing.lg,
+  },
+  sectionHeaderChip: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#F4EEFF',
+    borderWidth: 1,
+    borderColor: colors.chipBorder,
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
   },
   sectionHeader: {
-    fontSize: typography.sizes.lg,
-    fontWeight: typography.weights.semibold,
-    color: colors.text,
-    marginBottom: spacing.xs,
+    fontSize: typography.sizes.md,
+    fontFamily: typography.fonts.ui,
+    color: colors.primaryDark,
   },
   emptyText: {
     fontSize: typography.sizes.md,
     color: colors.textSecondary,
     textAlign: 'center',
-    paddingVertical: spacing.lg,
+    paddingVertical: spacing.xl,
+    backgroundColor: '#FFF6EC',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#FFE4BF',
   },
   entryCard: {
     marginBottom: spacing.xs,
+    borderWidth: 1,
+    borderColor: '#EFEAFF',
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+  },
+  entryStarDecal: {
+    position: 'absolute',
+    top: 8,
+    right: 12,
+    fontSize: 13,
+    opacity: 0.28,
+    color: colors.primary,
   },
   entryRow: {
     flexDirection: 'row',
@@ -262,9 +359,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  entryMoodChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#EEF4FF',
+    borderWidth: 1,
+    borderColor: '#D6E4FF',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
   entryMoodLabel: {
     fontSize: typography.sizes.body,
-    fontWeight: typography.weights.semibold,
+    fontFamily: typography.fonts.ui,
     color: colors.text,
   },
   entryTime: {
@@ -278,9 +386,16 @@ const styles = StyleSheet.create({
     marginLeft: 48 + spacing.sm,
   },
   entrySlot: {
+    alignSelf: 'flex-start',
     fontSize: typography.sizes.xs,
-    color: colors.textSecondary,
+    color: colors.primaryDark,
     marginTop: spacing.xs,
     marginLeft: 48 + spacing.sm,
+    backgroundColor: '#FFF4DF',
+    borderWidth: 1,
+    borderColor: '#FFE2B1',
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
   },
 });

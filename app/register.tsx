@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri } from 'expo-auth-session';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { supabase } from '@lib/supabase';
 import { colors, typography, spacing, radius } from '@constants/theme';
@@ -113,77 +114,87 @@ export default function RegistrationScreen() {
 
   return (
     <Screen scrollable={true} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Create your account</Text>
-      <Text style={styles.subtitle}>
-        Link your data to an account so you never lose it
-      </Text>
+      <LinearGradient
+        colors={[colors.skyStart, colors.skyEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.heroCard}
+      >
+        <Text style={styles.title}>Create your account</Text>
+        <Text style={styles.subtitle}>
+          Link your data to an account so you never lose it
+        </Text>
+      </LinearGradient>
 
-      {/* Social auth buttons */}
-      <View style={styles.socialGroup}>
-        <Pressable
-          style={({ pressed }) => [styles.appleButton, pressed && styles.pressed]}
-          onPress={handleApple}
-          accessibilityRole="button"
-          accessibilityLabel="Sign in with Apple"
-        >
-          <Text style={styles.appleButtonText}>Continue with Apple</Text>
-        </Pressable>
+      <View style={styles.sectionCard}>
+        {/* Social auth buttons */}
+        <View style={styles.socialGroup}>
+          <Pressable
+            style={({ pressed }) => [styles.appleButton, pressed && styles.pressed]}
+            onPress={handleApple}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in with Apple"
+          >
+            <Text style={styles.appleButtonText}>Continue with Apple</Text>
+          </Pressable>
 
-        <Pressable
-          style={({ pressed }) => [styles.googleButton, pressed && styles.pressed]}
-          onPress={handleGoogle}
-          accessibilityRole="button"
-          accessibilityLabel="Sign in with Google"
-        >
-          <Text style={styles.googleButtonText}>Continue with Google</Text>
-        </Pressable>
-      </View>
-
-      {/* Divider */}
-      <View style={styles.divider} accessibilityRole="none">
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>or</Text>
-        <View style={styles.dividerLine} />
-      </View>
-
-      {/* Email / password form */}
-      <View style={styles.form}>
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={(text) => { setEmail(text); setError(null); }}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            accessibilityLabel="Email address"
-            placeholder="you@example.com"
-            placeholderTextColor={colors.textDisabled}
-          />
+          <Pressable
+            style={({ pressed }) => [styles.googleButton, pressed && styles.pressed]}
+            onPress={handleGoogle}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in with Google"
+          >
+            <Text style={styles.googleButtonText}>Continue with Google</Text>
+          </Pressable>
         </View>
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Password</Text>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={(text) => { setPassword(text); setError(null); }}
-            secureTextEntry={true}
-            autoComplete="new-password"
-            accessibilityLabel="Password"
-            placeholder="Min. 8 characters"
-            placeholderTextColor={colors.textDisabled}
-          />
+        {/* Divider */}
+        <View style={styles.divider} accessibilityRole="none">
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>or</Text>
+          <View style={styles.dividerLine} />
         </View>
 
-        <Button
-          label="Create account"
-          onPress={handleEmail}
-          disabled={!email.trim() || !password.trim()}
-          loading={submitting}
-          fullWidth
-        />
+        {/* Email / password form */}
+        <View style={styles.form}>
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>Email</Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={(text) => { setEmail(text); setError(null); }}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+              accessibilityLabel="Email address"
+              placeholder="you@example.com"
+              placeholderTextColor={colors.textDisabled}
+            />
+          </View>
+
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>Password</Text>
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={(text) => { setPassword(text); setError(null); }}
+              secureTextEntry={true}
+              autoComplete="new-password"
+              accessibilityLabel="Password"
+              placeholder="Min. 8 characters"
+              placeholderTextColor={colors.textDisabled}
+            />
+          </View>
+
+          <Button
+            label="Create account"
+            onPress={handleEmail}
+            variant="sunrise"
+            disabled={!email.trim() || !password.trim()}
+            loading={submitting}
+            fullWidth
+          />
+        </View>
       </View>
 
       {/* Inline error display */}
@@ -209,18 +220,32 @@ export default function RegistrationScreen() {
 
 const styles = StyleSheet.create({
   content: {
-    paddingTop: spacing.xxl,
+    paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
     gap: spacing.lg,
+  },
+  heroCard: {
+    borderRadius: 28,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  sectionCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: 22,
+    padding: spacing.md,
+    gap: spacing.md,
   },
   title: {
     fontSize: typography.sizes.xxl,
     fontWeight: typography.weights.bold,
-    color: colors.text,
+    color: colors.textInverse,
   },
   subtitle: {
     fontSize: typography.sizes.md,
-    color: colors.textSecondary,
+    color: colors.sparkle,
     lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
     marginTop: -spacing.sm,
   },
@@ -239,9 +264,9 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.semibold,
   },
   googleButton: {
-    backgroundColor: colors.surface,
-    borderWidth: 1.5,
-    borderColor: colors.border,
+    backgroundColor: colors.chipSurface,
+    borderWidth: 1,
+    borderColor: colors.chipBorder,
     borderRadius: radius.button,
     paddingVertical: 14,
     alignItems: 'center',
@@ -277,17 +302,19 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.semibold,
-    color: colors.text,
+    color: colors.primaryDark,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
   },
   input: {
     borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: radius.md,
+    borderColor: colors.chipBorder,
+    borderRadius: radius.lg,
     paddingVertical: 12,
     paddingHorizontal: spacing.md,
     fontSize: typography.sizes.md,
     color: colors.text,
-    backgroundColor: colors.background,
+    backgroundColor: colors.chipSurface,
   },
   errorText: {
     fontSize: typography.sizes.sm,

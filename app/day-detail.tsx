@@ -94,9 +94,12 @@ export default function DayDetailScreen() {
                       <MoodBubble mood={entryMood} size="sm" />
                     )}
                     <View style={styles.entryInfo}>
-                      <Text style={styles.moodLabel}>
-                        {entryMood?.label ?? entry.moodId}
-                      </Text>
+                      <View style={styles.moodChip}>
+                        <Ionicons name="sparkles" size={12} color={colors.primaryDark} />
+                        <Text style={styles.moodLabel}>
+                          {entryMood?.label ?? entry.moodId}
+                        </Text>
+                      </View>
                       <Text style={styles.timeLabel}>
                         {formatTime(entry.loggedAt)}
                       </Text>
@@ -129,7 +132,7 @@ const styles = StyleSheet.create({
   dateHeading: {
     flex: 1,
     fontSize: typography.sizes.lg,
-    fontWeight: typography.weights.semibold,
+    fontFamily: typography.fonts.ui,
     color: colors.text,
   },
   emptyText: {
@@ -154,9 +157,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  moodChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#EEF4FF',
+    borderWidth: 1,
+    borderColor: '#D6E4FF',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
   moodLabel: {
     fontSize: typography.sizes.body,
-    fontWeight: typography.weights.semibold,
+    fontFamily: typography.fonts.ui,
     color: colors.text,
   },
   timeLabel: {
@@ -164,10 +178,17 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   slotLabel: {
+    alignSelf: 'flex-start',
     fontSize: typography.sizes.xs,
-    color: colors.textSecondary,
+    color: colors.primaryDark,
     marginTop: spacing.xs,
     marginLeft: 48 + spacing.sm,
+    backgroundColor: '#FFF4DF',
+    borderWidth: 1,
+    borderColor: '#FFE2B1',
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
   },
   noteText: {
     fontSize: typography.sizes.sm,

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import Purchases, { PURCHASES_ERROR_CODE } from 'react-native-purchases';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useSessionStore } from '@store/index';
@@ -65,18 +66,27 @@ export default function PaywallScreen() {
   return (
     <Screen scrollable={false} contentContainerStyle={styles.content}>
       <View style={styles.top}>
-        <Text style={styles.title}>Try kibun Premium</Text>
-        <Text style={styles.subtitle}>
-          Understand your emotional patterns with AI-powered insights.
-        </Text>
+        <LinearGradient
+          colors={[colors.skyStart, colors.skyEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.heroCard}
+        >
+          <Text style={styles.title}>Try kibun Premium</Text>
+          <Text style={styles.subtitle}>
+            Understand your emotional patterns with AI-powered insights.
+          </Text>
+        </LinearGradient>
 
-        <View style={styles.featureList}>
-          {FEATURES.map((feature) => (
-            <View key={feature} style={styles.featureRow}>
-              <Text style={styles.featureDot}>•</Text>
-              <Text style={styles.featureText}>{feature}</Text>
-            </View>
-          ))}
+        <View style={styles.featureCard}>
+          <View style={styles.featureList}>
+            {FEATURES.map((feature) => (
+              <View key={feature} style={styles.featureRow}>
+                <Text style={styles.featureDot}>•</Text>
+                <Text style={styles.featureText}>{feature}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
 
@@ -91,6 +101,7 @@ export default function PaywallScreen() {
         <Button
           label="Start 7-day free trial"
           onPress={handlePurchase}
+          variant="sunrise"
           loading={purchasing}
           fullWidth
           accessibilityHint="Begins your free trial. No charge for 7 days."
@@ -113,20 +124,33 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingTop: spacing.xxl,
+    paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
   },
   top: {
     gap: spacing.lg,
   },
+  heroCard: {
+    borderRadius: 28,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  featureCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: 22,
+    padding: spacing.md,
+  },
   title: {
     fontSize: typography.sizes.xxl,
     fontWeight: typography.weights.bold,
-    color: colors.text,
+    color: colors.textInverse,
   },
   subtitle: {
     fontSize: typography.sizes.md,
-    color: colors.textSecondary,
+    color: colors.sparkle,
     lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
   },
   featureList: {
@@ -153,12 +177,14 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   trialBox: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.chipSurface,
     borderRadius: radius.lg,
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.md,
     alignItems: 'center',
     gap: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.chipBorder,
     ...shadows.sm,
   },
   trialDays: {

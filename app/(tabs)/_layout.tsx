@@ -1,6 +1,8 @@
+import { useRef, useEffect } from 'react';
 import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '@constants/theme';
+import { Animated, View, StyleSheet } from 'react-native';
+import { colors, shadows, typography } from '@constants/theme';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -10,6 +12,7 @@ interface TabConfig {
   title: string;
   icon: IoniconName;
   iconFocused: IoniconName;
+  accent: string;
   accessibilityLabel: string;
 }
 
@@ -19,30 +22,84 @@ const TABS: TabConfig[] = [
     title: 'Home',
     icon: 'home-outline',
     iconFocused: 'home',
+    accent: '#89AFFF',
     accessibilityLabel: 'Home tab',
   },
   {
     name: 'history',
     title: 'History',
-    icon: 'time-outline',
-    iconFocused: 'time',
+    icon: 'calendar-outline',
+    iconFocused: 'calendar',
+    accent: '#FFA62B',
     accessibilityLabel: 'History tab',
   },
   {
     name: 'insights',
     title: 'Insights',
-    icon: 'bar-chart-outline',
-    iconFocused: 'bar-chart',
+    icon: 'sparkles-outline',
+    iconFocused: 'sparkles',
+    accent: '#7AC8FF',
     accessibilityLabel: 'Insights tab',
   },
   {
     name: 'settings',
     title: 'Settings',
-    icon: 'settings-outline',
-    iconFocused: 'settings',
+    icon: 'color-palette-outline',
+    iconFocused: 'color-palette',
+    accent: '#A7A0FF',
     accessibilityLabel: 'Settings tab',
   },
 ];
+
+function AnimatedTabIcon({
+  tab,
+  focused,
+  color,
+  size,
+}: {
+  tab: TabConfig;
+  focused: boolean;
+  color: string;
+  size: number;
+}) {
+  const bounceAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (focused) {
+      Animated.sequence([
+        Animated.spring(bounceAnim, {
+          toValue: 1.28,
+          useNativeDriver: true,
+          speed: 60,
+          bounciness: 14,
+        }),
+        Animated.spring(bounceAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          speed: 40,
+          bounciness: 8,
+        }),
+      ]).start();
+    }
+  }, [focused]);
+
+  return (
+    <Animated.View style={{ transform: [{ scale: bounceAnim }] }}>
+      <View
+        style={[
+          styles.iconBubble,
+          focused ? { backgroundColor: tab.accent } : styles.iconBubbleIdle,
+        ]}
+      >
+        <Ionicons
+          name={focused ? tab.iconFocused : tab.icon}
+          size={focused ? size + 1 : size}
+          color={focused ? colors.textInverse : color}
+        />
+      </View>
+    </Animated.View>
+  );
+}
 
 export default function TabLayout() {
   // Three-layer gate — renders null while AsyncStorage hydrates to prevent flash-redirect
@@ -61,8 +118,20 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
-          backgroundColor: colors.background,
-          borderTopColor: colors.border,
+          position: 'absolute',
+          left: 14,
+          right: 14,
+          bottom: 12,
+          height: 64,
+          paddingTop: 8,
+          backgroundColor: colors.surfaceElevated,
+          borderTopWidth: 0,
+          borderRadius: 22,
+          ...shadows.md,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontFamily: typography.fonts.ui,
         },
         headerShown: false,
       }}
@@ -75,11 +144,7 @@ export default function TabLayout() {
             title: tab.title,
             tabBarAccessibilityLabel: tab.accessibilityLabel,
             tabBarIcon: ({ focused, color, size }) => (
-              <Ionicons
-                name={focused ? tab.iconFocused : tab.icon}
-                size={size}
-                color={color}
-              />
+              <AnimatedTabIcon tab={tab} focused={focused} color={color} size={size} />
             ),
           }}
         />
@@ -87,3 +152,18 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  iconBubble: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.5)',
+  },
+  iconBubbleIdle: {
+    backgroundColor: 'rgba(74, 134, 255, 0.08)',
+  },
+});

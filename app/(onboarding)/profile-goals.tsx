@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing, radius } from '@constants/theme';
@@ -41,38 +42,48 @@ export default function ProfileGoalsScreen() {
 
   return (
     <Screen scrollable={true} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>What are you hoping for?</Text>
-      <Text style={styles.subtitle}>Pick everything that feels right.</Text>
-
-      <Text style={styles.groupLabel}>Your goals</Text>
-      <View
-        style={styles.chipsRow}
-        accessibilityRole="none"
-        accessibilityLabel="Goals"
+      <LinearGradient
+        colors={[colors.skyStart, colors.skyEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.heroCard}
       >
-        {GOAL_OPTIONS.map((option) => {
-          const isSelected = selectedGoals.includes(option.value);
-          return (
-            <Pressable
-              key={option.value}
-              onPress={() => handleGoalToggle(option.value)}
-              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-              style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: isSelected }}
-              accessibilityLabel={option.label}
-            >
-              <Text style={[styles.chipText, isSelected ? styles.chipTextSelected : styles.chipTextUnselected]}>
-                {option.label}
-              </Text>
-            </Pressable>
-          );
-        })}
+        <Text style={styles.title}>What are you hoping for?</Text>
+        <Text style={styles.subtitle}>Pick everything that feels right.</Text>
+      </LinearGradient>
+
+      <View style={styles.sectionCard}>
+        <Text style={styles.groupLabel}>Your goals</Text>
+        <View
+          style={styles.chipsRow}
+          accessibilityRole="none"
+          accessibilityLabel="Goals"
+        >
+          {GOAL_OPTIONS.map((option) => {
+            const isSelected = selectedGoals.includes(option.value);
+            return (
+              <Pressable
+                key={option.value}
+                onPress={() => handleGoalToggle(option.value)}
+                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: isSelected }}
+                accessibilityLabel={option.label}
+              >
+                <Text style={[styles.chipText, isSelected ? styles.chipTextSelected : styles.chipTextUnselected]}>
+                  {option.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
       <Button
         label="Continue"
         onPress={handleContinue}
+        variant="sunrise"
         disabled={!canContinue}
         fullWidth
       />
@@ -84,21 +95,36 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
   },
+  heroCard: {
+    borderRadius: 28,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
+    marginBottom: spacing.lg,
+  },
   title: {
-    fontSize: typography.sizes.xl,
+    fontSize: typography.sizes.xxl,
     fontWeight: typography.weights.semibold,
-    color: colors.text,
+    color: colors.textInverse,
     marginBottom: spacing.xs,
   },
   subtitle: {
-    fontSize: typography.sizes.sm,
-    color: colors.textSecondary,
+    fontSize: typography.sizes.body,
+    color: colors.sparkle,
+  },
+  sectionCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: 22,
+    padding: spacing.md,
     marginBottom: spacing.lg,
   },
   groupLabel: {
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.semibold,
-    color: colors.text,
+    color: colors.primaryDark,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
     marginBottom: spacing.sm,
   },
   chipsRow: {
@@ -113,12 +139,14 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   chipSelected: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.warmCtaStart,
+    borderWidth: 1,
+    borderColor: colors.warmCtaEnd,
   },
   chipUnselected: {
-    backgroundColor: colors.surface,
-    borderWidth: 1.5,
-    borderColor: colors.border,
+    backgroundColor: colors.chipSurface,
+    borderWidth: 1,
+    borderColor: colors.chipBorder,
   },
   chipText: {
     fontSize: typography.sizes.sm,

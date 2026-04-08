@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter, Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen } from '@components/index';
+import { Screen, Shiba } from '@components/index';
 import { useMoodEntryStore } from '@store/index';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { colors, spacing, typography, radius } from '@constants/theme';
@@ -118,34 +118,42 @@ export default function HistoryScreen() {
 
   return (
     <Screen scrollable={false}>
-      <View style={styles.header}>
-        <Pressable
-          onPress={goToPrevMonth}
-          accessibilityLabel="Previous month"
-          accessibilityRole="button"
-          hitSlop={12}
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.text} />
-        </Pressable>
+      <View style={styles.headerCard}>
+        <View style={styles.headerTopRow}>
+          <View style={styles.headerBadge}>
+            <Text style={styles.headerBadgeText}>Mood Calendar</Text>
+          </View>
+          <Shiba variant="neutral" size={44} floating />
+        </View>
+        <View style={styles.header}>
+          <Pressable
+            onPress={goToPrevMonth}
+            accessibilityLabel="Previous month"
+            accessibilityRole="button"
+            hitSlop={12}
+          >
+            <Ionicons name="chevron-back" size={24} color={colors.text} />
+          </Pressable>
 
-        <Text style={styles.monthLabel} accessibilityRole="header">
-          {MONTH_NAMES[currentMonth.month]} {currentMonth.year}
-        </Text>
+          <Text style={styles.monthLabel} accessibilityRole="header">
+            {MONTH_NAMES[currentMonth.month]} {currentMonth.year}
+          </Text>
 
-        <Pressable
-          onPress={goToNextMonth}
-          disabled={isCurrentMonth}
-          accessibilityLabel="Next month"
-          accessibilityRole="button"
-          hitSlop={12}
-          style={isCurrentMonth ? styles.disabledArrow : undefined}
-        >
-          <Ionicons
-            name="chevron-forward"
-            size={24}
-            color={isCurrentMonth ? colors.textDisabled : colors.text}
-          />
-        </Pressable>
+          <Pressable
+            onPress={goToNextMonth}
+            disabled={isCurrentMonth}
+            accessibilityLabel="Next month"
+            accessibilityRole="button"
+            hitSlop={12}
+            style={isCurrentMonth ? styles.disabledArrow : undefined}
+          >
+            <Ionicons
+              name="chevron-forward"
+              size={24}
+              color={isCurrentMonth ? colors.textDisabled : colors.text}
+            />
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.weekdayRow}>
@@ -221,6 +229,37 @@ export default function HistoryScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerCard: {
+    marginTop: spacing.md,
+    borderRadius: 22,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    backgroundColor: 'rgba(255,255,255,0.95)',
+  },
+  headerBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.primaryLight,
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: '#C6DBFF',
+  },
+  headerBadgeText: {
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.ui,
+    letterSpacing: 0.7,
+    color: colors.primaryDark,
+    textTransform: 'uppercase',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -230,7 +269,7 @@ const styles = StyleSheet.create({
   },
   monthLabel: {
     fontSize: typography.sizes.lg,
-    fontWeight: typography.weights.semibold,
+    fontFamily: typography.fonts.ui,
     color: colors.text,
   },
   disabledArrow: {
@@ -240,7 +279,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingHorizontal: spacing.screenPadding,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
+    marginTop: spacing.md,
   },
   weekdayLabel: {
     fontSize: typography.sizes.xs,
@@ -260,6 +300,7 @@ const styles = StyleSheet.create({
   dayCell: {
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.7)',
   },
   todayCell: {
     borderWidth: 2,

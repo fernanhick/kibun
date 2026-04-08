@@ -1,5 +1,6 @@
 import LottieView from 'lottie-react-native';
-import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, Easing, View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 
 export type ShibaVariant = 'happy' | 'excited' | 'sad' | 'neutral';
 
@@ -8,6 +9,7 @@ interface ShibaProps {
   size?: number;        // Diameter in pt — default 120
   loop?: boolean;       // default true
   autoPlay?: boolean;   // default true
+  floating?: boolean;
   onFinish?: () => void;
   style?: StyleProp<ViewStyle>;
 }
@@ -28,16 +30,41 @@ export function Shiba({
   size = 120,
   loop = true,
   autoPlay = true,
+  floating = false,
   onFinish,
   style,
 }: ShibaProps) {
+  const floatAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!floating) return;
+    const loopAnim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(floatAnim, {
+          toValue: -4,
+          duration: 1700,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatAnim, {
+          toValue: 0,
+          duration: 1700,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    loopAnim.start();
+    return () => loopAnim.stop();
+  }, [floating, floatAnim]);
+
   return (
     // Wrap LottieView in View for accessibility props. LottieViewProps does not guarantee
     // accessibilityLabel / accessibilityRole in its TypeScript interface — passing them
     // directly to LottieView is a strict-mode compile error if undeclared. View always
     // accepts all accessibility props.
-    <View
-      style={[{ width: size, height: size }, style]}
+    <Animated.View
+      style={[{ width: size, height: size, transform: [{ translateY: floatAnim }] }, style]}
       accessibilityLabel={`Shiba ${variant}`}
       accessibilityRole="image"
     >
@@ -48,6 +75,6 @@ export function Shiba({
         onAnimationFinish={onFinish}
         style={StyleSheet.absoluteFill}
       />
-    </View>
+    </Animated.View>
   );
 }

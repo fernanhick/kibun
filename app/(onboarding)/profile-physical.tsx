@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button, OptionPicker } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing } from '@constants/theme';
@@ -39,30 +40,40 @@ export default function ProfilePhysicalScreen() {
   return (
     <Screen scrollable={true}>
       <View style={styles.content}>
-        <Text style={styles.title}>Your physical routine</Text>
-        <Text style={styles.subtitle}>Sleep and movement have a big impact on how we feel.</Text>
+        <LinearGradient
+          colors={[colors.skyStart, colors.skyEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.heroCard}
+        >
+          <Text style={styles.title}>Your physical routine</Text>
+          <Text style={styles.subtitle}>Sleep and movement have a big impact on how we feel.</Text>
+        </LinearGradient>
 
-        <View style={styles.pickerGroup}>
-          <OptionPicker
-            label="Sleep per night (average)"
-            options={SLEEP_OPTIONS}
-            selected={sleepHours}
-            onSelect={setSleepHours}
-          />
-        </View>
+        <View style={styles.sectionCard}>
+          <View style={styles.pickerGroup}>
+            <OptionPicker
+              label="Sleep per night (average)"
+              options={SLEEP_OPTIONS}
+              selected={sleepHours}
+              onSelect={setSleepHours}
+            />
+          </View>
 
-        <View style={styles.pickerGroupLast}>
-          <OptionPicker
-            label="Exercise frequency"
-            options={EXERCISE_OPTIONS}
-            selected={exercise}
-            onSelect={setExercise}
-          />
+          <View style={styles.pickerGroupLast}>
+            <OptionPicker
+              label="Exercise frequency"
+              options={EXERCISE_OPTIONS}
+              selected={exercise}
+              onSelect={setExercise}
+            />
+          </View>
         </View>
 
         <Button
           label="Continue"
           onPress={handleContinue}
+          variant="sunrise"
           disabled={!canContinue}
           fullWidth
         />
@@ -75,15 +86,28 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
   },
+  heroCard: {
+    borderRadius: 28,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
+    marginBottom: spacing.lg,
+  },
   title: {
-    fontSize: typography.sizes.xl,
+    fontSize: typography.sizes.xxl,
     fontWeight: typography.weights.semibold,
-    color: colors.text,
+    color: colors.textInverse,
     marginBottom: spacing.xs,
   },
   subtitle: {
-    fontSize: typography.sizes.sm,
-    color: colors.textSecondary,
+    fontSize: typography.sizes.body,
+    color: colors.sparkle,
+  },
+  sectionCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    padding: spacing.md,
     marginBottom: spacing.lg,
   },
   pickerGroup: {

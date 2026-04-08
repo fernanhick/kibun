@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Stack, useRouter, type Href } from 'expo-router';
+import { useFonts } from 'expo-font';
+import {
+  Fredoka_500Medium,
+  Fredoka_600SemiBold,
+  Fredoka_700Bold,
+} from '@expo-google-fonts/fredoka';
 import * as Notifications from 'expo-notifications';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
@@ -89,6 +95,11 @@ class ErrorBoundary extends React.Component<
 export default function RootLayout() {
   const router = useRouter();
   const { isReady } = useAuth();
+  const [fontsLoaded] = useFonts({
+    Fredoka_500Medium,
+    Fredoka_600SemiBold,
+    Fredoka_700Bold,
+  });
   const [splashDone, setSplashDone] = useState(false);
 
   // Refs for cold-start notification routing.
@@ -174,15 +185,15 @@ export default function RootLayout() {
   // to Stack — the native splash fades revealing Stack, not SplashScreenView. The Shiba
   // animation would never be visible and Lottie integration could not be validated.
   useEffect(() => {
-    if (isReady && splashDone) {
+    if (isReady && splashDone && fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [isReady, splashDone]);
+  }, [isReady, splashDone, fontsLoaded]);
 
   // Show SplashScreenView until both conditions are met:
   // - isReady: auth resolved (prevents premature Stack render)
   // - splashDone: animation played once (ensures Shiba is visible to user)
-  if (!isReady || !splashDone) {
+  if (!isReady || !splashDone || !fontsLoaded) {
     return <SplashScreenView onFinish={() => setSplashDone(true)} />;
   }
 

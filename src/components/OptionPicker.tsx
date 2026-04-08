@@ -54,8 +54,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.semibold,
-    color: colors.text,
+    color: colors.primaryDark,
     marginBottom: spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
   },
   chipsRow: {
     flexDirection: 'row',
@@ -68,20 +70,20 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   chipSelected: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.warmCtaStart,
+    borderWidth: 1,
+    borderColor: colors.warmCtaEnd,
   },
   chipUnselected: {
-    backgroundColor: colors.surface,
-    borderWidth: 1.5,
-    borderColor: colors.border,
+    backgroundColor: colors.chipSurface,
+    borderWidth: 1,
+    borderColor: colors.chipBorder,
   },
   chipText: {
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.medium,
   },
   chipTextSelected: {
-    // WCAG note: #FFFFFF on #6C63FF = ~4.0:1 — below 4.5:1 AA for text <18px.
-    // Pre-existing design system constraint (same as primary Button). Flag for design audit.
     color: colors.textInverse,
   },
   chipTextUnselected: {

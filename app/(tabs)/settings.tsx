@@ -4,7 +4,8 @@ import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen } from '@components/index';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Screen, SparkleOverlay, Shiba } from '@components/index';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
@@ -84,9 +85,23 @@ export default function SettingsScreen() {
 
   return (
     <Screen scrollable={true}>
-      <Text style={styles.screenTitle} accessibilityRole="header">
-        Settings
-      </Text>
+      <LinearGradient
+        colors={[colors.skyStart, colors.skyEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.heroCard}
+      >
+        <SparkleOverlay count={20} />
+        <View style={styles.heroTopRow}>
+          <View>
+            <Text style={styles.screenTitle} accessibilityRole="header">
+              Settings
+            </Text>
+            <Text style={styles.heroSubtitle}>Tune reminders and your daily flow</Text>
+          </View>
+          <Shiba variant="happy" size={74} floating />
+        </View>
+      </LinearGradient>
 
       {/* ── Account section ─────────────────────────────────────────── */}
       <Text style={styles.sectionHeader} accessibilityRole="header">
@@ -203,11 +218,28 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   screenTitle: {
-    fontSize: typography.sizes.xl,
-    fontWeight: typography.weights.bold,
-    color: colors.text,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
+    fontSize: typography.sizes.xxl,
+    fontFamily: typography.fonts.display,
+    color: colors.textInverse,
+  },
+  heroCard: {
+    borderRadius: 26,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    marginTop: spacing.md,
+    marginBottom: spacing.md,
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  heroSubtitle: {
+    fontSize: typography.sizes.sm,
+    color: colors.sparkle,
+    marginTop: 2,
   },
   permissionBanner: {
     backgroundColor: colors.errorLight,
@@ -216,6 +248,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     marginBottom: spacing.lg,
     marginTop: spacing.sm,
+    borderWidth: 1,
+    borderColor: '#FFD6D1',
   },
   bannerText: {
     fontSize: typography.sizes.sm,
@@ -229,15 +263,17 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     fontSize: typography.sizes.sm,
-    fontWeight: typography.weights.semibold,
-    color: colors.textSecondary,
+    fontFamily: typography.fonts.ui,
+    color: colors.primaryDark,
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
     letterSpacing: 0.5,
   },
   section: {
-    backgroundColor: colors.surface,
+    backgroundColor: 'rgba(255,255,255,0.96)',
     borderRadius: radius.lg,
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
     overflow: 'hidden',
   },
   row: {
@@ -255,7 +291,7 @@ const styles = StyleSheet.create({
   },
   rowLabel: {
     fontSize: typography.sizes.body,
-    fontWeight: typography.weights.medium,
+    fontFamily: typography.fonts.ui,
     color: colors.text,
   },
   rowHint: {

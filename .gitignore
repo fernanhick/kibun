@@ -40,5 +40,6 @@ __pycache__/
 *.pyc
 
 api-project-146169649450-a4493526d571.json
+supabase/.temp/
 
 ## PAUL framework runtime (keep .paul/ tracked — it is project state)

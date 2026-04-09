@@ -5,11 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Card } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
-import { useMoodEntryStore } from '@store/index';
-import { filterEntriesByDays, getMoodFrequency, getDailyMoodScores } from '@lib/insights';
+import { useMoodEntryStore, useSessionStore } from '@store/index';
+import { filterEntriesByDays, getMoodFrequency, getDailyMoodScores, GROUP_SCORES } from '@lib/insights';
 import { detectPatterns } from '@lib/patterns';
 import { BarChart, LineChart } from 'react-native-gifted-charts';
 import { colors, typography, spacing, radius } from '@constants/theme';
+import { MOOD_MAP } from '@constants/moods';
+import type { MoodSlot } from '@models/index';
 
 type Period = 7 | 30;
 
@@ -20,6 +22,8 @@ export default function InsightsScreen() {
   const chartWidth = screenWidth - spacing.screenPadding * 2 - 40;
 
   const entries = useMoodEntryStore((s) => s.entries);
+  const session = useSessionStore((s) => s.session);
+  const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
 
   const filtered = useMemo(
     () => filterEntriesByDays(entries, period),
@@ -30,6 +34,21 @@ export default function InsightsScreen() {
   const dailyScores = useMemo(() => getDailyMoodScores(filtered), [filtered]);
   const patterns = useMemo(() => detectPatterns(filtered), [filtered]);
   const totalEntries = filtered.length;
+
+  // Correlation matrix: slot × day-of-week → average mood score
+  const correlationMatrix = useMemo(() => {
+    const matrix: Record<string, Record<number, number[]>> = {};
+    for (const e of filtered) {
+      const slot = e.slot;
+      const dow = new Date(e.loggedAt).getDay(); // 0=Sun...6=Sat
+      if (!matrix[slot]) matrix[slot] = {};
+      if (!matrix[slot][dow]) matrix[slot][dow] = [];
+      const mood = MOOD_MAP[e.moodId as keyof typeof MOOD_MAP];
+      const score = mood ? GROUP_SCORES[mood.group] : 3;
+      matrix[slot][dow].push(score);
+    }
+    return matrix;
+  }, [filtered]);
 
   const streak = useMemo(() => {
     if (entries.length === 0) return 0;
@@ -223,6 +242,37 @@ export default function InsightsScreen() {
         </View>
       )}
 
+      {/* Correlations — Pro feature */}
+      {filtered.length > 0 && (
+        <View>
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            Correlations
+          </Text>
+          {isPro ? (
+            <CorrelationHeatmap matrix={correlationMatrix} />
+          ) : (
+            <Pressable
+              onPress={() => router.push('/paywall')}
+              accessibilityRole="button"
+              accessibilityLabel="Upgrade to Pro to unlock Correlation Insights"
+            >
+              <Card style={styles.proLockCard}>
+                <Text style={styles.proLockIcon}>🔍</Text>
+                <View style={styles.proLockInfo}>
+                  <Text style={styles.proLockTitle}>Correlation Insights</Text>
+                  <Text style={styles.proLockSubtitle}>
+                    See which times and days you feel best. Pro feature.
+                  </Text>
+                </View>
+                <View style={styles.proLockBadge}>
+                  <Text style={styles.proLockBadgeText}>Pro</Text>
+                </View>
+              </Card>
+            </Pressable>
+          )}
+        </View>
+      )}
+
       {filtered.length > 0 && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
@@ -247,6 +297,148 @@ export default function InsightsScreen() {
     </Screen>
   );
 }
+
+// ─── Correlation Heatmap ──────────────────────────────────────────────────────
+
+const DOW_ORDER = [1, 2, 3, 4, 5, 6, 0]; // Mon...Sun
+const DOW_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+const SLOT_ORDER: MoodSlot[] = ['morning', 'afternoon', 'night', 'pre_sleep'];
+const SLOT_SHORT: Record<MoodSlot, string> = {
+  morning: 'Morn',
+  afternoon: 'Aftn',
+  night: 'Eve',
+  pre_sleep: 'Night',
+};
+
+function scoreToColor(score: number | null): string {
+  if (score === null) return '#F0F0F0';
+  if (score >= 3.5) return '#66BB6A';
+  if (score >= 2.5) return '#80DEEA';
+  if (score >= 1.5) return '#FFD54F';
+  return '#EF5350';
+}
+
+function CorrelationHeatmap({
+  matrix,
+}: {
+  matrix: Record<string, Record<number, number[]>>;
+}) {
+  return (
+    <View
+      style={heatmapStyles.container}
+      accessibilityLabel="Correlation heatmap showing average mood by time-of-day and day-of-week"
+    >
+      {/* Column headers */}
+      <View style={heatmapStyles.row}>
+        <View style={heatmapStyles.rowLabel} />
+        {DOW_LABELS.map((label, i) => (
+          <View key={i} style={heatmapStyles.cell}>
+            <Text style={heatmapStyles.colLabel}>{label}</Text>
+          </View>
+        ))}
+      </View>
+      {/* Data rows */}
+      {SLOT_ORDER.map((slot) => (
+        <View key={slot} style={heatmapStyles.row}>
+          <View style={heatmapStyles.rowLabel}>
+            <Text style={heatmapStyles.rowLabelText}>{SLOT_SHORT[slot]}</Text>
+          </View>
+          {DOW_ORDER.map((dow, i) => {
+            const scores = matrix[slot]?.[dow];
+            const avg = scores?.length
+              ? scores.reduce((s, v) => s + v, 0) / scores.length
+              : null;
+            return (
+              <View key={i} style={heatmapStyles.cell}>
+                <View
+                  style={[heatmapStyles.dot, { backgroundColor: scoreToColor(avg) }]}
+                  accessibilityLabel={avg !== null ? `score ${avg.toFixed(1)}` : 'no data'}
+                />
+              </View>
+            );
+          })}
+        </View>
+      ))}
+      {/* Legend */}
+      <View style={heatmapStyles.legend}>
+        {[
+          { color: '#EF5350', label: 'Low' },
+          { color: '#FFD54F', label: 'Mixed' },
+          { color: '#80DEEA', label: 'Good' },
+          { color: '#66BB6A', label: 'Great' },
+          { color: '#F0F0F0', label: 'No data' },
+        ].map(({ color, label }) => (
+          <View key={label} style={heatmapStyles.legendItem}>
+            <View style={[heatmapStyles.legendDot, { backgroundColor: color }]} />
+            <Text style={heatmapStyles.legendLabel}>{label}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+const heatmapStyles = StyleSheet.create({
+  container: {
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderRadius: 22,
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    padding: spacing.md,
+    gap: 4,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  rowLabel: {
+    width: 44,
+    alignItems: 'flex-end',
+    paddingRight: 4,
+  },
+  rowLabelText: {
+    fontSize: 10,
+    color: colors.textSecondary,
+  },
+  cell: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  colLabel: {
+    fontSize: 10,
+    color: colors.textSecondary,
+    fontWeight: '600',
+  },
+  dot: {
+    width: 26,
+    height: 26,
+    borderRadius: 6,
+  },
+  legend: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 3,
+  },
+  legendLabel: {
+    fontSize: 10,
+    color: colors.textSecondary,
+  },
+});
+
+// ─── Period Toggle ────────────────────────────────────────────────────────────
 
 function PeriodToggle({
   period,
@@ -455,5 +647,40 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.sm,
     color: colors.textSecondary,
     marginTop: 2,
+  },
+  proLockCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    backgroundColor: 'rgba(255,255,255,0.96)',
+  },
+  proLockIcon: {
+    fontSize: typography.sizes.xl,
+  },
+  proLockInfo: {
+    flex: 1,
+  },
+  proLockTitle: {
+    fontSize: typography.sizes.body,
+    fontWeight: typography.weights.semibold,
+    color: colors.text,
+  },
+  proLockSubtitle: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  proLockBadge: {
+    backgroundColor: colors.primary,
+    borderRadius: 999,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+  },
+  proLockBadgeText: {
+    fontSize: typography.sizes.xs,
+    color: colors.textInverse,
+    fontWeight: typography.weights.semibold,
   },
 });

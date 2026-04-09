@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, Switch, Pressable, StyleSheet, Linking } from 'react-native';
+import { View, Text, Switch, Pressable, TextInput, StyleSheet, Linking } from 'react-native';
 import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
@@ -34,10 +34,12 @@ export default function SettingsScreen() {
 
   const session = useSessionStore((s) => s.session);
   const isAnonymous = !session || session.authStatus === 'anonymous';
+  const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
 
   const selectedSlots = useNotificationPrefsStore((s) => s.selectedSlots);
   const streakNudgeEnabled = useNotificationPrefsStore((s) => s.streakNudgeEnabled);
-  const { setSlots, setStreakNudgeEnabled, setPermissionGranted } = useNotificationPrefsStore.getState();
+  const customTimes = useNotificationPrefsStore((s) => s.customTimes);
+  const { setSlots, setStreakNudgeEnabled, setPermissionGranted, setCustomTime, clearCustomTime } = useNotificationPrefsStore.getState();
 
   const appVersion = Constants.expoConfig?.version ?? '—';
 
@@ -58,9 +60,9 @@ export default function SettingsScreen() {
   const reschedule = useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
-      const { selectedSlots: slots, streakNudgeEnabled: nudge } = useNotificationPrefsStore.getState();
+      const { selectedSlots: slots, streakNudgeEnabled: nudge, customTimes: times } = useNotificationPrefsStore.getState();
       try {
-        await scheduleSlotNotifications(slots, nudge);
+        await scheduleSlotNotifications(slots, nudge, times);
       } catch (error) {
         if (__DEV__) {
           console.error('[kibun:notif] Reschedule failed:', error);
@@ -76,6 +78,21 @@ export default function SettingsScreen() {
       : [...current, slot];
     setSlots(updated);
     reschedule();
+  };
+
+  /** Validates HH:MM format and saves or clears the custom time for a slot. */
+  const handleCustomTimeChange = (slot: NotificationSlot, text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) {
+      clearCustomTime(slot);
+      reschedule();
+      return;
+    }
+    const valid = /^([01]\d|2[0-3]):([0-5]\d)$/.test(trimmed);
+    if (valid) {
+      setCustomTime(slot, trimmed);
+      reschedule();
+    }
   };
 
   const handleStreakToggle = (value: boolean) => {
@@ -169,6 +186,60 @@ export default function SettingsScreen() {
         })}
       </View>
 
+      {/* ── Custom Reminder Times — Pro feature ──────────────────────── */}
+      <Text style={styles.sectionHeader} accessibilityRole="header">
+        CUSTOM TIMES
+      </Text>
+      {isPro ? (
+        <View style={styles.section}>
+          {SLOT_ROWS.filter((r) => selectedSlots.includes(r.slot)).map((row) => (
+            <View key={row.slot} style={styles.row}>
+              <View style={styles.rowText}>
+                <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
+                  {row.label}
+                </Text>
+                <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
+                  {customTimes[row.slot] ? `Set to ${customTimes[row.slot]}` : row.hint}
+                </Text>
+              </View>
+              <TextInput
+                style={[styles.timeInput, isDisabled && styles.textDisabled]}
+                defaultValue={customTimes[row.slot] ?? ''}
+                placeholder="HH:MM"
+                placeholderTextColor={colors.textDisabled}
+                keyboardType="numbers-and-punctuation"
+                maxLength={5}
+                editable={!isDisabled}
+                onEndEditing={(e) => handleCustomTimeChange(row.slot, e.nativeEvent.text)}
+                accessibilityLabel={`Custom time for ${row.label} reminder`}
+                accessibilityHint="Enter 24-hour time in HH:MM format"
+              />
+            </View>
+          ))}
+          {selectedSlots.length === 0 && (
+            <View style={styles.row}>
+              <Text style={[styles.rowHint, { flex: 1 }]}>
+                Enable reminder slots above to set custom times.
+              </Text>
+            </View>
+          )}
+        </View>
+      ) : (
+        <Pressable
+          onPress={() => router.push('/paywall' as Href)}
+          accessibilityRole="button"
+          accessibilityLabel="Upgrade to Pro to set custom reminder times"
+        >
+          <View style={[styles.section, styles.proLockRow]}>
+            <Text style={styles.rowLabel}>Custom reminder times</Text>
+            <View style={styles.proLockBadge}>
+              <Text style={styles.proLockBadgeText}>Pro</Text>
+            </View>
+          </View>
+        </Pressable>
+      )}
+
+      {/* ── Streak Reminder ──────────────────────────────────────────── */}
       <Text style={styles.sectionHeader} accessibilityRole="header">
         STREAK REMINDER
       </Text>
@@ -301,5 +372,35 @@ const styles = StyleSheet.create({
   },
   textDisabled: {
     color: colors.textDisabled,
+  },
+  timeInput: {
+    width: 64,
+    borderWidth: 1.5,
+    borderColor: '#C8DCFF',
+    borderRadius: radius.md,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    fontSize: typography.sizes.sm,
+    color: colors.text,
+    backgroundColor: '#F7FBFF',
+    textAlign: 'center',
+  },
+  proLockRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  proLockBadge: {
+    backgroundColor: colors.primary,
+    borderRadius: 999,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+  },
+  proLockBadgeText: {
+    fontSize: typography.sizes.xs,
+    color: colors.textInverse,
+    fontWeight: typography.weights.semibold,
   },
 });

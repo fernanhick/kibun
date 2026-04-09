@@ -13,7 +13,7 @@ const linkingConfig = {
 
 export default ({ config }: ConfigContext) => ({
   ...config,
-  name: 'kibun',
+  name: 'Kibun',
   slug: 'kibun',
   version: '1.0.0',
   scheme: 'kibun',
@@ -22,7 +22,7 @@ export default ({ config }: ConfigContext) => ({
   userInterfaceStyle: 'automatic',
   splash: {
     image: './assets/splash-preview2.png',
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     backgroundColor: '#6C63FF',
   },
   assetBundlePatterns: ['**/*'],
@@ -56,11 +56,12 @@ export default ({ config }: ConfigContext) => ({
     'expo-router',
     'expo-secure-store',
     'expo-notifications',
+    'react-native-purchases',
     [
       'expo-splash-screen',
       {
         image: './assets/splash-preview2.png',
-        resizeMode: 'contain',
+        resizeMode: 'cover',
         backgroundColor: '#6C63FF',
       },
     ],

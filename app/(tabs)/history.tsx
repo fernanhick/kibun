@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { useMemo, useState, useCallback } from 'react';
+import { View, Text, Pressable, Share, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter, Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Shiba } from '@components/index';
-import { useMoodEntryStore } from '@store/index';
+import { useMoodEntryStore, useSessionStore } from '@store/index';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { colors, spacing, typography, radius } from '@constants/theme';
 
@@ -43,6 +43,10 @@ export default function HistoryScreen() {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
   });
+  const [exporting, setExporting] = useState(false);
+
+  const session = useSessionStore((s) => s.session);
+  const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
 
   const yearMonth = `${currentMonth.year}-${String(currentMonth.month + 1).padStart(2, '0')}`;
 
@@ -116,6 +120,35 @@ export default function HistoryScreen() {
     router.push(`/day-detail?date=${dateStr}` as Href);
   };
 
+  const handleExport = useCallback(async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const header = 'id,mood,slot,logged_at,note,sentiment_label,sentiment_score,journal_response';
+      const rows = entries.map((e) => {
+        const escape = (v: string | null | undefined) =>
+          v ? `"${v.replace(/"/g, '""')}"` : '';
+        return [
+          e.id,
+          e.moodId,
+          e.slot,
+          e.loggedAt,
+          escape(e.note),
+          e.sentimentLabel ?? '',
+          e.sentimentScore ?? '',
+          escape(e.journalResponse),
+        ].join(',');
+      });
+      const csv = [header, ...rows].join('\n');
+      await Share.share({
+        message: csv,
+        title: 'Kibun Mood Export',
+      });
+    } finally {
+      setExporting(false);
+    }
+  }, [entries, exporting]);
+
   return (
     <Screen scrollable={false}>
       <View style={styles.headerCard}>
@@ -123,7 +156,33 @@ export default function HistoryScreen() {
           <View style={styles.headerBadge}>
             <Text style={styles.headerBadgeText}>Mood Calendar</Text>
           </View>
-          <Shiba variant="neutral" size={44} floating />
+          <View style={styles.headerTopRight}>
+            {isPro ? (
+              <Pressable
+                onPress={handleExport}
+                disabled={exporting || entries.length === 0}
+                style={[styles.exportBtn, (exporting || entries.length === 0) && styles.exportBtnDisabled]}
+                accessibilityRole="button"
+                accessibilityLabel="Export mood history as CSV"
+              >
+                <Ionicons name="share-outline" size={16} color={colors.primaryDark} />
+                <Text style={styles.exportBtnLabel}>Export</Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={() => router.push('/paywall' as Href)}
+                style={styles.exportProLock}
+                accessibilityRole="button"
+                accessibilityLabel="Upgrade to Pro to export mood history"
+              >
+                <Text style={styles.exportProLockText}>Export</Text>
+                <View style={styles.proLockBadge}>
+                  <Text style={styles.proLockBadgeText}>Pro</Text>
+                </View>
+              </Pressable>
+            )}
+            <Shiba variant="neutral" size={44} floating />
+          </View>
         </View>
         <View style={styles.header}>
           <Pressable
@@ -233,6 +292,56 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  headerTopRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  exportBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.primaryLight,
+    borderWidth: 1,
+    borderColor: '#C6DBFF',
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+  },
+  exportBtnDisabled: {
+    opacity: 0.5,
+  },
+  exportBtnLabel: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.ui,
+    color: colors.primaryDark,
+  },
+  exportProLock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#F0F4FF',
+    borderWidth: 1,
+    borderColor: '#C6DBFF',
+    borderRadius: 999,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+  },
+  exportProLockText: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+  },
+  proLockBadge: {
+    backgroundColor: colors.primary,
+    borderRadius: 999,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  proLockBadgeText: {
+    fontSize: 9,
+    color: colors.textInverse,
+    fontWeight: typography.weights.semibold,
   },
   headerCard: {
     marginTop: spacing.md,

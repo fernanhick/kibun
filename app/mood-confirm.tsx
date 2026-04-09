@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRouter, useLocalSearchParams, type Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
@@ -9,9 +9,10 @@ import { Shiba, ShibaVariant } from '@components/Shiba';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { MOOD_MAP, MoodId, MoodGroup } from '@constants/moods';
 import { colors, typography, spacing, radius } from '@constants/theme';
-import { useMoodEntryStore } from '@store/index';
+import { useMoodEntryStore, useSessionStore } from '@store/index';
 import { getCheckInSlot } from '@lib/checkInSlot';
 import { analyseSentiment, getMoodSentimentAlignment } from '@lib/sentiment';
+import { supabase } from '@lib/supabase';
 import type { SentimentResult } from '@lib/sentiment';
 import type { SentimentLabel } from '@models/index';
 
@@ -29,12 +30,21 @@ const SENTIMENT_CONFIG: Record<SentimentLabel, { emoji: string; label: string; c
   negative: { emoji: '😔', label: 'Sounds difficult', color: colors.error },
 };
 
+const EXERCISE_OPTIONS: { type: string; label: string; emoji: string }[] = [
+  { type: 'box_breathing', label: 'Box Breathing', emoji: '🫁' },
+  { type: 'grounding',     label: 'Grounding',     emoji: '🌱' },
+  { type: 'gratitude',     label: 'Gratitude',     emoji: '🙏' },
+];
+
 export default function MoodConfirmScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ moodId: string }>();
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sentiment, setSentiment] = useState<SentimentResult | null>(null);
+
+  const session = useSessionStore((s) => s.session);
+  const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
 
   // Debounce sentiment analysis: run 600 ms after user stops typing
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -75,12 +85,13 @@ export default function MoodConfirmScreen() {
     ? getMoodSentimentAlignment(mood.group, sentiment)
     : 'neutral';
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (submitting) return;
     setSubmitting(true);
 
+    const entryId = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
     const entry = {
-      id: Date.now().toString(36) + Math.random().toString(36).substring(2, 9),
+      id: entryId,
       moodId: mood.id,
       note: note.trim() || null,
       slot: getCheckInSlot(),
@@ -90,6 +101,36 @@ export default function MoodConfirmScreen() {
     };
 
     useMoodEntryStore.getState().addEntry(entry);
+
+    // Pro: fetch a journal reflection prompt then navigate to journal screen
+    if (isPro && supabase) {
+      try {
+        const recent = useMoodEntryStore.getState().entries.slice(0, 5);
+        const { data } = await supabase.functions.invoke('generate-journal-prompt', {
+          body: {
+            mood_id:       mood.id,
+            mood_label:    mood.label,
+            mood_group:    mood.group,
+            recent_entries: recent.map((e) => ({
+              mood:       e.moodId,
+              slot:       e.slot,
+              logged_at:  e.loggedAt,
+              note:       e.note ?? undefined,
+            })),
+          },
+        });
+        if (data?.prompt) {
+          router.replace({
+            pathname: '/journal-reflect',
+            params: { entryId, prompt: data.prompt, moodId: mood.id },
+          } as unknown as Href);
+          return;
+        }
+      } catch {
+        // silently fall through to default navigation
+      }
+    }
+
     router.replace('/(tabs)');
   };
 
@@ -156,6 +197,28 @@ export default function MoodConfirmScreen() {
       </View>
 
       <View style={styles.actions}>
+        {/* Exercise CTA — Pro + red-orange moods */}
+        {isPro && mood.group === 'red-orange' && (
+          <View style={styles.exerciseCard}>
+            <Text style={styles.exerciseTitle}>Need a moment? 💛</Text>
+            <Text style={styles.exerciseSubtitle}>Try a quick exercise to help reset.</Text>
+            <View style={styles.exerciseRow}>
+              {EXERCISE_OPTIONS.map((opt) => (
+                <TouchableOpacity
+                  key={opt.type}
+                  style={styles.exerciseChip}
+                  onPress={() =>
+                    router.push({ pathname: '/exercise', params: { type: opt.type } } as unknown as Href)
+                  }
+                  accessibilityLabel={opt.label}
+                >
+                  <Text style={styles.exerciseEmoji}>{opt.emoji}</Text>
+                  <Text style={styles.exerciseChipLabel}>{opt.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        )}
         <Button
           label="Save"
           onPress={handleSave}
@@ -261,6 +324,48 @@ const styles = StyleSheet.create({
   },
   actions: {
     gap: spacing.sm,
+  },
+  exerciseCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 20,
+    borderWidth: 1.2,
+    borderColor: '#FFD8B0',
+    padding: spacing.md,
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  exerciseTitle: {
+    fontSize: typography.sizes.md,
+    fontFamily: typography.fonts.ui,
+    color: colors.text,
+  },
+  exerciseSubtitle: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+  },
+  exerciseRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    flexWrap: 'wrap',
+  },
+  exerciseChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#FFF3E0',
+    borderWidth: 1,
+    borderColor: '#FFCC80',
+    borderRadius: radius.lg,
+    paddingVertical: 8,
+    paddingHorizontal: spacing.sm,
+  },
+  exerciseEmoji: {
+    fontSize: 16,
+  },
+  exerciseChipLabel: {
+    fontSize: typography.sizes.sm,
+    color: colors.text,
+    fontFamily: typography.fonts.ui,
   },
   sentimentRow: {
     gap: spacing.xs,

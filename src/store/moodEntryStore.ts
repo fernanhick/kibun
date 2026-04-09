@@ -9,6 +9,7 @@ import { useSessionStore } from './sessionStore';
 interface MoodEntryState {
   entries: MoodEntry[];
   addEntry: (entry: MoodEntry) => void;
+  updateJournalResponse: (entryId: string, prompt: string, response: string) => void;
   getEntriesForDate: (dateStr: string) => MoodEntry[];
   getDaysWithEntries: (yearMonth: string) => Record<string, string>;
   getStreak: () => number;
@@ -39,6 +40,31 @@ export const useMoodEntryStore = create<MoodEntryState>()(
             .then(({ error }) => {
               if (error && __DEV__) {
                 console.error('[kibun:mood] Supabase insert failed:', error.message);
+              }
+            });
+        }
+      },
+
+      updateJournalResponse: (entryId, prompt, response) => {
+        set((state) => ({
+          entries: state.entries.map((e) =>
+            e.id === entryId
+              ? { ...e, journalPrompt: prompt, journalResponse: response }
+              : e
+          ),
+        }));
+
+        // Sync journal fields to Supabase for registered users
+        const session = useSessionStore.getState().session;
+        if (session?.authStatus === 'registered' && supabase) {
+          supabase
+            .from('mood_entries')
+            .update({ journal_prompt: prompt, journal_response: response })
+            .eq('id', entryId)
+            .eq('user_id', session.userId)
+            .then(({ error }) => {
+              if (error && __DEV__) {
+                console.error('[kibun:journal] Supabase update failed:', error.message);
               }
             });
         }

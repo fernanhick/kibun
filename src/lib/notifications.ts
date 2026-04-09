@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { NotificationSlot } from '@models/index';
+import type { CustomTimes } from '@store/notificationPrefsStore';
 
 const SLOT_SCHEDULE: Record<NotificationSlot, { hour: number; minute: number; body: string }> = {
   morning: { hour: 9, minute: 0, body: 'How are you feeling this morning?' },
@@ -8,6 +9,15 @@ const SLOT_SCHEDULE: Record<NotificationSlot, { hour: number; minute: number; bo
   evening: { hour: 19, minute: 0, body: 'Evening wind-down \u2014 how are you feeling?' },
   'pre-sleep': { hour: 22, minute: 0, body: 'Before you sleep \u2014 how was your day?' },
 };
+
+function parseCustomTime(hhmm: string): { hour: number; minute: number } | null {
+  const parts = hhmm.split(':');
+  if (parts.length !== 2) return null;
+  const hour = parseInt(parts[0], 10);
+  const minute = parseInt(parts[1], 10);
+  if (isNaN(hour) || isNaN(minute) || hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+  return { hour, minute };
+}
 
 export function configureNotificationHandler(): void {
   Notifications.setNotificationHandler({
@@ -23,15 +33,19 @@ export function configureNotificationHandler(): void {
 export async function scheduleSlotNotifications(
   slots: NotificationSlot[],
   streakNudge: boolean = false,
+  customTimes: CustomTimes = {},
 ): Promise<void> {
   await Notifications.cancelAllScheduledNotificationsAsync();
 
   for (const slot of slots) {
-    const { hour, minute, body } = SLOT_SCHEDULE[slot];
+    const defaults = SLOT_SCHEDULE[slot];
+    const custom = customTimes[slot] ? parseCustomTime(customTimes[slot]!) : null;
+    const { hour, minute } = custom ?? defaults;
+
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Time to check in',
-        body,
+        body: defaults.body,
         data: { slot },
       },
       trigger: {
@@ -45,7 +59,7 @@ export async function scheduleSlotNotifications(
   if (streakNudge) {
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'kibun',
+        title: 'Kibun',
         body: "Don't break your streak! How was your day?",
         data: { type: 'streak_nudge' },
       },
@@ -56,6 +70,17 @@ export async function scheduleSlotNotifications(
       },
     });
   }
+}
+
+export async function scheduleAchievementNotification(label: string, emoji: string): Promise<void> {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: `${emoji} Achievement unlocked!`,
+      body: label,
+      data: { type: 'achievement' },
+    },
+    trigger: null, // fire immediately
+  });
 }
 
 export async function cancelAllNotifications(): Promise<void> {

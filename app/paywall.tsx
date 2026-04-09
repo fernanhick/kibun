@@ -34,7 +34,10 @@ export default function PaywallScreen() {
         return;
       }
       const { customerInfo } = await Purchases.purchasePackage(pkg);
-      const active = customerInfo.entitlements.active['premium'];
+      if (__DEV__) {
+        console.log('[kibun:rc] Active entitlements:', JSON.stringify(customerInfo.entitlements.active));
+      }
+      const active = customerInfo.entitlements.active['kibun Pro'];
       if (active) {
         setSubscriptionStatus(active.periodType === 'TRIAL' ? 'trial' : 'active');
         setPaywallSeen();

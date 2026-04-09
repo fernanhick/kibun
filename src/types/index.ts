@@ -55,6 +55,27 @@ export interface MoodEntry {
   loggedAt: string;                    // ISO 8601 timestamp
   sentimentLabel?: SentimentLabel;     // ONNX-inferred note sentiment (undefined when no note)
   sentimentScore?: number;             // confidence 0–1 for the sentiment label
+  // Pro: AI Journaling
+  journalPrompt?: string;              // AI-generated reflection question (Pro only)
+  journalResponse?: string;            // user's typed response
+}
+
+// ─── Achievements ─────────────────────────────────────────────────────────────
+
+export type AchievementId =
+  | 'first_week'
+  | 'month_warrior'
+  | 'mood_explorer'
+  | 'reflector'
+  | 'early_bird'
+  | 'night_owl'
+  | 'consistent';
+
+export interface AchievementDefinition {
+  id: AchievementId;
+  label: string;
+  description: string;
+  emoji: string;
 }
 
 // ─── AI Reports ───────────────────────────────────────────────────────────────

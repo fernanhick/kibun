@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useSessionStore, useMoodEntryStore } from '@store/index';
+import { useSessionStore, useMoodEntryStore, useAchievementsStore } from '@store/index';
 import { useUiPrefsStore } from '@store/uiPrefsStore';
 import { Button, Card, MoodBubble, Screen } from '@components/index';
 import { Shiba } from '@components/Shiba';
@@ -12,6 +12,7 @@ import { SparkleOverlay } from '@components/SparkleOverlay';
 import type { ShibaVariant } from '@components/Shiba';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { colors, spacing, typography } from '@constants/theme';
+import { ACHIEVEMENT_DEFINITIONS } from '@lib/achievements';
 import type { MoodSlot } from '@models/index';
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -75,6 +76,12 @@ export default function HomeScreen() {
     }
     return count;
   }, [entries]);
+
+  const unlockedIds = useAchievementsStore((s) => s.unlockedIds);
+  const unlockedDefs = useMemo(
+    () => ACHIEVEMENT_DEFINITIONS.filter((d) => unlockedIds.includes(d.id)),
+    [unlockedIds]
+  );
 
   const mostRecent = todayEntries[0];
   const mood = mostRecent ? MOOD_MAP[mostRecent.moodId as MoodId] : null;
@@ -144,6 +151,26 @@ export default function HomeScreen() {
             />
           </View>
         </LinearGradient>
+
+        {unlockedDefs.length > 0 && (
+          <View style={styles.achievementsSection}>
+            <View style={styles.sectionHeaderChip}>
+              <Text style={styles.sectionHeader}>Achievements</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.achievementsRow}
+            >
+              {unlockedDefs.map((def) => (
+                <View key={def.id} style={styles.achievementBadge} accessibilityLabel={`${def.label}: ${def.description}`}>
+                  <Text style={styles.achievementEmoji}>{def.emoji}</Text>
+                  <Text style={styles.achievementLabel}>{def.label}</Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         <View style={styles.todaySection}>
           <View style={styles.sectionHeaderChip}>
@@ -308,6 +335,35 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
     gap: spacing.md,
     marginTop: spacing.lg,
+  },
+  achievementsSection: {
+    paddingHorizontal: spacing.md,
+    marginTop: spacing.lg,
+    gap: spacing.md,
+  },
+  achievementsRow: {
+    gap: spacing.sm,
+    paddingRight: spacing.md,
+  },
+  achievementBadge: {
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.surface,
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    borderRadius: 16,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    minWidth: 72,
+  },
+  achievementEmoji: {
+    fontSize: 22,
+  },
+  achievementLabel: {
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.ui,
+    color: colors.primaryDark,
+    textAlign: 'center',
   },
   sectionHeaderChip: {
     alignSelf: 'flex-start',

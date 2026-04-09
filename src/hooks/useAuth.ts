@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { isSupabaseConfigured, supabase } from '@lib/supabase';
 import { useSessionStore, useMoodEntryStore } from '@store/index';
 import { refreshSubscriptionStatus } from '@lib/revenuecat';
+import { MOOD_MAP, type MoodId } from '@constants/moods';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
 async function waitForMoodStoreHydration(): Promise<void> {
@@ -43,6 +44,46 @@ async function syncMoodEntriesForUser(userId: string): Promise<void> {
     journalPrompt: row.journal_prompt ?? undefined,
     journalResponse: row.journal_response ?? undefined,
   })));
+}
+
+/**
+ * Uploads all locally-stored mood entries to Supabase for the signed-in user.
+ * Uses ignoreDuplicates so existing server entries are never overwritten.
+ * This back-fills entries logged while the user was anonymous (local-only)
+ * as well as any inserts that failed silently in a previous session.
+ */
+async function uploadLocalEntriesToSupabase(userId: string): Promise<void> {
+  if (!supabase) return;
+
+  await waitForMoodStoreHydration();
+
+  const localEntries = useMoodEntryStore.getState().entries;
+  if (localEntries.length === 0) return;
+
+  const rows = localEntries.map((entry) => {
+    const mood = MOOD_MAP[entry.moodId as MoodId];
+    return {
+      id: entry.id,
+      user_id: userId,
+      mood: entry.moodId,
+      mood_color: mood?.bubbleColor ?? '#BDBDBD',
+      note: entry.note ?? null,
+      check_in_slot: entry.slot,
+      logged_at: entry.loggedAt,
+      sentiment_label: entry.sentimentLabel ?? null,
+      sentiment_score: entry.sentimentScore ?? null,
+      journal_prompt: entry.journalPrompt ?? null,
+      journal_response: entry.journalResponse ?? null,
+    };
+  });
+
+  const { error } = await supabase
+    .from('mood_entries')
+    .upsert(rows, { onConflict: 'id', ignoreDuplicates: true });
+
+  if (error && __DEV__) {
+    console.error('[kibun:sync] Failed to upload local entries:', error.message);
+  }
 }
 
 async function resolveSubscriptionStatus(isRegistered: boolean) {
@@ -92,7 +133,9 @@ export function useAuth() {
             });
 
             if (isRegistered) {
-              void syncMoodEntriesForUser(session.user.id);
+              void syncMoodEntriesForUser(session.user.id).then(() =>
+                uploadLocalEntriesToSupabase(session.user.id)
+              );
             }
 
             setIsReady(true);
@@ -117,7 +160,9 @@ export function useAuth() {
             });
 
             if (isRegistered) {
-              void syncMoodEntriesForUser(session.user.id);
+              void syncMoodEntriesForUser(session.user.id).then(() =>
+                uploadLocalEntriesToSupabase(session.user.id)
+              );
             }
           }
           setIsReady(true);

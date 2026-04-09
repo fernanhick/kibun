@@ -6,8 +6,26 @@ import { MOOD_MAP, MoodId } from '@constants/moods';
 import { supabase } from '@lib/supabase';
 import { useSessionStore } from './sessionStore';
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function mergeEntries(local: MoodEntry[], remote: MoodEntry[]): MoodEntry[] {
+  const byId = new Map<string, MoodEntry>();
+
+  for (const entry of local) {
+    byId.set(entry.id, entry);
+  }
+
+  for (const entry of remote) {
+    const existing = byId.get(entry.id);
+    byId.set(entry.id, existing ? { ...existing, ...entry } : entry);
+  }
+
+  return Array.from(byId.values()).sort((a, b) => b.loggedAt.localeCompare(a.loggedAt));
+}
+
 interface MoodEntryState {
   entries: MoodEntry[];
+  mergeRemoteEntries: (entries: MoodEntry[]) => void;
   addEntry: (entry: MoodEntry) => void;
   updateJournalResponse: (entryId: string, prompt: string, response: string) => void;
   getEntriesForDate: (dateStr: string) => MoodEntry[];
@@ -19,6 +37,9 @@ export const useMoodEntryStore = create<MoodEntryState>()(
   persist(
     (set, get) => ({
       entries: [],
+      mergeRemoteEntries: (remoteEntries) => {
+        set((state) => ({ entries: mergeEntries(state.entries, remoteEntries) }));
+      },
       addEntry: (entry) => {
         // 1. Save locally first (always succeeds)
         set((state) => ({ entries: [entry, ...state.entries] }));
@@ -27,16 +48,20 @@ export const useMoodEntryStore = create<MoodEntryState>()(
         const session = useSessionStore.getState().session;
         if (session?.authStatus === 'registered' && supabase) {
           const mood = MOOD_MAP[entry.moodId as MoodId];
+          const payload = {
+            user_id: session.userId,
+            mood: entry.moodId,
+            mood_color: mood?.bubbleColor ?? '#BDBDBD',
+            note: entry.note,
+            check_in_slot: entry.slot,
+            logged_at: entry.loggedAt,
+            sentiment_label: entry.sentimentLabel ?? null,
+            sentiment_score: entry.sentimentScore ?? null,
+          };
+
           supabase
             .from('mood_entries')
-            .insert({
-              user_id: session.userId,
-              mood: entry.moodId,
-              mood_color: mood?.bubbleColor ?? '#BDBDBD',
-              note: entry.note,
-              check_in_slot: entry.slot,
-              logged_at: entry.loggedAt,
-            })
+            .insert(UUID_REGEX.test(entry.id) ? { id: entry.id, ...payload } : payload)
             .then(({ error }) => {
               if (error && __DEV__) {
                 console.error('[kibun:mood] Supabase insert failed:', error.message);

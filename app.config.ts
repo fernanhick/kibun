@@ -56,7 +56,6 @@ export default ({ config }: ConfigContext) => ({
     'expo-router',
     'expo-secure-store',
     'expo-notifications',
-    'react-native-purchases',
     [
       'expo-splash-screen',
       {

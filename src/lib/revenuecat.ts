@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
-import Purchases, { LOG_LEVEL } from 'react-native-purchases';
+import Purchases, { LOG_LEVEL, CustomerInfo } from 'react-native-purchases';
+import type { SubscriptionStatus } from '@models/index';
 
 // ─── RevenueCat SDK Initializer ───────────────────────────────────────────────
 // Called once at app startup from _layout.tsx (module level, before React mounts).
@@ -38,4 +39,30 @@ export function initPurchases(): void {
   }
 
   Purchases.configure({ apiKey });
+}
+
+function getActiveEntitlement(customerInfo: CustomerInfo) {
+  return customerInfo.entitlements.active['kibun Pro']
+    ?? Object.values(customerInfo.entitlements.active)[0]
+    ?? null;
+}
+
+export function getSubscriptionStatusFromCustomerInfo(
+  customerInfo: CustomerInfo,
+): SubscriptionStatus {
+  const activeEntitlement = getActiveEntitlement(customerInfo);
+  if (!activeEntitlement) return 'none';
+  return activeEntitlement.periodType === 'TRIAL' ? 'trial' : 'active';
+}
+
+export async function refreshSubscriptionStatus(): Promise<SubscriptionStatus> {
+  try {
+    const customerInfo = await Purchases.getCustomerInfo();
+    return getSubscriptionStatusFromCustomerInfo(customerInfo);
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('[kibun:rc] Failed to refresh subscription status:', error);
+    }
+    return 'none';
+  }
 }

@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { supabase } from '@lib/supabase';
+import { useOnboardingGateStore } from '@store/onboardingGateStore';
+import { useSessionStore } from '@store/sessionStore';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
 // Required by expo-web-browser to complete any pending auth sessions on mount.
@@ -13,11 +15,28 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function RegistrationScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ mode?: string | string[]; source?: string | string[] }>();
+  const modeParam = Array.isArray(params.mode) ? params.mode[0] : params.mode;
+  const sourceParam = Array.isArray(params.source) ? params.source[0] : params.source;
+  const fromOnboarding = sourceParam === 'onboarding';
+  const session = useSessionStore((s) => s.session);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<'register' | 'login'>('register');
+  const [mode, setMode] = useState<'register' | 'login'>(modeParam === 'login' ? 'login' : 'register');
+
+  const completeOnboardingForReturningUser = () => {
+    if (!fromOnboarding) return;
+    useOnboardingGateStore.setState({ complete: true, paywallSeen: true });
+  };
+
+  useEffect(() => {
+    if (session?.authStatus === 'registered' && !fromOnboarding) {
+      router.replace('/(tabs)');
+    }
+  }, [fromOnboarding, router, session?.authStatus]);
 
   // Email/password: register (updateUser to upgrade anonymous) or login (signInWithPassword).
   const handleEmail = async () => {
@@ -51,6 +70,7 @@ export default function RegistrationScreen() {
       }
     }
 
+    completeOnboardingForReturningUser();
     router.replace('/(tabs)');
   };
 
@@ -98,6 +118,7 @@ export default function RegistrationScreen() {
           setError(exchangeError.message);
           return;
         }
+        completeOnboardingForReturningUser();
         router.replace('/(tabs)');
         return;
       }
@@ -117,6 +138,7 @@ export default function RegistrationScreen() {
           setError(sessionError.message);
           return;
         }
+        completeOnboardingForReturningUser();
         router.replace('/(tabs)');
         return;
       }
@@ -124,6 +146,7 @@ export default function RegistrationScreen() {
       // If neither worked, try refreshing the session — the OAuth might have completed server-side
       const { data: sessionData } = await supabase.auth.getSession();
       if (sessionData?.session && !sessionData.session.user.is_anonymous) {
+        completeOnboardingForReturningUser();
         router.replace('/(tabs)');
         return;
       }
@@ -156,6 +179,11 @@ export default function RegistrationScreen() {
             ? 'Link your data to an account so you never lose it'
             : 'Sign in to pick up where you left off'}
         </Text>
+        {fromOnboarding && (
+          <Text style={styles.infoNote}>
+            You can skip onboarding now. Completing those questions later helps us personalize insights.
+          </Text>
+        )}
       </LinearGradient>
 
       <View style={styles.sectionCard}>
@@ -295,6 +323,13 @@ const styles = StyleSheet.create({
     color: colors.sparkle,
     lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
     marginTop: -spacing.sm,
+  },
+  infoNote: {
+    marginTop: spacing.sm,
+    fontSize: typography.sizes.sm,
+    color: colors.textInverse,
+    opacity: 0.9,
+    lineHeight: 20,
   },
   socialGroup: {
     gap: spacing.sm,

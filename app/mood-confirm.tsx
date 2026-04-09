@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams, type Href } from 'expo-router';
+import * as Crypto from 'expo-crypto';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
@@ -89,7 +90,7 @@ export default function MoodConfirmScreen() {
     if (submitting) return;
     setSubmitting(true);
 
-    const entryId = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+    const entryId = Crypto.randomUUID();
     const entry = {
       id: entryId,
       moodId: mood.id,

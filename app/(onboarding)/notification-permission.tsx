@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import * as Crypto from 'expo-crypto';
 import * as Notifications from 'expo-notifications';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
@@ -43,7 +44,7 @@ export default function NotificationPermissionScreen() {
   const maybeLogFirstMood = () => {
     if (!firstMoodId) return;
     const entry = {
-      id: Date.now().toString(36) + Math.random().toString(36).substring(2, 9),
+      id: Crypto.randomUUID(),
       moodId: firstMoodId,
       note: null,
       slot: getCheckInSlot(),

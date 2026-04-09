@@ -1,7 +1,59 @@
 import { useState, useEffect } from 'react';
 import { isSupabaseConfigured, supabase } from '@lib/supabase';
-import { useSessionStore } from '@store/index';
+import { useSessionStore, useMoodEntryStore } from '@store/index';
+import { refreshSubscriptionStatus } from '@lib/revenuecat';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
+
+async function waitForMoodStoreHydration(): Promise<void> {
+  if (useMoodEntryStore.persist.hasHydrated()) return;
+  await new Promise<void>((resolve) => {
+    const unsubscribe = useMoodEntryStore.persist.onFinishHydration(() => {
+      unsubscribe();
+      resolve();
+    });
+  });
+}
+
+async function syncMoodEntriesForUser(userId: string): Promise<void> {
+  if (!supabase) return;
+
+  await waitForMoodStoreHydration();
+
+  const { data, error } = await supabase
+    .from('mood_entries')
+    .select('id,mood,note,check_in_slot,logged_at,sentiment_label,sentiment_score,journal_prompt,journal_response')
+    .eq('user_id', userId)
+    .order('logged_at', { ascending: false });
+
+  if (error) {
+    if (__DEV__) {
+      console.error('[kibun:sync] Failed to pull mood entries:', error.message);
+    }
+    return;
+  }
+
+  useMoodEntryStore.getState().mergeRemoteEntries((data ?? []).map((row) => ({
+    id: row.id,
+    moodId: row.mood,
+    note: row.note,
+    slot: row.check_in_slot,
+    loggedAt: row.logged_at,
+    sentimentLabel: row.sentiment_label ?? undefined,
+    sentimentScore: row.sentiment_score ?? undefined,
+    journalPrompt: row.journal_prompt ?? undefined,
+    journalResponse: row.journal_response ?? undefined,
+  })));
+}
+
+async function resolveSubscriptionStatus(isRegistered: boolean) {
+  const existingStatus = useSessionStore.getState().session?.subscriptionStatus ?? 'none';
+  if (!isRegistered && existingStatus !== 'none') {
+    return existingStatus;
+  }
+
+  const refreshedStatus = await refreshSubscriptionStatus();
+  return refreshedStatus === 'none' ? existingStatus : refreshedStatus;
+}
 
 // ─── useAuth ──────────────────────────────────────────────────────────────────
 // Initializes Supabase auth and syncs state to the Zustand session store.
@@ -31,11 +83,18 @@ export function useAuth() {
         if (event === 'INITIAL_SESSION') {
           if (session) {
             // Existing persisted session — restore it
+            const isRegistered = !session.user.is_anonymous;
+            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered);
             setSession({
               userId: session.user.id,
-              authStatus: session.user.is_anonymous ? 'anonymous' : 'registered',
-              subscriptionStatus: 'none',
+              authStatus: isRegistered ? 'registered' : 'anonymous',
+              subscriptionStatus,
             });
+
+            if (isRegistered) {
+              void syncMoodEntriesForUser(session.user.id);
+            }
+
             setIsReady(true);
           } else {
             // No session — create anonymous identity
@@ -49,27 +108,37 @@ export function useAuth() {
           }
         } else if (event === 'SIGNED_IN') {
           if (session) {
+            const isRegistered = !session.user.is_anonymous;
+            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered);
             setSession({
               userId: session.user.id,
-              authStatus: session.user.is_anonymous ? 'anonymous' : 'registered',
-              subscriptionStatus: 'none',
+              authStatus: isRegistered ? 'registered' : 'anonymous',
+              subscriptionStatus,
             });
+
+            if (isRegistered) {
+              void syncMoodEntriesForUser(session.user.id);
+            }
           }
           setIsReady(true);
         } else if (event === 'USER_UPDATED') {
           if (session) {
+            const isRegistered = !session.user.is_anonymous;
+            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered);
             setSession({
               userId: session.user.id,
-              authStatus: session.user.is_anonymous ? 'anonymous' : 'registered',
-              subscriptionStatus: 'none',
+              authStatus: isRegistered ? 'registered' : 'anonymous',
+              subscriptionStatus,
             });
           }
         } else if (event === 'TOKEN_REFRESHED') {
           if (session) {
+            const isRegistered = !session.user.is_anonymous;
+            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered);
             setSession({
               userId: session.user.id,
-              authStatus: session.user.is_anonymous ? 'anonymous' : 'registered',
-              subscriptionStatus: 'none',
+              authStatus: isRegistered ? 'registered' : 'anonymous',
+              subscriptionStatus,
             });
           }
         } else if (event === 'SIGNED_OUT') {

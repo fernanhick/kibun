@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useSessionStore } from '@store/index';
+import { getSubscriptionStatusFromCustomerInfo } from '@lib/revenuecat';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
 const FEATURES = [
@@ -17,6 +18,7 @@ const FEATURES = [
 export default function PaywallScreen() {
   const router = useRouter();
   const { setPaywallSeen } = useOnboardingGateStore();
+  const session = useSessionStore((s) => s.session);
   const { setSubscriptionStatus } = useSessionStore();
   const [purchasing, setPurchasing] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
@@ -37,11 +39,11 @@ export default function PaywallScreen() {
       if (__DEV__) {
         console.log('[kibun:rc] Active entitlements:', JSON.stringify(customerInfo.entitlements.active));
       }
-      const active = customerInfo.entitlements.active['kibun Pro'];
-      if (active) {
-        setSubscriptionStatus(active.periodType === 'TRIAL' ? 'trial' : 'active');
+      const subscriptionStatus = getSubscriptionStatusFromCustomerInfo(customerInfo);
+      if (subscriptionStatus !== 'none') {
+        setSubscriptionStatus(subscriptionStatus);
         setPaywallSeen();
-        router.replace('/register');
+        router.replace(session?.authStatus === 'registered' ? '/(tabs)' : '/register');
       } else {
         setPurchaseError('Purchase completed but entitlement not found. Please contact support.');
         setPurchasing(false);

@@ -17,6 +17,10 @@ export default function DisclaimerScreen() {
     router.push('/(onboarding)/first-mood');
   };
 
+  const handleExistingAccount = () => {
+    router.push('/register?mode=login&source=onboarding');
+  };
+
   return (
     <Screen scrollable>
       <View style={styles.container}>
@@ -76,13 +80,22 @@ export default function DisclaimerScreen() {
           </Text>
         </View>
 
-        <Button
-          label="Let's Go! 🎉"
-          onPress={handleContinue}
-          variant="sunrise"
-          disabled={!acknowledged}
-          style={styles.button}
-        />
+        <View style={styles.button}>
+          <Button
+            label="Let's Go! 🎉"
+            onPress={handleContinue}
+            variant="sunrise"
+            disabled={!acknowledged}
+            fullWidth
+          />
+        </View>
+
+        <Pressable onPress={handleExistingAccount} accessibilityRole="button" style={styles.loginLinkWrap}>
+          <Text style={styles.loginLink}>Already have an account? Sign in and skip onboarding</Text>
+        </Pressable>
+        <Text style={styles.personalizationNote}>
+          Heads up: these onboarding answers improve personalized insights later.
+        </Text>
       </View>
     </Screen>
   );
@@ -237,5 +250,23 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
+  },
+  loginLinkWrap: {
+    marginTop: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  loginLink: {
+    fontFamily: typography.fonts.ui,
+    fontSize: typography.sizes.md,
+    color: colors.primary,
+    textAlign: 'center',
+  },
+  personalizationNote: {
+    marginTop: spacing.xs,
+    fontFamily: typography.fonts.body,
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });

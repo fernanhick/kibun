@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep:*)",
+      "Bash(npm install:*)",
+      "Bash(npm info:*)",
+      "WebSearch",
+      "Bash(npx sharp-cli:*)",
+      "Bash(python -c \"from PIL import Image; img = Image.open\\('assets/happy-webp-kibun.webp'\\); print\\(f'Format: {img.format}'\\); print\\(f'Mode: {img.mode}'\\); print\\(f'Size: {img.size}'\\); print\\(f'Has alpha: {\\\\\"A\\\\\" in img.mode}'\\); print\\(f'Is animated: {getattr\\(img, \\\\\"is_animated\\\\\", False\\)}'\\); print\\(f'Frames: {getattr\\(img, \\\\\"n_frames\\\\\", 1\\)}'\\)\")",
+      "Bash(ffprobe -v quiet -show_streams -of json assets/happy-webp-kibun.webp)",
+      "Bash(python -c \"from PIL import Image; img = Image.open\\('assets/gif-test-happy_ca92.webp'\\); print\\(f'Format: {img.format}'\\); print\\(f'Mode: {img.mode}'\\); print\\(f'Size: {img.size}'\\); print\\(f'Has alpha: {\\\\\"A\\\\\" in img.mode}'\\); print\\(f'Is animated: {getattr\\(img, \\\\\"is_animated\\\\\", False\\)}'\\); print\\(f'Frames: {getattr\\(img, \\\\\"n_frames\\\\\", 1\\)}'\\)\")",
+      "Bash(python -c ':*)",
+      "Bash(rm -f assets/apng-happy.png assets/happy-webp-kibun.webp assets/gif-test-happy_ca92.webp)",
+      "Bash(rm -f \"assets/webp animation/gif-test-happy_ca92.webp\" \"assets/webp animation/webp-angry.webp\" \"assets/webp animation/webp-calm.webp\" \"assets/webp animation/webp-sad.webp\" \"assets/webp animation/webp-tired.webp\")",
+      "WebFetch(domain:docs.expo.dev)",
+      "Bash(npx expo:*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

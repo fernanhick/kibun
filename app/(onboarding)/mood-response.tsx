@@ -33,7 +33,7 @@ export default function MoodResponseScreen() {
           end={{ x: 1, y: 1 }}
           style={styles.heroCard}
         >
-          <Shiba variant={variant} size={128} loop={false} autoPlay />
+          <Shiba variant={variant} size={200} loop={false} autoPlay />
           <View style={styles.bubbleRow}>
             <MoodBubble mood={mood} size="lg" disabled />
           </View>

@@ -1,18 +1,24 @@
-import { useEffect, useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { View, Text, Pressable, Alert, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Card, MoodBubble } from '@components/index';
 import { useMoodEntryStore } from '@store/index';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
-import { colors, spacing, typography } from '@constants/theme';
-import type { MoodSlot } from '@models/index';
+import { colors, spacing, typography, radius } from '@constants/theme';
+import type { MoodSlot, SentimentLabel } from '@models/index';
 
 const SLOT_LABELS: Record<MoodSlot, string> = {
   morning: 'Morning',
   afternoon: 'Afternoon',
   night: 'Evening',
   pre_sleep: 'Night',
+};
+
+const SENTIMENT_DISPLAY: Record<SentimentLabel, { emoji: string; label: string }> = {
+  positive: { emoji: '😊', label: 'Positive' },
+  neutral:  { emoji: '😐', label: 'Neutral' },
+  negative: { emoji: '😔', label: 'Difficult' },
 };
 
 function formatDateHeading(dateStr: string): string {
@@ -36,9 +42,10 @@ export default function DayDetailScreen() {
   const dateParam = params.date;
   const isValidDate = !!dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam);
 
-  // All hooks called unconditionally (Rules of Hooks).
-  // Select stable reference, derive outside selector to avoid infinite loop.
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
   const allEntries = useMoodEntryStore((s) => s.entries);
+  const deleteEntry = useMoodEntryStore((s) => s.deleteEntry);
 
   const entries = useMemo(
     () =>
@@ -50,7 +57,6 @@ export default function DayDetailScreen() {
     [allEntries, dateParam, isValidDate]
   );
 
-  // Navigate back as side effect, not during render.
   useEffect(() => {
     if (!isValidDate) {
       router.back();
@@ -60,6 +66,24 @@ export default function DayDetailScreen() {
   if (!isValidDate) {
     return null;
   }
+
+  const handleDelete = (entryId: string, moodLabel: string) => {
+    Alert.alert(
+      'Delete entry',
+      `Are you sure you want to delete this "${moodLabel}" entry? This cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteEntry(entryId);
+            setExpandedId(null);
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <Screen scrollable={true}>
@@ -83,12 +107,19 @@ export default function DayDetailScreen() {
         <View style={styles.entriesList}>
           {entries.map((entry) => {
             const entryMood = MOOD_MAP[entry.moodId as MoodId];
+            const isExpanded = expandedId === entry.id;
+            const sentiment = entry.sentimentLabel
+              ? SENTIMENT_DISPLAY[entry.sentimentLabel]
+              : null;
+
             return (
-              <View
+              <Pressable
                 key={entry.id}
-                accessibilityLabel={`${entryMood?.label ?? entry.moodId} at ${formatTime(entry.loggedAt)}${entry.note ? `, ${entry.note}` : ''}`}
+                onPress={() => setExpandedId(isExpanded ? null : entry.id)}
+                accessibilityLabel={`${entryMood?.label ?? entry.moodId} at ${formatTime(entry.loggedAt)}${entry.note ? `, ${entry.note}` : ''}. Tap to ${isExpanded ? 'collapse' : 'expand'}.`}
+                accessibilityRole="button"
               >
-                <Card>
+                <Card style={isExpanded ? styles.cardExpanded : undefined}>
                   <View style={styles.entryRow}>
                     {entryMood && (
                       <MoodBubble mood={entryMood} size="sm" />
@@ -100,19 +131,73 @@ export default function DayDetailScreen() {
                           {entryMood?.label ?? entry.moodId}
                         </Text>
                       </View>
-                      <Text style={styles.timeLabel}>
-                        {formatTime(entry.loggedAt)}
-                      </Text>
+                      <View style={styles.timeRow}>
+                        <Text style={styles.timeLabel}>
+                          {formatTime(entry.loggedAt)}
+                        </Text>
+                        <Ionicons
+                          name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                          size={16}
+                          color={colors.textSecondary}
+                        />
+                      </View>
                     </View>
                   </View>
+
                   <Text style={styles.slotLabel}>
                     {SLOT_LABELS[entry.slot]}
                   </Text>
-                  {entry.note && (
-                    <Text style={styles.noteText}>{entry.note}</Text>
+
+                  {isExpanded && (
+                    <View style={styles.expandedSection}>
+                      {entry.note ? (
+                        <View style={styles.detailBlock}>
+                          <Text style={styles.detailLabel}>Note</Text>
+                          <Text style={styles.detailText}>{entry.note}</Text>
+                        </View>
+                      ) : (
+                        <View style={styles.detailBlock}>
+                          <Text style={styles.detailTextMuted}>No note added</Text>
+                        </View>
+                      )}
+
+                      {sentiment && (
+                        <View style={styles.detailBlock}>
+                          <Text style={styles.detailLabel}>Sentiment</Text>
+                          <View style={styles.sentimentRow}>
+                            <Text style={styles.sentimentEmoji}>{sentiment.emoji}</Text>
+                            <Text style={styles.detailText}>{sentiment.label}</Text>
+                          </View>
+                        </View>
+                      )}
+
+                      {entry.journalPrompt && (
+                        <View style={styles.detailBlock}>
+                          <Text style={styles.detailLabel}>Journal prompt</Text>
+                          <Text style={styles.detailTextItalic}>{entry.journalPrompt}</Text>
+                        </View>
+                      )}
+
+                      {entry.journalResponse && (
+                        <View style={styles.detailBlock}>
+                          <Text style={styles.detailLabel}>Your reflection</Text>
+                          <Text style={styles.detailText}>{entry.journalResponse}</Text>
+                        </View>
+                      )}
+
+                      <Pressable
+                        onPress={() => handleDelete(entry.id, entryMood?.label ?? entry.moodId)}
+                        style={styles.deleteButton}
+                        accessibilityLabel="Delete this entry"
+                        accessibilityRole="button"
+                      >
+                        <Ionicons name="trash-outline" size={16} color={colors.error} />
+                        <Text style={styles.deleteText}>Delete entry</Text>
+                      </Pressable>
+                    </View>
                   )}
                 </Card>
-              </View>
+              </Pressable>
             );
           })}
         </View>
@@ -146,6 +231,10 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingBottom: spacing.xl,
   },
+  cardExpanded: {
+    borderColor: colors.primary,
+    borderWidth: 1.5,
+  },
   entryRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -173,6 +262,11 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.ui,
     color: colors.text,
   },
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
   timeLabel: {
     fontSize: typography.sizes.sm,
     color: colors.textSecondary,
@@ -190,11 +284,64 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
-  noteText: {
+  expandedSection: {
+    marginTop: spacing.md,
+    marginLeft: 48 + spacing.sm,
+    gap: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: '#E8EDF5',
+    paddingTop: spacing.md,
+  },
+  detailBlock: {
+    gap: 4,
+  },
+  detailLabel: {
+    fontSize: typography.sizes.xs,
+    color: colors.primaryDark,
+    fontWeight: typography.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  detailText: {
     fontSize: typography.sizes.sm,
     color: colors.text,
-    marginTop: spacing.xs,
-    marginLeft: 48 + spacing.sm,
     lineHeight: typography.sizes.sm * typography.lineHeights.normal,
+  },
+  detailTextMuted: {
+    fontSize: typography.sizes.sm,
+    color: colors.textDisabled,
+    fontStyle: 'italic',
+  },
+  detailTextItalic: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    fontStyle: 'italic',
+    lineHeight: typography.sizes.sm * typography.lineHeights.normal,
+  },
+  sentimentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  sentimentEmoji: {
+    fontSize: 14,
+  },
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    marginTop: spacing.sm,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: radius.lg,
+    backgroundColor: '#FFF0F0',
+    borderWidth: 1,
+    borderColor: '#FFCDD2',
+  },
+  deleteText: {
+    fontSize: typography.sizes.sm,
+    color: colors.error,
+    fontWeight: typography.weights.medium,
   },
 });

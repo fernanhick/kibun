@@ -1,20 +1,29 @@
+import { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Shiba } from './Shiba';
+import { Image } from 'expo-image';
 import { colors, typography, spacing } from '@constants/theme';
+
+const SPLASH_IMAGE = require('../../assets/webp animation/mascot-happy.webp');
 
 interface SplashScreenViewProps {
   onFinish: () => void;
 }
 
 export function SplashScreenView({ onFinish }: SplashScreenViewProps) {
+  // The animated WebP loops indefinitely — fire onFinish after one
+  // visual cycle so the app can proceed past the splash screen.
+  useEffect(() => {
+    const timer = setTimeout(onFinish, 3000);
+    return () => clearTimeout(timer);
+  }, [onFinish]);
+
   return (
     <View style={styles.container}>
-      <Shiba
-        variant="happy"
-        size={160}
-        loop={false}
-        autoPlay
-        onFinish={onFinish}
+      <Image
+        source={SPLASH_IMAGE}
+        style={styles.mascot}
+        contentFit="contain"
+        autoplay
       />
       <Text style={styles.title}>kibun</Text>
       <Text style={styles.subtitle}>気分</Text>
@@ -28,6 +37,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.background,
+  },
+  mascot: {
+    width: 250,
+    height: 250,
   },
   title: {
     fontSize: typography.sizes.display,

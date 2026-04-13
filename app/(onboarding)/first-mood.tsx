@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@components/Screen';
@@ -7,6 +7,7 @@ import { Button } from '@components/Button';
 import { MoodBubble } from '@components/MoodBubble';
 import { Shiba } from '@components/Shiba';
 import { SparkleOverlay } from '@components/SparkleOverlay';
+import { Ionicons } from '@expo/vector-icons';
 import { MOODS, type MoodDefinition } from '@constants/moods';
 import { colors, typography, spacing } from '@constants/theme';
 import { useOnboardingStore } from '@store/onboardingStore';
@@ -31,8 +32,17 @@ export default function FirstMoodScreen() {
         style={styles.heroCard}
       >
         <SparkleOverlay count={20} />
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          hitSlop={12}
+          style={styles.backButton}
+        >
+          <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
+        </Pressable>
         <View style={styles.shibaContainer}>
-          <Shiba variant="neutral" size={100} loop autoPlay floating />
+          <Shiba variant="neutral" size={180} loop autoPlay />
         </View>
         <Text style={styles.headline}>How are you feeling?</Text>
         <Text style={styles.subline}>Pick the mood that feels closest right now.</Text>
@@ -66,6 +76,10 @@ export default function FirstMoodScreen() {
 }
 
 const styles = StyleSheet.create({
+  backButton: {
+    alignSelf: 'flex-start',
+    padding: spacing.xs,
+  },
   heroCard: {
     borderRadius: 28,
     paddingHorizontal: spacing.md,

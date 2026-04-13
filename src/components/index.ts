@@ -1,7 +1,9 @@
 export { Button } from './Button';
 export { Card } from './Card';
+export { KawaiiTabBar } from './KawaiiTabBar';
 export { MoodBubble } from './MoodBubble';
 export { OptionPicker } from './OptionPicker';
+export { PersistentMascotOverlay } from './PersistentMascotOverlay';
 export { Screen } from './Screen';
 export { Shiba } from './Shiba';
 export type { ShibaVariant } from './Shiba';

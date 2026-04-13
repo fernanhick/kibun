@@ -1,10 +1,14 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Crypto from 'expo-crypto';
 import { MoodEntry } from '@models/index';
 import { MOOD_MAP, MoodId } from '@constants/moods';
 import { supabase } from '@lib/supabase';
+import { checkAchievements } from '@lib/achievements';
+import { withRetry } from '@lib/syncRetry';
 import { useSessionStore } from './sessionStore';
+import { useAchievementsStore } from './achievementsStore';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -27,6 +31,8 @@ interface MoodEntryState {
   entries: MoodEntry[];
   mergeRemoteEntries: (entries: MoodEntry[]) => void;
   addEntry: (entry: MoodEntry) => void;
+  deleteEntry: (entryId: string) => void;
+  clearEntries: () => void;
   updateJournalResponse: (entryId: string, prompt: string, response: string) => void;
   getEntriesForDate: (dateStr: string) => MoodEntry[];
   getDaysWithEntries: (yearMonth: string) => Record<string, string>;
@@ -44,7 +50,13 @@ export const useMoodEntryStore = create<MoodEntryState>()(
         // 1. Save locally first (always succeeds)
         set((state) => ({ entries: [entry, ...state.entries] }));
 
-        // 2. Fire-and-forget Supabase sync for registered users
+        // 2. Check for newly unlocked achievements
+        const entries = get().entries;
+        const { unlockedIds, addUnlocked } = useAchievementsStore.getState();
+        const newlyUnlocked = checkAchievements(entries, unlockedIds);
+        for (const id of newlyUnlocked) { addUnlocked(id); }
+
+        // 3. Fire-and-forget Supabase sync for registered users
         const session = useSessionStore.getState().session;
         if (session?.authStatus === 'registered' && supabase) {
           const mood = MOOD_MAP[entry.moodId as MoodId];
@@ -59,14 +71,36 @@ export const useMoodEntryStore = create<MoodEntryState>()(
             sentiment_score: entry.sentimentScore ?? null,
           };
 
-          supabase
-            .from('mood_entries')
-            .insert(UUID_REGEX.test(entry.id) ? { id: entry.id, ...payload } : payload)
-            .then(({ error }) => {
-              if (error && __DEV__) {
-                console.error('[kibun:mood] Supabase insert failed:', error.message);
-              }
-            });
+          withRetry(
+            () => supabase!
+              .from('mood_entries')
+              .insert({ id: UUID_REGEX.test(entry.id) ? entry.id : Crypto.randomUUID(), ...payload })
+              .then(({ error }) => ({ error })),
+            'mood-insert'
+          );
+        }
+      },
+
+      clearEntries: () => {
+        set({ entries: [] });
+      },
+
+      deleteEntry: (entryId) => {
+        set((state) => ({
+          entries: state.entries.filter((e) => e.id !== entryId),
+        }));
+
+        const session = useSessionStore.getState().session;
+        if (session?.authStatus === 'registered' && supabase) {
+          withRetry(
+            () => supabase!
+              .from('mood_entries')
+              .delete()
+              .eq('id', entryId)
+              .eq('user_id', session.userId)
+              .then(({ error }) => ({ error })),
+            'mood-delete'
+          );
         }
       },
 
@@ -82,16 +116,15 @@ export const useMoodEntryStore = create<MoodEntryState>()(
         // Sync journal fields to Supabase for registered users
         const session = useSessionStore.getState().session;
         if (session?.authStatus === 'registered' && supabase) {
-          supabase
-            .from('mood_entries')
-            .update({ journal_prompt: prompt, journal_response: response })
-            .eq('id', entryId)
-            .eq('user_id', session.userId)
-            .then(({ error }) => {
-              if (error && __DEV__) {
-                console.error('[kibun:journal] Supabase update failed:', error.message);
-              }
-            });
+          withRetry(
+            () => supabase!
+              .from('mood_entries')
+              .update({ journal_prompt: prompt, journal_response: response })
+              .eq('id', entryId)
+              .eq('user_id', session.userId)
+              .then(({ error }) => ({ error })),
+            'journal-update'
+          );
         }
       },
 

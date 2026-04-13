@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Screen } from '@components/Screen';
 import { Button } from '@components/Button';
 import { Shiba, type ShibaVariant } from '@components/Shiba';
 import { MoodBubble } from '@components/MoodBubble';
+import { Ionicons } from '@expo/vector-icons';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { MOOD_RESPONSES } from '@constants/moodResponses';
 import { colors, typography, spacing } from '@constants/theme';
@@ -25,8 +26,17 @@ export default function MoodResponseScreen() {
 
   return (
     <Screen>
+      <Pressable
+        onPress={() => router.back()}
+        accessibilityRole="button"
+        accessibilityLabel="Go back"
+        hitSlop={12}
+        style={styles.backButton}
+      >
+        <Ionicons name="chevron-back" size={24} color={colors.text} />
+      </Pressable>
       <View style={styles.container}>
-        <Shiba variant={variant} size={140} loop={false} autoPlay />
+        <Shiba variant={variant} size={220} loop={false} autoPlay />
         <View style={styles.bubbleRow}>
           <MoodBubble mood={mood} size="lg" disabled />
         </View>
@@ -44,6 +54,10 @@ export default function MoodResponseScreen() {
 }
 
 const styles = StyleSheet.create({
+  backButton: {
+    alignSelf: 'flex-start',
+    padding: spacing.xs,
+  },
   container: {
     flex: 1,
     alignItems: 'center',

@@ -20,6 +20,9 @@ export const colors = {
   warmCtaEnd: '#FFD959',
   chipSurface: 'rgba(255, 255, 255, 0.95)',
   chipBorder: 'rgba(74, 134, 255, 0.22)',
+  accent: '#FFA62B',
+  accentLight: '#FFF4DF',
+  accentBorder: '#FFE0A3',
   // Background
   background: '#E6F4FF',
   surface: '#FFFDFB',

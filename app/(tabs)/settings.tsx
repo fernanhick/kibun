@@ -116,7 +116,7 @@ export default function SettingsScreen() {
             </Text>
             <Text style={styles.heroSubtitle}>Tune reminders and your daily flow</Text>
           </View>
-          <Shiba variant="happy" size={74} floating />
+          <Shiba variant="happy" size={140} />
         </View>
       </LinearGradient>
 
@@ -177,7 +177,7 @@ export default function SettingsScreen() {
                 value={isOn}
                 onValueChange={() => handleSlotToggle(row.slot)}
                 disabled={isDisabled}
-                trackColor={{ false: colors.border, true: colors.primary }}
+                trackColor={{ false: colors.border, true: colors.accent }}
                 accessibilityLabel={`${row.label} reminder at ${row.hint}`}
                 accessibilityState={{ disabled: isDisabled }}
               />
@@ -257,7 +257,7 @@ export default function SettingsScreen() {
             value={streakNudgeEnabled}
             onValueChange={handleStreakToggle}
             disabled={isDisabled}
-            trackColor={{ false: colors.border, true: colors.primary }}
+            trackColor={{ false: colors.border, true: colors.accent }}
             accessibilityLabel="Evening streak reminder at 8 pm"
             accessibilityState={{ disabled: isDisabled }}
           />
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: typography.sizes.sm,
     fontFamily: typography.fonts.ui,
-    color: colors.primaryDark,
+    color: colors.accent,
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
     letterSpacing: 0.5,

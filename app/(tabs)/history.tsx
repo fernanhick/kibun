@@ -150,7 +150,7 @@ export default function HistoryScreen() {
   }, [entries, exporting]);
 
   return (
-    <Screen scrollable={false}>
+    <Screen scrollable={true} contentContainerStyle={styles.scrollPadding}>
       <View style={styles.headerCard}>
         <View style={styles.headerTopRow}>
           <View style={styles.headerBadge}>
@@ -181,7 +181,7 @@ export default function HistoryScreen() {
                 </View>
               </Pressable>
             )}
-            <Shiba variant="neutral" size={44} floating />
+            <Shiba variant="neutral" size={80} />
           </View>
         </View>
         <View style={styles.header}>
@@ -288,6 +288,9 @@ export default function HistoryScreen() {
 }
 
 const styles = StyleSheet.create({
+  scrollPadding: {
+    paddingBottom: 120,
+  },
   headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -355,18 +358,18 @@ const styles = StyleSheet.create({
   },
   headerBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.accentLight,
     borderRadius: 999,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: '#C6DBFF',
+    borderColor: colors.accentBorder,
   },
   headerBadgeText: {
     fontSize: typography.sizes.xs,
     fontFamily: typography.fonts.ui,
     letterSpacing: 0.7,
-    color: colors.primaryDark,
+    color: '#B07000',
     textTransform: 'uppercase',
   },
   header: {
@@ -400,10 +403,12 @@ const styles = StyleSheet.create({
   calendarGrid: {
     paddingHorizontal: spacing.screenPadding,
     gap: spacing.xs,
+    alignItems: 'center',
   },
   weekRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    width: '100%',
     gap: spacing.xs,
   },
   dayCell: {
@@ -413,7 +418,7 @@ const styles = StyleSheet.create({
   },
   todayCell: {
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.accent,
   },
   futureCell: {
     opacity: 0.3,

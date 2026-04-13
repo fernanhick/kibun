@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing, radius } from '@constants/theme';
@@ -48,6 +49,15 @@ export default function ProfileGoalsScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          hitSlop={12}
+          style={styles.backButton}
+        >
+          <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
+        </Pressable>
         <Text style={styles.title}>What are you hoping for?</Text>
         <Text style={styles.subtitle}>Pick everything that feels right.</Text>
       </LinearGradient>
@@ -94,6 +104,10 @@ export default function ProfileGoalsScreen() {
 const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    padding: spacing.xs,
   },
   heroCard: {
     borderRadius: 28,

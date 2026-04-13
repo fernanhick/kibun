@@ -52,6 +52,7 @@ export default ({ config }: ConfigContext) => ({
   },
   plugins: [
     'expo-asset',
+    'expo-image',
     'expo-font',
     'expo-router',
     'expo-secure-store',

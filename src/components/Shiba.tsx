@@ -1,29 +1,28 @@
-import LottieView from 'lottie-react-native';
 import { useEffect, useRef } from 'react';
-import { Animated, Easing, View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { Animated, Easing, StyleProp, ViewStyle } from 'react-native';
+import { Image } from 'expo-image';
+import { getMascotSource } from '@constants/mascotAnimations';
+import type { MascotVariant } from '@constants/mascotAnimations';
 
 export type ShibaVariant = 'happy' | 'excited' | 'sad' | 'neutral';
 
+/** Map legacy Shiba variants to mascot animation variants. */
+const VARIANT_TO_MASCOT: Record<ShibaVariant, MascotVariant> = {
+  happy: 'happy',
+  excited: 'happy',
+  sad: 'sad',
+  neutral: 'tired',
+};
+
 interface ShibaProps {
   variant: ShibaVariant;
-  size?: number;        // Diameter in pt — default 120
-  loop?: boolean;       // default true
-  autoPlay?: boolean;   // default true
+  size?: number;
+  loop?: boolean;
+  autoPlay?: boolean;
   floating?: boolean;
   onFinish?: () => void;
   style?: StyleProp<ViewStyle>;
 }
-
-// No explicit type annotation — require() returns any, which is directly assignable to
-// LottieView's source prop (AnimationObject = Record<string, unknown> in lottie-react-native
-// v7). Annotating as Record<ShibaVariant, object> would produce a strict-mode error:
-// object is not assignable to Record<string, unknown> (lacks index signature).
-const ANIMATIONS = {
-  happy:   require('../assets/lottie/shiba-happy.json'),
-  excited: require('../assets/lottie/shiba-excited.json'),
-  sad:     require('../assets/lottie/shiba-sad.json'),
-  neutral: require('../assets/lottie/shiba-neutral.json'),
-};
 
 export function Shiba({
   variant,
@@ -58,22 +57,30 @@ export function Shiba({
     return () => loopAnim.stop();
   }, [floating, floatAnim]);
 
+  // For non-looping animations with onFinish, approximate one cycle duration.
+  useEffect(() => {
+    if (!onFinish) return;
+    const timer = setTimeout(onFinish, 3000);
+    return () => clearTimeout(timer);
+  }, [onFinish]);
+
+  const mascotVariant = VARIANT_TO_MASCOT[variant];
+  const source = getMascotSource(mascotVariant);
+
   return (
-    // Wrap LottieView in View for accessibility props. LottieViewProps does not guarantee
-    // accessibilityLabel / accessibilityRole in its TypeScript interface — passing them
-    // directly to LottieView is a strict-mode compile error if undeclared. View always
-    // accepts all accessibility props.
     <Animated.View
-      style={[{ width: size, height: size, transform: [{ translateY: floatAnim }] }, style]}
+      style={[
+        { width: size, height: size, transform: [{ translateY: floatAnim }] },
+        style,
+      ]}
       accessibilityLabel={`Shiba ${variant}`}
       accessibilityRole="image"
     >
-      <LottieView
-        source={ANIMATIONS[variant]}
-        autoPlay={autoPlay}
-        loop={loop}
-        onAnimationFinish={onFinish}
-        style={StyleSheet.absoluteFill}
+      <Image
+        source={source}
+        style={{ width: size, height: size }}
+        contentFit="contain"
+        autoplay={autoPlay}
       />
     </Animated.View>
   );

@@ -4,8 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@components/index';
 import { MoodBubble } from '@components/MoodBubble';
-import { Shiba } from '@components/Shiba';
-import { SparkleOverlay } from '@components/SparkleOverlay';
 import { MOODS, MoodDefinition, MoodGroup } from '@constants/moods';
 import { colors, typography, spacing } from '@constants/theme';
 
@@ -42,12 +40,6 @@ export default function MoodSelectionScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <SparkleOverlay count={20} />
-        <View style={styles.sparkleRow}>
-          <Ionicons name="sparkles" size={12} color={colors.textInverse} />
-          <Text style={styles.sparkleText}>Daily Check-In</Text>
-          <Ionicons name="star" size={12} color={colors.textInverse} />
-        </View>
         <View style={styles.header}>
           <Text style={styles.title}>How are you feeling?</Text>
           <Pressable
@@ -56,20 +48,12 @@ export default function MoodSelectionScreen() {
             accessibilityLabel="Cancel"
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <Text style={styles.cancelText}>Cancel</Text>
+            <Ionicons name="close" size={22} color={colors.textInverse} />
           </Pressable>
         </View>
-
         <Text style={styles.subtitle}>
           Pick the mood that matches this moment.
         </Text>
-
-        <View style={styles.heroMascotRow}>
-          <Shiba variant="excited" size={94} floating />
-          <View style={styles.heroHintChip}>
-            <Text style={styles.heroHintText}>Daily check-in</Text>
-          </View>
-        </View>
       </LinearGradient>
 
       {groups.map(({ group, label, moods }) => (
@@ -95,38 +79,18 @@ export default function MoodSelectionScreen() {
 
 const styles = StyleSheet.create({
   content: {
-    paddingTop: spacing.lg,
+    paddingTop: spacing.md,
     paddingBottom: spacing.xl,
-    gap: spacing.lg,
+    gap: spacing.sm,
   },
   heroCard: {
-    borderRadius: 28,
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
-    paddingVertical: spacing.lg,
+    paddingVertical: spacing.md,
     paddingHorizontal: spacing.md,
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  sparkleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     gap: spacing.xs,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.4)',
-    borderRadius: 999,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 6,
-  },
-  sparkleText: {
-    color: colors.textInverse,
-    fontSize: typography.sizes.xs,
-    fontWeight: typography.weights.semibold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.7,
+    marginBottom: spacing.sm,
   },
   header: {
     flexDirection: 'row',
@@ -134,54 +98,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: typography.sizes.display,
+    fontSize: typography.sizes.xxl,
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
-  },
-  cancelText: {
-    fontSize: typography.sizes.md,
-    color: colors.textInverse,
-    fontWeight: typography.weights.semibold,
   },
   subtitle: {
     fontSize: typography.sizes.body,
     color: colors.sparkle,
-    lineHeight: 24,
-  },
-  heroMascotRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  heroHintChip: {
-    alignSelf: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderColor: 'rgba(255, 255, 255, 0.35)',
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  heroHintText: {
-    color: colors.textInverse,
-    fontSize: typography.sizes.sm,
-    fontWeight: typography.weights.semibold,
   },
   groupSection: {
-    gap: spacing.sm,
+    gap: spacing.xs,
     backgroundColor: 'rgba(255,255,255,0.95)',
-    borderRadius: 24,
-    padding: spacing.md,
-    borderWidth: 1.2,
+    borderRadius: 16,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    borderWidth: 1,
     borderColor: '#DCE9FF',
-    shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 4,
   },
   groupLabel: {
-    fontSize: typography.sizes.sm,
+    fontSize: typography.sizes.xs,
     fontFamily: typography.fonts.ui,
     color: colors.primaryDark,
     textTransform: 'uppercase',
@@ -190,6 +125,6 @@ const styles = StyleSheet.create({
   bubbleRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
 });

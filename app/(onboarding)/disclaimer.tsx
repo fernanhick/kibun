@@ -24,7 +24,7 @@ export default function DisclaimerScreen() {
   return (
     <Screen scrollable>
       <View style={styles.container}>
-        <Shiba variant="neutral" size={100} floating style={styles.shiba} />
+        <Shiba variant="neutral" size={180} style={styles.shiba} />
 
         <Text style={styles.title}>Before We Begin… 🌸</Text>
         <Text style={styles.subtitle}>

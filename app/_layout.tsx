@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, AppState } from 'react-native';
+import * as NavigationBar from 'expo-navigation-bar';
 import { Stack, useRouter, type Href } from 'expo-router';
 import { useFonts } from 'expo-font';
 import {
@@ -12,6 +13,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
+import { PersistentMascotOverlay } from '@components/PersistentMascotOverlay';
 import { initPurchases } from '@lib/revenuecat';
 import { configureNotificationHandler, scheduleSlotNotifications } from '@lib/notifications';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
@@ -180,6 +182,21 @@ export default function RootLayout() {
     return () => sub.remove();
   }, [router]);
 
+  // Android: hide 3-button navigation bar (sticky immersive).
+  // Re-hide on app foreground since switching apps can reveal it.
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const hideNavBar = () => {
+      NavigationBar.setVisibilityAsync('hidden');
+      NavigationBar.setBehaviorAsync('inset-swipe');
+    };
+    hideNavBar();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') hideNavBar();
+    });
+    return () => sub.remove();
+  }, []);
+
   // Delay native splash hide until BOTH auth resolves AND animation has played once.
   // Without splashDone, hideAsync fires when isReady=true, React immediately re-renders
   // to Stack — the native splash fades revealing Stack, not SplashScreenView. The Shiba
@@ -200,23 +217,29 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
-        <Stack initialRouteName="(tabs)">
-          <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="paywall" options={{ headerShown: false }} />
-          <Stack.Screen name="register" options={{ headerShown: false }} />
-          <Stack.Screen name="check-in" options={{ headerShown: false, presentation: 'modal' }} />
-          <Stack.Screen name="mood-confirm" options={{ headerShown: false }} />
-          <Stack.Screen name="day-detail" options={{ headerShown: false }} />
-          <Stack.Screen name="ai-report" options={{ headerShown: false }} />
-          <Stack.Screen name="account" options={{ headerShown: false }} />
-        </Stack>
+        <View style={styles.appShell}>
+          <Stack initialRouteName="(tabs)">
+            <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="paywall" options={{ headerShown: false }} />
+            <Stack.Screen name="register" options={{ headerShown: false }} />
+            <Stack.Screen name="check-in" options={{ headerShown: false, presentation: 'modal' }} />
+            <Stack.Screen name="mood-confirm" options={{ headerShown: false }} />
+            <Stack.Screen name="day-detail" options={{ headerShown: false }} />
+            <Stack.Screen name="ai-report" options={{ headerShown: false }} />
+            <Stack.Screen name="account" options={{ headerShown: false }} />
+          </Stack>
+          <PersistentMascotOverlay />
+        </View>
       </ErrorBoundary>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  appShell: {
+    flex: 1,
+  },
   errorContainer: {
     flex: 1,
     alignItems: 'center',

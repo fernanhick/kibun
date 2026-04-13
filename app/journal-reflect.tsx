@@ -45,8 +45,7 @@ export default function JournalReflectScreen() {
         <View style={styles.shibaRow}>
           <Shiba
             variant={mood?.group === 'green' ? 'happy' : mood?.group === 'neutral' ? 'neutral' : 'sad'}
-            size={100}
-            floating
+            size={180}
           />
         </View>
         <View style={styles.promptContainer}>

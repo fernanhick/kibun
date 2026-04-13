@@ -89,7 +89,7 @@ function BoxBreathing() {
         <Text style={styles.doneEmoji}>✨</Text>
         <Text style={styles.doneTitle}>Well done!</Text>
         <Text style={styles.doneSubtitle}>You completed 4 cycles of box breathing.</Text>
-        <Button label="Back to home" onPress={() => router.replace('/(tabs)')} variant="sunrise" fullWidth />
+        <Button label="Continue" onPress={() => router.back()} variant="sunrise" fullWidth />
       </View>
     );
   }
@@ -141,7 +141,7 @@ function Grounding() {
         label={isLast ? 'Finish' : 'Continue'}
         onPress={() => {
           if (isLast) {
-            router.replace('/(tabs)');
+            router.back();
           } else {
             setStep((s) => s + 1);
           }
@@ -195,7 +195,7 @@ function Gratitude() {
       ))}
       <Button
         label="Done"
-        onPress={() => router.replace('/(tabs)')}
+        onPress={() => router.back()}
         variant="sunrise"
         disabled={!allFilled}
         fullWidth
@@ -204,12 +204,342 @@ function Gratitude() {
   );
 }
 
+// ─── Joy Capture (green) ──────────────────────────────────────────────────────
+
+const JOY_PROMPTS = [
+  'What made you smile or laugh today?',
+  'What are you most excited about right now?',
+  'Who brought you joy recently?',
+];
+
+function JoyCapture() {
+  const [values, setValues] = useState<string[]>(['', '', '']);
+  const router = useRouter();
+
+  const handleChange = (index: number, text: string) => {
+    setValues((prev) => {
+      const next = [...prev];
+      next[index] = text;
+      return next;
+    });
+  };
+
+  const allFilled = values.every((v) => v.trim().length > 0);
+
+  return (
+    <View style={styles.gratitudeContainer}>
+      <Text style={styles.exerciseDescription}>
+        Capture what is making you happy. Writing it down makes it stick.
+      </Text>
+      {JOY_PROMPTS.map((prompt, i) => (
+        <View key={i} style={styles.gratitudeRow}>
+          <Text style={styles.gratitudeNumber}>{i + 1}.</Text>
+          <TextInput
+            style={styles.gratitudeInput}
+            value={values[i]}
+            onChangeText={(t) => handleChange(i, t)}
+            placeholder={prompt}
+            placeholderTextColor={colors.textDisabled}
+            accessibilityLabel={`Joy item ${i + 1}`}
+          />
+        </View>
+      ))}
+      <Button label="Done" onPress={() => router.back()} variant="sunrise" disabled={!allFilled} fullWidth />
+    </View>
+  );
+}
+
+// ─── Savoring (green) ─────────────────────────────────────────────────────────
+
+const SAVORING_STEPS = [
+  { prompt: 'Close your eyes. Replay a happy moment from today in full detail.', duration: 15 },
+  { prompt: 'Notice how your body feels right now — warmth, lightness, ease.', duration: 10 },
+  { prompt: 'Smile gently. Let the feeling linger a little longer.', duration: 10 },
+];
+
+function Savoring() {
+  const [step, setStep] = useState(0);
+  const router = useRouter();
+
+  const current = SAVORING_STEPS[step];
+  const isLast = step === SAVORING_STEPS.length - 1;
+
+  return (
+    <View style={styles.groundingContainer}>
+      <Text style={styles.exerciseDescription}>
+        Savoring helps you hold onto positive emotions by slowing down and noticing them.
+      </Text>
+      <View style={styles.groundingCard}>
+        <Text style={styles.groundingPrompt}>{current.prompt}</Text>
+        <Text style={styles.groundingProgress}>Step {step + 1} of {SAVORING_STEPS.length}</Text>
+      </View>
+      <Button
+        label={isLast ? 'Finish' : 'Continue'}
+        onPress={() => {
+          if (isLast) router.back();
+          else setStep((s) => s + 1);
+        }}
+        variant="sunrise"
+        fullWidth
+      />
+    </View>
+  );
+}
+
+// ─── Energy Boost (neutral) ──────────────────────────────────────────────────
+
+const ENERGY_STEPS = [
+  'Stand up and stretch your arms above your head for 10 seconds.',
+  'Take 5 deep breaths — in through your nose, out through your mouth.',
+  'Shake out your hands and roll your shoulders back.',
+  'Splash cold water on your face or hold an ice cube.',
+];
+
+function EnergyBoost() {
+  const [step, setStep] = useState(0);
+  const router = useRouter();
+
+  const isLast = step === ENERGY_STEPS.length - 1;
+
+  return (
+    <View style={styles.groundingContainer}>
+      <Text style={styles.exerciseDescription}>
+        Quick physical resets to shake off the fog and reclaim your energy.
+      </Text>
+      <View style={styles.groundingCard}>
+        <Text style={styles.groundingCount}>{step + 1}</Text>
+        <Text style={styles.groundingPrompt}>{ENERGY_STEPS[step]}</Text>
+        <Text style={styles.groundingProgress}>Step {step + 1} of {ENERGY_STEPS.length}</Text>
+      </View>
+      <Button
+        label={isLast ? 'Finish' : 'Next'}
+        onPress={() => {
+          if (isLast) router.back();
+          else setStep((s) => s + 1);
+        }}
+        variant="sunrise"
+        fullWidth
+      />
+    </View>
+  );
+}
+
+// ─── Curiosity Spark (neutral) ───────────────────────────────────────────────
+
+const CURIOSITY_PROMPTS = [
+  'What is one thing you would like to learn more about today?',
+  'What is something around you that you have never really looked at closely?',
+  'If you could ask anyone one question right now, what would it be?',
+];
+
+function CuriositySpark() {
+  const [values, setValues] = useState<string[]>(['', '', '']);
+  const router = useRouter();
+
+  const handleChange = (index: number, text: string) => {
+    setValues((prev) => {
+      const next = [...prev];
+      next[index] = text;
+      return next;
+    });
+  };
+
+  const allFilled = values.every((v) => v.trim().length > 0);
+
+  return (
+    <View style={styles.gratitudeContainer}>
+      <Text style={styles.exerciseDescription}>
+        Curiosity pulls you out of autopilot. Answer these to re-engage with the world.
+      </Text>
+      {CURIOSITY_PROMPTS.map((prompt, i) => (
+        <View key={i} style={styles.gratitudeRow}>
+          <Text style={styles.gratitudeNumber}>{i + 1}.</Text>
+          <TextInput
+            style={styles.gratitudeInput}
+            value={values[i]}
+            onChangeText={(t) => handleChange(i, t)}
+            placeholder={prompt}
+            placeholderTextColor={colors.textDisabled}
+            accessibilityLabel={`Curiosity item ${i + 1}`}
+          />
+        </View>
+      ))}
+      <Button label="Done" onPress={() => router.back()} variant="sunrise" disabled={!allFilled} fullWidth />
+    </View>
+  );
+}
+
+// ─── Mindful Pause (neutral) ─────────────────────────────────────────────────
+
+const MINDFUL_STEPS = [
+  'Pause whatever you are doing. Sit still for a moment.',
+  'Notice three sounds around you without judging them.',
+  'Feel the weight of your body on the chair or floor.',
+  'Take one slow, deep breath and let it out gently.',
+];
+
+function MindfulPause() {
+  const [step, setStep] = useState(0);
+  const router = useRouter();
+
+  const isLast = step === MINDFUL_STEPS.length - 1;
+
+  return (
+    <View style={styles.groundingContainer}>
+      <Text style={styles.exerciseDescription}>
+        A quick reset to bring you back to the present moment.
+      </Text>
+      <View style={styles.groundingCard}>
+        <Text style={styles.groundingPrompt}>{MINDFUL_STEPS[step]}</Text>
+        <Text style={styles.groundingProgress}>Step {step + 1} of {MINDFUL_STEPS.length}</Text>
+      </View>
+      <Button
+        label={isLast ? 'Finish' : 'Continue'}
+        onPress={() => {
+          if (isLast) router.back();
+          else setStep((s) => s + 1);
+        }}
+        variant="sunrise"
+        fullWidth
+      />
+    </View>
+  );
+}
+
+// ─── Body Scan (red-orange) ──────────────────────────────────────────────────
+
+const BODY_SCAN_STEPS = [
+  'Close your eyes. Start at the top of your head. Notice any tension.',
+  'Move your attention to your face and jaw. Let them soften.',
+  'Drop your shoulders. Let your arms feel heavy.',
+  'Notice your chest and belly. Let your breathing slow naturally.',
+  'Scan down to your legs and feet. Feel them grounded on the floor.',
+];
+
+function BodyScan() {
+  const [step, setStep] = useState(0);
+  const router = useRouter();
+
+  const isLast = step === BODY_SCAN_STEPS.length - 1;
+
+  return (
+    <View style={styles.groundingContainer}>
+      <Text style={styles.exerciseDescription}>
+        Slowly scan your body from head to toe. Release tension wherever you find it.
+      </Text>
+      <View style={styles.groundingCard}>
+        <Text style={styles.groundingPrompt}>{BODY_SCAN_STEPS[step]}</Text>
+        <Text style={styles.groundingProgress}>Step {step + 1} of {BODY_SCAN_STEPS.length}</Text>
+      </View>
+      <Button
+        label={isLast ? 'Finish' : 'Continue'}
+        onPress={() => {
+          if (isLast) router.back();
+          else setStep((s) => s + 1);
+        }}
+        variant="sunrise"
+        fullWidth
+      />
+    </View>
+  );
+}
+
+// ─── Self Compassion (blue) ──────────────────────────────────────────────────
+
+const COMPASSION_STEPS = [
+  'Place a hand on your chest. Acknowledge: "This is a hard moment."',
+  'Remind yourself: "Struggle is part of being human. I am not alone in this."',
+  'Say to yourself: "May I be kind to myself right now."',
+  'Take a slow breath and let yourself feel whatever comes up.',
+];
+
+function SelfCompassion() {
+  const [step, setStep] = useState(0);
+  const router = useRouter();
+
+  const isLast = step === COMPASSION_STEPS.length - 1;
+
+  return (
+    <View style={styles.groundingContainer}>
+      <Text style={styles.exerciseDescription}>
+        Kristin Neff's self-compassion practice — be your own best friend for a moment.
+      </Text>
+      <View style={styles.groundingCard}>
+        <Text style={styles.groundingPrompt}>{COMPASSION_STEPS[step]}</Text>
+        <Text style={styles.groundingProgress}>Step {step + 1} of {COMPASSION_STEPS.length}</Text>
+      </View>
+      <Button
+        label={isLast ? 'Finish' : 'Continue'}
+        onPress={() => {
+          if (isLast) router.back();
+          else setStep((s) => s + 1);
+        }}
+        variant="sunrise"
+        fullWidth
+      />
+    </View>
+  );
+}
+
+// ─── Comfort List (blue) ─────────────────────────────────────────────────────
+
+const COMFORT_PROMPTS = [
+  'A place where you feel safe.',
+  'A song, show, or book that comforts you.',
+  'Something small you can do for yourself today.',
+];
+
+function ComfortList() {
+  const [values, setValues] = useState<string[]>(['', '', '']);
+  const router = useRouter();
+
+  const handleChange = (index: number, text: string) => {
+    setValues((prev) => {
+      const next = [...prev];
+      next[index] = text;
+      return next;
+    });
+  };
+
+  const allFilled = values.every((v) => v.trim().length > 0);
+
+  return (
+    <View style={styles.gratitudeContainer}>
+      <Text style={styles.exerciseDescription}>
+        Build a comfort toolkit. Knowing what helps makes hard moments easier to navigate.
+      </Text>
+      {COMFORT_PROMPTS.map((prompt, i) => (
+        <View key={i} style={styles.gratitudeRow}>
+          <Text style={styles.gratitudeNumber}>{i + 1}.</Text>
+          <TextInput
+            style={styles.gratitudeInput}
+            value={values[i]}
+            onChangeText={(t) => handleChange(i, t)}
+            placeholder={prompt}
+            placeholderTextColor={colors.textDisabled}
+            accessibilityLabel={`Comfort item ${i + 1}`}
+          />
+        </View>
+      ))}
+      <Button label="Done" onPress={() => router.back()} variant="sunrise" disabled={!allFilled} fullWidth />
+    </View>
+  );
+}
+
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 const EXERCISE_META: Record<string, { title: string; emoji: string }> = {
-  box_breathing: { title: 'Box Breathing', emoji: '🫁' },
-  grounding:     { title: 'Grounding',     emoji: '🌱' },
-  gratitude:     { title: 'Gratitude',     emoji: '🙏' },
+  box_breathing:   { title: 'Box Breathing',    emoji: '🫁' },
+  grounding:       { title: 'Grounding',        emoji: '🌱' },
+  gratitude:       { title: 'Gratitude',        emoji: '🙏' },
+  joy_capture:     { title: 'Joy Capture',      emoji: '✨' },
+  savoring:        { title: 'Savoring',         emoji: '🌸' },
+  energy_boost:    { title: 'Energy Boost',     emoji: '⚡' },
+  curiosity:       { title: 'Curiosity Spark',  emoji: '🔍' },
+  mindful_pause:   { title: 'Mindful Pause',    emoji: '🧘' },
+  body_scan:       { title: 'Body Scan',        emoji: '🫀' },
+  self_compassion: { title: 'Self Compassion',  emoji: '💜' },
+  comfort_list:    { title: 'Comfort List',     emoji: '🧸' },
 };
 
 export default function ExerciseScreen() {
@@ -219,9 +549,19 @@ export default function ExerciseScreen() {
   const meta = EXERCISE_META[type] ?? EXERCISE_META['box_breathing'];
 
   const renderExercise = () => {
-    if (type === 'grounding') return <Grounding />;
-    if (type === 'gratitude') return <Gratitude />;
-    return <BoxBreathing />;
+    switch (type) {
+      case 'grounding':       return <Grounding />;
+      case 'gratitude':       return <Gratitude />;
+      case 'joy_capture':     return <JoyCapture />;
+      case 'savoring':        return <Savoring />;
+      case 'energy_boost':    return <EnergyBoost />;
+      case 'curiosity':       return <CuriositySpark />;
+      case 'mindful_pause':   return <MindfulPause />;
+      case 'body_scan':       return <BodyScan />;
+      case 'self_compassion': return <SelfCompassion />;
+      case 'comfort_list':    return <ComfortList />;
+      default:                return <BoxBreathing />;
+    }
   };
 
   return (

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams, type Href } from 'expo-router';
 import * as Crypto from 'expo-crypto';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,11 +31,66 @@ const SENTIMENT_CONFIG: Record<SentimentLabel, { emoji: string; label: string; c
   negative: { emoji: '😔', label: 'Sounds difficult', color: colors.error },
 };
 
-const EXERCISE_OPTIONS: { type: string; label: string; emoji: string }[] = [
-  { type: 'box_breathing', label: 'Box Breathing', emoji: '🫁' },
-  { type: 'grounding',     label: 'Grounding',     emoji: '🌱' },
-  { type: 'gratitude',     label: 'Gratitude',     emoji: '🙏' },
-];
+// ─── Mood-specific exercise suggestions (Pro feature) ─────────────────────────
+interface MoodExerciseConfig {
+  title: string;
+  subtitle: string;
+  borderColor: string;
+  chipBg: string;
+  chipBorder: string;
+  options: { type: string; label: string; emoji: string }[];
+}
+
+const MOOD_EXERCISES: Record<MoodGroup, MoodExerciseConfig> = {
+  green: {
+    title: 'Ride the wave! 🌟',
+    subtitle: 'Capture this good energy while it lasts.',
+    borderColor: '#A5D6A7',
+    chipBg: '#E8F5E9',
+    chipBorder: '#81C784',
+    options: [
+      { type: 'gratitude',      label: 'Gratitude',       emoji: '🙏' },
+      { type: 'joy_capture',    label: 'Joy Capture',     emoji: '✨' },
+      { type: 'savoring',       label: 'Savoring',        emoji: '🌸' },
+    ],
+  },
+  neutral: {
+    title: 'A gentle nudge 🍃',
+    subtitle: 'Small shifts can change your whole day.',
+    borderColor: '#CFD8DC',
+    chipBg: '#ECEFF1',
+    chipBorder: '#B0BEC5',
+    options: [
+      { type: 'energy_boost',   label: 'Energy Boost',    emoji: '⚡' },
+      { type: 'curiosity',      label: 'Curiosity Spark', emoji: '🔍' },
+      { type: 'mindful_pause',  label: 'Mindful Pause',   emoji: '🧘' },
+    ],
+  },
+  'red-orange': {
+    title: 'Need a moment? 💛',
+    subtitle: 'Try a quick exercise to help reset.',
+    borderColor: '#FFD8B0',
+    chipBg: '#FFF3E0',
+    chipBorder: '#FFCC80',
+    options: [
+      { type: 'box_breathing',  label: 'Box Breathing',   emoji: '🫁' },
+      { type: 'grounding',      label: 'Grounding',       emoji: '🌱' },
+      { type: 'body_scan',      label: 'Body Scan',       emoji: '🫀' },
+    ],
+  },
+  blue: {
+    title: 'You are not alone 💙',
+    subtitle: 'Sometimes sitting with feelings is enough.',
+    borderColor: '#90CAF9',
+    chipBg: '#E3F2FD',
+    chipBorder: '#64B5F6',
+    options: [
+      { type: 'self_compassion', label: 'Self Compassion', emoji: '💜' },
+      { type: 'comfort_list',    label: 'Comfort List',    emoji: '🧸' },
+      { type: 'box_breathing',   label: 'Box Breathing',   emoji: '🫁' },
+    ],
+  },
+};
 
 export default function MoodConfirmScreen() {
   const router = useRouter();
@@ -144,6 +199,17 @@ export default function MoodConfirmScreen() {
         style={styles.heroCard}
       >
         <SparkleOverlay count={20} />
+        <View style={styles.headerRow}>
+          <View style={{ flex: 1 }} />
+          <Pressable
+            onPress={() => router.replace('/(tabs)')}
+            accessibilityRole="button"
+            accessibilityLabel="Close without saving"
+            hitSlop={12}
+          >
+            <Ionicons name="close" size={22} color={colors.textInverse} />
+          </Pressable>
+        </View>
         <View style={styles.heroBadge}>
           <Ionicons name="sparkles" size={12} color={colors.textInverse} />
           <Text style={styles.heroBadgeText}>Your vibe today</Text>
@@ -157,7 +223,7 @@ export default function MoodConfirmScreen() {
         </View>
 
         <View style={styles.shibaContainer}>
-          <Shiba variant={shibaVariant} size={124} floating />
+          <Shiba variant={shibaVariant} size={200} />
         </View>
       </LinearGradient>
 
@@ -198,28 +264,53 @@ export default function MoodConfirmScreen() {
       </View>
 
       <View style={styles.actions}>
-        {/* Exercise CTA — Pro + red-orange moods */}
-        {isPro && mood.group === 'red-orange' && (
-          <View style={styles.exerciseCard}>
-            <Text style={styles.exerciseTitle}>Need a moment? 💛</Text>
-            <Text style={styles.exerciseSubtitle}>Try a quick exercise to help reset.</Text>
-            <View style={styles.exerciseRow}>
-              {EXERCISE_OPTIONS.map((opt) => (
+        {/* Exercise CTA — visible to all, functional for Pro only */}
+        {(() => {
+          const config = MOOD_EXERCISES[mood.group];
+          return (
+            <View style={[styles.exerciseCard, { borderColor: config.borderColor }]}>
+              <View style={styles.exerciseTitleRow}>
+                <Text style={styles.exerciseTitle}>{config.title}</Text>
+                {!isPro && (
+                  <View style={styles.proBadge}>
+                    <Ionicons name="lock-closed" size={10} color="#fff" />
+                    <Text style={styles.proBadgeText}>Pro</Text>
+                  </View>
+                )}
+              </View>
+              <Text style={styles.exerciseSubtitle}>{config.subtitle}</Text>
+              <View style={[styles.exerciseRow, !isPro && { opacity: 0.5 }]}>
+                {config.options.map((opt) => (
+                  <TouchableOpacity
+                    key={opt.type}
+                    style={[styles.exerciseChip, { backgroundColor: config.chipBg, borderColor: config.chipBorder }]}
+                    onPress={() => {
+                      if (isPro) {
+                        router.push({ pathname: '/exercise', params: { type: opt.type } } as unknown as Href);
+                      } else {
+                        router.push('/paywall' as Href);
+                      }
+                    }}
+                    accessibilityLabel={isPro ? opt.label : `${opt.label} — requires Pro`}
+                  >
+                    <Text style={styles.exerciseEmoji}>{opt.emoji}</Text>
+                    <Text style={styles.exerciseChipLabel}>{opt.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              {!isPro && (
                 <TouchableOpacity
-                  key={opt.type}
-                  style={styles.exerciseChip}
-                  onPress={() =>
-                    router.push({ pathname: '/exercise', params: { type: opt.type } } as unknown as Href)
-                  }
-                  accessibilityLabel={opt.label}
+                  style={styles.unlockButton}
+                  onPress={() => router.push('/paywall' as Href)}
+                  accessibilityLabel="Unlock exercises with Pro"
                 >
-                  <Text style={styles.exerciseEmoji}>{opt.emoji}</Text>
-                  <Text style={styles.exerciseChipLabel}>{opt.label}</Text>
+                  <Ionicons name="sparkles" size={14} color="#fff" />
+                  <Text style={styles.unlockButtonText}>Unlock with Pro</Text>
                 </TouchableOpacity>
-              ))}
+              )}
             </View>
-          </View>
-        )}
+          );
+        })()}
         <Button
           label="Save"
           onPress={handleSave}
@@ -244,6 +335,10 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
     gap: spacing.lg,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   heroCard: {
     borderRadius: 28,
@@ -330,15 +425,50 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: 20,
     borderWidth: 1.2,
-    borderColor: '#FFD8B0',
     padding: spacing.md,
     gap: spacing.sm,
     marginBottom: spacing.xs,
+  },
+  exerciseTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   exerciseTitle: {
     fontSize: typography.sizes.md,
     fontFamily: typography.fonts.ui,
     color: colors.text,
+  },
+  proBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.primary,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  proBadgeText: {
+    fontSize: typography.sizes.xs,
+    fontWeight: typography.weights.semibold,
+    color: '#fff',
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  unlockButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: colors.primary,
+    borderRadius: radius.lg,
+    paddingVertical: 10,
+    marginTop: spacing.xs,
+  },
+  unlockButtonText: {
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.semibold,
+    color: '#fff',
   },
   exerciseSubtitle: {
     fontSize: typography.sizes.sm,
@@ -353,9 +483,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#FFF3E0',
     borderWidth: 1,
-    borderColor: '#FFCC80',
     borderRadius: radius.lg,
     paddingVertical: 8,
     paddingHorizontal: spacing.sm,

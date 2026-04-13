@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OptionPicker } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing } from '@constants/theme';
@@ -46,6 +47,15 @@ export default function ProfilePhysicalScreen() {
           end={{ x: 1, y: 1 }}
           style={styles.heroCard}
         >
+          <Pressable
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            hitSlop={12}
+            style={styles.backButton}
+          >
+            <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
+          </Pressable>
           <Text style={styles.title}>Your physical routine</Text>
           <Text style={styles.subtitle}>Sleep and movement have a big impact on how we feel.</Text>
         </LinearGradient>
@@ -85,6 +95,10 @@ export default function ProfilePhysicalScreen() {
 const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    padding: spacing.xs,
   },
   heroCard: {
     borderRadius: 28,

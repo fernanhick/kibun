@@ -4,13 +4,16 @@ import { useRouter } from 'expo-router';
 import * as Crypto from 'expo-crypto';
 import * as Notifications from 'expo-notifications';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button } from '@components/index';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useOnboardingStore } from '@store/onboardingStore';
+import { useSessionStore } from '@store/sessionStore';
 import { useMoodEntryStore } from '@store/moodEntryStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
 import { getCheckInSlot } from '@lib/checkInSlot';
+import { saveProfileToSupabase } from '@lib/profileSync';
 import { NotificationSlot } from '@models/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
@@ -61,6 +64,12 @@ export default function NotificationPermissionScreen() {
     if (requesting) return;
     setRequesting(true);
     maybeLogFirstMood();
+
+    // Persist profile to Supabase before clearing in-memory state
+    const profile = useOnboardingStore.getState().profile;
+    const userId = useSessionStore.getState().session?.userId;
+    if (userId) saveProfileToSupabase(userId, profile);
+
     setComplete();
     resetOnboarding();
 
@@ -82,6 +91,12 @@ export default function NotificationPermissionScreen() {
 
   const handleSkip = () => {
     maybeLogFirstMood();
+
+    // Persist profile to Supabase before clearing in-memory state
+    const profile = useOnboardingStore.getState().profile;
+    const userId = useSessionStore.getState().session?.userId;
+    if (userId) saveProfileToSupabase(userId, profile);
+
     setComplete();
     resetOnboarding();
     router.replace('/(tabs)');
@@ -95,6 +110,15 @@ export default function NotificationPermissionScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          hitSlop={12}
+          style={styles.backButton}
+        >
+          <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
+        </Pressable>
         <Text style={styles.title}>Stay on track</Text>
         <Text style={styles.subtitle}>
           Kibun works best with daily check-ins. Pick your reminder times.
@@ -150,6 +174,10 @@ export default function NotificationPermissionScreen() {
 const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    padding: spacing.xs,
   },
   heroCard: {
     borderRadius: 28,

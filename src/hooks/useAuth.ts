@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import * as Crypto from 'expo-crypto';
 import { isSupabaseConfigured, supabase } from '@lib/supabase';
 import { useSessionStore, useMoodEntryStore } from '@store/index';
+import { useAchievementsStore } from '@store/achievementsStore';
 import { refreshSubscriptionStatus } from '@lib/revenuecat';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
@@ -33,6 +35,8 @@ async function syncMoodEntriesForUser(userId: string): Promise<void> {
     return;
   }
 
+  // Replace local entries (which may belong to a previous user) with remote data
+  useMoodEntryStore.getState().clearEntries();
   useMoodEntryStore.getState().mergeRemoteEntries((data ?? []).map((row) => ({
     id: row.id,
     moodId: row.mood,
@@ -60,10 +64,11 @@ async function uploadLocalEntriesToSupabase(userId: string): Promise<void> {
   const localEntries = useMoodEntryStore.getState().entries;
   if (localEntries.length === 0) return;
 
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
   const rows = localEntries.map((entry) => {
     const mood = MOOD_MAP[entry.moodId as MoodId];
-    return {
-      id: entry.id,
+    const payload = {
       user_id: userId,
       mood: entry.moodId,
       mood_color: mood?.bubbleColor ?? '#BDBDBD',
@@ -75,6 +80,7 @@ async function uploadLocalEntriesToSupabase(userId: string): Promise<void> {
       journal_prompt: entry.journalPrompt ?? null,
       journal_response: entry.journalResponse ?? null,
     };
+    return { id: UUID_REGEX.test(entry.id) ? entry.id : Crypto.randomUUID(), ...payload };
   });
 
   const { error } = await supabase
@@ -83,6 +89,27 @@ async function uploadLocalEntriesToSupabase(userId: string): Promise<void> {
 
   if (error && __DEV__) {
     console.error('[kibun:sync] Failed to upload local entries:', error.message);
+  }
+}
+
+async function syncAchievementsForUser(userId: string): Promise<void> {
+  if (!supabase) return;
+
+  const { data, error } = await supabase
+    .from('user_achievements')
+    .select('achievement_id')
+    .eq('user_id', userId);
+
+  if (error) {
+    if (__DEV__) {
+      console.error('[kibun:sync] Failed to pull achievements:', error.message);
+    }
+    return;
+  }
+
+  const { addUnlocked } = useAchievementsStore.getState();
+  for (const row of data ?? []) {
+    addUnlocked(row.achievement_id);
   }
 }
 
@@ -136,6 +163,7 @@ export function useAuth() {
               void syncMoodEntriesForUser(session.user.id).then(() =>
                 uploadLocalEntriesToSupabase(session.user.id)
               );
+              void syncAchievementsForUser(session.user.id);
             }
 
             setIsReady(true);
@@ -163,6 +191,7 @@ export function useAuth() {
               void syncMoodEntriesForUser(session.user.id).then(() =>
                 uploadLocalEntriesToSupabase(session.user.id)
               );
+              void syncAchievementsForUser(session.user.id);
             }
           }
           setIsReady(true);
@@ -187,6 +216,7 @@ export function useAuth() {
             });
           }
         } else if (event === 'SIGNED_OUT') {
+          useMoodEntryStore.getState().clearEntries();
           clearSession();
         }
       }

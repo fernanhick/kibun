@@ -25,6 +25,7 @@ export default function RegistrationScreen() {
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [mode, setMode] = useState<'register' | 'login'>(modeParam === 'login' ? 'login' : 'register');
 
   const completeOnboardingForReturningUser = () => {
@@ -47,16 +48,62 @@ export default function RegistrationScreen() {
     if (!email.trim() || !password.trim() || submitting) return;
     setSubmitting(true);
     setError(null);
+    setInfoMessage(null);
 
     if (mode === 'register') {
-      const { error: authError } = await supabase.auth.updateUser({
-        email: email.trim(),
-        password: password.trim(),
-      });
-      if (authError) {
-        setError(authError.message);
-        setSubmitting(false);
-        return;
+      const cleanEmail = email.trim();
+      const cleanPassword = password.trim();
+
+      const { data: preSession } = await supabase.auth.getSession();
+      const hasAnonymousSession = Boolean(preSession.session?.user.is_anonymous);
+
+      if (hasAnonymousSession) {
+        const { error: authError } = await supabase.auth.updateUser({
+          email: cleanEmail,
+          password: cleanPassword,
+        });
+        if (authError) {
+          setError(authError.message);
+          setSubmitting(false);
+          return;
+        }
+
+        // On some projects USER_UPDATED arrives before session reflects non-anonymous state.
+        // A password sign-in normalizes session state and guarantees auth listeners update.
+        const { data: updatedSession } = await supabase.auth.getSession();
+        if (updatedSession.session?.user.is_anonymous) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: cleanEmail,
+            password: cleanPassword,
+          });
+          if (signInError) {
+            if (/email.*confirm/i.test(signInError.message)) {
+              setInfoMessage('Account created. Please confirm your email, then sign in.');
+            } else {
+              setError(signInError.message);
+            }
+            setSubmitting(false);
+            return;
+          }
+        }
+      } else {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password: cleanPassword,
+        });
+
+        if (signUpError) {
+          setError(signUpError.message);
+          setSubmitting(false);
+          return;
+        }
+
+        // If email confirmation is required, Supabase returns session=null.
+        if (!signUpData.session) {
+          setInfoMessage('Account created. Please confirm your email, then sign in.');
+          setSubmitting(false);
+          return;
+        }
       }
     } else {
       const { error: authError } = await supabase.auth.signInWithPassword({
@@ -68,6 +115,13 @@ export default function RegistrationScreen() {
         setSubmitting(false);
         return;
       }
+    }
+
+    const { data: postSession } = await supabase.auth.getSession();
+    if (!postSession.session || postSession.session.user.is_anonymous) {
+      setError('Sign in could not be completed. Please try again.');
+      setSubmitting(false);
+      return;
     }
 
     completeOnboardingForReturningUser();
@@ -83,6 +137,7 @@ export default function RegistrationScreen() {
       return;
     }
     setError(null);
+    setInfoMessage(null);
 
     const redirectUrl = Linking.createURL('auth/callback');
     if (__DEV__) console.log('[kibun:oauth] redirectUrl:', redirectUrl);
@@ -222,7 +277,7 @@ export default function RegistrationScreen() {
             <TextInput
               style={styles.input}
               value={email}
-              onChangeText={(text) => { setEmail(text); setError(null); }}
+              onChangeText={(text) => { setEmail(text); setError(null); setInfoMessage(null); }}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
@@ -237,7 +292,7 @@ export default function RegistrationScreen() {
             <TextInput
               style={styles.input}
               value={password}
-              onChangeText={(text) => { setPassword(text); setError(null); }}
+              onChangeText={(text) => { setPassword(text); setError(null); setInfoMessage(null); }}
               secureTextEntry={true}
               autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
               accessibilityLabel="Password"
@@ -258,7 +313,7 @@ export default function RegistrationScreen() {
 
         {/* Toggle login/register */}
         <Pressable
-          onPress={() => { setMode(mode === 'register' ? 'login' : 'register'); setError(null); }}
+          onPress={() => { setMode(mode === 'register' ? 'login' : 'register'); setError(null); setInfoMessage(null); }}
           style={styles.toggleRow}
         >
           <Text style={styles.toggleText}>
@@ -276,6 +331,13 @@ export default function RegistrationScreen() {
       {error !== null && (
         <Text style={styles.errorText} accessibilityRole="alert">
           {error}
+        </Text>
+      )}
+
+      {/* Inline info display */}
+      {infoMessage !== null && (
+        <Text style={styles.infoText} accessibilityRole="status">
+          {infoMessage}
         </Text>
       )}
 
@@ -400,9 +462,21 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: typography.sizes.sm,
-    color: colors.error,
+    color: colors.text,
     textAlign: 'center',
     paddingHorizontal: spacing.sm,
+    backgroundColor: colors.errorLight,
+    borderRadius: radius.md,
+    paddingVertical: spacing.sm,
+  },
+  infoText: {
+    fontSize: typography.sizes.sm,
+    color: colors.text,
+    textAlign: 'center',
+    paddingHorizontal: spacing.sm,
+    backgroundColor: colors.primaryLight,
+    borderRadius: radius.md,
+    paddingVertical: spacing.sm,
   },
   toggleRow: {
     flexDirection: 'row',

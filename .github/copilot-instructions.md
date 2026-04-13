@@ -68,3 +68,25 @@ Use these TypeScript path aliases (configured in `tsconfig.json`):
 - Prefer `expo-image` over React Native's `Image` component.
 - The app targets both iOS and Android — ensure platform compatibility.
 - Never commit API keys, secrets, or `.env` files.
+
+## Graph Workflow Auto-Use Rule
+
+Use graph workflow automatically when the user asks for:
+
+- architecture mapping, dependency mapping, or module relationships
+- knowledge graph, concept graph, or cross-file connection discovery
+- large-scale codebase understanding, onboarding map, or repo exploration report
+- traceability of concepts across docs, code, and assets
+- token-efficient analysis of many files through cached extraction
+
+Execution policy:
+
+- If the user explicitly says `/graphify`, run graph workflow immediately.
+- If the request implies graph-level analysis (even without `/graphify`), run graph workflow by default.
+- For narrow tasks (single bug fix, one function explanation, or one-file edit), do not run graph workflow.
+- Prefer token-efficient runs:
+  1. Start with the smallest relevant folder.
+  2. Use update mode after the first run.
+  3. Expand scope only if required.
+- Use this threshold for auto-trigger:
+  1. If scope is more than 15 files, or spans more than one top-level folder, use graph workflow.

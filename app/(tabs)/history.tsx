@@ -215,24 +215,25 @@ export default function HistoryScreen() {
         </View>
       </View>
 
-      <View style={styles.weekdayRow}>
-        {WEEKDAYS.map((day, i) => (
-          <Text
-            key={i}
-            style={[styles.weekdayLabel, { width: cellSize }]}
-          >
-            {day}
-          </Text>
-        ))}
-      </View>
+      <View style={styles.calendarPanel}>
+        <View style={styles.weekdayRow}>
+          {WEEKDAYS.map((day, i) => (
+            <Text
+              key={i}
+              style={[styles.weekdayLabel, { width: cellSize }]}
+            >
+              {day}
+            </Text>
+          ))}
+        </View>
 
-      <View style={styles.calendarGrid}>
-        {grid.map((week, weekIdx) => (
-          <View key={weekIdx} style={styles.weekRow}>
-            {week.map((day, dayIdx) => {
-              if (day === null) {
-                return <View key={dayIdx} style={{ width: cellSize, height: cellSize }} />;
-              }
+        <View style={styles.calendarGrid}>
+          {grid.map((week, weekIdx) => (
+            <View key={weekIdx} style={styles.weekRow}>
+              {week.map((day, dayIdx) => {
+                if (day === null) {
+                  return <View key={dayIdx} style={{ width: cellSize, height: cellSize }} />;
+                }
 
               const dateStr = `${yearMonth}-${String(day).padStart(2, '0')}`;
               const moodId = daysWithMoods[dateStr];
@@ -250,38 +251,39 @@ export default function HistoryScreen() {
                 .filter(Boolean)
                 .join(', ');
 
-              return (
-                <Pressable
-                  key={dayIdx}
-                  onPress={hasEntries && !isFuture ? () => handleDayPress(day) : undefined}
-                  accessibilityLabel={cellA11yLabel}
-                  accessibilityRole={hasEntries && !isFuture ? 'button' : 'text'}
-                  style={[
-                    styles.dayCell,
-                    {
-                      width: cellSize,
-                      height: cellSize,
-                      borderRadius: radius.sm,
-                    },
-                    hasEntries && { backgroundColor: mood.tintColor },
-                    isToday && styles.todayCell,
-                    isFuture && styles.futureCell,
-                  ]}
-                >
-                  <Text
+                return (
+                  <Pressable
+                    key={dayIdx}
+                    onPress={hasEntries && !isFuture ? () => handleDayPress(day) : undefined}
+                    accessibilityLabel={cellA11yLabel}
+                    accessibilityRole={hasEntries && !isFuture ? 'button' : 'text'}
                     style={[
-                      styles.dayNumber,
-                      hasEntries ? { color: colors.text } : { color: colors.textSecondary },
-                      isFuture && { color: colors.textDisabled },
+                      styles.dayCell,
+                      {
+                        width: cellSize,
+                        height: cellSize,
+                        borderRadius: radius.sm,
+                      },
+                      hasEntries && { backgroundColor: mood.tintColor },
+                      isToday && styles.todayCell,
+                      isFuture && styles.futureCell,
                     ]}
                   >
-                    {day}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ))}
+                    <Text
+                      style={[
+                        styles.dayNumber,
+                        hasEntries ? { color: colors.text } : { color: colors.text },
+                        isFuture && { color: colors.textDisabled },
+                      ]}
+                    >
+                      {day}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ))}
+        </View>
       </View>
     </Screen>
   );
@@ -389,39 +391,48 @@ const styles = StyleSheet.create({
   },
   weekdayRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: spacing.screenPadding,
+    justifyContent: 'center',
+    gap: spacing.xs,
     marginBottom: spacing.sm,
-    marginTop: spacing.md,
   },
   weekdayLabel: {
     fontSize: typography.sizes.xs,
-    color: colors.textSecondary,
+    color: colors.text,
     textAlign: 'center',
     fontWeight: typography.weights.medium,
   },
+  calendarPanel: {
+    marginTop: spacing.md,
+    borderRadius: 18,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderWidth: 1,
+    borderColor: '#DCE9FF',
+    backgroundColor: 'rgba(255, 218, 218, 0.94)',
+  },
   calendarGrid: {
-    paddingHorizontal: spacing.screenPadding,
     gap: spacing.xs,
-    alignItems: 'center',
+    alignItems: 'stretch',
   },
   weekRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     width: '100%',
     gap: spacing.xs,
   },
   dayCell: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.7)',
+    backgroundColor: 'rgba(255,255,255,0.98)',
+    borderWidth: 1,
+    borderColor: '#D9E5F7',
   },
   todayCell: {
     borderWidth: 2,
     borderColor: colors.accent,
   },
   futureCell: {
-    opacity: 0.3,
+    opacity: 0.55,
   },
   dayNumber: {
     fontSize: typography.sizes.sm,

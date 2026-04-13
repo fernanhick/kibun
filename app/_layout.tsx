@@ -223,8 +223,10 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="paywall" options={{ headerShown: false }} />
             <Stack.Screen name="register" options={{ headerShown: false }} />
-            <Stack.Screen name="check-in" options={{ headerShown: false, presentation: 'modal' }} />
-            <Stack.Screen name="mood-confirm" options={{ headerShown: false }} />
+            <Stack.Screen name="check-in" options={{ headerShown: false, presentation: 'card' }} />
+            <Stack.Screen name="mood-confirm" options={{ headerShown: false, presentation: 'card' }} />
+            <Stack.Screen name="journal-reflect" options={{ headerShown: false, presentation: 'card' }} />
+            <Stack.Screen name="exercise" options={{ headerShown: false, presentation: 'card' }} />
             <Stack.Screen name="day-detail" options={{ headerShown: false }} />
             <Stack.Screen name="ai-report" options={{ headerShown: false }} />
             <Stack.Screen name="account" options={{ headerShown: false }} />

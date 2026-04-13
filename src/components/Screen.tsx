@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Animated,
   Easing,
+  Platform,
   ScrollView,
   View,
   StyleSheet,
@@ -9,12 +10,18 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSegments } from 'expo-router';
 // SafeAreaView must come from react-native-safe-area-context (NOT react-native).
 // The app wraps its tree in SafeAreaProvider from this package in app/_layout.tsx.
 // Using react-native's SafeAreaView bypasses the provider context and produces
 // incorrect insets on notched iOS devices (iPhone X+, Dynamic Island) silently.
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing } from '@constants/theme';
+import {
+  KAWAII_TAB_VISUAL_OBSTRUCTION,
+  KAWAII_TAB_SAFE_BOTTOM_ANDROID,
+  KAWAII_TAB_SAFE_BOTTOM_MIN,
+} from '@constants/layout';
 import { SparkleOverlay } from './SparkleOverlay';
 
 interface ScreenProps {
@@ -30,9 +37,26 @@ export function Screen({
   style,
   contentContainerStyle,
 }: ScreenProps) {
+  const segments = useSegments();
+  const insets = useSafeAreaInsets();
   const driftA = React.useRef(new Animated.Value(0)).current;
   const driftB = React.useRef(new Animated.Value(0)).current;
   const driftC = React.useRef(new Animated.Value(0)).current;
+  const isTabRoute = segments[0] === '(tabs)';
+  const tabSafeBottom =
+    Platform.OS === 'android'
+      ? KAWAII_TAB_SAFE_BOTTOM_ANDROID
+      : Math.max(insets.bottom, KAWAII_TAB_SAFE_BOTTOM_MIN);
+
+  // Reserve room for the custom tab bar + raised mascot so bottom content can scroll above it.
+  const tabBottomInset = isTabRoute ? KAWAII_TAB_VISUAL_OBSTRUCTION + tabSafeBottom : 0;
+  const flattenedContentStyle = StyleSheet.flatten(contentContainerStyle);
+  const requestedPaddingBottom = flattenedContentStyle?.paddingBottom;
+  const minPaddingBottom = styles.scrollContent.paddingBottom + tabBottomInset;
+  const resolvedPaddingBottom =
+    typeof requestedPaddingBottom === 'number'
+      ? Math.max(requestedPaddingBottom, minPaddingBottom)
+      : minPaddingBottom;
 
   React.useEffect(() => {
     const createDrift = (value: Animated.Value, duration: number, distance: number) => {
@@ -95,13 +119,23 @@ export function Screen({
       {scrollable ? (
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
+          contentContainerStyle={[
+            styles.scrollContent,
+            contentContainerStyle,
+            { paddingBottom: resolvedPaddingBottom },
+          ]}
           keyboardShouldPersistTaps="handled"
         >
           {children}
         </ScrollView>
       ) : (
-        <View style={[styles.content, contentContainerStyle]}>
+        <View
+          style={[
+            styles.content,
+            contentContainerStyle,
+            isTabRoute && { paddingBottom: tabBottomInset },
+          ]}
+        >
           {children}
         </View>
       )}

@@ -2,6 +2,14 @@ import { Platform } from 'react-native';
 import Purchases, { LOG_LEVEL, CustomerInfo } from 'react-native-purchases';
 import type { SubscriptionStatus } from '@models/index';
 
+const DEFAULT_ENTITLEMENT_ID = 'premium';
+const configuredEntitlementId = process.env.EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID?.trim();
+export const REVENUECAT_ENTITLEMENT_ID = configuredEntitlementId || DEFAULT_ENTITLEMENT_ID;
+const ENTITLEMENT_IDS = [
+  REVENUECAT_ENTITLEMENT_ID,
+  'kibun Pro',
+];
+
 // ─── RevenueCat SDK Initializer ───────────────────────────────────────────────
 // Called once at app startup from _layout.tsx (module level, before React mounts).
 // Graceful no-op when API keys are absent — RevenueCat is non-blocking for core
@@ -15,14 +23,11 @@ import type { SubscriptionStatus } from '@models/index';
 // entitlement ID configured in the RevenueCat dashboard.
 
 export function initPurchases(): void {
-  const prodKey = Platform.select({
+  const apiKey = Platform.select({
     ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY,
     android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY,
     default: undefined,
   });
-  const apiKey = (__DEV__ && process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY)
-    ? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY
-    : prodKey;
 
   if (!apiKey) {
     if (__DEV__) {
@@ -42,9 +47,11 @@ export function initPurchases(): void {
 }
 
 function getActiveEntitlement(customerInfo: CustomerInfo) {
-  return customerInfo.entitlements.active['kibun Pro']
-    ?? Object.values(customerInfo.entitlements.active)[0]
-    ?? null;
+  for (const id of ENTITLEMENT_IDS) {
+    const active = customerInfo.entitlements.active[id];
+    if (active) return active;
+  }
+  return Object.values(customerInfo.entitlements.active)[0] ?? null;
 }
 
 export function getSubscriptionStatusFromCustomerInfo(

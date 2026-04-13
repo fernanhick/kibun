@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import Purchases, { PURCHASES_ERROR_CODE } from 'react-native-purchases';
+import Purchases from 'react-native-purchases';
+import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useSessionStore } from '@store/index';
-import { getSubscriptionStatusFromCustomerInfo } from '@lib/revenuecat';
+import {
+  getSubscriptionStatusFromCustomerInfo,
+  REVENUECAT_ENTITLEMENT_ID,
+} from '@lib/revenuecat';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
 const FEATURES = [
@@ -28,36 +32,49 @@ export default function PaywallScreen() {
     setPurchasing(true);
     setPurchaseError(null);
     try {
-      const offerings = await Purchases.getOfferings();
-      const pkg = offerings.current?.availablePackages[0];
-      if (!pkg) {
-        setPurchaseError('No subscription products found. Please try again later.');
+      const paywallResult = await RevenueCatUI.presentPaywallIfNeeded({
+        requiredEntitlementIdentifier: REVENUECAT_ENTITLEMENT_ID,
+        displayCloseButton: true,
+      });
+
+      if (__DEV__) {
+        console.log('[kibun:rc] Paywall result:', paywallResult);
+      }
+
+      if (paywallResult === PAYWALL_RESULT.CANCELLED) {
         setPurchasing(false);
         return;
       }
-      const { customerInfo } = await Purchases.purchasePackage(pkg);
+
+      const customerInfo = await Purchases.getCustomerInfo();
       if (__DEV__) {
         console.log('[kibun:rc] Active entitlements:', JSON.stringify(customerInfo.entitlements.active));
       }
+
       const subscriptionStatus = getSubscriptionStatusFromCustomerInfo(customerInfo);
       if (subscriptionStatus !== 'none') {
         setSubscriptionStatus(subscriptionStatus);
         setPaywallSeen();
         router.replace(session?.authStatus === 'registered' ? '/(tabs)' : '/register');
       } else {
-        setPurchaseError('Purchase completed but entitlement not found. Please contact support.');
+        if (paywallResult === PAYWALL_RESULT.NOT_PRESENTED) {
+          setPurchaseError('RevenueCat paywall is not configured. Set a current offering in the dashboard.');
+        } else if (paywallResult === PAYWALL_RESULT.ERROR) {
+          setPurchaseError('Paywall failed to load. Please try again.');
+        } else {
+          setPurchaseError('Purchase completed but entitlement not found. Please contact support.');
+        }
         setPurchasing(false);
       }
     } catch (error: unknown) {
       const rcError = error as { code?: string; message?: string };
-      if (rcError?.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
-        // User cancelled — stay on screen silently
+      if (rcError?.message?.includes('Native module not found')) {
+        setPurchaseError('RevenueCat paywall UI is unavailable in this build. Rebuild the dev client and try again.');
         setPurchasing(false);
         return;
       }
-      // Store or billing unavailable on this device/region
-      if (rcError?.code === PURCHASES_ERROR_CODE.STORE_PROBLEM_ERROR ||
-          rcError?.message?.toLowerCase().includes('billing')) {
+
+      if (rcError?.message?.toLowerCase().includes('billing')) {
         setPurchaseError('In-app purchases are not available on this device. Make sure you are signed into Google Play.');
       } else {
         setPurchaseError('Something went wrong. Please try again.');

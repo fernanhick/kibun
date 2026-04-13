@@ -31,6 +31,18 @@ const SENTIMENT_CONFIG: Record<SentimentLabel, { emoji: string; label: string; c
   negative: { emoji: '😔', label: 'Sounds difficult', color: colors.error },
 };
 
+function getMoodAwareSentimentLabel(
+  moodGroup: MoodGroup,
+  sentiment: SentimentResult,
+  alignment: 'aligned' | 'contrary' | 'neutral'
+): SentimentLabel {
+  // When note tone strongly contradicts selected mood, keep UX consistent by storing/displaying neutral.
+  if (alignment === 'contrary' && moodGroup !== 'neutral') {
+    return 'neutral';
+  }
+  return sentiment.label;
+}
+
 // ─── Mood-specific exercise suggestions (Pro feature) ─────────────────────────
 interface MoodExerciseConfig {
   title: string;
@@ -141,6 +153,10 @@ export default function MoodConfirmScreen() {
     ? getMoodSentimentAlignment(mood.group, sentiment)
     : 'neutral';
 
+  const moodAwareSentimentLabel = sentiment
+    ? getMoodAwareSentimentLabel(mood.group, sentiment, alignment)
+    : null;
+
   const handleSave = async () => {
     if (submitting) return;
     setSubmitting(true);
@@ -152,7 +168,7 @@ export default function MoodConfirmScreen() {
       note: note.trim() || null,
       slot: getCheckInSlot(),
       loggedAt: new Date().toISOString(),
-      sentimentLabel: sentiment?.label,
+      sentimentLabel: moodAwareSentimentLabel ?? undefined,
       sentimentScore: sentiment?.score,
     };
 
@@ -243,12 +259,12 @@ export default function MoodConfirmScreen() {
         {/* Sentiment chip — only shown when ONNX model is available + note is long enough */}
         {sentiment && (
           <View style={styles.sentimentRow}>
-            <View style={[styles.sentimentChip, { borderColor: SENTIMENT_CONFIG[sentiment.label].color }]}>
+            <View style={[styles.sentimentChip, { borderColor: SENTIMENT_CONFIG[moodAwareSentimentLabel ?? 'neutral'].color }]}>
               <Text style={styles.sentimentEmoji}>
-                {SENTIMENT_CONFIG[sentiment.label].emoji}
+                {SENTIMENT_CONFIG[moodAwareSentimentLabel ?? 'neutral'].emoji}
               </Text>
-              <Text style={[styles.sentimentLabel, { color: SENTIMENT_CONFIG[sentiment.label].color }]}>
-                {SENTIMENT_CONFIG[sentiment.label].label}
+              <Text style={[styles.sentimentLabel, { color: SENTIMENT_CONFIG[moodAwareSentimentLabel ?? 'neutral'].color }]}>
+                {SENTIMENT_CONFIG[moodAwareSentimentLabel ?? 'neutral'].label}
               </Text>
             </View>
             {/* Gentle contradiction hint */}

@@ -6,7 +6,7 @@ web-build/
 expo-env.d.ts
 
 graphify-out/
-
+.github/
 ## Environment variables — NEVER commit real secrets
 .env
 .env.local

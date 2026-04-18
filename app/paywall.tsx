@@ -11,6 +11,7 @@ import {
   getSubscriptionStatusFromCustomerInfo,
   REVENUECAT_ENTITLEMENT_ID,
 } from '@lib/revenuecat';
+import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
 const FEATURES = [
@@ -54,6 +55,9 @@ export default function PaywallScreen() {
       const subscriptionStatus = getSubscriptionStatusFromCustomerInfo(customerInfo);
       if (subscriptionStatus !== 'none') {
         setSubscriptionStatus(subscriptionStatus);
+        if (session?.userId) {
+          syncSubscriptionStatusToSupabase(session.userId, subscriptionStatus);
+        }
         setPaywallSeen();
         router.replace(session?.authStatus === 'registered' ? '/(tabs)' : '/register');
       } else {

@@ -39,6 +39,21 @@ Deno.serve(async (req: Request) => {
 
     const userId = user.id;
 
+    // --- Subscription gate ---
+    const { data: profileRow } = await adminClient
+      .from('profiles')
+      .select('subscription_status')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    const subStatus = profileRow?.subscription_status ?? 'none';
+    if (subStatus !== 'active' && subStatus !== 'trial') {
+      return new Response(
+        JSON.stringify({ error: 'subscription_required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
     // --- Parse request body ---
     const body = await req.json();
     const { report_type, profile } = body;

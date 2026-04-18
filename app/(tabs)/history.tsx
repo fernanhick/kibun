@@ -116,8 +116,11 @@ export default function HistoryScreen() {
 
   const handleDayPress = (day: number) => {
     const dateStr = `${yearMonth}-${String(day).padStart(2, '0')}`;
-    if (!daysWithMoods[dateStr]) return;
-    router.push(`/day-detail?date=${dateStr}` as Href);
+    if (daysWithMoods[dateStr]) {
+      router.push(`/day-detail?date=${dateStr}` as Href);
+    } else {
+      router.push(`/check-in?date=${dateStr}` as Href);
+    }
   };
 
   const handleExport = useCallback(async () => {
@@ -246,7 +249,7 @@ export default function HistoryScreen() {
               const cellA11yLabel = [
                 `${monthName} ${day}`,
                 isToday ? 'today' : '',
-                hasEntries ? mood.label : 'no entries',
+                hasEntries ? mood.label : (!isFuture ? 'tap to log mood' : 'no entries'),
               ]
                 .filter(Boolean)
                 .join(', ');
@@ -254,9 +257,9 @@ export default function HistoryScreen() {
                 return (
                   <Pressable
                     key={dayIdx}
-                    onPress={hasEntries && !isFuture ? () => handleDayPress(day) : undefined}
+                    onPress={!isFuture ? () => handleDayPress(day) : undefined}
                     accessibilityLabel={cellA11yLabel}
-                    accessibilityRole={hasEntries && !isFuture ? 'button' : 'text'}
+                    accessibilityRole={!isFuture ? 'button' : 'text'}
                     style={[
                       styles.dayCell,
                       {
@@ -265,6 +268,7 @@ export default function HistoryScreen() {
                         borderRadius: radius.sm,
                       },
                       hasEntries && { backgroundColor: mood.tintColor },
+                      !hasEntries && !isFuture && styles.emptyPastCell,
                       isToday && styles.todayCell,
                       isFuture && styles.futureCell,
                     ]}
@@ -433,6 +437,11 @@ const styles = StyleSheet.create({
   },
   futureCell: {
     opacity: 0.55,
+  },
+  emptyPastCell: {
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   dayNumber: {
     fontSize: typography.sizes.sm,

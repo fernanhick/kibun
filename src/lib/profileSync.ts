@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { OnboardingProfile } from '@models/index';
+import type { OnboardingProfile, SubscriptionStatus } from '@models/index';
 
 /**
  * Fire-and-forget upsert of the onboarding profile to Supabase.
@@ -33,6 +33,30 @@ export function saveProfileToSupabase(
     .then(({ error }) => {
       if (error && __DEV__) {
         console.error('[kibun:profile] Supabase upsert failed:', error.message);
+      }
+    });
+}
+
+/**
+ * Writes the subscription status to the profiles table in Supabase so that
+ * server-side Edge Functions can verify entitlement without calling RevenueCat.
+ * Fire-and-forget — call after a successful RevenueCat purchase confirmation.
+ */
+export function syncSubscriptionStatusToSupabase(
+  userId: string,
+  status: SubscriptionStatus,
+): void {
+  if (!supabase || !userId) return;
+
+  supabase
+    .from('profiles')
+    .upsert(
+      { user_id: userId, subscription_status: status },
+      { onConflict: 'user_id' },
+    )
+    .then(({ error }) => {
+      if (error && __DEV__) {
+        console.error('[kibun:profile] Failed to sync subscription_status:', error.message);
       }
     });
 }

@@ -1,5 +1,5 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useRouter, Href } from 'expo-router';
+import { useRouter, useLocalSearchParams, Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@components/index';
@@ -24,12 +24,22 @@ function groupMoods(): { group: MoodGroup; label: string; moods: MoodDefinition[
   }));
 }
 
+const MONTHS = ['January','February','March','April','May','June','July',
+  'August','September','October','November','December'];
+
+function formatBackdate(d: string) {
+  const [, m, day] = d.split('-');
+  return `${MONTHS[parseInt(m) - 1]} ${parseInt(day)}`;
+}
+
 export default function MoodSelectionScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ date?: string }>();
   const groups = groupMoods();
 
   const handleSelect = (mood: MoodDefinition) => {
-    router.push(`/mood-confirm?moodId=${mood.id}` as Href);
+    const dateParam = params.date ? `&date=${params.date}` : '';
+    router.push(`/mood-confirm?moodId=${mood.id}${dateParam}` as Href);
   };
 
   return (
@@ -52,7 +62,7 @@ export default function MoodSelectionScreen() {
           </Pressable>
         </View>
         <Text style={styles.subtitle}>
-          Pick the mood that matches this moment.
+          {params.date ? `Logging for ${formatBackdate(params.date)}` : 'Pick the mood that matches this moment.'}
         </Text>
       </LinearGradient>
 

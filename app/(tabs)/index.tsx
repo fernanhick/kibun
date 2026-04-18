@@ -1,5 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect, useContext } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+// SpotlightTourContext is not in the public API; import from the compiled dist
+// file so Metro resolves to the same cached module the provider uses.
+// eslint-disable-next-line import/no-internal-modules
+import { SpotlightTourContext } from 'react-native-spotlight-tour/dist/lib/SpotlightTour.context';
+import { useTourAutoStart } from '@hooks/useTourAutoStart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -74,6 +79,21 @@ export default function HomeScreen() {
     [unlockedIds]
   );
 
+  const logMoodRef = useRef<View>(null);
+  const { current: tourStep, changeSpot } = useContext(SpotlightTourContext);
+
+  useEffect(() => {
+    if (tourStep !== 0) return;
+    const timer = setTimeout(() => {
+      logMoodRef.current?.measureInWindow((x, y, width, height) => {
+        changeSpot({ x, y, width, height });
+      });
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [tourStep, changeSpot]);
+
+  useTourAutoStart();
+
   return (
     <View style={styles.container}>
       {showBanner && (
@@ -124,12 +144,14 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.ctaSection}>
-            <Button
-              label="Log mood"
-              onPress={() => router.push('/check-in' as Href)}
-              variant="sunrise"
-              fullWidth
-            />
+            <View ref={logMoodRef} collapsable={false} style={styles.ctaAttach}>
+              <Button
+                label="Log mood"
+                onPress={() => router.push('/check-in' as Href)}
+                variant="sunrise"
+                fullWidth
+              />
+            </View>
           </View>
         </LinearGradient>
 
@@ -266,6 +288,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingVertical: 3,
     paddingHorizontal: spacing.sm,
+  },
+  ctaAttach: {
+    alignSelf: 'stretch',
   },
   ctaSection: {
     paddingHorizontal: spacing.sm,

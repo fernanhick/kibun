@@ -17,6 +17,14 @@ import { supabase } from '@lib/supabase';
 import type { SentimentResult } from '@lib/sentiment';
 import type { SentimentLabel } from '@models/index';
 
+const MONTHS = ['January','February','March','April','May','June','July',
+  'August','September','October','November','December'];
+
+function formatBackdate(d: string) {
+  const [, m, day] = d.split('-');
+  return `${MONTHS[parseInt(m) - 1]} ${parseInt(day)}`;
+}
+
 const SHIBA_MAP: Record<MoodGroup, ShibaVariant> = {
   green: 'happy',
   neutral: 'neutral',
@@ -106,7 +114,7 @@ const MOOD_EXERCISES: Record<MoodGroup, MoodExerciseConfig> = {
 
 export default function MoodConfirmScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ moodId: string }>();
+  const params = useLocalSearchParams<{ moodId: string; date?: string }>();
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sentiment, setSentiment] = useState<SentimentResult | null>(null);
@@ -162,12 +170,13 @@ export default function MoodConfirmScreen() {
     setSubmitting(true);
 
     const entryId = Crypto.randomUUID();
+    const entryDate = params.date ? new Date(`${params.date}T12:00:00`) : new Date();
     const entry = {
       id: entryId,
       moodId: mood.id,
       note: note.trim() || null,
-      slot: getCheckInSlot(),
-      loggedAt: new Date().toISOString(),
+      slot: getCheckInSlot(entryDate),
+      loggedAt: entryDate.toISOString(),
       sentimentLabel: moodAwareSentimentLabel ?? undefined,
       sentimentScore: sentiment?.score,
     };
@@ -228,7 +237,9 @@ export default function MoodConfirmScreen() {
         </View>
         <View style={styles.heroBadge}>
           <Ionicons name="sparkles" size={12} color={colors.textInverse} />
-          <Text style={styles.heroBadgeText}>Your vibe today</Text>
+          <Text style={styles.heroBadgeText}>
+            {params.date ? `Logging for ${formatBackdate(params.date)}` : 'Your vibe today'}
+          </Text>
         </View>
         <View style={styles.moodDisplay}>
           <MoodBubble mood={mood} size="lg" />

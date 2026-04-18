@@ -10,9 +10,11 @@ interface OnboardingGateState {
   complete: boolean;
   paywallSeen: boolean;
   _hasHydrated: boolean;
+  onboardingJustCompleted: boolean;
   setComplete: () => void;
   setPaywallSeen: () => void;
   setHasHydrated: (value: boolean) => void;
+  clearOnboardingJustCompleted: () => void;
 }
 
 export const useOnboardingGateStore = create<OnboardingGateState>()(
@@ -21,14 +23,16 @@ export const useOnboardingGateStore = create<OnboardingGateState>()(
       complete: false,
       paywallSeen: false,
       _hasHydrated: false,
-      setComplete: () => set({ complete: true }),
+      onboardingJustCompleted: false,
+      setComplete: () => set({ complete: true, onboardingJustCompleted: true }),
       setPaywallSeen: () => set({ paywallSeen: true }),
       setHasHydrated: (value) => set({ _hasHydrated: value }),
+      clearOnboardingJustCompleted: () => set({ onboardingJustCompleted: false }),
     }),
     {
       name: 'kibun-onboarding-gate',
       storage: createJSONStorage(() => AsyncStorage),
-      // Only persist 'complete' and 'paywallSeen' — _hasHydrated is transient (always starts false on launch)
+      // Only persist 'complete' and 'paywallSeen' — transient flags always reset on launch
       partialize: (state) => ({ complete: state.complete, paywallSeen: state.paywallSeen }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);

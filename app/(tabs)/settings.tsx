@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, Switch, Pressable, TextInput, StyleSheet, Linking } from 'react-native';
 import { useFocusEffect, useRouter, type Href } from 'expo-router';
+import { useSpotlightTour } from 'react-native-spotlight-tour';
+import { useTourStore } from '@store/tourStore';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
@@ -34,7 +36,6 @@ export default function SettingsScreen() {
 
   const session = useSessionStore((s) => s.session);
   const isAnonymous = !session || session.authStatus === 'anonymous';
-  const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
 
   const selectedSlots = useNotificationPrefsStore((s) => s.selectedSlots);
   const streakNudgeEnabled = useNotificationPrefsStore((s) => s.streakNudgeEnabled);
@@ -42,6 +43,8 @@ export default function SettingsScreen() {
   const { setSlots, setStreakNudgeEnabled, setPermissionGranted, setCustomTime, clearCustomTime } = useNotificationPrefsStore.getState();
 
   const appVersion = Constants.expoConfig?.version ?? '—';
+  const resetTour = useTourStore((s) => s.resetTour);
+  const { start: startTour } = useSpotlightTour();
 
   // Re-check permission on every screen focus — critical for detecting changes
   // after user returns from OS Settings via Linking.openSettings().
@@ -56,6 +59,12 @@ export default function SettingsScreen() {
   );
 
   const isDisabled = permissionStatus !== 'granted';
+
+  const handleReplayTour = () => {
+    resetTour();
+    router.replace('/(tabs)/' as Href);
+    setTimeout(startTour, 700);
+  };
 
   const reschedule = useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -141,6 +150,26 @@ export default function SettingsScreen() {
         </Pressable>
       </View>
 
+      {/* ── App Tour section ────────────────────────────────────────── */}
+      <Text style={styles.sectionHeader} accessibilityRole="header">
+        APP TOUR
+      </Text>
+      <View style={styles.section}>
+        <Pressable
+          style={styles.row}
+          onPress={handleReplayTour}
+          accessibilityRole="button"
+          accessibilityLabel="Replay feature tour"
+          accessibilityHint="Restarts the walkthrough from the Home screen"
+        >
+          <View style={styles.rowText}>
+            <Text style={styles.rowLabel}>Feature tour</Text>
+            <Text style={styles.rowHint}>Replay the walkthrough</Text>
+          </View>
+          <Ionicons name="play-circle-outline" size={20} color={colors.primary} />
+        </Pressable>
+      </View>
+
       {/* ── Notification permission banner ──────────────────────────── */}
       {isDisabled && (
         <Pressable
@@ -190,8 +219,7 @@ export default function SettingsScreen() {
       <Text style={styles.sectionHeader} accessibilityRole="header">
         CUSTOM TIMES
       </Text>
-      {isPro ? (
-        <View style={styles.section}>
+      <View style={styles.section}>
           {SLOT_ROWS.filter((r) => selectedSlots.includes(r.slot)).map((row) => (
             <View key={row.slot} style={styles.row}>
               <View style={styles.rowText}>
@@ -224,20 +252,6 @@ export default function SettingsScreen() {
             </View>
           )}
         </View>
-      ) : (
-        <Pressable
-          onPress={() => router.push('/paywall' as Href)}
-          accessibilityRole="button"
-          accessibilityLabel="Upgrade to Pro to set custom reminder times"
-        >
-          <View style={[styles.section, styles.proLockRow]}>
-            <Text style={styles.rowLabel}>Custom reminder times</Text>
-            <View style={styles.proLockBadge}>
-              <Text style={styles.proLockBadgeText}>Pro</Text>
-            </View>
-          </View>
-        </Pressable>
-      )}
 
       {/* ── Streak Reminder ──────────────────────────────────────────── */}
       <Text style={styles.sectionHeader} accessibilityRole="header">

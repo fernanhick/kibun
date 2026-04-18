@@ -4,6 +4,7 @@ import { isSupabaseConfigured, supabase } from '@lib/supabase';
 import { useSessionStore, useMoodEntryStore } from '@store/index';
 import { useAchievementsStore } from '@store/achievementsStore';
 import { refreshSubscriptionStatus } from '@lib/revenuecat';
+import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
@@ -113,14 +114,25 @@ async function syncAchievementsForUser(userId: string): Promise<void> {
   }
 }
 
-async function resolveSubscriptionStatus(isRegistered: boolean) {
+async function resolveSubscriptionStatus(
+  isRegistered: boolean,
+  userId?: string,
+) {
   const existingStatus = useSessionStore.getState().session?.subscriptionStatus ?? 'none';
   if (!isRegistered && existingStatus !== 'none') {
     return existingStatus;
   }
 
   const refreshedStatus = await refreshSubscriptionStatus();
-  return refreshedStatus === 'none' ? existingStatus : refreshedStatus;
+  const resolved = refreshedStatus === 'none' ? existingStatus : refreshedStatus;
+
+  // Keep Supabase in sync so Edge Functions can gate on subscription_status
+  // without calling RevenueCat. Fire-and-forget — never blocks auth resolution.
+  if (userId && resolved !== 'none') {
+    syncSubscriptionStatusToSupabase(userId, resolved);
+  }
+
+  return resolved;
 }
 
 // ─── useAuth ──────────────────────────────────────────────────────────────────
@@ -152,7 +164,7 @@ export function useAuth() {
           if (session) {
             // Existing persisted session — restore it
             const isRegistered = !session.user.is_anonymous;
-            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered);
+            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered, session.user.id);
             setSession({
               userId: session.user.id,
               authStatus: isRegistered ? 'registered' : 'anonymous',
@@ -180,7 +192,7 @@ export function useAuth() {
         } else if (event === 'SIGNED_IN') {
           if (session) {
             const isRegistered = !session.user.is_anonymous;
-            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered);
+            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered, session.user.id);
             setSession({
               userId: session.user.id,
               authStatus: isRegistered ? 'registered' : 'anonymous',
@@ -198,7 +210,7 @@ export function useAuth() {
         } else if (event === 'USER_UPDATED') {
           if (session) {
             const isRegistered = !session.user.is_anonymous;
-            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered);
+            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered, session.user.id);
             setSession({
               userId: session.user.id,
               authStatus: isRegistered ? 'registered' : 'anonymous',
@@ -208,7 +220,7 @@ export function useAuth() {
         } else if (event === 'TOKEN_REFRESHED') {
           if (session) {
             const isRegistered = !session.user.is_anonymous;
-            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered);
+            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered, session.user.id);
             setSession({
               userId: session.user.id,
               authStatus: isRegistered ? 'registered' : 'anonymous',

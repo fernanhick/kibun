@@ -1,29 +1,24 @@
-import { useEffect } from 'react';
+import { useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import LottieView from 'lottie-react-native';
 import { colors, typography, spacing } from '@constants/theme';
-
-const SPLASH_IMAGE = require('../../assets/webp animation/mascot-happy.webp');
 
 interface SplashScreenViewProps {
   onFinish: () => void;
 }
 
 export function SplashScreenView({ onFinish }: SplashScreenViewProps) {
-  // The animated WebP loops indefinitely — fire onFinish after one
-  // visual cycle so the app can proceed past the splash screen.
-  useEffect(() => {
-    const timer = setTimeout(onFinish, 3000);
-    return () => clearTimeout(timer);
-  }, [onFinish]);
+  const animRef = useRef<LottieView>(null);
 
   return (
     <View style={styles.container}>
-      <Image
-        source={SPLASH_IMAGE}
+      <LottieView
+        ref={animRef}
+        source={require('../assets/lottie/shiba-happy.json')}
         style={styles.mascot}
-        contentFit="contain"
-        autoplay
+        autoPlay
+        loop={false}
+        onAnimationFinish={onFinish}
       />
       <Text style={styles.title}>kibun</Text>
       <Text style={styles.subtitle}>気分</Text>

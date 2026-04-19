@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, Switch, Pressable, TextInput, StyleSheet, Linking } from 'react-native';
 import { useFocusEffect, useRouter, type Href } from 'expo-router';
-import { useSpotlightTour } from 'react-native-spotlight-tour';
-import { useTourStore } from '@store/tourStore';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
@@ -43,8 +41,6 @@ export default function SettingsScreen() {
   const { setSlots, setStreakNudgeEnabled, setPermissionGranted, setCustomTime, clearCustomTime } = useNotificationPrefsStore.getState();
 
   const appVersion = Constants.expoConfig?.version ?? '—';
-  const resetTour = useTourStore((s) => s.resetTour);
-  const { start: startTour } = useSpotlightTour();
 
   // Re-check permission on every screen focus — critical for detecting changes
   // after user returns from OS Settings via Linking.openSettings().
@@ -59,12 +55,6 @@ export default function SettingsScreen() {
   );
 
   const isDisabled = permissionStatus !== 'granted';
-
-  const handleReplayTour = () => {
-    resetTour();
-    router.replace('/(tabs)/' as Href);
-    setTimeout(startTour, 700);
-  };
 
   const reschedule = useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -147,26 +137,6 @@ export default function SettingsScreen() {
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
-        </Pressable>
-      </View>
-
-      {/* ── App Tour section ────────────────────────────────────────── */}
-      <Text style={styles.sectionHeader} accessibilityRole="header">
-        APP TOUR
-      </Text>
-      <View style={styles.section}>
-        <Pressable
-          style={styles.row}
-          onPress={handleReplayTour}
-          accessibilityRole="button"
-          accessibilityLabel="Replay feature tour"
-          accessibilityHint="Restarts the walkthrough from the Home screen"
-        >
-          <View style={styles.rowText}>
-            <Text style={styles.rowLabel}>Feature tour</Text>
-            <Text style={styles.rowHint}>Replay the walkthrough</Text>
-          </View>
-          <Ionicons name="play-circle-outline" size={20} color={colors.primary} />
         </Pressable>
       </View>
 

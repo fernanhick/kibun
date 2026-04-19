@@ -9,5 +9,4 @@ export { Shiba } from './Shiba';
 export type { ShibaVariant } from './Shiba';
 export { SplashScreenView } from './SplashScreenView';
 export { SparkleOverlay } from './SparkleOverlay';
-export { TourTooltip } from './TourTooltip';
 export type { PickerOption } from '@models/index';

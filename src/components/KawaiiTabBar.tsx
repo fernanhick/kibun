@@ -1,9 +1,5 @@
-import { useRef, useEffect, useContext } from 'react';
+import { useRef, useEffect } from 'react';
 import { View, Pressable, Text, Animated, StyleSheet, Platform } from 'react-native';
-// SpotlightTourContext is not in the public API; import from the compiled dist
-// file so Metro resolves to the same cached module the provider uses.
-// eslint-disable-next-line import/no-internal-modules
-import { SpotlightTourContext } from 'react-native-spotlight-tour/dist/lib/SpotlightTour.context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -86,28 +82,6 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
   const router = useRouter();
   const lastMoodId = useMoodEntryStore((s) => s.entries[0]?.moodId);
 
-  const historyRef = useRef<View>(null);
-  const insightsRef = useRef<View>(null);
-  const mascotRef = useRef<View>(null);
-  const { current: tourStep, changeSpot } = useContext(SpotlightTourContext);
-
-  useEffect(() => {
-    const refMap: Record<number, React.RefObject<View>> = {
-      1: historyRef,
-      2: insightsRef,
-      3: mascotRef,
-    };
-    if (tourStep === undefined) return;
-    const ref = refMap[tourStep];
-    if (!ref) return;
-    const timer = setTimeout(() => {
-      ref.current?.measureInWindow((x, y, width, height) => {
-        changeSpot({ x, y, width, height });
-      });
-    }, 50);
-    return () => clearTimeout(timer);
-  }, [tourStep, changeSpot]);
-
   const routes = state.routes;
   const leftTabs = routes.slice(0, 2);
   const rightTabs = routes.slice(2, 4);
@@ -139,12 +113,6 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
       />
     );
 
-    if (route.name === 'history') {
-      return <View key={route.key} ref={historyRef} collapsable={false} style={styles.tabAttach}>{icon}</View>;
-    }
-    if (route.name === 'insights') {
-      return <View key={route.key} ref={insightsRef} collapsable={false} style={styles.tabAttach}>{icon}</View>;
-    }
     return icon;
   };
 
@@ -156,21 +124,19 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
         </View>
 
         <View style={styles.centerSlot}>
-          <View ref={mascotRef} collapsable={false} style={{ alignSelf: 'center' }}>
-            <Pressable
-              onPress={() => router.push('/check-in' as Href)}
-              accessibilityLabel="Log mood"
-              accessibilityRole="button"
-              style={styles.mascotButton}
-            >
-              <Image
-                source={getMascotSource(lastMoodId)}
-                style={styles.mascotImage}
-                contentFit="contain"
-                autoplay
-              />
-            </Pressable>
-          </View>
+          <Pressable
+            onPress={() => router.push('/check-in' as Href)}
+            accessibilityLabel="Log mood"
+            accessibilityRole="button"
+            style={styles.mascotButton}
+          >
+            <Image
+              source={getMascotSource(lastMoodId)}
+              style={styles.mascotImage}
+              contentFit="contain"
+              autoplay
+            />
+          </Pressable>
         </View>
 
         <View style={styles.tabSide}>
@@ -207,9 +173,6 @@ const styles = StyleSheet.create({
     width: MASCOT_SIZE ,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  tabAttach: {
-    alignSelf: 'center',
   },
   tabButton: {
     width: 64,

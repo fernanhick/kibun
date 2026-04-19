@@ -10,15 +10,18 @@ import { UserSession, SubscriptionStatus } from '@models/index';
 
 interface SessionState {
   session: UserSession | null;
+  _hasHydrated: boolean;
   setSession: (session: UserSession) => void;
   clearSession: () => void;
   setSubscriptionStatus: (status: SubscriptionStatus) => void;
+  setHasHydrated: (value: boolean) => void;
 }
 
 export const useSessionStore = create<SessionState>()(
   persist(
     (set) => ({
       session: null,
+      _hasHydrated: false,
       setSession: (session) => set({ session }),
       clearSession: () => set({ session: null }),
       setSubscriptionStatus: (status) =>
@@ -27,10 +30,15 @@ export const useSessionStore = create<SessionState>()(
             ? { ...state.session, subscriptionStatus: status }
             : null,
         })),
+      setHasHydrated: (value) => set({ _hasHydrated: value }),
     }),
     {
       name: 'kibun-session',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({ session: state.session }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

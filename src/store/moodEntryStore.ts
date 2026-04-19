@@ -29,6 +29,7 @@ function mergeEntries(local: MoodEntry[], remote: MoodEntry[]): MoodEntry[] {
 
 interface MoodEntryState {
   entries: MoodEntry[];
+  _hasHydrated: boolean;
   mergeRemoteEntries: (entries: MoodEntry[]) => void;
   addEntry: (entry: MoodEntry) => void;
   deleteEntry: (entryId: string) => void;
@@ -37,12 +38,15 @@ interface MoodEntryState {
   getEntriesForDate: (dateStr: string) => MoodEntry[];
   getDaysWithEntries: (yearMonth: string) => Record<string, string>;
   getStreak: () => number;
+  setHasHydrated: (value: boolean) => void;
 }
 
 export const useMoodEntryStore = create<MoodEntryState>()(
   persist(
     (set, get) => ({
       entries: [],
+      _hasHydrated: false,
+      setHasHydrated: (value) => set({ _hasHydrated: value }),
       mergeRemoteEntries: (remoteEntries) => {
         set((state) => ({ entries: mergeEntries(state.entries, remoteEntries) }));
       },
@@ -188,6 +192,10 @@ export const useMoodEntryStore = create<MoodEntryState>()(
     {
       name: 'kibun-mood-entries',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({ entries: state.entries }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

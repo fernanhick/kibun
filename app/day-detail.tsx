@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { View, Text, Pressable, Alert, StyleSheet } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Card, MoodBubble } from '@components/index';
 import { useMoodEntryStore, useLifeEventsStore } from '@store/index';
@@ -269,6 +269,15 @@ export default function DayDetailScreen() {
               </Pressable>
             );
           })}
+          <Pressable
+            onPress={() => router.push(`/check-in?date=${dateParam}` as Href)}
+            style={styles.logAnotherBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Log another mood for this day"
+          >
+            <Ionicons name="add-circle-outline" size={18} color={colors.primaryDark} />
+            <Text style={styles.logAnotherText}>Log another mood</Text>
+          </Pressable>
         </View>
       )}
     </Screen>
@@ -483,6 +492,25 @@ const styles = StyleSheet.create({
   deleteText: {
     fontSize: typography.sizes.sm,
     color: colors.error,
+    fontWeight: typography.weights.medium,
+  },
+  logAnotherBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: spacing.xs,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.lg,
+    backgroundColor: colors.primaryLight,
+    borderWidth: 1,
+    borderColor: '#C6DBFF',
+  },
+  logAnotherText: {
+    fontSize: typography.sizes.body,
+    fontFamily: typography.fonts.ui,
+    color: colors.primaryDark,
     fontWeight: typography.weights.medium,
   },
 });

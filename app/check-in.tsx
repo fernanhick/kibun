@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   bubbleRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.xs,
+    gap: 0,
   },
   customGroupHeader: {
     flexDirection: 'row',

@@ -1,8 +1,8 @@
 import { useRef, useEffect } from 'react';
-import { Animated, Pressable, Text, StyleSheet, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import { Animated, Pressable, Text, StyleSheet, Image } from 'react-native';
+import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { MoodDefinition } from '@constants/moods';
-import { typography, shadows } from '@constants/theme';
+import { typography } from '@constants/theme';
 
 interface MoodBubbleProps {
   mood: MoodDefinition;
@@ -12,16 +12,11 @@ interface MoodBubbleProps {
   disabled?: boolean;
 }
 
-// 2:1 aspect ratio to match the horizontal bone silhouette
 const BONE_SIZES = {
-  sm: { width: 64, height: 32 },
-  md: { width: 96, height: 48 },
-  lg: { width: 128, height: 64 },
+  sm: { width: 74, imageSize: 48 },
+  md: { width: 90, imageSize: 60 },
+  lg: { width: 110, imageSize: 76 },
 } as const;
-
-// Q control points pushed far outward (y=10/70) for a chunky ~41px waist.
-const BONE_PATH =
-  'M 45,27 Q 80,10 115,27 A 20,20 0 1,1 143,40 A 20,20 0 1,1 115,53 Q 80,70 45,53 A 20,20 0 1,1 17,40 A 20,20 0 1,1 45,27 Z';
 
 const FONT_SIZES = {
   sm: typography.sizes.xs,
@@ -49,8 +44,14 @@ export function MoodBubble({
     return () => animation.stop(); // Stop on unmount or before next effect run
   }, [selected]);
 
-  const { width, height } = BONE_SIZES[size];
+  const { width, imageSize } = BONE_SIZES[size];
   const fontSizeStyle = { fontSize: FONT_SIZES[size] };
+
+  // Gradient anchored on the paw center; clamped so it never reaches the container edge
+  const PAD = 8;
+  const gradCx = width / 2;
+  const gradCy = PAD + imageSize / 2;
+  const gradR = Math.min(imageSize * 0.75, width / 2 - 4);
 
   return (
     <Animated.View
@@ -71,7 +72,7 @@ export function MoodBubble({
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         style={({ pressed }) => [
           styles.bone,
-          { width, height },
+          { width },
           disabled && styles.disabled,
           pressed && !disabled && styles.pressed,
         ]}
@@ -79,30 +80,34 @@ export function MoodBubble({
         accessibilityLabel={mood.label}
         accessibilityState={onPress ? { selected, disabled } : undefined}
       >
-        <Svg width={width} height={height} viewBox="0 0 160 80" style={StyleSheet.absoluteFill}>
-          {/* Drop shadow layer */}
-          <Path
-            d={BONE_PATH}
-            fill="rgba(0,0,0,0.18)"
-            transform="translate(3, 4)"
-          />
-          <Path
-            d={BONE_PATH}
-            fill={mood.bubbleColor}
-            stroke="rgba(255,255,255,0.85)"
-            strokeWidth={3}
-            strokeLinejoin="round"
-          />
+        <Svg width={width} height="100%" style={StyleSheet.absoluteFill}>
+          <Defs>
+            <RadialGradient
+              id={`rg-${mood.id}`}
+              cx={gradCx}
+              cy={gradCy}
+              r={gradR}
+              gradientUnits="userSpaceOnUse"
+            >
+              <Stop offset="0%" stopColor={mood.bubbleColor} stopOpacity="1" />
+              <Stop offset="60%" stopColor={mood.bubbleColor} stopOpacity="1" />
+              <Stop offset="100%" stopColor={mood.bubbleColor} stopOpacity="0" />
+            </RadialGradient>
+          </Defs>
+          <Rect width="100%" height="100%" fill={`url(#rg-${mood.id})`} />
         </Svg>
-        <View style={styles.labelContainer}>
-          <Text
-            style={[styles.label, fontSizeStyle, { color: mood.textColor }]}
-            numberOfLines={2}
-            adjustsFontSizeToFit
-          >
-            {mood.label}
-          </Text>
-        </View>
+        <Image
+          source={require('../../assets/paw.png')}
+          style={{ width: imageSize, height: imageSize }}
+          resizeMode="contain"
+        />
+        <Text
+          style={[styles.label, fontSizeStyle, { color: mood.textColor }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          {mood.label}
+        </Text>
       </Pressable>
     </Animated.View>
   );
@@ -115,16 +120,12 @@ const styles = StyleSheet.create({
   bone: {
     alignItems: 'center',
     justifyContent: 'center',
-    ...shadows.sm,
-  },
-  labelContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 0,
+    gap: 1,
+    borderRadius: 16,
+    overflow: 'hidden',
+    backgroundColor: 'transparent',
   },
   pressed: {
     opacity: 0.82,

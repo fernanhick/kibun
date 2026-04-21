@@ -37,7 +37,7 @@ export default function JournalReflectScreen() {
   return (
     <Screen scrollable={false} contentContainerStyle={styles.content}>
       <LinearGradient
-        colors={[colors.skyStart, colors.skyEnd]}
+        colors={[colors.pink, colors.pinkEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.hero}
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderRadius: 22,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
+    borderColor: colors.pinkBorder,
     padding: spacing.md,
   },
   input: {

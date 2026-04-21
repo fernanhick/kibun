@@ -1,6 +1,7 @@
-import { useRef } from 'react';
+import { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import LottieView from 'lottie-react-native';
+import { Image } from 'expo-image';
+import { getMascotSource } from '@constants/mascotAnimations';
 import { colors, typography, spacing } from '@constants/theme';
 
 interface SplashScreenViewProps {
@@ -8,17 +9,18 @@ interface SplashScreenViewProps {
 }
 
 export function SplashScreenView({ onFinish }: SplashScreenViewProps) {
-  const animRef = useRef<LottieView>(null);
+  useEffect(() => {
+    const timer = setTimeout(onFinish, 2500);
+    return () => clearTimeout(timer);
+  }, [onFinish]);
 
   return (
     <View style={styles.container}>
-      <LottieView
-        ref={animRef}
-        source={require('../assets/lottie/shiba-happy.json')}
+      <Image
+        source={getMascotSource('happy')}
         style={styles.mascot}
-        autoPlay
-        loop={false}
-        onAnimationFinish={onFinish}
+        contentFit="contain"
+        autoplay
       />
       <Text style={styles.title}>kibun</Text>
       <Text style={styles.subtitle}>気分</Text>

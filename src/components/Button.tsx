@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.semibold,
   },
   mdLabel: {
-    fontSize: typography.sizes.md,
+    fontSize: typography.sizes.lg,
   },
   smLabel: {
     fontSize: typography.sizes.sm,

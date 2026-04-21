@@ -23,7 +23,7 @@ export default ({ config }: ConfigContext) => ({
   splash: {
     image: './assets/splash-preview2.png',
     resizeMode: 'cover',
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#E6F4FF',
   },
   assetBundlePatterns: ['**/*'],
   linking: linkingConfig as any,
@@ -62,7 +62,7 @@ export default ({ config }: ConfigContext) => ({
       {
         image: './assets/splash-preview2.png',
         resizeMode: 'cover',
-        backgroundColor: '#6C63FF',
+        backgroundColor: '#E6F4FF',
       },
     ],
   ],

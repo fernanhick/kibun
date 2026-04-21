@@ -38,7 +38,11 @@ export default function SettingsScreen() {
   const selectedSlots = useNotificationPrefsStore((s) => s.selectedSlots);
   const streakNudgeEnabled = useNotificationPrefsStore((s) => s.streakNudgeEnabled);
   const customTimes = useNotificationPrefsStore((s) => s.customTimes);
-  const { setSlots, setStreakNudgeEnabled, setPermissionGranted, setCustomTime, clearCustomTime } = useNotificationPrefsStore.getState();
+  const adaptiveTimes = useNotificationPrefsStore((s) => s.adaptiveTimes);
+  const adaptiveEnabled = useNotificationPrefsStore((s) => s.adaptiveEnabled);
+  const { setSlots, setStreakNudgeEnabled, setPermissionGranted, setCustomTime, clearCustomTime, toggleAdaptive } = useNotificationPrefsStore.getState();
+
+  const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
 
   const appVersion = Constants.expoConfig?.version ?? '—';
 
@@ -59,9 +63,12 @@ export default function SettingsScreen() {
   const reschedule = useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
-      const { selectedSlots: slots, streakNudgeEnabled: nudge, customTimes: times } = useNotificationPrefsStore.getState();
+      const {
+        selectedSlots: slots, streakNudgeEnabled: nudge, customTimes: times,
+        adaptiveTimes: aTimes, adaptiveEnabled: aEnabled,
+      } = useNotificationPrefsStore.getState();
       try {
-        await scheduleSlotNotifications(slots, nudge, times);
+        await scheduleSlotNotifications(slots, nudge, times, aEnabled ? aTimes : {});
       } catch (error) {
         if (__DEV__) {
           console.error('[kibun:notif] Reschedule failed:', error);
@@ -248,6 +255,81 @@ export default function SettingsScreen() {
         </View>
       </View>
 
+      {/* ── Smart Timing — Pro feature ───────────────────────────────── */}
+      <Text style={styles.sectionHeader} accessibilityRole="header">
+        SMART TIMING
+      </Text>
+      {isPro ? (
+        <View style={styles.section}>
+          <View style={styles.row}>
+            <View style={styles.rowText}>
+              <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
+                Adaptive reminders
+              </Text>
+              <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
+                Shifts reminder times to when you usually check in
+              </Text>
+            </View>
+            <Switch
+              value={adaptiveEnabled}
+              onValueChange={(v) => { toggleAdaptive(v); reschedule(); }}
+              disabled={isDisabled}
+              trackColor={{ false: colors.border, true: colors.accent }}
+              accessibilityLabel="Enable adaptive reminder timing"
+              accessibilityState={{ disabled: isDisabled }}
+            />
+          </View>
+          {adaptiveEnabled && SLOT_ROWS.filter((r) => selectedSlots.includes(r.slot)).map((row) => {
+            const adaptiveTime = adaptiveTimes[row.slot];
+            if (!adaptiveTime) return null;
+            const isOverridden = !!customTimes[row.slot];
+            return (
+              <View key={row.slot} style={styles.row}>
+                <View style={styles.rowText}>
+                  <Text style={styles.rowLabel}>{row.label}</Text>
+                  <Text style={styles.rowHint}>
+                    {isOverridden
+                      ? `Custom time overrides smart timing (${adaptiveTime} computed)`
+                      : `Smart time: ${adaptiveTime}`}
+                  </Text>
+                </View>
+                {!isOverridden && (
+                  <View style={styles.activeBadge}>
+                    <Text style={styles.activeBadgeText}>Active</Text>
+                  </View>
+                )}
+              </View>
+            );
+          })}
+          {adaptiveEnabled && Object.keys(adaptiveTimes).length === 0 && (
+            <View style={styles.row}>
+              <Text style={[styles.rowHint, { flex: 1 }]}>
+                Log more check-ins to activate smart timing.
+              </Text>
+            </View>
+          )}
+        </View>
+      ) : (
+        <Pressable
+          style={styles.section}
+          onPress={() => router.push('/paywall' as any)}
+          accessibilityRole="button"
+          accessibilityLabel="Upgrade to Pro to unlock Smart Timing"
+        >
+          <View style={styles.proLockRow}>
+            <View style={styles.rowText}>
+              <Text style={styles.rowLabel}>Adaptive reminders</Text>
+              <Text style={styles.rowHint}>
+                Learns when you actually check in and adjusts reminder times. Pro feature.
+              </Text>
+            </View>
+            <View style={styles.proLockBadge}>
+              <Text style={styles.proLockBadgeText}>Pro</Text>
+            </View>
+          </View>
+        </Pressable>
+      )}
+
       {/* ── About section ────────────────────────────────────────────── */}
       <Text style={styles.sectionHeader} accessibilityRole="header">
         ABOUT
@@ -385,6 +467,19 @@ const styles = StyleSheet.create({
   proLockBadgeText: {
     fontSize: typography.sizes.xs,
     color: colors.textInverse,
+    fontWeight: typography.weights.semibold,
+  },
+  activeBadge: {
+    backgroundColor: '#E8F5E9',
+    borderRadius: 999,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: '#A5D6A7',
+  },
+  activeBadgeText: {
+    fontSize: typography.sizes.xs,
+    color: '#388E3C',
     fontWeight: typography.weights.semibold,
   },
 });

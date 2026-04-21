@@ -23,6 +23,11 @@ export const colors = {
   accent: '#FFA62B',
   accentLight: '#FFF4DF',
   accentBorder: '#FFE0A3',
+  // Pink accent (emotional / personal screens)
+  pink: '#FF6B9D',
+  pinkEnd: '#C77DFF',
+  pinkLight: 'rgba(255, 107, 157, 0.10)',
+  pinkBorder: 'rgba(255, 107, 157, 0.25)',
   // Background
   background: '#E6F4FF',
   surface: '#FFFDFB',

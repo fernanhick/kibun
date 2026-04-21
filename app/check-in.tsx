@@ -5,7 +5,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@components/index';
 import { MoodBubble } from '@components/MoodBubble';
 import { MOODS, MoodDefinition, MoodGroup } from '@constants/moods';
-import { colors, typography, spacing } from '@constants/theme';
+import { colors, typography, spacing, radius } from '@constants/theme';
+import { useSessionStore } from '@store/sessionStore';
+import { useCustomMoodsStore } from '@store/customMoodsStore';
+import { getMoodDef } from '@lib/moodUtils';
 
 const GROUP_LABELS: Record<MoodGroup, string> = {
   green: 'Positive',
@@ -36,16 +39,24 @@ export default function MoodSelectionScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ date?: string }>();
   const groups = groupMoods();
+  const session = useSessionStore((s) => s.session);
+  const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
+  const customMoods = useCustomMoodsStore((s) => s.moods);
 
   const handleSelect = (mood: MoodDefinition) => {
     const dateParam = params.date ? `&date=${params.date}` : '';
     router.push(`/mood-confirm?moodId=${mood.id}${dateParam}` as Href);
   };
 
+  const handleSelectCustom = (id: string) => {
+    const dateParam = params.date ? `&date=${params.date}` : '';
+    router.push(`/mood-confirm?moodId=${id}${dateParam}` as Href);
+  };
+
   return (
     <Screen scrollable={true} contentContainerStyle={styles.content}>
       <LinearGradient
-        colors={[colors.skyStart, colors.skyEnd]}
+        colors={[colors.pink, colors.pinkEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
@@ -83,6 +94,53 @@ export default function MoodSelectionScreen() {
           </View>
         </View>
       ))}
+
+      {/* Custom moods — Pro only */}
+      {isPro && (
+        <View style={styles.groupSection}>
+          <View style={styles.customGroupHeader}>
+            <Text style={styles.groupLabel} accessibilityRole="header">
+              Your moods
+            </Text>
+            <Pressable
+              onPress={() => router.push('/custom-moods' as Href)}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Manage custom moods"
+            >
+              <Text style={styles.manageLink}>
+                {customMoods.length > 0 ? 'Manage' : '+ Create'}
+              </Text>
+            </Pressable>
+          </View>
+          {customMoods.length === 0 ? (
+            <Pressable
+              style={styles.createCustomPill}
+              onPress={() => router.push('/custom-moods' as Href)}
+              accessibilityRole="button"
+              accessibilityLabel="Create your first custom mood"
+            >
+              <Ionicons name="add" size={16} color={colors.primary} />
+              <Text style={styles.createCustomText}>Create a custom mood</Text>
+            </Pressable>
+          ) : (
+            <View style={styles.bubbleRow}>
+              {customMoods.map((cm) => {
+                const def = getMoodDef(cm.id, customMoods);
+                if (!def) return null;
+                return (
+                  <MoodBubble
+                    key={cm.id}
+                    mood={def}
+                    size="md"
+                    onPress={() => handleSelectCustom(cm.id)}
+                  />
+                );
+              })}
+            </View>
+          )}
+        </View>
+      )}
     </Screen>
   );
 }
@@ -123,12 +181,12 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
     borderWidth: 1,
-    borderColor: '#DCE9FF',
+    borderColor: colors.pinkBorder,
   },
   groupLabel: {
     fontSize: typography.sizes.xs,
     fontFamily: typography.fonts.ui,
-    color: colors.primaryDark,
+    color: colors.pink,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
@@ -136,5 +194,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.xs,
+  },
+  customGroupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  manageLink: {
+    fontSize: typography.sizes.sm,
+    color: colors.pink,
+    fontFamily: typography.fonts.ui,
+  },
+  createCustomPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: 9,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.full,
+    borderWidth: 1.5,
+    borderColor: colors.pinkBorder,
+    borderStyle: 'dashed',
+    alignSelf: 'flex-start',
+    backgroundColor: colors.pinkLight,
+  },
+  createCustomText: {
+    fontSize: typography.sizes.sm,
+    color: colors.pink,
+    fontFamily: typography.fonts.ui,
   },
 });

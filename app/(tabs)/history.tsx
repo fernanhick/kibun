@@ -3,7 +3,7 @@ import { View, Text, Pressable, Share, StyleSheet, useWindowDimensions } from 'r
 import { useRouter, Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Shiba } from '@components/index';
-import { useMoodEntryStore, useSessionStore } from '@store/index';
+import { useMoodEntryStore, useSessionStore, useLifeEventsStore } from '@store/index';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { colors, spacing, typography, radius } from '@constants/theme';
 
@@ -53,6 +53,7 @@ export default function HistoryScreen() {
   // Select stable reference, derive outside selector to avoid infinite loop:
   // getDaysWithEntries returns a new object each call, breaking useSyncExternalStore.
   const entries = useMoodEntryStore((s) => s.entries);
+  const lifeEvents = useLifeEventsStore((s) => s.events);
 
   const daysWithMoods = useMemo(() => {
     const dayEntries = entries.filter((e) => e.loggedAt.startsWith(yearMonth));
@@ -83,6 +84,14 @@ export default function HistoryScreen() {
     }
     return result;
   }, [entries, yearMonth]);
+
+  const daysWithEvents = useMemo(() => {
+    const set = new Set<string>();
+    for (const e of lifeEvents) {
+      if (e.eventDate.startsWith(yearMonth)) set.add(e.eventDate);
+    }
+    return set;
+  }, [lifeEvents, yearMonth]);
 
   const grid = useMemo(
     () => buildCalendarGrid(currentMonth.year, currentMonth.month),
@@ -127,7 +136,7 @@ export default function HistoryScreen() {
     if (exporting) return;
     setExporting(true);
     try {
-      const header = 'id,mood,slot,logged_at,note,sentiment_label,sentiment_score,journal_response';
+      const header = 'id,mood,slot,logged_at,note,sentiment_label,sentiment_score,journal_response,energy_level,focus_level';
       const rows = entries.map((e) => {
         const escape = (v: string | null | undefined) =>
           v ? `"${v.replace(/"/g, '""')}"` : '';
@@ -140,6 +149,8 @@ export default function HistoryScreen() {
           e.sentimentLabel ?? '',
           e.sentimentScore ?? '',
           escape(e.journalResponse),
+          e.energyLevel ?? '',
+          e.focusLevel ?? '',
         ].join(',');
       });
       const csv = [header, ...rows].join('\n');
@@ -160,6 +171,17 @@ export default function HistoryScreen() {
             <Text style={styles.headerBadgeText}>Mood Calendar</Text>
           </View>
           <View style={styles.headerTopRight}>
+            {isPro && (
+              <Pressable
+                onPress={() => router.push('/log-event' as Href)}
+                style={styles.addEventBtn}
+                accessibilityRole="button"
+                accessibilityLabel="Log a life event"
+              >
+                <Ionicons name="add" size={16} color={colors.primaryDark} />
+                <Text style={styles.exportBtnLabel}>Event</Text>
+              </Pressable>
+            )}
             {isPro ? (
               <Pressable
                 onPress={handleExport}
@@ -282,6 +304,9 @@ export default function HistoryScreen() {
                     >
                       {day}
                     </Text>
+                    {daysWithEvents.has(dateStr) && (
+                      <View style={styles.eventDot} />
+                    )}
                   </Pressable>
                 );
               })}
@@ -446,5 +471,23 @@ const styles = StyleSheet.create({
   dayNumber: {
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.medium,
+  },
+  eventDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: colors.accent,
+    marginTop: 1,
+  },
+  addEventBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.accentLight,
+    borderWidth: 1,
+    borderColor: colors.accentBorder,
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
   },
 });

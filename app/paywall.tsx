@@ -15,9 +15,14 @@ import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
 const FEATURES = [
-  'AI weekly and monthly mood reports',
-  'Unlimited mood history and calendar',
-  'Personalised pattern insights',
+  { emoji: '✨', text: 'Daily AI wellness insight, just for you' },
+  { emoji: '📊', text: 'Weekly & monthly AI mood reports' },
+  { emoji: '🎉', text: 'Annual mood report & year in review' },
+  { emoji: '📅', text: 'Unlimited mood history & calendar' },
+  { emoji: '🔮', text: 'Pattern insights & resilience score' },
+  { emoji: '🌱', text: 'Habit tracking (sleep, exercise & more)' },
+  { emoji: '📝', text: 'Life event logging & mood correlation' },
+  { emoji: '🎨', text: 'Custom moods with personalised colours' },
 ];
 
 export default function PaywallScreen() {
@@ -96,26 +101,28 @@ export default function PaywallScreen() {
   };
 
   return (
-    <Screen scrollable={false} contentContainerStyle={styles.content}>
+    <Screen scrollable contentContainerStyle={styles.content}>
       <View style={styles.top}>
         <LinearGradient
-          colors={[colors.skyStart, colors.skyEnd]}
+          colors={['#FF6B9D', '#C77DFF']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.heroCard}
         >
-          <Text style={styles.title}>Try kibun Premium</Text>
+          <Text style={styles.heroEmoji}>🌸</Text>
+          <Text style={styles.title}>kibun Premium</Text>
           <Text style={styles.subtitle}>
-            Understand your emotional patterns with AI-powered insights.
+            Your feelings deserve the full picture.{'\n'}Let's make sense of them together 💕
           </Text>
         </LinearGradient>
 
         <View style={styles.featureCard}>
+          <Text style={styles.featureSectionLabel}>Everything you get ✨</Text>
           <View style={styles.featureList}>
             {FEATURES.map((feature) => (
-              <View key={feature} style={styles.featureRow}>
-                <Text style={styles.featureDot}>•</Text>
-                <Text style={styles.featureText}>{feature}</Text>
+              <View key={feature.text} style={styles.featureRow}>
+                <Text style={styles.featureEmoji}>{feature.emoji}</Text>
+                <Text style={styles.featureText}>{feature.text}</Text>
               </View>
             ))}
           </View>
@@ -124,14 +131,14 @@ export default function PaywallScreen() {
 
       <View style={styles.bottom}>
         <View style={styles.trialBox}>
-          <Text style={styles.trialDays}>7 days free</Text>
+          <Text style={styles.trialDays}>🎀 7 days free</Text>
           <Text style={styles.trialTerms}>
             then $5.99 / month or $39.99 / year · cancel anytime
           </Text>
         </View>
 
         <Button
-          label="Start 7-day free trial"
+          label="Start my free trial 🌸"
           onPress={handlePurchase}
           variant="sunrise"
           loading={purchasing}
@@ -155,10 +162,13 @@ export default function PaywallScreen() {
   );
 }
 
+const PINK = '#FF6B9D';
+const PINK_LIGHT = 'rgba(255, 107, 157, 0.10)';
+const PINK_BORDER = 'rgba(255, 107, 157, 0.25)';
+
 const styles = StyleSheet.create({
   content: {
-    flex: 1,
-    justifyContent: 'space-between',
+    gap: spacing.lg,
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
   },
@@ -168,43 +178,61 @@ const styles = StyleSheet.create({
   heroCard: {
     borderRadius: 28,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
-    marginBottom: spacing.lg,
+    paddingVertical: spacing.xl,
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  heroEmoji: {
+    fontSize: 44,
   },
   featureCard: {
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
+    borderWidth: 1.5,
+    borderColor: PINK_BORDER,
     borderRadius: 22,
     padding: spacing.md,
+    ...shadows.sm,
   },
   title: {
     fontSize: typography.sizes.xxl,
-    fontWeight: typography.weights.bold,
+    fontFamily: typography.fonts.display,
     color: colors.textInverse,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: typography.sizes.md,
-    color: colors.sparkle,
+    color: 'rgba(255,255,255,0.90)',
     lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
+    textAlign: 'center',
+  },
+  featureSectionLabel: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.ui,
+    color: PINK,
+    marginBottom: spacing.sm,
+    letterSpacing: 0.4,
   },
   featureList: {
     gap: spacing.sm,
-    marginTop: spacing.sm,
   },
   featureRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
-    alignItems: 'flex-start',
+    backgroundColor: PINK_LIGHT,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.xs + 2,
+    paddingHorizontal: spacing.sm,
   },
-  featureDot: {
-    fontSize: typography.sizes.md,
-    color: colors.primary,
-    lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
+  featureEmoji: {
+    fontSize: 18,
+    width: 26,
+    textAlign: 'center',
   },
   featureText: {
     flex: 1,
     fontSize: typography.sizes.md,
+    fontFamily: typography.fonts.body,
     color: colors.text,
     lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
   },
@@ -212,20 +240,20 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   trialBox: {
-    backgroundColor: colors.chipSurface,
+    backgroundColor: PINK_LIGHT,
     borderRadius: radius.lg,
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.md,
     alignItems: 'center',
     gap: spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.chipBorder,
+    borderWidth: 1.5,
+    borderColor: PINK_BORDER,
     ...shadows.sm,
   },
   trialDays: {
     fontSize: typography.sizes.xl,
-    fontWeight: typography.weights.bold,
-    color: colors.primary,
+    fontFamily: typography.fonts.display,
+    color: PINK,
   },
   trialTerms: {
     fontSize: typography.sizes.sm,

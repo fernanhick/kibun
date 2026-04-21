@@ -58,6 +58,48 @@ export interface MoodEntry {
   // Pro: AI Journaling
   journalPrompt?: string;              // AI-generated reflection question (Pro only)
   journalResponse?: string;            // user's typed response
+  // Pro: Multi-dimensional check-ins
+  energyLevel?: number;                // 1–5 scale (Pro only)
+  focusLevel?: number;                 // 1–5 scale (Pro only)
+}
+
+// ─── Habits ───────────────────────────────────────────────────────────────────
+
+export type HabitTrackingType = 'boolean' | 'scale';
+
+export interface Habit {
+  id: string;
+  name: string;
+  icon: string;
+  trackingType: HabitTrackingType;
+  displayOrder: number;
+  createdAt: string;
+}
+
+export interface HabitLog {
+  id: string;
+  habitId: string;
+  logDate: string;   // YYYY-MM-DD
+  value: number;     // 1 for boolean done; 1–5 for scale
+}
+
+// ─── Life Events ──────────────────────────────────────────────────────────────
+
+export type LifeEventCategory =
+  | 'work'
+  | 'social'
+  | 'health'
+  | 'travel'
+  | 'relationship'
+  | 'personal';
+
+export interface LifeEvent {
+  id: string;
+  title: string;
+  category: LifeEventCategory;
+  eventDate: string;   // YYYY-MM-DD
+  notes?: string;
+  createdAt: string;   // ISO timestamp
 }
 
 // ─── Achievements ─────────────────────────────────────────────────────────────
@@ -78,12 +120,22 @@ export interface AchievementDefinition {
   emoji: string;
 }
 
+// ─── Custom Moods ─────────────────────────────────────────────────────────────
+
+export interface CustomMood {
+  id: string;          // 'custom_xxxxxx' client-generated
+  label: string;       // max 12 chars
+  color: string;       // hex color e.g. '#FF6B9D'
+  group: 'green' | 'neutral' | 'red-orange' | 'blue';  // matches MoodGroup
+  createdAt: string;   // ISO timestamp
+}
+
 // ─── AI Reports ───────────────────────────────────────────────────────────────
 
 export interface AIReport {
   id: string;
   userId: string;
-  reportType: 'weekly' | 'monthly';
+  reportType: 'weekly' | 'monthly' | 'annual' | 'daily';
   periodStart: string;     // ISO date (YYYY-MM-DD)
   periodEnd: string;       // ISO date (YYYY-MM-DD)
   content: string;         // narrative text from OpenAI

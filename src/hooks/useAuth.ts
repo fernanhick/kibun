@@ -3,7 +3,7 @@ import * as Crypto from 'expo-crypto';
 import { isSupabaseConfigured, supabase } from '@lib/supabase';
 import { useSessionStore, useMoodEntryStore } from '@store/index';
 import { useAchievementsStore } from '@store/achievementsStore';
-import { refreshSubscriptionStatus } from '@lib/revenuecat';
+import { refreshSubscriptionStatus, loginPurchases, logoutPurchases } from '@lib/revenuecat';
 import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
@@ -172,6 +172,7 @@ export function useAuth() {
             });
 
             if (isRegistered) {
+              void loginPurchases(session.user.id);
               void syncMoodEntriesForUser(session.user.id).then(() =>
                 uploadLocalEntriesToSupabase(session.user.id)
               );
@@ -200,6 +201,7 @@ export function useAuth() {
             });
 
             if (isRegistered) {
+              void loginPurchases(session.user.id);
               void syncMoodEntriesForUser(session.user.id).then(() =>
                 uploadLocalEntriesToSupabase(session.user.id)
               );
@@ -228,6 +230,7 @@ export function useAuth() {
             });
           }
         } else if (event === 'SIGNED_OUT') {
+          void logoutPurchases();
           useMoodEntryStore.getState().clearEntries();
           clearSession();
         }

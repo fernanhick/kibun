@@ -6,12 +6,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Card } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useMoodEntryStore, useSessionStore } from '@store/index';
+import { useHabitsStore } from '@store/habitsStore';
 import { filterEntriesByDays, getMoodFrequency, getDailyMoodScores, GROUP_SCORES } from '@lib/insights';
-import { detectPatterns } from '@lib/patterns';
+import { detectPatterns, calculateResilienceScore, type ResilienceResult } from '@lib/patterns';
 import { BarChart, LineChart } from 'react-native-gifted-charts';
 import { colors, typography, spacing, radius } from '@constants/theme';
 import { MOOD_MAP } from '@constants/moods';
-import type { MoodSlot } from '@models/index';
+import type { MoodSlot, Habit, HabitLog, MoodEntry } from '@models/index';
 
 type Period = 7 | 30;
 
@@ -34,6 +35,23 @@ export default function InsightsScreen() {
   const dailyScores = useMemo(() => getDailyMoodScores(filtered), [filtered]);
   const patterns = useMemo(() => detectPatterns(filtered), [filtered]);
   const totalEntries = filtered.length;
+
+  const habits = useHabitsStore((s) => s.habits);
+  const habitLogs = useHabitsStore((s) => s.logs);
+
+  const resilienceCurrent = useMemo(() => calculateResilienceScore(filtered), [filtered]);
+  const resiliencePrior = useMemo(() => {
+    const nowMs = Date.now();
+    const currentCutoff = new Date(nowMs - period * 24 * 60 * 60 * 1000).toISOString();
+    const priorCutoff = new Date(nowMs - period * 2 * 24 * 60 * 60 * 1000).toISOString();
+    const priorEntries = entries.filter((e) => e.loggedAt < currentCutoff && e.loggedAt >= priorCutoff);
+    return calculateResilienceScore(priorEntries);
+  }, [entries, period]);
+
+  const habitCorrelations = useMemo(
+    () => computeHabitCorrelations(habits, habitLogs, filtered),
+    [habits, habitLogs, filtered],
+  );
 
   // Correlation matrix: slot × day-of-week → average mood score
   const correlationMatrix = useMemo(() => {
@@ -242,6 +260,37 @@ export default function InsightsScreen() {
         </View>
       )}
 
+      {/* Resilience Score — Pro feature */}
+      {filtered.length > 0 && (
+        <View>
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            Resilience
+          </Text>
+          {isPro ? (
+            <ResilienceCard current={resilienceCurrent} prior={resiliencePrior} />
+          ) : (
+            <Pressable
+              onPress={() => router.push('/paywall')}
+              accessibilityRole="button"
+              accessibilityLabel="Upgrade to Pro to unlock Emotional Resilience Score"
+            >
+              <Card style={styles.proLockCard}>
+                <Text style={styles.proLockIcon}>💪</Text>
+                <View style={styles.proLockInfo}>
+                  <Text style={styles.proLockTitle}>Emotional Resilience Score</Text>
+                  <Text style={styles.proLockSubtitle}>
+                    See how quickly you bounce back from difficult moods. Pro feature.
+                  </Text>
+                </View>
+                <View style={styles.proLockBadge}>
+                  <Text style={styles.proLockBadgeText}>Pro</Text>
+                </View>
+              </Card>
+            </Pressable>
+          )}
+        </View>
+      )}
+
       {/* Correlations — Pro feature */}
       {filtered.length > 0 && (
         <View>
@@ -262,6 +311,49 @@ export default function InsightsScreen() {
                   <Text style={styles.proLockTitle}>Correlation Insights</Text>
                   <Text style={styles.proLockSubtitle}>
                     See which times and days you feel best. Pro feature.
+                  </Text>
+                </View>
+                <View style={styles.proLockBadge}>
+                  <Text style={styles.proLockBadgeText}>Pro</Text>
+                </View>
+              </Card>
+            </Pressable>
+          )}
+        </View>
+      )}
+
+      {/* Habits × Mood — Pro feature */}
+      {habits.length > 0 && filtered.length > 0 && (
+        <View>
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            Habits &amp; Mood
+          </Text>
+          {isPro ? (
+            habitCorrelations.length > 0 ? (
+              <HabitCorrelationList correlations={habitCorrelations} />
+            ) : (
+              <Card style={styles.proLockCard}>
+                <Text style={styles.proLockIcon}>📊</Text>
+                <View style={styles.proLockInfo}>
+                  <Text style={styles.proLockTitle}>Not enough data yet</Text>
+                  <Text style={styles.proLockSubtitle}>
+                    Log habits for at least 5 days to see correlations.
+                  </Text>
+                </View>
+              </Card>
+            )
+          ) : (
+            <Pressable
+              onPress={() => router.push('/paywall')}
+              accessibilityRole="button"
+              accessibilityLabel="Upgrade to Pro to unlock Habit Correlations"
+            >
+              <Card style={styles.proLockCard}>
+                <Text style={styles.proLockIcon}>📊</Text>
+                <View style={styles.proLockInfo}>
+                  <Text style={styles.proLockTitle}>Habit × Mood Correlations</Text>
+                  <Text style={styles.proLockSubtitle}>
+                    See which habits most influence your mood scores. Pro feature.
                   </Text>
                 </View>
                 <View style={styles.proLockBadge}>
@@ -294,9 +386,198 @@ export default function InsightsScreen() {
           </Pressable>
         </View>
       )}
+
+      {entries.length > 0 && (
+        <View>
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            Year in Mood
+          </Text>
+          <Pressable
+            onPress={() => router.push('/annual-report')}
+            accessibilityRole="button"
+            accessibilityLabel="View your Year in Mood annual report"
+          >
+            <Card style={styles.aiReportCard}>
+              <Text style={styles.aiReportIcon}>🗓️</Text>
+              <View style={styles.aiReportInfo}>
+                <Text style={styles.aiReportTitle}>
+                  {new Date().getFullYear()} in Mood
+                </Text>
+                <Text style={styles.aiReportSubtitle}>
+                  Your yearly mood story with AI narrative
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+            </Card>
+          </Pressable>
+        </View>
+      )}
     </Screen>
   );
 }
+
+// ─── Habit Correlation ───────────────────────────────────────────────────────
+
+interface HabitCorrelation {
+  habit: Habit;
+  correlation: number;  // -1 to 1 (scale) or mean-diff normalized (boolean)
+  label: string;
+}
+
+function strengthLabel(r: number): string {
+  const abs = Math.abs(r);
+  const dir = r >= 0 ? 'positive' : 'negative';
+  if (abs >= 0.5) return `Strong ${dir}`;
+  if (abs >= 0.3) return `Moderate ${dir}`;
+  if (abs >= 0.1) return `Weak ${dir}`;
+  return 'No clear link';
+}
+
+function pearsonCorrelation(xs: number[], ys: number[]): number {
+  const n = xs.length;
+  if (n < 2) return 0;
+  const meanX = xs.reduce((a, b) => a + b, 0) / n;
+  const meanY = ys.reduce((a, b) => a + b, 0) / n;
+  let num = 0, sdX = 0, sdY = 0;
+  for (let i = 0; i < n; i++) {
+    num += (xs[i] - meanX) * (ys[i] - meanY);
+    sdX += (xs[i] - meanX) ** 2;
+    sdY += (ys[i] - meanY) ** 2;
+  }
+  const denom = Math.sqrt(sdX * sdY);
+  return denom === 0 ? 0 : num / denom;
+}
+
+function computeHabitCorrelations(
+  habits: Habit[],
+  logs: HabitLog[],
+  entries: MoodEntry[],
+): HabitCorrelation[] {
+  // Build daily average mood score map
+  const dailyMood: Record<string, number[]> = {};
+  for (const e of entries) {
+    const date = e.loggedAt.split('T')[0];
+    const mood = MOOD_MAP[e.moodId as keyof typeof MOOD_MAP];
+    const score = mood ? GROUP_SCORES[mood.group] : 3;
+    if (!dailyMood[date]) dailyMood[date] = [];
+    dailyMood[date].push(score);
+  }
+  const dailyAvg: Record<string, number> = {};
+  for (const [date, scores] of Object.entries(dailyMood)) {
+    dailyAvg[date] = scores.reduce((a, b) => a + b, 0) / scores.length;
+  }
+
+  const result: HabitCorrelation[] = [];
+
+  for (const habit of habits) {
+    const hLogs = logs.filter((l) => l.habitId === habit.id && dailyAvg[l.logDate] !== undefined);
+    if (hLogs.length < 5) continue;
+
+    let r: number;
+    if (habit.trackingType === 'scale') {
+      r = pearsonCorrelation(hLogs.map((l) => l.value), hLogs.map((l) => dailyAvg[l.logDate]));
+    } else {
+      // boolean: normalise mean-diff to -1..1 range (scale 0–4)
+      const doneMean = hLogs.filter((l) => l.value === 1).map((l) => dailyAvg[l.logDate]);
+      const skipMean = hLogs.filter((l) => l.value === 0).map((l) => dailyAvg[l.logDate]);
+      if (doneMean.length < 3) continue;
+      const avgDone = doneMean.reduce((a, b) => a + b, 0) / doneMean.length;
+      const avgSkip = skipMean.length > 0
+        ? skipMean.reduce((a, b) => a + b, 0) / skipMean.length
+        : Object.values(dailyAvg).reduce((a, b) => a + b, 0) / Object.values(dailyAvg).length;
+      r = (avgDone - avgSkip) / 3;
+    }
+
+    result.push({ habit, correlation: r, label: strengthLabel(r) });
+  }
+
+  return result.sort((a, b) => Math.abs(b.correlation) - Math.abs(a.correlation));
+}
+
+function correlationColor(r: number): string {
+  const abs = Math.abs(r);
+  if (abs >= 0.5) return r >= 0 ? '#66BB6A' : '#EF5350';
+  if (abs >= 0.3) return r >= 0 ? '#AED581' : '#FF8A65';
+  if (abs >= 0.1) return r >= 0 ? '#80DEEA' : '#FFD54F';
+  return '#BDBDBD';
+}
+
+function HabitCorrelationList({ correlations }: { correlations: HabitCorrelation[] }) {
+  return (
+    <View style={corrStyles.container}>
+      {correlations.map(({ habit, correlation, label }) => {
+        const barWidth = Math.abs(correlation) * 100;
+        const color = correlationColor(correlation);
+        return (
+          <View
+            key={habit.id}
+            style={corrStyles.row}
+            accessibilityLabel={`${habit.name}: ${label}`}
+          >
+            <Text style={corrStyles.icon}>{habit.icon}</Text>
+            <View style={corrStyles.info}>
+              <View style={corrStyles.nameLine}>
+                <Text style={corrStyles.habitName}>{habit.name}</Text>
+                <Text style={[corrStyles.labelText, { color }]}>{label}</Text>
+              </View>
+              <View style={corrStyles.barTrack}>
+                <View style={[corrStyles.barFill, { width: `${Math.max(barWidth, 4)}%` as any, backgroundColor: color }]} />
+              </View>
+            </View>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+const corrStyles = StyleSheet.create({
+  container: {
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    borderRadius: 22,
+    padding: spacing.md,
+    gap: spacing.md,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  icon: {
+    fontSize: 20,
+    width: 28,
+  },
+  info: {
+    flex: 1,
+    gap: 6,
+  },
+  nameLine: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  habitName: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.ui,
+    color: colors.text,
+  },
+  labelText: {
+    fontSize: typography.sizes.xs,
+    fontWeight: typography.weights.semibold,
+  },
+  barTrack: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.borderLight,
+    overflow: 'hidden',
+  },
+  barFill: {
+    height: 6,
+    borderRadius: 3,
+  },
+});
 
 // ─── Correlation Heatmap ──────────────────────────────────────────────────────
 
@@ -435,6 +716,133 @@ const heatmapStyles = StyleSheet.create({
   legendLabel: {
     fontSize: 10,
     color: colors.textSecondary,
+  },
+});
+
+// ─── Resilience Card ─────────────────────────────────────────────────────────
+
+function scoreToResilienceColor(score: number): string {
+  if (score >= 70) return '#66BB6A';
+  if (score >= 40) return '#FFB300';
+  return '#EF5350';
+}
+
+function ResilienceCard({
+  current,
+  prior,
+}: {
+  current: ResilienceResult | null;
+  prior: ResilienceResult | null;
+}) {
+  if (!current) {
+    return (
+      <Card style={resilienceStyles.container}>
+        <Text style={resilienceStyles.emptyText}>
+          Log more moods — including some difficult ones — to see your resilience score.
+        </Text>
+      </Card>
+    );
+  }
+
+  const trendDiff = prior ? current.score - prior.score : null;
+  const trendArrow = trendDiff === null ? null : trendDiff > 5 ? '↑' : trendDiff < -5 ? '↓' : '→';
+  const trendColor = trendDiff === null ? colors.textSecondary : trendDiff > 5 ? '#66BB6A' : trendDiff < -5 ? '#EF5350' : colors.textSecondary;
+
+  const avgHoursDisplay =
+    current.avgHours < 1
+      ? `${Math.round(current.avgHours * 60)}m avg recovery`
+      : current.avgHours < 24
+      ? `${Math.round(current.avgHours)}h avg recovery`
+      : `${(current.avgHours / 24).toFixed(1)}d avg recovery`;
+
+  return (
+    <Card
+      style={resilienceStyles.container}
+      accessibilityLabel={`Emotional resilience score: ${current.score} out of 100`}
+    >
+      <View style={resilienceStyles.scoreRow}>
+        <View>
+          <View style={resilienceStyles.scoreLine}>
+            <Text style={[resilienceStyles.scoreValue, { color: scoreToResilienceColor(current.score) }]}>
+              {current.score}
+            </Text>
+            <Text style={resilienceStyles.scoreMax}>/100</Text>
+            {trendArrow && (
+              <Text style={[resilienceStyles.trendArrow, { color: trendColor }]}>{trendArrow}</Text>
+            )}
+          </View>
+          <Text style={resilienceStyles.scoreLabel}>Emotional Resilience</Text>
+        </View>
+        <Text style={resilienceStyles.icon}>💪</Text>
+      </View>
+      <Text style={resilienceStyles.detail}>
+        {avgHoursDisplay} · based on {current.recoveries} {current.recoveries === 1 ? 'recovery' : 'recoveries'}
+      </Text>
+      <View style={resilienceStyles.barTrack}>
+        <View style={[resilienceStyles.barFill, { width: `${current.score}%` as any, backgroundColor: scoreToResilienceColor(current.score) }]} />
+      </View>
+    </Card>
+  );
+}
+
+const resilienceStyles = StyleSheet.create({
+  container: {
+    borderWidth: 1.2,
+    borderColor: colors.pinkBorder,
+    backgroundColor: colors.pinkLight,
+    gap: spacing.sm,
+  },
+  scoreRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  scoreLine: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+  },
+  scoreValue: {
+    fontSize: 40,
+    fontWeight: '700',
+    lineHeight: 44,
+  },
+  scoreMax: {
+    fontSize: typography.sizes.md,
+    color: colors.textSecondary,
+  },
+  trendArrow: {
+    fontSize: typography.sizes.lg,
+    fontWeight: '700',
+    marginLeft: 4,
+  },
+  scoreLabel: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  icon: {
+    fontSize: 28,
+  },
+  detail: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+  },
+  barTrack: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.borderLight,
+    overflow: 'hidden',
+  },
+  barFill: {
+    height: 6,
+    borderRadius: 3,
+  },
+  emptyText: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    paddingVertical: spacing.sm,
   },
 });
 
@@ -673,7 +1081,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   proLockBadge: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.pink,
     borderRadius: 999,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,

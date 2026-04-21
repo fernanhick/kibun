@@ -73,3 +73,25 @@ export async function refreshSubscriptionStatus(): Promise<SubscriptionStatus> {
     return 'none';
   }
 }
+
+// Links the RevenueCat identity to the Supabase user ID so webhook events
+// carry a matching app_user_id that the Edge Function can use to update profiles.
+export async function loginPurchases(userId: string): Promise<void> {
+  try {
+    await Purchases.logIn(userId);
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('[kibun:rc] Failed to logIn to RevenueCat:', error);
+    }
+  }
+}
+
+export async function logoutPurchases(): Promise<void> {
+  try {
+    await Purchases.logOut();
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('[kibun:rc] Failed to logOut from RevenueCat:', error);
+    }
+  }
+}

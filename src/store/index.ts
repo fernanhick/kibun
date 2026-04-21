@@ -4,3 +4,7 @@ export { useOnboardingGateStore } from './onboardingGateStore';
 export { useMoodEntryStore } from './moodEntryStore';
 export { useNotificationPrefsStore } from './notificationPrefsStore';
 export { useAchievementsStore } from './achievementsStore';
+export { useDailyInsightStore } from './dailyInsightStore';
+export { useLifeEventsStore } from './lifeEventsStore';
+export { useHabitsStore } from './habitsStore';
+export { useCustomMoodsStore } from './customMoodsStore';

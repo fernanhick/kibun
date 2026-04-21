@@ -118,6 +118,8 @@ export default function MoodConfirmScreen() {
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sentiment, setSentiment] = useState<SentimentResult | null>(null);
+  const [energyLevel, setEnergyLevel] = useState<number | null>(null);
+  const [focusLevel, setFocusLevel] = useState<number | null>(null);
 
   const session = useSessionStore((s) => s.session);
   const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
@@ -179,6 +181,8 @@ export default function MoodConfirmScreen() {
       loggedAt: entryDate.toISOString(),
       sentimentLabel: moodAwareSentimentLabel ?? undefined,
       sentimentScore: sentiment?.score,
+      energyLevel: isPro && energyLevel !== null ? energyLevel : undefined,
+      focusLevel: isPro && focusLevel !== null ? focusLevel : undefined,
     };
 
     useMoodEntryStore.getState().addEntry(entry);
@@ -218,7 +222,7 @@ export default function MoodConfirmScreen() {
   return (
     <Screen scrollable={true} contentContainerStyle={styles.content}>
       <LinearGradient
-        colors={[colors.skyStart, colors.skyEnd]}
+        colors={[colors.pink, colors.pinkEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
@@ -250,7 +254,7 @@ export default function MoodConfirmScreen() {
         </View>
 
         <View style={styles.shibaContainer}>
-          <Shiba variant={shibaVariant} size={200} />
+          <Shiba variant={shibaVariant} size={130} />
         </View>
       </LinearGradient>
 
@@ -289,6 +293,41 @@ export default function MoodConfirmScreen() {
           </View>
         )}
       </View>
+
+      {/* Energy & Focus — Pro feature */}
+      {isPro ? (
+        <View style={styles.efCard}>
+          <Text style={styles.efTitle}>Energy & Focus</Text>
+          <Text style={styles.efSubtitle}>Optional — helps reveal deeper patterns</Text>
+          <DotPicker
+            label="Energy"
+            emoji="⚡"
+            value={energyLevel}
+            onChange={setEnergyLevel}
+            activeColor={colors.accent}
+          />
+          <DotPicker
+            label="Focus"
+            emoji="🎯"
+            value={focusLevel}
+            onChange={setFocusLevel}
+            activeColor={colors.primary}
+          />
+        </View>
+      ) : (
+        <TouchableOpacity
+          style={styles.efTeaser}
+          onPress={() => router.push('/paywall' as Href)}
+          accessibilityRole="button"
+          accessibilityLabel="Track energy and focus levels — Pro feature"
+        >
+          <Ionicons name="sparkles" size={13} color={colors.primary} />
+          <Text style={styles.efTeaserText}>Track energy & focus levels</Text>
+          <View style={styles.efProBadge}>
+            <Text style={styles.efProBadgeText}>Pro</Text>
+          </View>
+        </TouchableOpacity>
+      )}
 
       <View style={styles.actions}>
         {/* Exercise CTA — visible to all, functional for Pro only */}
@@ -357,6 +396,95 @@ export default function MoodConfirmScreen() {
   );
 }
 
+// ─── Dot Picker ──────────────────────────────────────────────────────────────
+
+function DotPicker({
+  label,
+  emoji,
+  value,
+  onChange,
+  activeColor,
+}: {
+  label: string;
+  emoji: string;
+  value: number | null;
+  onChange: (v: number | null) => void;
+  activeColor: string;
+}) {
+  return (
+    <View style={dotStyles.row}>
+      <View style={dotStyles.labelGroup}>
+        <Text style={dotStyles.emoji}>{emoji}</Text>
+        <Text style={dotStyles.label}>{label}</Text>
+      </View>
+      <View style={dotStyles.dots}>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <TouchableOpacity
+            key={n}
+            onPress={() => onChange(n)}
+            accessibilityLabel={`${label} level ${n}`}
+            accessibilityRole="button"
+            accessibilityState={{ selected: value === n }}
+            style={[
+              dotStyles.dot,
+              value !== null && n <= value
+                ? { backgroundColor: activeColor, borderColor: activeColor }
+                : undefined,
+            ]}
+          >
+            {value !== null && n <= value ? null : (
+              <Text style={dotStyles.dotEmpty} />
+            )}
+          </TouchableOpacity>
+        ))}
+      </View>
+      {value !== null && (
+        <TouchableOpacity onPress={() => onChange(null)} hitSlop={8} accessibilityLabel={`Clear ${label}`}>
+          <Ionicons name="close-circle-outline" size={16} color={colors.textSecondary} />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+
+const dotStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  labelGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    width: 80,
+  },
+  emoji: {
+    fontSize: 14,
+  },
+  label: {
+    fontSize: typography.sizes.sm,
+    color: colors.text,
+    fontFamily: typography.fonts.ui,
+  },
+  dots: {
+    flexDirection: 'row',
+    gap: 8,
+    flex: 1,
+  },
+  dot: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#C8DCFF',
+    backgroundColor: '#F0F7FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dotEmpty: {},
+});
+
 const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
@@ -371,10 +499,9 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
-    paddingVertical: spacing.lg,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
-    gap: spacing.md,
-    marginBottom: spacing.lg,
+    gap: spacing.xs,
   },
   heroBadge: {
     flexDirection: 'row',
@@ -425,24 +552,24 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     padding: spacing.md,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
+    borderColor: colors.pinkBorder,
   },
   noteLabel: {
     fontSize: typography.sizes.sm,
     fontFamily: typography.fonts.ui,
-    color: colors.primaryDark,
+    color: colors.pink,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   noteInput: {
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.pinkBorder,
     borderRadius: radius.lg,
     paddingVertical: 12,
     paddingHorizontal: spacing.md,
     fontSize: typography.sizes.md,
     color: colors.text,
-    backgroundColor: '#F7FBFF',
+    backgroundColor: colors.pinkLight,
     minHeight: 100,
   },
   actions: {
@@ -470,7 +597,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.pink,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 3,
@@ -487,7 +614,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.pink,
     borderRadius: radius.lg,
     paddingVertical: 10,
     marginTop: spacing.xs,
@@ -549,5 +676,52 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xs,
     color: colors.textSecondary,
     fontStyle: 'italic',
+  },
+  efCard: {
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderRadius: 22,
+    padding: spacing.md,
+    borderWidth: 1.2,
+    borderColor: colors.pinkBorder,
+    gap: spacing.sm,
+  },
+  efTitle: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.ui,
+    color: colors.pink,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  efSubtitle: {
+    fontSize: typography.sizes.xs,
+    color: colors.textSecondary,
+    marginTop: -spacing.xs,
+  },
+  efTeaser: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.pinkLight,
+    borderWidth: 1,
+    borderColor: colors.pinkBorder,
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 7,
+  },
+  efTeaserText: {
+    fontSize: typography.sizes.sm,
+    color: colors.pink,
+  },
+  efProBadge: {
+    backgroundColor: colors.pink,
+    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+  },
+  efProBadgeText: {
+    fontSize: 9,
+    color: '#fff',
+    fontWeight: typography.weights.semibold,
   },
 });

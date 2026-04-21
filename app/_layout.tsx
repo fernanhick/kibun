@@ -14,7 +14,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
 import { PersistentMascotOverlay } from '@components/PersistentMascotOverlay';
-import { initPurchases } from '@lib/revenuecat';
+import { initPurchases, refreshSubscriptionStatus } from '@lib/revenuecat';
 import { configureNotificationHandler, scheduleSlotNotifications } from '@lib/notifications';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
@@ -128,10 +128,18 @@ export default function RootLayout() {
   // Must wait for AsyncStorage hydration before reading store state.
   useEffect(() => {
     const reschedule = async () => {
-      const { permissionGranted, selectedSlots, streakNudgeEnabled } = useNotificationPrefsStore.getState();
+      const {
+        permissionGranted, selectedSlots, streakNudgeEnabled,
+        customTimes, adaptiveTimes, adaptiveEnabled,
+      } = useNotificationPrefsStore.getState();
       if (permissionGranted && (selectedSlots.length > 0 || streakNudgeEnabled)) {
         try {
-          await scheduleSlotNotifications(selectedSlots, streakNudgeEnabled);
+          await scheduleSlotNotifications(
+            selectedSlots,
+            streakNudgeEnabled,
+            customTimes,
+            adaptiveEnabled ? adaptiveTimes : {},
+          );
         } catch (error) {
           if (__DEV__) {
             console.error('[kibun:notif] Scheduling failed on launch:', error);
@@ -147,6 +155,18 @@ export default function RootLayout() {
       return () => { unsubscribe(); };
     }
   }, []);
+
+  // Refresh RevenueCat entitlement on launch so the cached subscriptionStatus
+  // stays accurate across reinstalls, device switches, and subscription renewals.
+  useEffect(() => {
+    if (!isReady) return;
+    refreshSubscriptionStatus().then((status) => {
+      const { session, setSubscriptionStatus } = useSessionStore.getState();
+      if (session && status !== session.subscriptionStatus) {
+        setSubscriptionStatus(status);
+      }
+    });
+  }, [isReady]);
 
   // Register Expo push token for subscribed registered users.
   // Must run after isReady (auth resolved) so session data is available.
@@ -197,15 +217,15 @@ export default function RootLayout() {
     return () => sub.remove();
   }, []);
 
-  // Delay native splash hide until BOTH auth resolves AND animation has played once.
-  // Without splashDone, hideAsync fires when isReady=true, React immediately re-renders
-  // to Stack — the native splash fades revealing Stack, not SplashScreenView. The Shiba
-  // animation would never be visible and Lottie integration could not be validated.
+  // Hide the native PNG splash as soon as auth and fonts are ready, so the user
+  // sees SplashScreenView (Lottie dog animation) before the Stack renders.
+  // splashDone is intentionally excluded: hiding only after the animation would
+  // keep the PNG splash on screen while Lottie plays hidden behind it.
   useEffect(() => {
-    if (isReady && splashDone && fontsLoaded) {
+    if (isReady && fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [isReady, splashDone, fontsLoaded]);
+  }, [isReady, fontsLoaded]);
 
   // Show SplashScreenView until both conditions are met:
   // - isReady: auth resolved (prevents premature Stack render)
@@ -230,6 +250,10 @@ export default function RootLayout() {
             <Stack.Screen name="day-detail" options={{ headerShown: false }} />
             <Stack.Screen name="ai-report" options={{ headerShown: false }} />
             <Stack.Screen name="account" options={{ headerShown: false }} />
+            <Stack.Screen name="log-event" options={{ headerShown: false, presentation: 'card' }} />
+            <Stack.Screen name="manage-habits" options={{ headerShown: false, presentation: 'card' }} />
+            <Stack.Screen name="custom-moods" options={{ headerShown: false, presentation: 'card' }} />
+            <Stack.Screen name="annual-report" options={{ headerShown: false }} />
           </Stack>
           <PersistentMascotOverlay />
         </View>

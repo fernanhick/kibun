@@ -20,7 +20,9 @@
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Name:', d.get\\('name'\\)\\); print\\('Version:', d.get\\('version'\\)\\); print\\('Description:', d.get\\('description'\\)\\); print\\('Homepage:', d.get\\('homepage',''\\)\\); print\\('Last publish:', d.get\\('time',{}\\).get\\('modified',''\\)\\); print\\('Weekly downloads:', d.get\\('downloads',''\\)\\); deps=d.get\\('peerDependencies',{}\\); print\\('Peer deps:', deps\\)\")",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Name:', d.get\\('name'\\)\\); print\\('Version:', d.get\\('version'\\)\\); print\\('Description:', d.get\\('description'\\)\\); print\\('Last publish:', d.get\\('time',{}\\).get\\('modified',''\\)\\); deps=d.get\\('peerDependencies',{}\\); print\\('Peer deps:', deps\\)\")",
       "Bash(python -c ' *)",
-      "Bash(python -c \" import sys, json d = json.load\\(sys.stdin\\) print\\('=== react-native-copilot ==='\\) print\\('Peer deps:', json.dumps\\(d.get\\('peerDependencies', {}\\), indent=2\\)\\) print\\('Dependencies:', json.dumps\\(d.get\\('dependencies', {}\\), indent=2\\)\\) print\\('Keywords:', d.get\\('keywords', []\\)\\) \")"
+      "Bash(python -c \" import sys, json d = json.load\\(sys.stdin\\) print\\('=== react-native-copilot ==='\\) print\\('Peer deps:', json.dumps\\(d.get\\('peerDependencies', {}\\), indent=2\\)\\) print\\('Dependencies:', json.dumps\\(d.get\\('dependencies', {}\\), indent=2\\)\\) print\\('Keywords:', d.get\\('keywords', []\\)\\) \")",
+      "Bash(xargs -I {} basename {})",
+      "Bash(supabase functions *)"
     ]
   }
 }

@@ -73,6 +73,8 @@ export const useMoodEntryStore = create<MoodEntryState>()(
             logged_at: entry.loggedAt,
             sentiment_label: entry.sentimentLabel ?? null,
             sentiment_score: entry.sentimentScore ?? null,
+            energy_level: entry.energyLevel ?? null,
+            focus_level: entry.focusLevel ?? null,
           };
 
           withRetry(

@@ -1,5 +1,5 @@
 import { MoodEntry, MoodSlot } from '@models/index';
-import { MOOD_MAP } from '@constants/moods';
+import { MOOD_MAP, type MoodGroup } from '@constants/moods';
 import { GROUP_SCORES } from '@lib/insights';
 
 export interface PatternFlag {
@@ -182,4 +182,50 @@ export function detectPatterns(entries: MoodEntry[]): PatternFlag[] {
   const results = [...dayPatterns, ...timePatterns];
   if (trend) results.push(trend);
   return results;
+}
+
+// ─── Resilience Score ─────────────────────────────────────────────────────────
+
+export interface ResilienceResult {
+  score: number;       // 0–100, higher = faster emotional recovery
+  recoveries: number;  // number of recovery events found
+  avgHours: number;    // average hours to recover from a difficult mood
+}
+
+const DIFFICULT_GROUPS: MoodGroup[] = ['red-orange', 'blue'];
+const RECOVERY_GROUPS: MoodGroup[] = ['green', 'neutral'];
+
+/**
+ * Measures how quickly a user recovers from difficult moods (red-orange or blue)
+ * back to positive/neutral ones. Returns null if insufficient data.
+ *
+ * Score 0–100: 100 = recover within ~1 hour, 0 = takes 48+ hours.
+ */
+export function calculateResilienceScore(entries: MoodEntry[]): ResilienceResult | null {
+  if (entries.length < 2) return null;
+
+  const sorted = [...entries].sort((a, b) => a.loggedAt.localeCompare(b.loggedAt));
+  const recoveryHours: number[] = [];
+
+  for (let i = 0; i < sorted.length; i++) {
+    const mood = MOOD_MAP[sorted[i].moodId as keyof typeof MOOD_MAP];
+    if (!mood || !DIFFICULT_GROUPS.includes(mood.group)) continue;
+
+    for (let j = i + 1; j < sorted.length; j++) {
+      const nextMood = MOOD_MAP[sorted[j].moodId as keyof typeof MOOD_MAP];
+      if (!nextMood) continue;
+      if (RECOVERY_GROUPS.includes(nextMood.group)) {
+        const diffMs = new Date(sorted[j].loggedAt).getTime() - new Date(sorted[i].loggedAt).getTime();
+        recoveryHours.push(diffMs / (1000 * 60 * 60));
+        break;
+      }
+    }
+  }
+
+  if (recoveryHours.length === 0) return null;
+
+  const avgHours = recoveryHours.reduce((s, h) => s + h, 0) / recoveryHours.length;
+  const score = Math.max(0, Math.min(100, Math.round(100 - (avgHours / 48) * 100)));
+
+  return { score, recoveries: recoveryHours.length, avgHours };
 }

@@ -14,14 +14,19 @@ import {
 import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
-const FEATURES = [
+const FREE_FEATURES = [
+  { emoji: '📓', text: 'Daily mood logging' },
+  { emoji: '🔔', text: 'Custom reminder times' },
+  { emoji: '📅', text: 'Full mood history & calendar' },
+];
+
+const PRO_FEATURES = [
   { emoji: '✨', text: 'Daily AI wellness insight, just for you' },
   { emoji: '📊', text: 'Weekly & monthly AI mood reports' },
   { emoji: '🎉', text: 'Annual mood report & year in review' },
-  { emoji: '📅', text: 'Unlimited mood history & calendar' },
   { emoji: '🔮', text: 'Pattern insights & resilience score' },
   { emoji: '🌱', text: 'Habit tracking (sleep, exercise & more)' },
-  { emoji: '📝', text: 'Life event logging & mood correlation' },
+  { emoji: '📝', text: 'Life events & mood correlation' },
   { emoji: '🎨', text: 'Custom moods with personalised colours' },
 ];
 
@@ -102,40 +107,76 @@ export default function PaywallScreen() {
 
   return (
     <Screen scrollable contentContainerStyle={styles.content}>
-      <View style={styles.top}>
-        <LinearGradient
-          colors={['#FF6B9D', '#C77DFF']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.heroCard}
-        >
-          <Text style={styles.heroEmoji}>🌸</Text>
-          <Text style={styles.title}>kibun Premium</Text>
-          <Text style={styles.subtitle}>
-            Your feelings deserve the full picture.{'\n'}Let's make sense of them together 💕
-          </Text>
-        </LinearGradient>
+      {/* ── Hero ─────────────────────────────────────────────────────── */}
+      <LinearGradient
+        colors={['#FF6B9D', '#C060F0']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.heroCard}
+      >
+        <Text style={styles.heroEmoji}>🌸</Text>
+        <Text style={styles.title}>kibun Premium</Text>
+        <Text style={styles.subtitle}>
+          Your feelings deserve the full picture.{'\n'}Let's make sense of them together 💕
+        </Text>
+      </LinearGradient>
 
-        <View style={styles.featureCard}>
-          <Text style={styles.featureSectionLabel}>Everything you get ✨</Text>
-          <View style={styles.featureList}>
-            {FEATURES.map((feature) => (
-              <View key={feature.text} style={styles.featureRow}>
-                <Text style={styles.featureEmoji}>{feature.emoji}</Text>
-                <Text style={styles.featureText}>{feature.text}</Text>
-              </View>
-            ))}
+      {/* ── Feature comparison ───────────────────────────────────────── */}
+      <View style={styles.featureCard}>
+        {/* Free tier */}
+        <View style={styles.tierHeader}>
+          <View style={styles.tierBadgeFree}>
+            <Text style={styles.tierBadgeText}>FREE</Text>
           </View>
+          <Text style={styles.tierLabel}>Always included</Text>
+        </View>
+        <View style={[styles.featureList, styles.featureListSpaced]}>
+          {FREE_FEATURES.map((f) => (
+            <View key={f.text} style={styles.featureRowFree}>
+              <Text style={styles.featureEmoji}>{f.emoji}</Text>
+              <Text style={styles.featureText}>{f.text}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* Pro tier */}
+        <View style={styles.tierHeader}>
+          <LinearGradient
+            colors={['#FF6B9D', '#C060F0']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.tierBadgePro}
+          >
+            <Text style={styles.tierBadgeText}>PREMIUM</Text>
+          </LinearGradient>
+          <Text style={styles.tierLabel}>Unlock with trial</Text>
+        </View>
+        <View style={styles.featureList}>
+          {PRO_FEATURES.map((f) => (
+            <View key={f.text} style={styles.featureRowPro}>
+              <Text style={styles.featureEmoji}>{f.emoji}</Text>
+              <Text style={styles.featureText}>{f.text}</Text>
+            </View>
+          ))}
         </View>
       </View>
 
+      {/* ── CTA ──────────────────────────────────────────────────────── */}
       <View style={styles.bottom}>
-        <View style={styles.trialBox}>
+        <LinearGradient
+          colors={['#FF6B9D', '#C060F0']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.trialBox}
+        >
           <Text style={styles.trialDays}>🎀 7 days free</Text>
           <Text style={styles.trialTerms}>
             then $5.99 / month or $39.99 / year · cancel anytime
           </Text>
-        </View>
+        </LinearGradient>
 
         <Button
           label="Start my free trial 🌸"
@@ -163,8 +204,8 @@ export default function PaywallScreen() {
 }
 
 const PINK = '#FF6B9D';
-const PINK_LIGHT = 'rgba(255, 107, 157, 0.10)';
-const PINK_BORDER = 'rgba(255, 107, 157, 0.25)';
+const PINK_LIGHT = 'rgba(255, 107, 157, 0.08)';
+const PINK_BORDER = 'rgba(255, 107, 157, 0.20)';
 
 const styles = StyleSheet.create({
   content: {
@@ -172,50 +213,87 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
   },
-  top: {
-    gap: spacing.lg,
-  },
   heroCard: {
     borderRadius: 28,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.xl,
     alignItems: 'center',
     gap: spacing.sm,
   },
   heroEmoji: {
-    fontSize: 44,
+    fontSize: 52,
+  },
+  title: {
+    fontSize: typography.sizes.display,
+    fontFamily: typography.fonts.display,
+    color: colors.textInverse,
+    textAlign: 'center',
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: typography.sizes.md,
+    color: 'rgba(255,255,255,0.88)',
+    lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
+    textAlign: 'center',
   },
   featureCard: {
     backgroundColor: colors.surface,
     borderWidth: 1.5,
     borderColor: PINK_BORDER,
-    borderRadius: 22,
+    borderRadius: 24,
     padding: spacing.md,
+    gap: spacing.sm,
     ...shadows.sm,
   },
-  title: {
-    fontSize: typography.sizes.xxl,
-    fontFamily: typography.fonts.display,
-    color: colors.textInverse,
-    textAlign: 'center',
+  tierHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: 2,
   },
-  subtitle: {
-    fontSize: typography.sizes.md,
-    color: 'rgba(255,255,255,0.90)',
-    lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
-    textAlign: 'center',
+  tierBadgeFree: {
+    backgroundColor: 'rgba(0,0,0,0.07)',
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
   },
-  featureSectionLabel: {
-    fontSize: typography.sizes.sm,
+  tierBadgePro: {
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+  },
+  tierBadgeText: {
+    fontSize: 10,
     fontFamily: typography.fonts.ui,
-    color: PINK,
-    marginBottom: spacing.sm,
-    letterSpacing: 0.4,
+    color: colors.textInverse,
+    letterSpacing: 0.8,
+  },
+  tierLabel: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.body,
+    color: colors.textSecondary,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: PINK_BORDER,
+    marginVertical: spacing.sm,
   },
   featureList: {
-    gap: spacing.sm,
+    gap: spacing.xs + 2,
   },
-  featureRow: {
+  featureListSpaced: {
+    marginBottom: spacing.xs,
+  },
+  featureRowFree: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: 'rgba(0,0,0,0.04)',
+    borderRadius: radius.lg,
+    paddingVertical: spacing.xs + 2,
+    paddingHorizontal: spacing.sm,
+  },
+  featureRowPro: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
@@ -225,8 +303,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
   },
   featureEmoji: {
-    fontSize: 18,
-    width: 26,
+    fontSize: 17,
+    width: 24,
     textAlign: 'center',
   },
   featureText: {
@@ -240,24 +318,21 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   trialBox: {
-    backgroundColor: PINK_LIGHT,
-    borderRadius: radius.lg,
+    borderRadius: 22,
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.md,
     alignItems: 'center',
     gap: spacing.xs,
-    borderWidth: 1.5,
-    borderColor: PINK_BORDER,
-    ...shadows.sm,
   },
   trialDays: {
     fontSize: typography.sizes.xl,
     fontFamily: typography.fonts.display,
-    color: PINK,
+    color: colors.textInverse,
   },
   trialTerms: {
     fontSize: typography.sizes.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255,255,255,0.85)',
+    textAlign: 'center',
   },
   skipRow: {
     marginTop: spacing.xs,

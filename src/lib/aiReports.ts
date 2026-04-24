@@ -1,6 +1,10 @@
 import { supabase } from '@lib/supabase';
 import { AIReport, OnboardingProfile } from '@models/index';
 
+export type RequestReportResult =
+  | { ok: true; report: AIReport }
+  | { ok: false; reason: 'no_entries' | 'subscription_required' | 'ai_unavailable' | 'error' };
+
 function mapRow(row: Record<string, unknown>): AIReport {
   return {
     id: row.id as string,
@@ -17,8 +21,8 @@ function mapRow(row: Record<string, unknown>): AIReport {
 export async function requestReport(params: {
   reportType: 'weekly' | 'monthly';
   profile?: Partial<OnboardingProfile>;
-}): Promise<AIReport | null> {
-  if (!supabase) return null;
+}): Promise<RequestReportResult> {
+  if (!supabase) return { ok: false, reason: 'error' };
 
   const { data, error } = await supabase.functions.invoke('generate-report', {
     body: {
@@ -29,16 +33,30 @@ export async function requestReport(params: {
 
   if (error) {
     if (__DEV__) {
-      console.error('[kibun:aiReports] requestReport failed:', error.message);
+      console.error('[kibun:aiReports] requestReport failed:', error);
     }
-    return null;
+    try {
+      const body = await (error as { context?: Response }).context?.json?.();
+      if (body?.error === 'subscription_required') {
+        return { ok: false, reason: 'subscription_required' };
+      }
+      if (body?.error === 'ai_unavailable') {
+        return { ok: false, reason: 'ai_unavailable' };
+      }
+    } catch {
+      // ignore — fall through to generic error
+    }
+    return { ok: false, reason: 'error' };
   }
 
-  if (!data || data.report === null) {
-    return null;
+  if (!data) return { ok: false, reason: 'error' };
+
+  // Edge function returns { report: null, reason: 'no_entries' } when there is no data
+  if (data.reason === 'no_entries' || data.report === null) {
+    return { ok: false, reason: 'no_entries' };
   }
 
-  return mapRow(data);
+  return { ok: true, report: mapRow(data) };
 }
 
 export async function getReports(userId: string): Promise<AIReport[]> {

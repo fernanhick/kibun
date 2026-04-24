@@ -153,7 +153,7 @@
             </div>
         </div>
         <div id="status" class="status info" role="status" aria-live="polite">
-            Configure Supabase URL and anon key in this file before using this form.
+            Enter your account email, choose a deletion type, then send yourself a verification code.
         </div>
     </div>
 
@@ -225,10 +225,10 @@
     <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-        // TODO: Set these from your Supabase project settings.
+        // The anon key is public by design — RLS enforces row-level access.
         // Project Settings -> API -> Project URL / anon public key.
-        const SUPABASE_URL = '';
-        const SUPABASE_ANON_KEY = '';
+        const SUPABASE_URL = 'https://jyjogbhomljslkxlsaes.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5am9nYmhvbWxqc2xreGxzYWVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjQ3NjQsImV4cCI6MjA5MDgwMDc2NH0.3adyWIg6SsJFlL2BfQsKVMkxwdAYl7mlVZKCeqoELE4';
 
         const emailEl = document.getElementById('email');
         const actionEl = document.getElementById('action');

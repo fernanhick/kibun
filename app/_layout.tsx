@@ -20,6 +20,8 @@ import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
 import { registerPushToken } from '@lib/pushTokens';
 import { prewarmSentimentModel } from '@lib/sentiment';
+import { getIsTabletDevice } from '@lib/deviceClass';
+import { applyOrientationPolicy } from '@lib/orientation';
 
 // Keep the native splash screen visible until auth is resolved.
 // Without this, the OS auto-dismisses the splash before React is ready,
@@ -217,13 +219,19 @@ export default function RootLayout() {
     return () => sub.remove();
   }, []);
 
-  // Hide the native PNG splash as soon as auth and fonts are ready, so the user
-  // sees SplashScreenView (Lottie dog animation) before the Stack renders.
-  // splashDone is intentionally excluded: hiding only after the animation would
-  // keep the PNG splash on screen while Lottie plays hidden behind it.
+  // Dismiss the native splash as soon as fonts are bundled — SplashScreenView
+  // is already rendered underneath and handles the auth wait visually.
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  // Phones: lock portrait. Tablets: unlock rotation.
+  // Runs once after fonts + auth resolve so it doesn't race onboarding hydration.
   useEffect(() => {
     if (isReady && fontsLoaded) {
-      SplashScreen.hideAsync();
+      applyOrientationPolicy(getIsTabletDevice());
     }
   }, [isReady, fontsLoaded]);
 
@@ -250,6 +258,7 @@ export default function RootLayout() {
             <Stack.Screen name="day-detail" options={{ headerShown: false }} />
             <Stack.Screen name="ai-report" options={{ headerShown: false }} />
             <Stack.Screen name="account" options={{ headerShown: false }} />
+            <Stack.Screen name="change-password" options={{ headerShown: false, presentation: 'card' }} />
             <Stack.Screen name="log-event" options={{ headerShown: false, presentation: 'card' }} />
             <Stack.Screen name="manage-habits" options={{ headerShown: false, presentation: 'card' }} />
             <Stack.Screen name="custom-moods" options={{ headerShown: false, presentation: 'card' }} />

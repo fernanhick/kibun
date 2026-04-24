@@ -17,18 +17,18 @@ export default ({ config }: ConfigContext) => ({
   slug: 'kibun',
   version: '1.0.0',
   scheme: 'kibun',
-  orientation: 'portrait',
+  // Orientation unlocked here; phones are locked to portrait at runtime via
+  // @lib/orientation:applyOrientationPolicy so tablets can rotate freely.
+  orientation: 'default',
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
   splash: {
-    image: './assets/splash-preview2.png',
-    resizeMode: 'cover',
-    backgroundColor: '#E6F4FF',
+    backgroundColor: '#4A86FF',
   },
   assetBundlePatterns: ['**/*'],
   linking: linkingConfig as any,
   ios: {
-    supportsTablet: false,
+    supportsTablet: true,
     bundleIdentifier: 'com.kibun.app',
     buildNumber: '1',
     icon: './assets/icon.png',
@@ -38,7 +38,12 @@ export default ({ config }: ConfigContext) => ({
   },
   android: {
     icon: './assets/icon.png',
+    adaptiveIcon: {
+      foregroundImage: './assets/adaptive-icon.png',
+      backgroundColor: '#4A86FF',
+    },
     package: 'com.kibun.app',
+    resizeableActivity: true,
   },
   web: {
     bundler: 'metro',
@@ -56,15 +61,16 @@ export default ({ config }: ConfigContext) => ({
     'expo-font',
     'expo-router',
     'expo-secure-store',
-    'expo-notifications',
     [
-      'expo-splash-screen',
+      'expo-notifications',
       {
-        image: './assets/splash-preview2.png',
-        resizeMode: 'cover',
-        backgroundColor: '#E6F4FF',
+        icon: './assets/notification-icon.png',
+        color: '#4A86FF',
       },
     ],
+    'expo-screen-orientation',
+    'expo-sharing',
+    ['expo-splash-screen', { backgroundColor: '#4A86FF' }],
   ],
   experiments: {
     typedRoutes: true,

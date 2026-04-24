@@ -11,6 +11,7 @@ import {
   KAWAII_TAB_SAFE_BOTTOM_ANDROID,
   KAWAII_TAB_SAFE_BOTTOM_MIN,
 } from '@constants/layout';
+import { SCREEN_MAX_WIDTH } from '@constants/breakpoints';
 import { getMascotSource } from '@constants/mascotAnimations';
 import { useMoodEntryStore } from '@store/index';
 
@@ -116,31 +117,36 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
     return icon;
   };
 
+  // On wide screens (tablets, landscape) clamp the tab row so icons stay
+  // thumb-reachable and the mascot/notch geometry remains valid. Below the
+  // clamp width this is a no-op.
   return (
     <View style={[styles.container, { paddingBottom: safeBottom }]} pointerEvents="box-none">
-      <View style={styles.tabRow}>
-        <View style={styles.tabSide}>
-          {leftTabs.map((r, i) => renderTab(r, i))}
-        </View>
+      <View style={styles.tabRowClamp}>
+        <View style={styles.tabRow}>
+          <View style={styles.tabSide}>
+            {leftTabs.map((r, i) => renderTab(r, i))}
+          </View>
 
-        <View style={styles.centerSlot}>
-          <Pressable
-            onPress={() => router.push('/check-in' as Href)}
-            accessibilityLabel="Log mood"
-            accessibilityRole="button"
-            style={styles.mascotButton}
-          >
-            <Image
-              source={getMascotSource(lastMoodId)}
-              style={styles.mascotImage}
-              contentFit="contain"
-              autoplay
-            />
-          </Pressable>
-        </View>
+          <View style={styles.centerSlot}>
+            <Pressable
+              onPress={() => router.push('/check-in' as Href)}
+              accessibilityLabel="Log mood"
+              accessibilityRole="button"
+              style={styles.mascotButton}
+            >
+              <Image
+                source={getMascotSource(lastMoodId)}
+                style={styles.mascotImage}
+                contentFit="contain"
+                autoplay
+              />
+            </Pressable>
+          </View>
 
-        <View style={styles.tabSide}>
-          {rightTabs.map((r, i) => renderTab(r, i + 2))}
+          <View style={styles.tabSide}>
+            {rightTabs.map((r, i) => renderTab(r, i + 2))}
+          </View>
         </View>
       </View>
     </View>
@@ -155,6 +161,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+  },
+  tabRowClamp: {
+    width: '100%',
+    maxWidth: SCREEN_MAX_WIDTH.tablet,
+    alignSelf: 'center',
   },
   tabRow: {
     flexDirection: 'row',

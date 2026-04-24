@@ -13,6 +13,50 @@ import { colors, typography, spacing, radius } from '@constants/theme';
 // Required by expo-web-browser to complete any pending auth sessions on mount.
 WebBrowser.maybeCompleteAuthSession();
 
+function friendlyAuthError(message: string, mode: 'register' | 'login'): string {
+  const m = message.toLowerCase();
+  if (/same.*previous|password.*reuse/i.test(message)) {
+    return 'Please choose a different password and try again.';
+  }
+  if (/user.*already.*registered|already.*registered|email.*already.*use/i.test(message)) {
+    return mode === 'register'
+      ? 'An account with this email already exists. Try signing in instead.'
+      : 'Incorrect email or password.';
+  }
+  if (/invalid.*login.*credentials|invalid.*email.*password|invalid.*credentials/i.test(message)) {
+    return 'Incorrect email or password.';
+  }
+  if (/email.*not.*confirmed|email.*confirm|confirm.*email/i.test(message)) {
+    return 'Please check your inbox and confirm your email first.';
+  }
+  if (/signup.*disabled/i.test(message)) {
+    return 'Account creation is temporarily unavailable. Please try again later.';
+  }
+  if (/too many requests|rate.*limit/i.test(message)) {
+    return 'Too many attempts. Please wait a moment and try again.';
+  }
+  if (/network.*failed|fetch.*failed|failed to fetch/i.test(message)) {
+    return 'Connection error. Please check your internet and try again.';
+  }
+  if (/password.*length|should be at least|at least.*character/i.test(message)) {
+    return 'Password must be at least 8 characters.';
+  }
+  if (/invalid.*email|email.*invalid/i.test(message)) {
+    return 'Please enter a valid email address.';
+  }
+  return message;
+}
+
+function validateInputs(email: string, password: string, mode: 'register' | 'login'): string | null {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    return 'Please enter a valid email address.';
+  }
+  if (mode === 'register' && password.trim().length < 8) {
+    return 'Password must be at least 8 characters.';
+  }
+  return null;
+}
+
 export default function RegistrationScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ mode?: string | string[]; source?: string | string[] }>();
@@ -46,6 +90,13 @@ export default function RegistrationScreen() {
       return;
     }
     if (!email.trim() || !password.trim() || submitting) return;
+
+    const validationError = validateInputs(email, password, mode);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     setInfoMessage(null);
@@ -62,28 +113,53 @@ export default function RegistrationScreen() {
           email: cleanEmail,
           password: cleanPassword,
         });
-        if (authError) {
-          setError(authError.message);
-          setSubmitting(false);
-          return;
-        }
 
-        // On some projects USER_UPDATED arrives before session reflects non-anonymous state.
-        // A password sign-in normalizes session state and guarantees auth listeners update.
-        const { data: updatedSession } = await supabase.auth.getSession();
-        if (updatedSession.session?.user.is_anonymous) {
-          const { error: signInError } = await supabase.auth.signInWithPassword({
-            email: cleanEmail,
-            password: cleanPassword,
-          });
-          if (signInError) {
-            if (/email.*confirm/i.test(signInError.message)) {
-              setInfoMessage('Account created. Please confirm your email, then sign in.');
-            } else {
-              setError(signInError.message);
+        if (authError) {
+          // "Same password as previous" means the user already set these credentials in a
+          // prior partial registration on this device. Recover by signing in directly.
+          if (/same.*previous|password.*reuse/i.test(authError.message)) {
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+              email: cleanEmail,
+              password: cleanPassword,
+            });
+            if (signInError) {
+              if (/email.*confirm|confirm.*email/i.test(signInError.message)) {
+                setInfoMessage('Account created. Please confirm your email, then sign in.');
+              } else {
+                setError(friendlyAuthError(signInError.message, 'register'));
+              }
+              setSubmitting(false);
+              return;
             }
+            // Sign-in succeeded — fall through to post-session check below
+          } else if (/user.*already.*registered|already.*registered|email.*already.*use/i.test(authError.message)) {
+            setError('An account with this email already exists. Try signing in instead.');
+            setMode('login');
             setSubmitting(false);
             return;
+          } else {
+            setError(friendlyAuthError(authError.message, 'register'));
+            setSubmitting(false);
+            return;
+          }
+        } else {
+          // On some projects USER_UPDATED arrives before session reflects non-anonymous state.
+          // A password sign-in normalizes session state and guarantees auth listeners update.
+          const { data: updatedSession } = await supabase.auth.getSession();
+          if (updatedSession.session?.user.is_anonymous) {
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+              email: cleanEmail,
+              password: cleanPassword,
+            });
+            if (signInError) {
+              if (/email.*confirm|confirm.*email/i.test(signInError.message)) {
+                setInfoMessage('Account created. Please confirm your email, then sign in.');
+              } else {
+                setError(friendlyAuthError(signInError.message, 'register'));
+              }
+              setSubmitting(false);
+              return;
+            }
           }
         }
       } else {
@@ -93,7 +169,12 @@ export default function RegistrationScreen() {
         });
 
         if (signUpError) {
-          setError(signUpError.message);
+          if (/user.*already.*registered|already.*registered|email.*already.*use/i.test(signUpError.message)) {
+            setError('An account with this email already exists. Try signing in instead.');
+            setMode('login');
+          } else {
+            setError(friendlyAuthError(signUpError.message, 'register'));
+          }
           setSubmitting(false);
           return;
         }
@@ -111,7 +192,11 @@ export default function RegistrationScreen() {
         password: password.trim(),
       });
       if (authError) {
-        setError(authError.message);
+        if (/email.*confirm|confirm.*email/i.test(authError.message)) {
+          setInfoMessage('Please check your inbox and confirm your email before signing in.');
+        } else {
+          setError(friendlyAuthError(authError.message, 'login'));
+        }
         setSubmitting(false);
         return;
       }
@@ -119,13 +204,31 @@ export default function RegistrationScreen() {
 
     const { data: postSession } = await supabase.auth.getSession();
     if (!postSession.session || postSession.session.user.is_anonymous) {
-      setError('Sign in could not be completed. Please try again.');
+      // If email confirmation is still pending, the session will remain anonymous/null.
+      setInfoMessage('Please confirm your email first, then sign in.');
       setSubmitting(false);
       return;
     }
 
     completeOnboardingForReturningUser();
     router.replace('/(tabs)');
+  };
+
+  const handleForgotPassword = async () => {
+    if (!supabase) return;
+    const cleanEmail = email.trim();
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setError('Please enter your email address above first.');
+      return;
+    }
+    setError(null);
+    setInfoMessage(null);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(cleanEmail);
+    if (resetError) {
+      setError(friendlyAuthError(resetError.message, 'login'));
+    } else {
+      setInfoMessage('Password reset email sent. Check your inbox.');
+    }
   };
 
   // Shared OAuth handler for Google/Apple.
@@ -309,6 +412,17 @@ export default function RegistrationScreen() {
             loading={submitting}
             fullWidth
           />
+
+          {mode === 'login' && (
+            <Pressable
+              onPress={handleForgotPassword}
+              style={styles.forgotRow}
+              accessibilityRole="button"
+              accessibilityLabel="Forgot password"
+            >
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </Pressable>
+          )}
         </View>
 
         {/* Toggle login/register */}
@@ -459,6 +573,14 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     color: colors.text,
     backgroundColor: colors.chipSurface,
+  },
+  forgotRow: {
+    alignItems: 'center',
+    marginTop: -spacing.xs,
+  },
+  forgotText: {
+    fontSize: typography.sizes.sm,
+    color: colors.primary,
   },
   errorText: {
     fontSize: typography.sizes.sm,

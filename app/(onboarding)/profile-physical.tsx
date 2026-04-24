@@ -39,7 +39,7 @@ export default function ProfilePhysicalScreen() {
   };
 
   return (
-    <Screen scrollable={true}>
+    <Screen scrollable={true} edgePadding="large">
       <View style={styles.content}>
         <LinearGradient
           colors={[colors.skyStart, colors.skyEnd]}

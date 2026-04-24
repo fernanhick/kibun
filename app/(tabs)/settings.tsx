@@ -107,7 +107,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <Screen scrollable={true}>
+    <Screen scrollable={true} layout="wide">
       <LinearGradient
         colors={[colors.skyStart, colors.skyEnd]}
         start={{ x: 0, y: 0 }}

@@ -42,7 +42,7 @@ export default function ProfileGoalsScreen() {
   };
 
   return (
-    <Screen scrollable={true} contentContainerStyle={styles.content}>
+    <Screen scrollable={true} edgePadding="large" contentContainerStyle={styles.content}>
       <LinearGradient
         colors={[colors.skyStart, colors.skyEnd]}
         start={{ x: 0, y: 0 }}

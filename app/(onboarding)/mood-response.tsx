@@ -25,7 +25,7 @@ export default function MoodResponseScreen() {
   const variant = shibaVariant(mood.group, mood.id);
 
   return (
-    <Screen>
+    <Screen edgePadding="large">
       <View style={styles.container}>
         <LinearGradient
           colors={[colors.skyStart, colors.skyEnd]}

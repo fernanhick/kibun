@@ -102,7 +102,7 @@ export default function DayDetailScreen() {
   };
 
   return (
-    <Screen scrollable={true}>
+    <Screen scrollable={true} layout="wide">
       <View style={styles.header}>
         <Pressable
           onPress={() => router.back()}

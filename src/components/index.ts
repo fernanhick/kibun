@@ -6,6 +6,7 @@ export { OptionPicker } from './OptionPicker';
 export { PersistentMascotOverlay } from './PersistentMascotOverlay';
 export { Screen } from './Screen';
 export { Shiba } from './Shiba';
+export { TabletSplit } from './TabletSplit';
 export type { ShibaVariant } from './Shiba';
 export { SplashScreenView } from './SplashScreenView';
 export { SparkleOverlay } from './SparkleOverlay';

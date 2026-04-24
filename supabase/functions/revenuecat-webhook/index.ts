@@ -81,8 +81,10 @@ Deno.serve(async (req: Request) => {
 
   const { error } = await adminClient
     .from("profiles")
-    .update({ subscription_status: newStatus })
-    .eq("user_id", appUserId);
+    .upsert(
+      { user_id: appUserId, subscription_status: newStatus },
+      { onConflict: "user_id" },
+    );
 
   if (error) {
     console.error("[revenuecat-webhook] DB update failed:", error.message, { type, appUserId });

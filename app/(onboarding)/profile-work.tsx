@@ -60,7 +60,7 @@ export default function ProfileWorkScreen() {
   };
 
   return (
-    <Screen scrollable={true}>
+    <Screen scrollable={true} edgePadding="large">
       <View style={styles.content}>
         <LinearGradient
           colors={[colors.skyStart, colors.skyEnd]}

@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { View, Text, Pressable, StyleSheet, type LayoutChangeEvent } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,8 +19,15 @@ type Period = 7 | 30;
 export default function InsightsScreen() {
   const [period, setPeriod] = useState<Period>(7);
   const router = useRouter();
-  const { width: screenWidth } = useWindowDimensions();
-  const chartWidth = screenWidth - spacing.screenPadding * 2 - 40;
+  // Charts must size against the actual rendered column (Screen clamps to a
+  // tablet-friendly max-width), not the full window. Measured via onLayout
+  // on each chart container; default keeps charts non-zero on first paint.
+  const [chartContainerWidth, setChartContainerWidth] = useState(0);
+  const handleChartLayout = useCallback((e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    if (w > 0 && w !== chartContainerWidth) setChartContainerWidth(w);
+  }, [chartContainerWidth]);
+  const chartWidth = chartContainerWidth > 0 ? Math.max(chartContainerWidth - 40, 200) : 280;
 
   const entries = useMoodEntryStore((s) => s.entries);
   const session = useSessionStore((s) => s.session);
@@ -105,7 +112,7 @@ export default function InsightsScreen() {
 
   if (filtered.length === 0) {
     return (
-      <Screen scrollable={true}>
+      <Screen scrollable={true} layout="wide">
         <LinearGradient
           colors={[colors.skyStart, colors.skyEnd]}
           start={{ x: 0, y: 0 }}
@@ -130,7 +137,7 @@ export default function InsightsScreen() {
   }
 
   return (
-    <Screen scrollable={true}>
+    <Screen scrollable={true} layout="wide">
       <LinearGradient
         colors={[colors.skyStart, colors.skyEnd]}
         start={{ x: 0, y: 0 }}
@@ -177,6 +184,7 @@ export default function InsightsScreen() {
           </Text>
           <View
             style={styles.chartContainer}
+            onLayout={handleChartLayout}
             accessibilityLabel={`Mood frequency chart showing top ${Math.min(frequency.length, 6)} moods`}
           >
             <BarChart
@@ -206,6 +214,7 @@ export default function InsightsScreen() {
           </Text>
           <View
             style={styles.chartContainer}
+            onLayout={handleChartLayout}
             accessibilityLabel={`Mood trend line chart over ${period} days`}
           >
             <LineChart
@@ -787,9 +796,8 @@ function ResilienceCard({
 
 const resilienceStyles = StyleSheet.create({
   container: {
-    borderWidth: 1.2,
-    borderColor: colors.pinkBorder,
-    backgroundColor: colors.pinkLight,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
     gap: spacing.sm,
   },
   scoreRow: {

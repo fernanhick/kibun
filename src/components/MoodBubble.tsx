@@ -6,7 +6,7 @@ import { typography } from '@constants/theme';
 
 interface MoodBubbleProps {
   mood: MoodDefinition;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   selected?: boolean;
   onPress?: (mood: MoodDefinition) => void;
   disabled?: boolean;
@@ -16,12 +16,14 @@ const BONE_SIZES = {
   sm: { width: 74, imageSize: 48 },
   md: { width: 90, imageSize: 60 },
   lg: { width: 110, imageSize: 76 },
+  xl: { width: 140, imageSize: 96 },
 } as const;
 
 const FONT_SIZES = {
   sm: typography.sizes.xs,
   md: typography.sizes.sm,
   lg: typography.sizes.md,
+  xl: typography.sizes.lg,
 } as const;
 
 export function MoodBubble({

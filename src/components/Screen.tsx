@@ -17,6 +17,8 @@ import { useSegments } from 'expo-router';
 // incorrect insets on notched iOS devices (iPhone X+, Dynamic Island) silently.
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing } from '@constants/theme';
+import { SCREEN_MAX_WIDTH } from '@constants/breakpoints';
+import { useResponsive } from '@hooks/useResponsive';
 import {
   KAWAII_TAB_VISUAL_OBSTRUCTION,
   KAWAII_TAB_SAFE_BOTTOM_ANDROID,
@@ -24,11 +26,20 @@ import {
 } from '@constants/layout';
 import { SparkleOverlay } from './SparkleOverlay';
 
+// `centered` clamps to a comfortable reading width on tablets (720). `wide`
+// clamps wider (920) — for screens that host master-detail or multi-column
+// layouts. `full` opts out of clamping entirely (the screen handles its own
+// layout). Below the tablet breakpoint, all three behave identically.
+type ScreenLayout = 'centered' | 'wide' | 'full';
+type EdgePadding = 'default' | 'large' | 'none';
+
 interface ScreenProps {
   children: React.ReactNode;
   scrollable?: boolean;
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  layout?: ScreenLayout;
+  edgePadding?: EdgePadding;
 }
 
 export function Screen({
@@ -36,9 +47,12 @@ export function Screen({
   scrollable = false,
   style,
   contentContainerStyle,
+  layout = 'centered',
+  edgePadding = 'default',
 }: ScreenProps) {
   const segments = useSegments();
   const insets = useSafeAreaInsets();
+  const responsive = useResponsive();
   const driftA = React.useRef(new Animated.Value(0)).current;
   const driftB = React.useRef(new Animated.Value(0)).current;
   const driftC = React.useRef(new Animated.Value(0)).current;
@@ -57,6 +71,21 @@ export function Screen({
     typeof requestedPaddingBottom === 'number'
       ? Math.max(requestedPaddingBottom, minPaddingBottom)
       : minPaddingBottom;
+
+  // Tablet-aware max-width clamp (no clamp on phone — layout is identical).
+  const maxWidth =
+    layout === 'full' || !responsive.isTablet
+      ? undefined
+      : layout === 'wide'
+        ? SCREEN_MAX_WIDTH.tabletLg
+        : SCREEN_MAX_WIDTH.tablet;
+
+  const horizontalPadding =
+    edgePadding === 'none'
+      ? 0
+      : edgePadding === 'large'
+        ? responsive.select({ phone: spacing.screenPadding, tablet: spacing.xl, tabletLg: spacing.xxl })
+        : responsive.select({ phone: spacing.screenPadding, tablet: spacing.lg, tabletLg: spacing.xl });
 
   React.useEffect(() => {
     const createDrift = (value: Animated.Value, duration: number, distance: number) => {
@@ -90,6 +119,14 @@ export function Screen({
     };
   }, [driftA, driftB, driftC]);
 
+  const innerWrapperStyle: ViewStyle = {
+    width: '100%',
+    maxWidth,
+    alignSelf: 'center',
+    paddingHorizontal: horizontalPadding,
+    ...(scrollable ? null : { flex: 1 }),
+  };
+
   return (
     <SafeAreaView style={[styles.safeArea, style]}>
       <LinearGradient
@@ -122,21 +159,20 @@ export function Screen({
           contentContainerStyle={[
             styles.scrollContent,
             contentContainerStyle,
-            { paddingBottom: resolvedPaddingBottom },
+            { paddingBottom: resolvedPaddingBottom, paddingHorizontal: 0 },
           ]}
           keyboardShouldPersistTaps="handled"
         >
-          {children}
+          <View style={innerWrapperStyle}>{children}</View>
         </ScrollView>
       ) : (
         <View
           style={[
             styles.content,
-            contentContainerStyle,
             isTabRoute && { paddingBottom: tabBottomInset },
           ]}
         >
-          {children}
+          <View style={[innerWrapperStyle, contentContainerStyle]}>{children}</View>
         </View>
       )}
     </SafeAreaView>
@@ -186,24 +222,25 @@ const styles = StyleSheet.create({
     left: 48,
     bottom: 18,
   },
+  // Cloud positions are percentage-based so they distribute proportionally
+  // across phones, tablets in portrait, and tablets in landscape (where
+  // absolute positions would cluster top-left on a wide canvas).
   cloudOne: {
-    top: 40,
-    left: -10,
+    top: '6%',
+    left: '-3%',
   },
   cloudTwo: {
-    top: 94,
-    right: -14,
+    top: '14%',
+    right: '-4%',
   },
   cloudThree: {
-    bottom: 26,
-    left: 36,
+    bottom: '4%',
+    left: '10%',
   },
   content: {
     flex: 1,
-    paddingHorizontal: spacing.screenPadding,
   },
   scrollContent: {
-    paddingHorizontal: spacing.screenPadding,
     paddingBottom: spacing.xxl,
   },
 });

@@ -10,7 +10,7 @@ import type { AIReport } from '@models/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
 type ReportType = 'weekly' | 'monthly';
-type ScreenState = 'loading' | 'no-report' | 'generating' | 'has-report' | 'error';
+type ScreenState = 'loading' | 'no-report' | 'generating' | 'has-report' | 'error' | 'no-entries' | 'subscription-error';
 
 export default function AIReportScreen() {
   const router = useRouter();
@@ -52,10 +52,14 @@ export default function AIReportScreen() {
 
   const handleGenerate = useCallback(async () => {
     setScreenState('generating');
-    const generated = await requestReport({ reportType, profile });
-    if (generated) {
-      setReport(generated);
+    const result = await requestReport({ reportType, profile });
+    if (result.ok) {
+      setReport(result.report);
       setScreenState('has-report');
+    } else if (result.reason === 'no_entries') {
+      setScreenState('no-entries');
+    } else if (result.reason === 'subscription_required') {
+      setScreenState('subscription-error');
     } else {
       setScreenState('error');
     }
@@ -64,7 +68,7 @@ export default function AIReportScreen() {
   // ── Locked state ──────────────────────────────────────────────────────────
   if (!isSubscribed) {
     return (
-      <Screen scrollable={false}>
+      <Screen scrollable={false} layout="wide">
         <ScreenHeader onBack={() => router.back()} />
         <View style={styles.lockedContainer}>
           <Ionicons
@@ -88,7 +92,7 @@ export default function AIReportScreen() {
 
   // ── Subscribed — report type toggle always visible ─────────────────────
   return (
-    <Screen scrollable={true}>
+    <Screen scrollable={true} layout="wide">
       <ScreenHeader onBack={() => router.back()} />
       <ReportTypeToggle
         selected={reportType}
@@ -195,6 +199,30 @@ function ReportBody({
       <View style={styles.centeredState}>
         <Text style={styles.errorTitle}>Could not load report</Text>
         <Text style={styles.errorSubtitle}>Check your connection and try again</Text>
+        <Button label="Try again" onPress={onRetry} />
+      </View>
+    );
+  }
+
+  if (state === 'no-entries') {
+    return (
+      <View style={styles.centeredState}>
+        <Text style={styles.emptyIcon} accessibilityElementsHidden>{'📅'}</Text>
+        <Text style={styles.emptyTitle}>Not enough data yet</Text>
+        <Text style={styles.emptySubtitle}>
+          Log your mood for a few days and then come back to generate your report.
+        </Text>
+      </View>
+    );
+  }
+
+  if (state === 'subscription-error') {
+    return (
+      <View style={styles.centeredState}>
+        <Text style={styles.errorTitle}>Subscription not verified</Text>
+        <Text style={styles.errorSubtitle}>
+          Your subscription could not be confirmed on the server. Try closing and reopening the app. If the problem persists, restore your purchase.
+        </Text>
         <Button label="Try again" onPress={onRetry} />
       </View>
     );

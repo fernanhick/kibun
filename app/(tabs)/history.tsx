@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
-import { View, Text, Pressable, Share, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, Share, StyleSheet, type LayoutChangeEvent } from 'react-native';
 import { useRouter, Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Shiba } from '@components/index';
@@ -36,8 +36,16 @@ function buildCalendarGrid(year: number, month: number): (number | null)[][] {
 
 export default function HistoryScreen() {
   const router = useRouter();
-  const { width: screenWidth } = useWindowDimensions();
-  const cellSize = Math.floor((screenWidth - 2 * spacing.screenPadding - 6 * spacing.xs) / 7);
+  // The calendar panel measures its own width via onLayout; cellSize is derived
+  // from that so the grid stays correct when Screen clamps content on tablets.
+  const [calendarWidth, setCalendarWidth] = useState(0);
+  const cellSize = calendarWidth > 0
+    ? Math.floor((calendarWidth - 2 * spacing.sm - 6 * spacing.xs) / 7)
+    : 44;
+  const handleCalendarLayout = useCallback((e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    if (w > 0 && w !== calendarWidth) setCalendarWidth(w);
+  }, [calendarWidth]);
 
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
@@ -164,7 +172,7 @@ export default function HistoryScreen() {
   }, [entries, exporting]);
 
   return (
-    <Screen scrollable={true} contentContainerStyle={styles.scrollPadding}>
+    <Screen scrollable={true} layout="wide" contentContainerStyle={styles.scrollPadding}>
       <View style={styles.headerCard}>
         <View style={styles.headerTopRow}>
           <View style={styles.headerBadge}>
@@ -240,7 +248,7 @@ export default function HistoryScreen() {
         </View>
       </View>
 
-      <View style={styles.calendarPanel}>
+      <View style={styles.calendarPanel} onLayout={handleCalendarLayout}>
         <View style={styles.weekdayRow}>
           {WEEKDAYS.map((day, i) => (
             <Text

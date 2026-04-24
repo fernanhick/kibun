@@ -25,7 +25,7 @@ export default function MoodResponseScreen() {
   const variant = shibaVariant(mood.group, mood.id);
 
   return (
-    <Screen>
+    <Screen edgePadding="large">
       <Pressable
         onPress={() => router.back()}
         accessibilityRole="button"

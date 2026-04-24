@@ -22,7 +22,7 @@ export default function DisclaimerScreen() {
   };
 
   return (
-    <Screen scrollable>
+    <Screen scrollable edgePadding="large">
       <View style={styles.container}>
         <Shiba variant="neutral" size={180} style={styles.shiba} />
 

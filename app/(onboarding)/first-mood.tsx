@@ -24,7 +24,7 @@ export default function FirstMoodScreen() {
   };
 
   return (
-    <Screen scrollable>
+    <Screen scrollable edgePadding="large">
       <LinearGradient
         colors={[colors.skyStart, colors.skyEnd]}
         start={{ x: 0, y: 0 }}

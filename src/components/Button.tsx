@@ -14,7 +14,7 @@ interface ButtonProps {
   label: string;
   onPress: () => void;
   variant?: 'primary' | 'secondary' | 'ghost' | 'sunrise';
-  size?: 'md' | 'sm';
+  size?: 'md' | 'sm' | 'lg';
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
@@ -131,6 +131,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  lgGradient: {
+    minHeight: 60,
+    paddingHorizontal: spacing.xl,
+  },
   mdGradient: {
     minHeight: 52,
     paddingHorizontal: spacing.lg,
@@ -149,6 +153,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.28)',
   },
   // ─── Sizes ──────────────────────────────────────────────────────────────
+  lg: {
+    paddingVertical: 18,
+    paddingHorizontal: spacing.xl,
+  },
   md: {
     paddingVertical: 14,
     paddingHorizontal: spacing.lg,
@@ -171,6 +179,9 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: typography.fonts.ui,
     fontWeight: typography.weights.semibold,
+  },
+  lgLabel: {
+    fontSize: typography.sizes.xl,
   },
   mdLabel: {
     fontSize: typography.sizes.lg,

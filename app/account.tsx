@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { File, Paths } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { Screen, Button } from '@components/index';
 import { useSessionStore } from '@store/sessionStore';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { supabase } from '@lib/supabase';
+import { resetAllLocalUserData } from '@lib/localDataReset';
+import { exportUserData } from '@lib/exportUserData';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
 export default function AccountScreen() {
@@ -15,15 +19,18 @@ export default function AccountScreen() {
   const subscriptionStatus = session?.subscriptionStatus ?? 'none';
 
   const [email, setEmail] = useState<string | null>(null);
+  const [hasEmailPassword, setHasEmailPassword] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deletingData, setDeletingData] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
-  // Load email for registered users
+  // Load email + identity info for registered users
   useEffect(() => {
     if (isAnonymous || !supabase) return;
     supabase.auth.getUser().then(({ data }) => {
       setEmail(data.user?.email ?? null);
+      setHasEmailPassword(data.user?.identities?.some((i) => i.provider === 'email') ?? false);
     });
   }, [isAnonymous]);
 
@@ -42,6 +49,7 @@ export default function AccountScreen() {
             try {
               const { error } = await supabase.rpc('delete_user_data');
               if (error) throw error;
+              await resetAllLocalUserData();
               useOnboardingGateStore.setState({ complete: false, paywallSeen: false });
               router.replace('/(onboarding)/first-mood');
             } catch (err) {
@@ -71,6 +79,7 @@ export default function AccountScreen() {
               const { error } = await supabase.rpc('delete_user');
               if (error) throw error;
               await supabase.auth.signOut();
+              await resetAllLocalUserData();
               useOnboardingGateStore.setState({ complete: false, paywallSeen: false });
               router.replace('/(onboarding)/first-mood');
             } catch (err) {
@@ -105,6 +114,33 @@ export default function AccountScreen() {
         console.error('[kibun:account] Sign out failed:', err);
       }
       setSigningOut(false);
+    }
+  };
+
+  const handleExport = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const json = await exportUserData();
+      const stamp = new Date().toISOString().slice(0, 10);
+      const file = new File(Paths.cache, `kibun-export-${stamp}.json`);
+      file.create({ overwrite: true });
+      file.write(json);
+
+      if (!(await Sharing.isAvailableAsync())) {
+        Alert.alert('Export saved', `Sharing is not available on this device. File: ${file.uri}`);
+        return;
+      }
+      await Sharing.shareAsync(file.uri, {
+        mimeType: 'application/json',
+        dialogTitle: 'Export Kibun data',
+        UTI: 'public.json',
+      });
+    } catch (err) {
+      if (__DEV__) console.error('[kibun:account] Export failed:', err);
+      Alert.alert('Export failed', 'Could not export your data. Please try again.');
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -185,6 +221,30 @@ export default function AccountScreen() {
             )}
           </View>
 
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            SECURITY
+          </Text>
+          <View style={styles.section}>
+            <Pressable
+              style={styles.securityRow}
+              onPress={() => router.push('/change-password')}
+              accessibilityRole="button"
+              accessibilityLabel={hasEmailPassword ? 'Change password' : 'Set a password'}
+            >
+              <View style={styles.securityTextGroup}>
+                <Text style={styles.securityLabel}>
+                  {hasEmailPassword ? 'Change password' : 'Set a password'}
+                </Text>
+                {!hasEmailPassword && (
+                  <Text style={styles.securityHint}>
+                    Add a password as a backup to Google or Apple sign-in.
+                  </Text>
+                )}
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={colors.primary} />
+            </Pressable>
+          </View>
+
           <View style={styles.signOutSection}>
             <Button
               label={signingOut ? 'Signing out...' : 'Sign out'}
@@ -196,6 +256,31 @@ export default function AccountScreen() {
             <Text style={styles.signOutHint}>
               Signing out will end your session. Your mood data will remain on this device.
             </Text>
+          </View>
+
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            PRIVACY
+          </Text>
+          <View style={styles.section}>
+            <Pressable
+              style={styles.securityRow}
+              onPress={handleExport}
+              disabled={exporting}
+              accessibilityRole="button"
+              accessibilityLabel="Export my data"
+            >
+              <View style={styles.securityTextGroup}>
+                <Text style={styles.securityLabel}>
+                  {exporting ? 'Preparing export...' : 'Export my data'}
+                </Text>
+                <Text style={styles.securityHint}>
+                  Download a JSON copy of your moods, journals, habits, and profile.
+                </Text>
+              </View>
+              {exporting
+                ? <ActivityIndicator size="small" color={colors.primary} />
+                : <Ionicons name="download-outline" size={20} color={colors.primary} />}
+            </Pressable>
           </View>
 
           <View style={styles.dangerSection}>
@@ -363,6 +448,27 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.body,
     color: colors.primary,
     fontWeight: typography.weights.medium,
+  },
+  securityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+  },
+  securityTextGroup: {
+    flex: 1,
+    gap: 2,
+  },
+  securityLabel: {
+    fontSize: typography.sizes.body,
+    color: colors.text,
+    fontWeight: typography.weights.medium,
+  },
+  securityHint: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
   },
   badge: {
     paddingVertical: spacing.xs,

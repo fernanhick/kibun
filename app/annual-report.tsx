@@ -120,7 +120,7 @@ export default function AnnualReportScreen() {
 
   if (!stats || yearEntries.length === 0) {
     return (
-      <Screen scrollable={false}>
+      <Screen scrollable={false} layout="wide">
         <LinearGradient
           colors={[colors.pink, colors.pinkEnd]}
           start={{ x: 0, y: 0 }}
@@ -144,7 +144,7 @@ export default function AnnualReportScreen() {
   }
 
   return (
-    <Screen scrollable={false} contentContainerStyle={reportStyles.root}>
+    <Screen scrollable={false} layout="wide" contentContainerStyle={reportStyles.root}>
       <LinearGradient
         colors={[colors.pink, colors.pinkEnd]}
         start={{ x: 0, y: 0 }}

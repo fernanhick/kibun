@@ -54,7 +54,7 @@ export default function MoodSelectionScreen() {
   };
 
   return (
-    <Screen scrollable={true} contentContainerStyle={styles.content}>
+    <Screen scrollable={true} layout="wide" contentContainerStyle={styles.content}>
       <LinearGradient
         colors={[colors.pink, colors.pinkEnd]}
         start={{ x: 0, y: 0 }}

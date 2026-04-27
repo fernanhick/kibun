@@ -114,10 +114,12 @@ Deno.serve(async (req: Request) => {
     }
 
     // --- Build OpenAI prompt ---
-    const moodLines = entries.map((e: { mood: string; check_in_slot: string; logged_at: string; note: string | null }) => {
+    // Raw user notes are intentionally excluded from the OpenAI payload to
+    // honor the privacy commitment that note text never leaves the device.
+    // Only mood label, slot, and date are sent.
+    const moodLines = entries.map((e: { mood: string; check_in_slot: string; logged_at: string }) => {
       const date = e.logged_at.split("T")[0];
-      const note = e.note ? ` (note: ${e.note})` : "";
-      return `${date} ${e.check_in_slot}: ${e.mood}${note}`;
+      return `${date} ${e.check_in_slot}: ${e.mood}`;
     });
 
     const profileContext = profile
@@ -142,10 +144,18 @@ Deno.serve(async (req: Request) => {
 
     const systemMessage =
       "You are a warm, insightful mood analyst for the kibun app. " +
-      "Generate a personalized mood report. Be supportive, specific, and actionable. " +
-      "Use the user's name if provided. Keep the report concise (200-300 words). " +
-      "Structure as: 1) Summary of mood patterns, 2) Notable observations, " +
-      "3) One gentle, actionable suggestion.";
+      "Generate a personalized mood report as a JSON object that the client " +
+      "will render into rich UI sections. Be supportive, specific, and actionable. " +
+      "Use the user's name when natural. Keep prose concise — the whole report " +
+      "should read in under 60 seconds.\n\n" +
+      "Return JSON with exactly these fields:\n" +
+      '- "headline": string. A short, warm one-line title (max ~70 chars), e.g. "A gentle, mostly-calm week".\n' +
+      '- "summary": string. 2-4 sentences of plain prose summarising the period. No markdown.\n' +
+      '- "patterns": array of 2-4 strings. Each string is a single observation about timing, mood mix, or trend. No markdown, no leading bullet characters.\n' +
+      '- "highlight": object or null. When notable, { "label": short phrase, "detail": one sentence of context }. Use null when nothing stands out.\n' +
+      '- "nudge": object. { "title": short imperative phrase, "body": 1-2 sentences with one gentle, actionable suggestion }.\n' +
+      '- "tone": one of "positive" | "neutral" | "mixed" | "tough". Best characterisation of the period overall.\n' +
+      "Output JSON only — do not wrap in markdown fences.";
 
     const userMessage = [
       `Report type: ${report_type}`,
@@ -153,11 +163,12 @@ Deno.serve(async (req: Request) => {
       `\nMood check-ins (${entries.length} entries):`,
       moodLines.join("\n"),
       profileContext ? `\nUser profile:\n${profileContext}` : "",
-      `\nGenerate a ${report_type} mood report for ${userName}.`,
+      `\nGenerate a ${report_type} mood report for ${userName} as the JSON object described.`,
     ].join("\n");
 
     // --- Call OpenAI API ---
     let reportContent: string;
+    let structured: Record<string, unknown> | null = null;
     try {
       const openaiResponse = await fetch(
         "https://api.openai.com/v1/chat/completions",
@@ -174,7 +185,8 @@ Deno.serve(async (req: Request) => {
               { role: "user", content: userMessage },
             ],
             temperature: 0.7,
-            max_tokens: 500,
+            max_tokens: 700,
+            response_format: { type: "json_object" },
           }),
         },
       );
@@ -188,15 +200,31 @@ Deno.serve(async (req: Request) => {
       }
 
       const openaiData = await openaiResponse.json();
-      reportContent = openaiData.choices?.[0]?.message?.content ?? "";
+      const rawContent: string = openaiData.choices?.[0]?.message?.content ?? "";
 
-      if (!reportContent) {
+      if (!rawContent) {
         console.error("[generate-report] OpenAI returned empty content");
         return new Response(
           JSON.stringify({ error: "ai_unavailable" }),
           { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
+
+      // Parse + lightly validate the structured payload. If anything is off,
+      // we fall through to a markdown-rendered version of whatever prose
+      // fields we can salvage so the client never sees a blank report.
+      try {
+        const parsed = JSON.parse(rawContent);
+        if (parsed && typeof parsed === "object") {
+          structured = sanitizeStructured(parsed);
+        }
+      } catch (parseErr) {
+        console.error("[generate-report] JSON parse failed:", parseErr);
+      }
+
+      reportContent = structured
+        ? renderStructuredAsMarkdown(structured)
+        : rawContent;
     } catch (err) {
       console.error("[generate-report] OpenAI fetch failed:", err);
       return new Response(
@@ -236,6 +264,7 @@ Deno.serve(async (req: Request) => {
         period_start: periodStart,
         period_end: periodEnd,
         content: reportContent,
+        structured,
         mood_summary: moodSummary,
       })
       .select()
@@ -289,3 +318,76 @@ Deno.serve(async (req: Request) => {
     );
   }
 });
+
+// --- Helpers ----------------------------------------------------------------
+
+const ALLOWED_TONES = new Set(["positive", "neutral", "mixed", "tough"]);
+
+function asString(value: unknown, max = 500): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return trimmed.length > max ? trimmed.slice(0, max) : trimmed;
+}
+
+function sanitizeStructured(raw: Record<string, unknown>): Record<string, unknown> | null {
+  const headline = asString(raw.headline, 120);
+  const summary = asString(raw.summary, 800);
+  const patternsRaw = Array.isArray(raw.patterns) ? raw.patterns : [];
+  const patterns = patternsRaw
+    .map((p) => asString(p, 240))
+    .filter((p): p is string => !!p)
+    .slice(0, 6);
+
+  let highlight: { label: string; detail: string } | null = null;
+  if (raw.highlight && typeof raw.highlight === "object") {
+    const h = raw.highlight as Record<string, unknown>;
+    const label = asString(h.label, 60);
+    const detail = asString(h.detail, 240);
+    if (label && detail) highlight = { label, detail };
+  }
+
+  let nudge: { title: string; body: string } | null = null;
+  if (raw.nudge && typeof raw.nudge === "object") {
+    const n = raw.nudge as Record<string, unknown>;
+    const title = asString(n.title, 80);
+    const body = asString(n.body, 320);
+    if (title && body) nudge = { title, body };
+  }
+
+  const toneRaw = asString(raw.tone, 16);
+  const tone = toneRaw && ALLOWED_TONES.has(toneRaw) ? toneRaw : "neutral";
+
+  // Need at least summary + nudge for the rich layout to be worth using.
+  if (!summary || !nudge) return null;
+
+  return {
+    headline,
+    summary,
+    patterns,
+    highlight,
+    nudge,
+    tone,
+    schemaVersion: 1,
+  };
+}
+
+function renderStructuredAsMarkdown(s: Record<string, unknown>): string {
+  const lines: string[] = [];
+  if (s.headline) lines.push(`## ${s.headline}`);
+  if (s.summary) lines.push("", String(s.summary));
+  const patterns = Array.isArray(s.patterns) ? (s.patterns as string[]) : [];
+  if (patterns.length) {
+    lines.push("", "### Patterns we noticed");
+    for (const p of patterns) lines.push(`- ${p}`);
+  }
+  if (s.highlight && typeof s.highlight === "object") {
+    const h = s.highlight as { label: string; detail: string };
+    lines.push("", `### ${h.label}`, h.detail);
+  }
+  if (s.nudge && typeof s.nudge === "object") {
+    const n = s.nudge as { title: string; body: string };
+    lines.push("", `### ${n.title}`, n.body);
+  }
+  return lines.join("\n").trim();
+}

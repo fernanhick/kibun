@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as Crypto from 'expo-crypto';
-import { isSupabaseConfigured, supabase } from '@lib/supabase';
+import { isSupabaseConfigured, supabase, ensureFreshSession } from '@lib/supabase';
 import { useSessionStore, useMoodEntryStore } from '@store/index';
 import { useAchievementsStore } from '@store/achievementsStore';
 import { refreshSubscriptionStatus, loginPurchases, logoutPurchases } from '@lib/revenuecat';
@@ -65,6 +65,11 @@ async function uploadLocalEntriesToSupabase(userId: string): Promise<void> {
   const localEntries = useMoodEntryStore.getState().entries;
   if (localEntries.length === 0) return;
 
+  // Upload runs after the pull, so the JWT may be closer to expiry than it was
+  // at sign-in. Refresh proactively to avoid "JWT expired" on the upsert.
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (sessionData.session) await ensureFreshSession(sessionData.session);
+
   const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   const rows = localEntries.map((entry) => {
@@ -108,16 +113,44 @@ async function syncAchievementsForUser(userId: string): Promise<void> {
     return;
   }
 
-  const { addUnlocked } = useAchievementsStore.getState();
-  for (const row of data ?? []) {
-    addUnlocked(row.achievement_id);
+  const ids = (data ?? []).map((row) => row.achievement_id);
+  useAchievementsStore.getState().hydrateFromServer(ids);
+}
+
+async function syncFreezeForUser(userId: string): Promise<void> {
+  if (!supabase) return;
+
+  const now = new Date();
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+
+  const { data, error } = await supabase
+    .from('streak_freezes')
+    .select('freeze_used')
+    .eq('user_id', userId)
+    .eq('month', monthStart)
+    .maybeSingle();
+
+  if (error) {
+    if (__DEV__) {
+      console.error('[kibun:sync] Failed to pull streak freeze:', error.message);
+    }
+    return;
   }
+
+  useAchievementsStore.getState().hydrateFreezeFromServer(Boolean(data?.freeze_used));
 }
 
 async function resolveSubscriptionStatus(
   isRegistered: boolean,
   userId?: string,
 ) {
+  // Screenshot/demo override: force a specific user to "active" without RevenueCat.
+  // Set EXPO_PUBLIC_FORCE_PRO_USER_ID only in screenshot builds; remove before release.
+  const forceProUserId = process.env.EXPO_PUBLIC_FORCE_PRO_USER_ID;
+  if (userId && forceProUserId && userId === forceProUserId) {
+    return 'active';
+  }
+
   const existingStatus = useSessionStore.getState().session?.subscriptionStatus ?? 'none';
   if (!isRegistered && existingStatus !== 'none') {
     return existingStatus;
@@ -162,21 +195,24 @@ export function useAuth() {
       async (event: AuthChangeEvent, session: Session | null) => {
         if (event === 'INITIAL_SESSION') {
           if (session) {
-            // Existing persisted session — restore it
-            const isRegistered = !session.user.is_anonymous;
-            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered, session.user.id);
+            // The persisted access token may already be expired on cold start.
+            // Refresh it before any data request so PostgREST doesn't 401 on sync.
+            const fresh = await ensureFreshSession(session);
+            const isRegistered = !fresh.user.is_anonymous;
+            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered, fresh.user.id);
             setSession({
-              userId: session.user.id,
+              userId: fresh.user.id,
               authStatus: isRegistered ? 'registered' : 'anonymous',
               subscriptionStatus,
             });
 
             if (isRegistered) {
-              void loginPurchases(session.user.id);
-              void syncMoodEntriesForUser(session.user.id).then(() =>
-                uploadLocalEntriesToSupabase(session.user.id)
+              void loginPurchases(fresh.user.id);
+              void syncMoodEntriesForUser(fresh.user.id).then(() =>
+                uploadLocalEntriesToSupabase(fresh.user.id)
               );
-              void syncAchievementsForUser(session.user.id);
+              void syncAchievementsForUser(fresh.user.id);
+              void syncFreezeForUser(fresh.user.id);
             }
 
             setIsReady(true);
@@ -192,20 +228,24 @@ export function useAuth() {
           }
         } else if (event === 'SIGNED_IN') {
           if (session) {
-            const isRegistered = !session.user.is_anonymous;
-            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered, session.user.id);
+            // Mirror INITIAL_SESSION: refresh before sync so PostgREST never
+            // 401s on a token that was already near expiry at sign-in.
+            const fresh = await ensureFreshSession(session);
+            const isRegistered = !fresh.user.is_anonymous;
+            const subscriptionStatus = await resolveSubscriptionStatus(isRegistered, fresh.user.id);
             setSession({
-              userId: session.user.id,
+              userId: fresh.user.id,
               authStatus: isRegistered ? 'registered' : 'anonymous',
               subscriptionStatus,
             });
 
             if (isRegistered) {
-              void loginPurchases(session.user.id);
-              void syncMoodEntriesForUser(session.user.id).then(() =>
-                uploadLocalEntriesToSupabase(session.user.id)
+              void loginPurchases(fresh.user.id);
+              void syncMoodEntriesForUser(fresh.user.id).then(() =>
+                uploadLocalEntriesToSupabase(fresh.user.id)
               );
-              void syncAchievementsForUser(session.user.id);
+              void syncAchievementsForUser(fresh.user.id);
+              void syncFreezeForUser(fresh.user.id);
             }
           }
           setIsReady(true);

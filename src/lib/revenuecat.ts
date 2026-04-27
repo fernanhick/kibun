@@ -74,6 +74,18 @@ export async function refreshSubscriptionStatus(): Promise<SubscriptionStatus> {
   }
 }
 
+export async function restorePurchases(): Promise<SubscriptionStatus> {
+  try {
+    const customerInfo = await Purchases.restorePurchases();
+    return getSubscriptionStatusFromCustomerInfo(customerInfo);
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('[kibun:rc] Failed to restore purchases:', error);
+    }
+    return 'none';
+  }
+}
+
 // Links the RevenueCat identity to the Supabase user ID so webhook events
 // carry a matching app_user_id that the Edge Function can use to update profiles.
 export async function loginPurchases(userId: string): Promise<void> {

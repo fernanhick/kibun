@@ -109,6 +109,9 @@ export default function AnnualReportScreen() {
         if (fnError) throw fnError;
         setNarrative(data?.narrative ?? null);
       } catch (e) {
+        if (__DEV__) {
+          console.error('[kibun:annual-report] generate-annual-report failed:', e);
+        }
         setError('Could not generate your story. Try again later.');
       } finally {
         setLoading(false);

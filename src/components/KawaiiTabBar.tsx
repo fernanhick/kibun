@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { View, Pressable, Text, Animated, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, type Href } from 'expo-router';
@@ -10,17 +10,31 @@ import {
   KAWAII_TAB_BAR_HEIGHT,
   KAWAII_TAB_SAFE_BOTTOM_ANDROID,
   KAWAII_TAB_SAFE_BOTTOM_MIN,
+  getKawaiiTabScale,
 } from '@constants/layout';
 import { SCREEN_MAX_WIDTH } from '@constants/breakpoints';
 import { getMascotSource } from '@constants/mascotAnimations';
+import { useResponsive } from '@hooks/useResponsive';
 import { useMoodEntryStore } from '@store/index';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TAB_BAR_HEIGHT = KAWAII_TAB_BAR_HEIGHT;
-const MASCOT_SIZE = 140;
+// Phone-correct base geometry. Tablet sizing is achieved via getKawaiiTabScale
+// applied in the component — do NOT bump these to "make tablets bigger" or
+// the phone layout will overflow (icons clip at the screen edge).
+const BASE_MASCOT_SIZE = 140;
+const BASE_ICON_SIZE = 26;
+const BASE_ICON_WRAP = 52;
+const BASE_ICON_RADIUS = 16;
+// Tight to BASE_ICON_WRAP so two buttons actually fit inside each side on a
+// phone: 4 × 56 + 140 mascot = 364 ≤ 393 − 2 × 8 padding. Going wider causes
+// space-evenly to overflow and silently fall back to flex-start, which packs
+// the right pair against the screen edge.
+const BASE_TAB_BUTTON = 56;
+const BASE_LABEL_FONT = 11;
+const BASE_MASCOT_TRANSLATE_Y = -10;
 
 const TAB_ICONS: Record<string, { outline: IoniconName; filled: IoniconName; accent: string }> = {
   index:    { outline: 'home-outline',           filled: 'home',           accent: '#89AFFF' },
@@ -31,16 +45,26 @@ const TAB_ICONS: Record<string, { outline: IoniconName; filled: IoniconName; acc
 
 // ─── Animated Tab Icon ────────────────────────────────────────────────────────
 
+interface TabMetrics {
+  iconSize: number;
+  iconWrap: number;
+  iconRadius: number;
+  buttonWidth: number;
+  labelFont: number;
+}
+
 function TabIcon({
   routeName,
   label,
   focused,
   onPress,
+  metrics,
 }: {
   routeName: string;
   label: string;
   focused: boolean;
   onPress: () => void;
+  metrics: TabMetrics;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
   const icons = TAB_ICONS[routeName];
@@ -62,16 +86,25 @@ function TabIcon({
       accessibilityRole="tab"
       accessibilityState={{ selected: focused }}
       accessibilityLabel={label}
-      style={styles.tabButton}
+      style={[styles.tabButton, { width: metrics.buttonWidth }]}
     >
-      <Animated.View style={[styles.iconWrap, focused && { backgroundColor: icons.accent }, { transform: [{ scale }] }]}>
+      <Animated.View
+        style={[
+          styles.iconWrap,
+          { width: metrics.iconWrap, height: metrics.iconWrap, borderRadius: metrics.iconRadius },
+          focused && { backgroundColor: icons.accent },
+          { transform: [{ scale }] },
+        ]}
+      >
         <Ionicons
           name={focused ? icons.filled : icons.outline}
-          size={26}
+          size={metrics.iconSize}
           color={focused ? '#fff' : '#fff'}
         />
       </Animated.View>
-      <Text style={[styles.tabLabel, focused && { color: icons.accent }]}>{label}</Text>
+      <Text style={[styles.tabLabel, { fontSize: metrics.labelFont }, focused && { color: icons.accent }]}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -81,7 +114,23 @@ function TabIcon({
 export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { width } = useResponsive();
   const lastMoodId = useMoodEntryStore((s) => s.entries[0]?.moodId);
+
+  const { tabBarHeight, mascotSize, metrics } = useMemo(() => {
+    const scale = getKawaiiTabScale(width);
+    return {
+      tabBarHeight: KAWAII_TAB_BAR_HEIGHT * scale,
+      mascotSize: BASE_MASCOT_SIZE * scale,
+      metrics: {
+        iconSize: BASE_ICON_SIZE * scale,
+        iconWrap: BASE_ICON_WRAP * scale,
+        iconRadius: BASE_ICON_RADIUS * scale,
+        buttonWidth: BASE_TAB_BUTTON * scale,
+        labelFont: BASE_LABEL_FONT * scale,
+      },
+    };
+  }, [width]);
 
   const routes = state.routes;
   const leftTabs = routes.slice(0, 2);
@@ -105,6 +154,7 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
         routeName={route.name}
         label={label}
         focused={focused}
+        metrics={metrics}
         onPress={() => {
           const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
           if (!event.defaultPrevented && !focused) {
@@ -123,21 +173,21 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
   return (
     <View style={[styles.container, { paddingBottom: safeBottom }]} pointerEvents="box-none">
       <View style={styles.tabRowClamp}>
-        <View style={styles.tabRow}>
+        <View style={[styles.tabRow, { height: tabBarHeight }]}>
           <View style={styles.tabSide}>
             {leftTabs.map((r, i) => renderTab(r, i))}
           </View>
 
-          <View style={styles.centerSlot}>
+          <View style={[styles.centerSlot, { width: mascotSize }]}>
             <Pressable
               onPress={() => router.push('/check-in' as Href)}
               accessibilityLabel="Log mood"
               accessibilityRole="button"
-              style={styles.mascotButton}
+              style={{ width: mascotSize, height: mascotSize, alignItems: 'center', justifyContent: 'center' }}
             >
               <Image
                 source={getMascotSource(lastMoodId)}
-                style={styles.mascotImage}
+                style={{ width: mascotSize, height: mascotSize, transform: [{ translateY: BASE_MASCOT_TRANSLATE_Y }] }}
                 contentFit="contain"
                 autoplay
               />
@@ -171,8 +221,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: TAB_BAR_HEIGHT,
-    paddingHorizontal: 30,
+    paddingHorizontal: 8,
   },
   tabSide: {
     flex: 1,
@@ -181,38 +230,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   centerSlot: {
-    width: MASCOT_SIZE ,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tabButton: {
-    width: 64,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
   },
   iconWrap: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(255, 218, 218, 1)',
   },
   tabLabel: {
-    fontSize: 11,
     fontFamily: typography.fonts.ui,
     color: colors.textSecondary,
-  },
-  mascotButton: {
-    width: MASCOT_SIZE,
-    height: MASCOT_SIZE,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mascotImage: {
-    width: MASCOT_SIZE,
-    height: MASCOT_SIZE,
-    transform: [{ translateY: -10 }],
   },
 });

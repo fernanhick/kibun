@@ -133,7 +133,7 @@ ${statsContext}`;
     const openaiData = await openaiResponse.json();
     const narrative = openaiData.choices?.[0]?.message?.content?.trim() ?? '';
 
-    await adminClient.from('ai_reports').insert({
+    const { error: insertError } = await adminClient.from('ai_reports').insert({
       user_id: userId,
       report_type: 'annual',
       period_start: yearStart,
@@ -141,6 +141,10 @@ ${statsContext}`;
       content: narrative,
       mood_summary: { totalEntries: totalCheckIns, topMoods, avgEntriesPerDay: 0 },
     });
+
+    if (insertError) {
+      console.error('[generate-annual-report] cache insert failed:', insertError);
+    }
 
     return new Response(
       JSON.stringify({ narrative }),

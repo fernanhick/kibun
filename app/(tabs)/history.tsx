@@ -4,8 +4,26 @@ import { useRouter, Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Shiba } from '@components/index';
 import { useMoodEntryStore, useSessionStore, useLifeEventsStore } from '@store/index';
-import { MOOD_MAP, type MoodId } from '@constants/moods';
+import { useResponsive } from '@hooks/useResponsive';
+import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { colors, spacing, typography, radius } from '@constants/theme';
+
+// Representative tones per mood group used in the balance bar / legend.
+const GROUP_COLORS: Record<MoodGroup, string> = {
+  green: '#66BB6A',
+  neutral: '#BDBDBD',
+  'red-orange': '#FF8A65',
+  blue: '#90CAF9',
+};
+
+const GROUP_LABELS: Record<MoodGroup, string> = {
+  green: 'Positive',
+  neutral: 'Mixed',
+  'red-orange': 'Stormy',
+  blue: 'Tender',
+};
+
+const GROUP_ORDER: MoodGroup[] = ['green', 'neutral', 'red-orange', 'blue'];
 
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -13,6 +31,37 @@ const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
+
+type ResponsiveSelect = ReturnType<typeof useResponsive>['select'];
+
+// Centralized text/dimension scaling. The base (phone) values match the legacy
+// design; tablet and tabletLg bump them so the screen does not feel sparse on
+// larger viewports — same approach as the tab bar scale in @constants/layout.
+function buildResponsiveSizes(select: ResponsiveSelect) {
+  return {
+    badgeText: select({ phone: typography.sizes.xs, tablet: 13, tabletLg: 15 }),
+    monthLabel: select({ phone: typography.sizes.lg, tablet: 22, tabletLg: 26 }),
+    weekdayLabel: select({ phone: typography.sizes.xs, tablet: 13, tabletLg: 15 }),
+    dayNumber: select({ phone: typography.sizes.sm, tablet: 16, tabletLg: 18 }),
+    btnLabel: select({ phone: typography.sizes.sm, tablet: 15, tabletLg: 16 }),
+    statValue: select({ phone: typography.sizes.xl, tablet: 28, tabletLg: 32 }),
+    statLabel: select({ phone: typography.sizes.xs, tablet: 13, tabletLg: 15 }),
+    emptyTitle: select({ phone: typography.sizes.md, tablet: 18, tabletLg: 20 }),
+    emptySubtitle: select({ phone: typography.sizes.sm, tablet: 15, tabletLg: 16 }),
+    legendLabel: select({ phone: typography.sizes.xs, tablet: 13, tabletLg: 15 }),
+    proLockBadge: select({ phone: 9, tablet: 11, tabletLg: 12 }),
+    chevronIcon: select({ phone: 24, tablet: 28, tabletLg: 32 }),
+    actionIcon: select({ phone: 16, tablet: 20, tabletLg: 22 }),
+    topMoodBubble: select({ phone: 24, tablet: 30, tabletLg: 34 }),
+    legendSwatch: select({ phone: 10, tablet: 12, tabletLg: 14 }),
+    balanceBarHeight: select({ phone: 14, tablet: 18, tabletLg: 22 }),
+    statDividerHeight: select({ phone: 28, tablet: 36, tabletLg: 40 }),
+    shibaEmpty: select({ phone: 64, tablet: 84, tabletLg: 96 }),
+    shibaHeader: select({ phone: 80, tablet: 100, tabletLg: 116 }),
+  };
+}
+
+type ResponsiveSizes = ReturnType<typeof buildResponsiveSizes>;
 
 function buildCalendarGrid(year: number, month: number): (number | null)[][] {
   const firstDay = new Date(year, month, 1).getDay();
@@ -36,6 +85,8 @@ function buildCalendarGrid(year: number, month: number): (number | null)[][] {
 
 export default function HistoryScreen() {
   const router = useRouter();
+  const responsive = useResponsive();
+  const r = useMemo(() => buildResponsiveSizes(responsive.select), [responsive.select]);
   // The calendar panel measures its own width via onLayout; cellSize is derived
   // from that so the grid stays correct when Screen clamps content on tablets.
   const [calendarWidth, setCalendarWidth] = useState(0);
@@ -100,6 +151,34 @@ export default function HistoryScreen() {
     }
     return set;
   }, [lifeEvents, yearMonth]);
+
+  const monthSummary = useMemo(() => {
+    const monthEntries = entries.filter((e) => e.loggedAt.startsWith(yearMonth));
+    const total = monthEntries.length;
+    const activeDays = new Set(monthEntries.map((e) => e.loggedAt.split('T')[0])).size;
+
+    const groupCounts: Record<MoodGroup, number> = {
+      green: 0, neutral: 0, 'red-orange': 0, blue: 0,
+    };
+    const moodFreq: Record<string, number> = {};
+    for (const e of monthEntries) {
+      const def = MOOD_MAP[e.moodId as MoodId];
+      if (!def) continue;
+      groupCounts[def.group]++;
+      moodFreq[e.moodId] = (moodFreq[e.moodId] ?? 0) + 1;
+    }
+
+    let topMoodId: MoodId | null = null;
+    let topCount = 0;
+    for (const [id, count] of Object.entries(moodFreq)) {
+      if (count > topCount) {
+        topCount = count;
+        topMoodId = id as MoodId;
+      }
+    }
+
+    return { total, activeDays, groupCounts, topMoodId, topCount };
+  }, [entries, yearMonth]);
 
   const grid = useMemo(
     () => buildCalendarGrid(currentMonth.year, currentMonth.month),
@@ -176,7 +255,7 @@ export default function HistoryScreen() {
       <View style={styles.headerCard}>
         <View style={styles.headerTopRow}>
           <View style={styles.headerBadge}>
-            <Text style={styles.headerBadgeText}>Mood Calendar</Text>
+            <Text style={[styles.headerBadgeText, { fontSize: r.badgeText }]}>Mood Calendar</Text>
           </View>
           <View style={styles.headerTopRight}>
             {isPro && (
@@ -186,8 +265,8 @@ export default function HistoryScreen() {
                 accessibilityRole="button"
                 accessibilityLabel="Log a life event"
               >
-                <Ionicons name="add" size={16} color={colors.primaryDark} />
-                <Text style={styles.exportBtnLabel}>Event</Text>
+                <Ionicons name="add" size={r.actionIcon} color={colors.primaryDark} />
+                <Text style={[styles.exportBtnLabel, { fontSize: r.btnLabel }]}>Event</Text>
               </Pressable>
             )}
             {isPro ? (
@@ -198,8 +277,8 @@ export default function HistoryScreen() {
                 accessibilityRole="button"
                 accessibilityLabel="Export mood history as CSV"
               >
-                <Ionicons name="share-outline" size={16} color={colors.primaryDark} />
-                <Text style={styles.exportBtnLabel}>Export</Text>
+                <Ionicons name="share-outline" size={r.actionIcon} color={colors.primaryDark} />
+                <Text style={[styles.exportBtnLabel, { fontSize: r.btnLabel }]}>Export</Text>
               </Pressable>
             ) : (
               <Pressable
@@ -208,13 +287,13 @@ export default function HistoryScreen() {
                 accessibilityRole="button"
                 accessibilityLabel="Upgrade to Pro to export mood history"
               >
-                <Text style={styles.exportProLockText}>Export</Text>
+                <Text style={[styles.exportProLockText, { fontSize: r.btnLabel }]}>Export</Text>
                 <View style={styles.proLockBadge}>
-                  <Text style={styles.proLockBadgeText}>Pro</Text>
+                  <Text style={[styles.proLockBadgeText, { fontSize: r.proLockBadge }]}>Pro</Text>
                 </View>
               </Pressable>
             )}
-            <Shiba variant="neutral" size={80} />
+            <Shiba variant="neutral" size={r.shibaHeader} />
           </View>
         </View>
         <View style={styles.header}>
@@ -224,10 +303,10 @@ export default function HistoryScreen() {
             accessibilityRole="button"
             hitSlop={12}
           >
-            <Ionicons name="chevron-back" size={24} color={colors.text} />
+            <Ionicons name="chevron-back" size={r.chevronIcon} color={colors.text} />
           </Pressable>
 
-          <Text style={styles.monthLabel} accessibilityRole="header">
+          <Text style={[styles.monthLabel, { fontSize: r.monthLabel }]} accessibilityRole="header">
             {MONTH_NAMES[currentMonth.month]} {currentMonth.year}
           </Text>
 
@@ -241,7 +320,7 @@ export default function HistoryScreen() {
           >
             <Ionicons
               name="chevron-forward"
-              size={24}
+              size={r.chevronIcon}
               color={isCurrentMonth ? colors.textDisabled : colors.text}
             />
           </Pressable>
@@ -253,7 +332,7 @@ export default function HistoryScreen() {
           {WEEKDAYS.map((day, i) => (
             <Text
               key={i}
-              style={[styles.weekdayLabel, { width: cellSize }]}
+              style={[styles.weekdayLabel, { width: cellSize, fontSize: r.weekdayLabel }]}
             >
               {day}
             </Text>
@@ -306,6 +385,7 @@ export default function HistoryScreen() {
                     <Text
                       style={[
                         styles.dayNumber,
+                        { fontSize: r.dayNumber },
                         hasEntries ? { color: colors.text } : { color: colors.text },
                         isFuture && { color: colors.textDisabled },
                       ]}
@@ -322,7 +402,126 @@ export default function HistoryScreen() {
           ))}
         </View>
       </View>
+
+      <MonthSnapshot
+        monthLabel={MONTH_NAMES[currentMonth.month]}
+        summary={monthSummary}
+        r={r}
+      />
     </Screen>
+  );
+}
+
+interface MonthSnapshotProps {
+  monthLabel: string;
+  summary: {
+    total: number;
+    activeDays: number;
+    groupCounts: Record<MoodGroup, number>;
+    topMoodId: MoodId | null;
+    topCount: number;
+  };
+  r: ResponsiveSizes;
+}
+
+function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
+  const { total, activeDays, groupCounts, topMoodId } = summary;
+  const topMood = topMoodId ? MOOD_MAP[topMoodId] : null;
+
+  if (total === 0) {
+    return (
+      <View style={styles.snapshotCard}>
+        <View style={styles.snapshotBadge}>
+          <Text style={[styles.snapshotBadgeText, { fontSize: r.badgeText }]}>Monthly Snapshot</Text>
+        </View>
+        <View style={styles.emptyState}>
+          <Shiba variant="neutral" size={r.shibaEmpty} />
+          <Text style={[styles.emptyTitle, { fontSize: r.emptyTitle }]}>No moods yet for {monthLabel}</Text>
+          <Text style={[styles.emptySubtitle, { fontSize: r.emptySubtitle }]}>
+            Tap a day above to log how you're feeling.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  const balanceSegments = GROUP_ORDER
+    .map((group) => ({ group, count: groupCounts[group] }))
+    .filter((s) => s.count > 0);
+
+  return (
+    <View style={styles.snapshotCard}>
+      <View style={styles.snapshotBadge}>
+        <Text style={[styles.snapshotBadgeText, { fontSize: r.badgeText }]}>Monthly Snapshot</Text>
+      </View>
+
+      <View style={styles.statsRow}>
+        <View style={styles.statCell}>
+          <Text style={[styles.statValue, { fontSize: r.statValue }]}>{total}</Text>
+          <Text style={[styles.statLabel, { fontSize: r.statLabel }]}>moods logged</Text>
+        </View>
+        <View style={[styles.statDivider, { height: r.statDividerHeight }]} />
+        <View style={styles.statCell}>
+          <Text style={[styles.statValue, { fontSize: r.statValue }]}>{activeDays}</Text>
+          <Text style={[styles.statLabel, { fontSize: r.statLabel }]}>active days</Text>
+        </View>
+        {topMood && (
+          <>
+            <View style={[styles.statDivider, { height: r.statDividerHeight }]} />
+            <View style={[styles.statCell, styles.topMoodCell]}>
+              <View style={[
+                styles.topMoodBubble,
+                { backgroundColor: topMood.bubbleColor, width: r.topMoodBubble, height: r.topMoodBubble },
+              ]} />
+              <Text style={[styles.statLabel, { fontSize: r.statLabel }]} numberOfLines={1}>
+                top: {topMood.label.toLowerCase()}
+              </Text>
+            </View>
+          </>
+        )}
+      </View>
+
+      <View style={[styles.balanceBar, { height: r.balanceBarHeight }]}>
+        {balanceSegments.map((seg, idx) => {
+          const flex = seg.count / total;
+          const isFirst = idx === 0;
+          const isLast = idx === balanceSegments.length - 1;
+          return (
+            <View
+              key={seg.group}
+              style={{
+                flex,
+                height: '100%',
+                backgroundColor: GROUP_COLORS[seg.group],
+                borderTopLeftRadius: isFirst ? 999 : 0,
+                borderBottomLeftRadius: isFirst ? 999 : 0,
+                borderTopRightRadius: isLast ? 999 : 0,
+                borderBottomRightRadius: isLast ? 999 : 0,
+              }}
+            />
+          );
+        })}
+      </View>
+
+      <View style={styles.legendRow}>
+        {GROUP_ORDER.map((group) => {
+          const count = groupCounts[group];
+          if (count === 0) return null;
+          const pct = Math.round((count / total) * 100);
+          return (
+            <View key={group} style={styles.legendItem}>
+              <View style={[
+                styles.legendSwatch,
+                { backgroundColor: GROUP_COLORS[group], width: r.legendSwatch, height: r.legendSwatch },
+              ]} />
+              <Text style={[styles.legendLabel, { fontSize: r.legendLabel }]}>
+                {GROUP_LABELS[group]} <Text style={styles.legendPct}>{pct}%</Text>
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+    </View>
   );
 }
 
@@ -497,5 +696,116 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
+  },
+  snapshotCard: {
+    marginTop: spacing.md,
+    borderRadius: 22,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+    borderWidth: 1.2,
+    borderColor: '#DCE9FF',
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    gap: spacing.sm,
+  },
+  snapshotBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.pinkLight,
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: colors.pinkBorder,
+  },
+  snapshotBadgeText: {
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.ui,
+    letterSpacing: 0.7,
+    color: colors.pink,
+    textTransform: 'uppercase',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+    gap: 6,
+  },
+  emptyTitle: {
+    fontSize: typography.sizes.md,
+    fontFamily: typography.fonts.ui,
+    color: colors.text,
+  },
+  emptySubtitle: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.xs,
+  },
+  statCell: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 2,
+  },
+  topMoodCell: {
+    gap: 4,
+  },
+  statValue: {
+    fontSize: typography.sizes.xl,
+    fontFamily: typography.fonts.display,
+    color: colors.text,
+  },
+  statLabel: {
+    fontSize: typography.sizes.xs,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  statDivider: {
+    width: 1,
+    height: 28,
+    backgroundColor: colors.borderLight,
+  },
+  topMoodBubble: {
+    width: 24,
+    height: 24,
+    borderRadius: 999,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.85)',
+  },
+  balanceBar: {
+    flexDirection: 'row',
+    height: 14,
+    borderRadius: 999,
+    backgroundColor: colors.borderLight,
+    overflow: 'hidden',
+    marginTop: spacing.xs,
+  },
+  legendRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    rowGap: 6,
+    marginTop: 2,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  legendSwatch: {
+    width: 10,
+    height: 10,
+    borderRadius: 999,
+  },
+  legendLabel: {
+    fontSize: typography.sizes.xs,
+    color: colors.textSecondary,
+  },
+  legendPct: {
+    color: colors.text,
+    fontFamily: typography.fonts.ui,
   },
 });

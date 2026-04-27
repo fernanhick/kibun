@@ -2,11 +2,12 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Markdown from 'react-native-markdown-display';
 import { Screen, Card, Button } from '@components/index';
 import { useSessionStore } from '@store/sessionStore';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { requestReport, getLatestReport } from '@lib/aiReports';
-import type { AIReport } from '@models/index';
+import type { AIReport, AIReportStructured, AIReportTone } from '@models/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
 type ReportType = 'weekly' | 'monthly';
@@ -259,12 +260,7 @@ function ReportBody({
         {periodLabel}
       </Text>
 
-      <Card style={styles.contentCard}>
-        {/* No accessibilityLabel needed — Text content is self-describing */}
-        <Text style={styles.contentText}>
-          {report.content}
-        </Text>
-      </Card>
+      <ReportContent report={report} />
 
       {summary && (
         <View>
@@ -313,6 +309,107 @@ function ReportBody({
       <Button label="Generate new report" onPress={onGenerate} />
     </View>
   );
+}
+
+// ── Report content (structured → markdown → plain text) ─────────────────────
+
+function ReportContent({ report }: { report: AIReport }) {
+  if (report.structured) {
+    return <StructuredReport data={report.structured} />;
+  }
+  if (looksLikeMarkdown(report.content)) {
+    return <MarkdownReport content={report.content} />;
+  }
+  return (
+    <Card style={styles.contentCard}>
+      <Text style={styles.contentText}>{report.content}</Text>
+    </Card>
+  );
+}
+
+function StructuredReport({ data }: { data: AIReportStructured }) {
+  return (
+    <View style={styles.structuredContainer}>
+      {data.headline ? (
+        <Text style={styles.headline} accessibilityRole="header">
+          {data.headline}
+        </Text>
+      ) : null}
+
+      <ToneChip tone={data.tone} />
+
+      <Card style={styles.summaryCard}>
+        <Text style={styles.summaryText}>{data.summary}</Text>
+      </Card>
+
+      {data.patterns.length > 0 && (
+        <View style={styles.patternsSection}>
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            Patterns we noticed
+          </Text>
+          <Card style={styles.patternsCard} padding="md">
+            {data.patterns.map((p, i) => (
+              <View
+                key={i}
+                style={[styles.patternRow, i === 0 ? null : styles.patternRowDivider]}
+              >
+                <View style={styles.patternBullet} />
+                <Text style={styles.patternText}>{p}</Text>
+              </View>
+            ))}
+          </Card>
+        </View>
+      )}
+
+      {data.highlight && (
+        <View style={styles.highlightCard} accessibilityRole="summary">
+          <View style={styles.highlightIconWrap}>
+            <Ionicons name="sparkles" size={14} color={colors.accent} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.highlightLabel}>{data.highlight.label}</Text>
+            <Text style={styles.highlightDetail}>{data.highlight.detail}</Text>
+          </View>
+        </View>
+      )}
+
+      <View style={styles.nudgeCard}>
+        <View style={styles.nudgeHeaderRow}>
+          <Ionicons name="leaf-outline" size={16} color={colors.primary} />
+          <Text style={styles.nudgeTitle}>{data.nudge.title}</Text>
+        </View>
+        <Text style={styles.nudgeBody}>{data.nudge.body}</Text>
+      </View>
+    </View>
+  );
+}
+
+function MarkdownReport({ content }: { content: string }) {
+  return (
+    <Card style={styles.contentCard}>
+      <Markdown style={markdownStyles}>{content}</Markdown>
+    </Card>
+  );
+}
+
+function ToneChip({ tone }: { tone: AIReportTone }) {
+  const meta = TONE_META[tone];
+  return (
+    <View style={[styles.toneChip, { backgroundColor: meta.bg, borderColor: meta.border }]}>
+      <Text style={[styles.toneChipText, { color: meta.text }]}>{meta.label}</Text>
+    </View>
+  );
+}
+
+const TONE_META: Record<AIReportTone, { label: string; bg: string; border: string; text: string }> = {
+  positive: { label: 'Mostly bright', bg: '#F1FFF2', border: '#A5D6A7', text: '#2E7D32' },
+  neutral:  { label: 'Steady',        bg: colors.primaryLight, border: colors.chipBorder, text: colors.primaryDark },
+  mixed:    { label: 'Mixed',         bg: colors.accentLight, border: colors.accentBorder, text: '#8A5A00' },
+  tough:    { label: 'A tougher stretch', bg: colors.pinkLight, border: colors.pinkBorder, text: '#9D2E5C' },
+};
+
+function looksLikeMarkdown(s: string): boolean {
+  return /(^|\n)\s*(#{1,6}\s|[-*]\s|\d+\.\s)/.test(s) || /\*\*[^*]+\*\*/.test(s);
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -492,5 +589,196 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xs,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  structuredContainer: {
+    gap: spacing.sm,
+  },
+  headline: {
+    fontSize: typography.sizes.xl,
+    fontFamily: typography.fonts.display,
+    color: colors.text,
+    marginTop: spacing.xs,
+  },
+  toneChip: {
+    alignSelf: 'flex-start',
+    paddingVertical: 4,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.full,
+    borderWidth: 1,
+  },
+  toneChipText: {
+    fontSize: typography.sizes.xs,
+    fontWeight: typography.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  summaryCard: {
+    padding: spacing.md,
+  },
+  summaryText: {
+    fontSize: typography.sizes.body,
+    color: colors.text,
+    lineHeight: typography.sizes.body * typography.lineHeights.relaxed,
+  },
+  patternsSection: {
+    gap: spacing.xs,
+  },
+  patternsCard: {
+    paddingVertical: spacing.sm,
+  },
+  patternRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+  },
+  patternRowDivider: {
+    borderTopWidth: 1,
+    borderTopColor: colors.borderLight,
+  },
+  patternBullet: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.primary,
+    marginTop: 8,
+  },
+  patternText: {
+    flex: 1,
+    fontSize: typography.sizes.md,
+    color: colors.text,
+    lineHeight: typography.sizes.md * typography.lineHeights.normal,
+  },
+  highlightCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    backgroundColor: colors.accentLight,
+    borderWidth: 1,
+    borderColor: colors.accentBorder,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+  },
+  highlightIconWrap: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  highlightLabel: {
+    fontSize: typography.sizes.md,
+    fontWeight: typography.weights.semibold,
+    color: colors.text,
+  },
+  highlightDetail: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    lineHeight: typography.sizes.sm * typography.lineHeights.normal,
+    marginTop: 2,
+  },
+  nudgeCard: {
+    backgroundColor: colors.primaryLight,
+    borderWidth: 1,
+    borderColor: colors.chipBorder,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    gap: spacing.xs,
+  },
+  nudgeHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  nudgeTitle: {
+    fontSize: typography.sizes.md,
+    fontWeight: typography.weights.semibold,
+    color: colors.primaryDark,
+  },
+  nudgeBody: {
+    fontSize: typography.sizes.md,
+    color: colors.text,
+    lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
+  },
+});
+
+const markdownStyles = StyleSheet.create({
+  body: {
+    color: colors.text,
+    fontSize: typography.sizes.body,
+    lineHeight: typography.sizes.body * typography.lineHeights.relaxed,
+  },
+  heading1: {
+    fontSize: typography.sizes.xl,
+    fontFamily: typography.fonts.display,
+    color: colors.text,
+    marginTop: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  heading2: {
+    fontSize: typography.sizes.lg,
+    fontWeight: typography.weights.bold,
+    color: colors.text,
+    marginTop: spacing.md,
+    marginBottom: spacing.xs,
+  },
+  heading3: {
+    fontSize: typography.sizes.md,
+    fontWeight: typography.weights.semibold,
+    color: colors.primaryDark,
+    marginTop: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  paragraph: {
+    marginTop: 0,
+    marginBottom: spacing.sm,
+  },
+  strong: {
+    fontWeight: typography.weights.bold,
+    color: colors.text,
+  },
+  em: {
+    fontStyle: 'italic',
+  },
+  bullet_list: {
+    marginBottom: spacing.sm,
+  },
+  ordered_list: {
+    marginBottom: spacing.sm,
+  },
+  list_item: {
+    marginBottom: 4,
+  },
+  bullet_list_icon: {
+    color: colors.primary,
+    marginLeft: 0,
+    marginRight: spacing.xs,
+    fontSize: typography.sizes.md,
+    lineHeight: typography.sizes.md * typography.lineHeights.normal,
+  },
+  ordered_list_icon: {
+    color: colors.primary,
+    marginRight: spacing.xs,
+  },
+  code_inline: {
+    backgroundColor: colors.borderLight,
+    color: colors.primaryDark,
+    paddingHorizontal: 4,
+    borderRadius: radius.sm,
+  },
+  blockquote: {
+    backgroundColor: colors.primaryLight,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.primary,
+    paddingLeft: spacing.sm,
+    paddingVertical: spacing.xs,
+    marginVertical: spacing.xs,
+  },
+  hr: {
+    backgroundColor: colors.border,
+    height: 1,
+    marginVertical: spacing.sm,
   },
 });

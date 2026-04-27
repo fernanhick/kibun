@@ -44,6 +44,13 @@ export default ({ config }: ConfigContext) => ({
     },
     package: 'com.kibun.app',
     resizeableActivity: true,
+    // SYSTEM_ALERT_WINDOW leaks in from RN's debug manifest; AD_ID is auto-injected
+    // by Play Services. Neither is used by Kibun — block both so Play doesn't gate
+    // the listing on a sensitive-permissions declaration.
+    blockedPermissions: [
+      'android.permission.SYSTEM_ALERT_WINDOW',
+      'com.google.android.gms.permission.AD_ID',
+    ],
   },
   web: {
     bundler: 'metro',

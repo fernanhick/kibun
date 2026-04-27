@@ -48,13 +48,15 @@ Deno.serve(async (req: Request) => {
     }
 
     // --- Build recent entries context ---
+    // Notes are intentionally excluded from the OpenAI payload to honor the
+    // privacy commitment that raw user notes never leave the device. Only
+    // mood label + slot + date is sent.
     const recentLines = Array.isArray(recent_entries)
       ? recent_entries
           .slice(0, 5)
-          .map((e: { mood: string; slot: string; logged_at: string; note?: string }) => {
+          .map((e: { mood: string; slot: string; logged_at: string }) => {
             const date = e.logged_at.split("T")[0];
-            const note = e.note ? ` (note: ${e.note})` : "";
-            return `${date} ${e.slot}: ${e.mood}${note}`;
+            return `${date} ${e.slot}: ${e.mood}`;
           })
           .join("\n")
       : "";

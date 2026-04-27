@@ -8,11 +8,12 @@ import { Screen, Button } from '@components/index';
 import { MoodBubble } from '@components/MoodBubble';
 import { Shiba, ShibaVariant } from '@components/Shiba';
 import { SparkleOverlay } from '@components/SparkleOverlay';
-import { MOOD_MAP, MoodId, MoodGroup } from '@constants/moods';
+import { MoodGroup } from '@constants/moods';
 import { colors, typography, spacing, radius } from '@constants/theme';
-import { useMoodEntryStore, useSessionStore } from '@store/index';
+import { useMoodEntryStore, useSessionStore, useCustomMoodsStore } from '@store/index';
 import { getCheckInSlot } from '@lib/checkInSlot';
 import { analyseSentiment, getMoodSentimentAlignment } from '@lib/sentiment';
+import { getMoodDef } from '@lib/moodUtils';
 import { supabase } from '@lib/supabase';
 import type { SentimentResult } from '@lib/sentiment';
 import type { SentimentLabel } from '@models/index';
@@ -123,17 +124,21 @@ export default function MoodConfirmScreen() {
 
   const session = useSessionStore((s) => s.session);
   const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
+  const customMoods = useCustomMoodsStore((s) => s.moods);
 
   // Debounce sentiment analysis: run 600 ms after user stops typing
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const mood = MOOD_MAP[params.moodId as MoodId];
+  const mood = getMoodDef(params.moodId, customMoods);
 
-  // Guard against invalid/missing moodId (audit-added S1)
-  if (!mood) {
-    router.back();
-    return null;
-  }
+  // Guard against invalid/missing moodId — defer to effect so we don't
+  // call router.back() during render (React warns about scheduling updates
+  // on another component while rendering).
+  useEffect(() => {
+    if (!mood) router.back();
+  }, [mood, router]);
+
+  if (!mood) return null;
 
   const shibaVariant = SHIBA_MAP[mood.group];
 

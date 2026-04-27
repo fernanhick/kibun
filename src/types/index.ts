@@ -132,13 +132,26 @@ export interface CustomMood {
 
 // ─── AI Reports ───────────────────────────────────────────────────────────────
 
+export type AIReportTone = 'positive' | 'neutral' | 'mixed' | 'tough';
+
+export interface AIReportStructured {
+  schemaVersion: number;
+  headline: string | null;
+  summary: string;
+  patterns: string[];
+  highlight: { label: string; detail: string } | null;
+  nudge: { title: string; body: string };
+  tone: AIReportTone;
+}
+
 export interface AIReport {
   id: string;
   userId: string;
   reportType: 'weekly' | 'monthly' | 'annual' | 'daily';
   periodStart: string;     // ISO date (YYYY-MM-DD)
   periodEnd: string;       // ISO date (YYYY-MM-DD)
-  content: string;         // narrative text from OpenAI
+  content: string;         // markdown / plain-text narrative (always present)
+  structured: AIReportStructured | null; // rich payload for new reports; null for legacy
   moodSummary: {
     totalEntries: number;
     topMoods: { moodId: string; count: number }[];

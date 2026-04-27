@@ -43,6 +43,7 @@
     "react-native-device-info": "^15.0.2",
     "react-native-gifted-charts": "^1.4.76",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-markdown-display": "^7.0.2",
     "react-native-purchases": "^9.15.1",
     "react-native-purchases-ui": "^9.15.2",
     "react-native-reanimated": "4.2.1",

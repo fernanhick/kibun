@@ -298,7 +298,7 @@ export default function ChangePasswordScreen() {
             </Text>
           )}
           {info !== null && (
-            <Text style={styles.infoText} accessibilityRole="status">
+            <Text style={styles.infoText} accessibilityLiveRegion="polite">
               {info}
             </Text>
           )}

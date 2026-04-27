@@ -3,11 +3,13 @@ import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
+import { Linking as RNLinking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { supabase } from '@lib/supabase';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useSessionStore } from '@store/sessionStore';
+import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '@constants/legal';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
 // Required by expo-web-browser to complete any pending auth sessions on mount.
@@ -387,6 +389,7 @@ export default function RegistrationScreen() {
               accessibilityLabel="Email address"
               placeholder="you@example.com"
               placeholderTextColor={colors.textDisabled}
+              maxLength={254}
             />
           </View>
 
@@ -401,6 +404,7 @@ export default function RegistrationScreen() {
               accessibilityLabel="Password"
               placeholder={mode === 'register' ? 'Min. 8 characters' : 'Your password'}
               placeholderTextColor={colors.textDisabled}
+              maxLength={128}
             />
           </View>
 
@@ -422,6 +426,28 @@ export default function RegistrationScreen() {
             >
               <Text style={styles.forgotText}>Forgot password?</Text>
             </Pressable>
+          )}
+
+          {mode === 'register' && (
+            <Text style={styles.legalText}>
+              By creating an account you agree to our{' '}
+              <Text
+                style={styles.legalLink}
+                onPress={() => RNLinking.openURL(TERMS_OF_USE_URL)}
+                accessibilityRole="link"
+              >
+                Terms of Use
+              </Text>{' '}
+              and{' '}
+              <Text
+                style={styles.legalLink}
+                onPress={() => RNLinking.openURL(PRIVACY_POLICY_URL)}
+                accessibilityRole="link"
+              >
+                Privacy Policy
+              </Text>
+              .
+            </Text>
           )}
         </View>
 
@@ -450,7 +476,7 @@ export default function RegistrationScreen() {
 
       {/* Inline info display */}
       {infoMessage !== null && (
-        <Text style={styles.infoText} accessibilityRole="status">
+        <Text style={styles.infoText} accessibilityLiveRegion="polite">
           {infoMessage}
         </Text>
       )}
@@ -581,6 +607,18 @@ const styles = StyleSheet.create({
   forgotText: {
     fontSize: typography.sizes.sm,
     color: colors.primary,
+  },
+  legalText: {
+    fontSize: typography.sizes.xs,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: typography.sizes.xs * typography.lineHeights.relaxed,
+    paddingHorizontal: spacing.sm,
+    marginTop: -spacing.xs,
+  },
+  legalLink: {
+    color: colors.primary,
+    textDecorationLine: 'underline',
   },
   errorText: {
     fontSize: typography.sizes.sm,

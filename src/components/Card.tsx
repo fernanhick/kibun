@@ -1,14 +1,14 @@
 import React from 'react';
-import { View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { View, StyleSheet, type StyleProp, type ViewStyle, type ViewProps } from 'react-native';
 import { colors, spacing, radius, shadows } from '@constants/theme';
 
-interface CardProps {
+interface CardProps extends Pick<ViewProps, 'accessibilityLabel' | 'accessibilityHint' | 'accessibilityRole' | 'accessible'> {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   padding?: keyof typeof spacing;
 }
 
-export function Card({ children, style, padding = 'md' }: CardProps) {
+export function Card({ children, style, padding = 'md', ...accessibilityProps }: CardProps) {
   return (
     <View
       style={[
@@ -16,6 +16,7 @@ export function Card({ children, style, padding = 'md' }: CardProps) {
         { padding: spacing[padding] },
         style,
       ]}
+      {...accessibilityProps}
     >
       {children}
     </View>

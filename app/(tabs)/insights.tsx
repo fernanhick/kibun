@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Card } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
+import { TabletSplit } from '@components/TabletSplit';
 import { useMoodEntryStore, useSessionStore } from '@store/index';
 import { useHabitsStore } from '@store/habitsStore';
 import { filterEntriesByDays, getMoodFrequency, getDailyMoodScores, GROUP_SCORES } from '@lib/insights';
@@ -22,12 +23,22 @@ export default function InsightsScreen() {
   // Charts must size against the actual rendered column (Screen clamps to a
   // tablet-friendly max-width), not the full window. Measured via onLayout
   // on each chart container; default keeps charts non-zero on first paint.
-  const [chartContainerWidth, setChartContainerWidth] = useState(0);
-  const handleChartLayout = useCallback((e: LayoutChangeEvent) => {
+  // Each chart container has its own measurement so the bar and trend charts
+  // can sit side-by-side on tablets without sharing a width.
+  const [barChartContainerWidth, setBarChartContainerWidth] = useState(0);
+  const [trendChartContainerWidth, setTrendChartContainerWidth] = useState(0);
+  const handleBarLayout = useCallback((e: LayoutChangeEvent) => {
     const w = e.nativeEvent.layout.width;
-    if (w > 0 && w !== chartContainerWidth) setChartContainerWidth(w);
-  }, [chartContainerWidth]);
-  const chartWidth = chartContainerWidth > 0 ? Math.max(chartContainerWidth - 40, 200) : 280;
+    if (w > 0 && w !== barChartContainerWidth) setBarChartContainerWidth(w);
+  }, [barChartContainerWidth]);
+  const handleTrendLayout = useCallback((e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    if (w > 0 && w !== trendChartContainerWidth) setTrendChartContainerWidth(w);
+  }, [trendChartContainerWidth]);
+  // Subtract the chart container's horizontal padding (spacing.sm * 2 = 16)
+  // so the chart's parentWidth matches the actual area available for SVG.
+  const barChartWidth = barChartContainerWidth > 0 ? Math.max(barChartContainerWidth - 16, 200) : 280;
+  const trendChartWidth = trendChartContainerWidth > 0 ? Math.max(trendChartContainerWidth - 16, 200) : 280;
 
   const entries = useMoodEntryStore((s) => s.entries);
   const session = useSessionStore((s) => s.session);
@@ -39,7 +50,11 @@ export default function InsightsScreen() {
   );
 
   const frequency = useMemo(() => getMoodFrequency(filtered), [filtered]);
-  const dailyScores = useMemo(() => getDailyMoodScores(filtered), [filtered]);
+  const dailyScores = useMemo(() => getDailyMoodScores(filtered, period), [filtered, period]);
+  const trendPointCount = useMemo(
+    () => dailyScores.filter((d) => d.score !== null).length,
+    [dailyScores],
+  );
   const patterns = useMemo(() => detectPatterns(filtered), [filtered]);
   const totalEntries = filtered.length;
 
@@ -101,12 +116,43 @@ export default function InsightsScreen() {
   );
 
   const lineData = useMemo(
-    () =>
-      dailyScores.map((item, index) => ({
-        value: item.score,
+    () => {
+      // Interpolate gaps locally instead of passing NaN to gifted-charts'
+      // interpolateMissingValues — on Android the curved+areaChart path
+      // generator leaks NaN into the SVG `d` attribute, and react-native-svg
+      // rejects it with IllegalArgumentException at PathParser.
+      const filled: number[] = [];
+      const n = dailyScores.length;
+      for (let i = 0; i < n; i++) {
+        const s = dailyScores[i].score;
+        if (s !== null) {
+          filled[i] = s;
+          continue;
+        }
+        let prevIdx = i - 1;
+        while (prevIdx >= 0 && dailyScores[prevIdx].score === null) prevIdx--;
+        let nextIdx = i + 1;
+        while (nextIdx < n && dailyScores[nextIdx].score === null) nextIdx++;
+        const prev = prevIdx >= 0 ? dailyScores[prevIdx].score! : null;
+        const next = nextIdx < n ? dailyScores[nextIdx].score! : null;
+        if (prev !== null && next !== null) {
+          const t = (i - prevIdx) / (nextIdx - prevIdx);
+          filled[i] = prev + (next - prev) * t;
+        } else if (prev !== null) {
+          filled[i] = prev;
+        } else if (next !== null) {
+          filled[i] = next;
+        } else {
+          filled[i] = 0;
+        }
+      }
+      return dailyScores.map((item, index) => ({
+        value: filled[index],
+        hideDataPoint: item.score === null,
         label: period === 30 ? (index % 5 === 0 ? item.label : '') : item.label,
         labelTextStyle: { fontSize: 9, color: colors.textSecondary },
-      })),
+      }));
+    },
     [dailyScores, period],
   );
 
@@ -177,71 +223,83 @@ export default function InsightsScreen() {
         </Card>
       </View>
 
-      {frequency.length > 0 && (
-        <View>
-          <Text style={styles.sectionHeader} accessibilityRole="header">
-            Top moods
-          </Text>
-          <View
-            style={styles.chartContainer}
-            onLayout={handleChartLayout}
-            accessibilityLabel={`Mood frequency chart showing top ${Math.min(frequency.length, 6)} moods`}
-          >
-            <BarChart
-              data={barData}
-              width={chartWidth}
-              barWidth={32}
-              spacing={16}
-              noOfSections={4}
-              yAxisTextStyle={styles.axisText}
-              xAxisLabelTextStyle={styles.axisText}
-              hideRules={false}
-              rulesColor={colors.borderLight}
-              isAnimated
-              barBorderRadius={4}
-              yAxisThickness={0}
-              xAxisThickness={1}
-              xAxisColor={colors.borderLight}
-            />
-          </View>
-        </View>
-      )}
-
-      {dailyScores.length > 1 && (
-        <View>
-          <Text style={styles.sectionHeader} accessibilityRole="header">
-            Mood trend
-          </Text>
-          <View
-            style={styles.chartContainer}
-            onLayout={handleChartLayout}
-            accessibilityLabel={`Mood trend line chart over ${period} days`}
-          >
-            <LineChart
-              data={lineData}
-              width={chartWidth}
-              color={colors.primary}
-              thickness={2}
-              dataPointsColor={colors.primary}
-              noOfSections={4}
-              maxValue={4}
-              yAxisTextStyle={styles.axisText}
-              xAxisLabelTextStyle={styles.axisText}
-              hideRules={false}
-              rulesColor={colors.borderLight}
-              curved
-              isAnimated
-              areaChart
-              startFillColor={colors.primaryLight}
-              endFillColor={colors.background}
-              startOpacity={0.4}
-              endOpacity={0.05}
-              yAxisThickness={0}
-              xAxisThickness={1}
-              xAxisColor={colors.borderLight}
-            />
-          </View>
-        </View>
+      {(frequency.length > 0 || trendPointCount > 1) && (
+        <TabletSplit
+          collapseAt="tablet"
+          primary={
+            frequency.length > 0 ? (
+              <View>
+                <Text style={styles.sectionHeader} accessibilityRole="header">
+                  Top moods
+                </Text>
+                <View
+                  style={styles.chartContainer}
+                  onLayout={handleBarLayout}
+                  accessibilityLabel={`Mood frequency chart showing top ${Math.min(frequency.length, 6)} moods`}
+                >
+                  <BarChart
+                    data={barData}
+                    width={barChartWidth}
+                    parentWidth={barChartWidth}
+                    adjustToWidth
+                    disableScroll
+                    noOfSections={4}
+                    yAxisTextStyle={styles.axisText}
+                    xAxisLabelTextStyle={styles.axisText}
+                    hideRules={false}
+                    rulesColor={colors.borderLight}
+                    isAnimated
+                    barBorderRadius={4}
+                    yAxisThickness={0}
+                    xAxisThickness={1}
+                    xAxisColor={colors.borderLight}
+                  />
+                </View>
+              </View>
+            ) : <View />
+          }
+          secondary={
+            trendPointCount > 1 ? (
+              <View>
+                <Text style={styles.sectionHeader} accessibilityRole="header">
+                  Mood trend
+                </Text>
+                <View
+                  style={styles.chartContainer}
+                  onLayout={handleTrendLayout}
+                  accessibilityLabel={`Mood trend line chart over ${period} days`}
+                >
+                  <LineChart
+                    data={lineData}
+                    width={trendChartWidth}
+                    parentWidth={trendChartWidth}
+                    adjustToWidth
+                    disableScroll
+                    color={colors.primary}
+                    thickness={2}
+                    dataPointsColor={colors.primary}
+                    noOfSections={4}
+                    maxValue={4}
+                    yAxisTextStyle={styles.axisText}
+                    xAxisLabelTextStyle={styles.axisText}
+                    hideRules={false}
+                    rulesColor={colors.borderLight}
+                    curved
+                    isAnimated
+                    areaChart
+                    startFillColor={colors.primaryLight}
+                    endFillColor={colors.background}
+                    startOpacity={0.4}
+                    endOpacity={0.05}
+                    yAxisThickness={0}
+                    xAxisThickness={1}
+                    xAxisColor={colors.borderLight}
+                  />
+                </View>
+              </View>
+            ) : <View />
+          }
+        />
       )}
 
       {patterns.length > 0 && (

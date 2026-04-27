@@ -1,5 +1,6 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient, type Session } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
+import { AppState } from 'react-native';
 
 // ─── SecureStore Adapter ──────────────────────────────────────────────────────
 // Supabase auth requires a storage adapter that persists JWT and refresh tokens.
@@ -38,3 +39,35 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
       },
     })
   : null;
+
+// Supabase's auto-refresh timer can stop while the app is backgrounded. Tie it
+// to AppState so the JWT is refreshed as soon as the user returns — prevents
+// "JWT expired" on the first PostgREST call after a long background.
+if (supabase) {
+  AppState.addEventListener('change', (state) => {
+    if (state === 'active') supabase!.auth.startAutoRefresh();
+    else supabase!.auth.stopAutoRefresh();
+  });
+}
+
+// `onAuthStateChange` fires INITIAL_SESSION with whatever's in storage — which
+// can be an already-expired access token on cold start. Call this before using
+// that session for data requests to guarantee a valid JWT.
+//
+// Threshold is 5 minutes: a sync chain (pull → upload → achievements → freeze)
+// can take several seconds, and the JWT must outlast the longest request in it.
+const FRESH_SESSION_THRESHOLD_SEC = 300;
+
+export async function ensureFreshSession(session: Session): Promise<Session> {
+  if (!supabase) return session;
+  const expiresAt = session.expires_at ?? 0;
+  const nowSec = Math.floor(Date.now() / 1000);
+  if (expiresAt - nowSec > FRESH_SESSION_THRESHOLD_SEC) return session;
+
+  const { data, error } = await supabase.auth.refreshSession();
+  if (error || !data.session) {
+    if (__DEV__) console.warn('[kibun:auth] refreshSession failed:', error?.message);
+    return session;
+  }
+  return data.session;
+}

@@ -11,8 +11,19 @@ export async function fetchDailyInsight(params: {
   });
 
   if (error) {
-    if (__DEV__) {
-      console.error('[kibun:dailyInsight] fetch failed:', error.message);
+    // Edge Function returns non-2xx for known states (subscription_required,
+    // unauthorized, ai_unavailable). Those are anticipated for users without a
+    // confirmed server-side subscription_status (e.g. webhook not yet fired),
+    // not bugs — surface them silently. Only log truly unexpected failures.
+    let knownReason: string | null = null;
+    try {
+      const body = await (error as { context?: Response }).context?.json?.();
+      if (body?.error) knownReason = body.error;
+    } catch {
+      // ignore
+    }
+    if (__DEV__ && !knownReason) {
+      console.warn('[kibun:dailyInsight] fetch failed:', error.message);
     }
     return null;
   }

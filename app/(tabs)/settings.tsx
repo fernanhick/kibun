@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, Switch, Pressable, TextInput, StyleSheet, Linking } from 'react-native';
+import { View, Text, Switch, Pressable, TextInput, StyleSheet, Linking, Platform } from 'react-native';
 import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
@@ -9,10 +9,16 @@ import { Screen, SparkleOverlay, Shiba } from '@components/index';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
+import { restorePurchases } from '@lib/revenuecat';
+import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
 import type { NotificationSlot } from '@models/index';
+import {
+  PRIVACY_POLICY_URL,
+  TERMS_OF_USE_URL,
+  MANAGE_SUBSCRIPTION_URL_IOS,
+  MANAGE_SUBSCRIPTION_URL_ANDROID,
+} from '@constants/legal';
 import { colors, typography, spacing, radius } from '@constants/theme';
-
-const PRIVACY_POLICY_URL = 'https://fernanhick.github.io/kibun/privacy-policy.html';
 
 interface SlotRow {
   slot: NotificationSlot;
@@ -104,6 +110,28 @@ export default function SettingsScreen() {
   const handleStreakToggle = (value: boolean) => {
     setStreakNudgeEnabled(value);
     reschedule();
+  };
+
+  const [restoreState, setRestoreState] = useState<'idle' | 'restoring' | 'restored' | 'none'>('idle');
+
+  const handleRestore = useCallback(async () => {
+    if (restoreState === 'restoring') return;
+    setRestoreState('restoring');
+    const status = await restorePurchases();
+    if (status !== 'none') {
+      useSessionStore.getState().setSubscriptionStatus(status);
+      if (session?.userId) {
+        syncSubscriptionStatusToSupabase(session.userId, status);
+      }
+      setRestoreState('restored');
+    } else {
+      setRestoreState('none');
+    }
+  }, [restoreState, session?.userId]);
+
+  const handleManageSubscription = () => {
+    const url = Platform.OS === 'ios' ? MANAGE_SUBSCRIPTION_URL_IOS : MANAGE_SUBSCRIPTION_URL_ANDROID;
+    Linking.openURL(url);
   };
 
   return (
@@ -339,6 +367,46 @@ export default function SettingsScreen() {
           <Text style={styles.rowLabel}>Version</Text>
           <Text style={styles.rowHint}>{appVersion}</Text>
         </View>
+        <Pressable
+          style={styles.row}
+          onPress={handleRestore}
+          accessibilityRole="button"
+          accessibilityLabel="Restore purchases"
+          disabled={restoreState === 'restoring'}
+        >
+          <View style={styles.rowText}>
+            <Text style={styles.rowLabel}>Restore purchases</Text>
+            {restoreState === 'restored' && (
+              <Text style={styles.rowHint}>Subscription restored.</Text>
+            )}
+            {restoreState === 'none' && (
+              <Text style={styles.rowHint}>No previous purchases found.</Text>
+            )}
+          </View>
+          <Ionicons
+            name={restoreState === 'restoring' ? 'sync' : 'refresh'}
+            size={20}
+            color={colors.textSecondary}
+          />
+        </Pressable>
+        <Pressable
+          style={styles.row}
+          onPress={handleManageSubscription}
+          accessibilityRole="link"
+          accessibilityLabel="Manage subscription"
+        >
+          <Text style={styles.rowLabel}>Manage subscription</Text>
+          <Ionicons name="open-outline" size={20} color={colors.textSecondary} />
+        </Pressable>
+        <Pressable
+          style={styles.row}
+          onPress={() => Linking.openURL(TERMS_OF_USE_URL)}
+          accessibilityRole="link"
+          accessibilityLabel="Terms of Use"
+        >
+          <Text style={styles.rowLabel}>Terms of Use</Text>
+          <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+        </Pressable>
         <Pressable
           style={styles.row}
           onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}

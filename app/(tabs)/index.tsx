@@ -16,6 +16,7 @@ import { colors, spacing, typography, radius } from '@constants/theme';
 import { ACHIEVEMENT_DEFINITIONS } from '@lib/achievements';
 import { fetchDailyInsight } from '@lib/dailyInsight';
 import { computeAdaptiveTimes } from '@lib/notifications';
+import { useResponsive } from '@hooks/useResponsive';
 import type { MoodSlot, Habit, HabitLog } from '@models/index';
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -76,6 +77,80 @@ const MOTIVATIONAL_MESSAGES = {
 
 type MoodSentiment = keyof typeof MOTIVATIONAL_MESSAGES;
 
+const EMPTY_STATE_VARIANTS: Record<MoodSentiment, ReadonlyArray<{
+  emoji: string;
+  title: string;
+  body: string;
+  affirmation: string;
+}>> = {
+  positive: [
+    {
+      emoji: '🌞',
+      title: 'Welcome back',
+      body: "Recent days have felt bright. Want to keep that good energy going?",
+      affirmation: 'Today is yours to shine. ✨',
+    },
+    {
+      emoji: '🌻',
+      title: "Glad you're here",
+      body: "You've been on a lovely streak. A quick check-in keeps the momentum.",
+      affirmation: 'Small moments, big wins. 💛',
+    },
+    {
+      emoji: '🌈',
+      title: 'Keep it going',
+      body: "Things have felt good lately. Capture how today is treating you.",
+      affirmation: 'Your light matters. ✨',
+    },
+  ],
+  struggling: [
+    {
+      emoji: '🌷',
+      title: "We're here with you",
+      body: "Recent days have felt heavy. Even one small check-in helps you understand what you need.",
+      affirmation: "You're stronger than you know. 🤍",
+    },
+    {
+      emoji: '🍃',
+      title: 'One breath at a time',
+      body: "Hard moments don't last forever. Logging how you feel is a quiet act of self-care.",
+      affirmation: 'Be tender with yourself today. 🤍',
+    },
+    {
+      emoji: '☁️',
+      title: 'You showed up',
+      body: "And that's enough. Tracking your mood, even on tough days, is how you start to see yourself clearly.",
+      affirmation: "Healing isn't linear — every step counts. ✨",
+    },
+  ],
+  neutral: [
+    {
+      emoji: '🌸',
+      title: 'You matter',
+      body: "No moods logged yet — and that's okay. Just showing up here is a kind thing to do for yourself.",
+      affirmation: 'Be gentle with yourself today. ✨',
+    },
+    {
+      emoji: '🪷',
+      title: 'A fresh page',
+      body: "Each day is a new chapter. Take a moment to check in with yourself.",
+      affirmation: 'Your feelings are valid — whatever they are. ✨',
+    },
+    {
+      emoji: '✨',
+      title: 'Hi there',
+      body: "How's your inner world today? A quick log helps you spot patterns over time.",
+      affirmation: "You're worth paying attention to. 💛",
+    },
+  ],
+};
+
+function dayHash(dateStr: string): number {
+  let h = 0;
+  for (let i = 0; i < dateStr.length; i++) h = (h * 31 + dateStr.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
 function getMoodSentiment(recentEntries: Array<{ moodId: string }>): MoodSentiment {
   if (recentEntries.length === 0) return 'neutral';
   const groups = recentEntries.map((e) => MOOD_MAP[e.moodId as MoodId]?.group ?? 'neutral');
@@ -93,6 +168,22 @@ function getMoodSentiment(recentEntries: Array<{ moodId: string }>): MoodSentime
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const responsive = useResponsive();
+  const emptySizes = {
+    title: responsive.select({ phone: 24, phoneWide: 26, tablet: 30, tabletLg: 34 }),
+    body: responsive.select({ phone: 17, phoneWide: 18, tablet: 20, tabletLg: 22 }),
+    bodyLine: responsive.select({ phone: 24, phoneWide: 26, tablet: 28, tabletLg: 32 }),
+    tipTitle: responsive.select({ phone: 17, phoneWide: 18, tablet: 20, tabletLg: 22 }),
+    tipSub: responsive.select({ phone: 14, phoneWide: 15, tablet: 16, tabletLg: 18 }),
+    tipSubLine: responsive.select({ phone: 20, phoneWide: 22, tablet: 24, tabletLg: 26 }),
+    affirmation: responsive.select({ phone: 14, phoneWide: 15, tablet: 16, tabletLg: 18 }),
+    emoji: responsive.select({ phone: 30, phoneWide: 32, tablet: 38, tabletLg: 44 }),
+    badgeSize: responsive.select({ phone: 40, phoneWide: 42, tablet: 48, tabletLg: 54 }),
+    iconSize: responsive.select({ phone: 22, phoneWide: 24, tablet: 26, tabletLg: 30 }),
+    chevronSize: responsive.select({ phone: 16, tablet: 18, tabletLg: 20 }),
+    rowPadV: responsive.select({ phone: 14, tablet: 16, tabletLg: 18 }),
+    rowPadH: responsive.select({ phone: 14, tablet: 16, tabletLg: 18 }),
+  };
   const { session } = useSessionStore();
   const isAnonymous = !session || session.authStatus === 'anonymous';
   const bannerDismissedAt = useUiPrefsStore((s) => s.bannerDismissedAt);
@@ -123,6 +214,18 @@ export default function HomeScreen() {
     const pool = MOTIVATIONAL_MESSAGES[sentiment];
     return pool[msgSeed % pool.length];
   }, [entries, today, msgSeed]);
+
+  const emptyVariant = useMemo(() => {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 3);
+    const cutoffIso = cutoff.toISOString();
+    const recent = entries.filter(
+      (e) => e.loggedAt >= cutoffIso && !e.loggedAt.startsWith(today)
+    );
+    const sentiment = getMoodSentiment(recent);
+    const pool = EMPTY_STATE_VARIANTS[sentiment];
+    return pool[dayHash(today) % pool.length];
+  }, [entries, today]);
 
   const streak = useMemo(() => {
     if (entries.length === 0) return 0;
@@ -295,9 +398,104 @@ export default function HomeScreen() {
           </View>
 
           {todayEntries.length === 0 ? (
-            <Text style={styles.emptyText}>
-              No moods logged yet. How are you feeling?
-            </Text>
+            <View style={styles.emptyState}>
+              <View style={styles.emptyHeader}>
+                <Text style={[styles.emptyEmoji, { fontSize: emptySizes.emoji }]}>
+                  {emptyVariant.emoji}
+                </Text>
+                <Text style={[styles.emptyTitle, { fontSize: emptySizes.title }]}>
+                  {emptyVariant.title}
+                </Text>
+              </View>
+              <Text
+                style={[
+                  styles.emptyBody,
+                  { fontSize: emptySizes.body, lineHeight: emptySizes.bodyLine },
+                ]}
+              >
+                {emptyVariant.body}
+              </Text>
+
+              <View style={styles.emptyTips}>
+                <Pressable
+                  style={[
+                    styles.emptyTipRow,
+                    { paddingVertical: emptySizes.rowPadV, paddingHorizontal: emptySizes.rowPadH },
+                  ]}
+                  onPress={() => router.push('/check-in' as Href)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Log your first mood of the day"
+                >
+                  <View
+                    style={[
+                      styles.emptyTipBadge,
+                      {
+                        width: emptySizes.badgeSize,
+                        height: emptySizes.badgeSize,
+                        borderRadius: emptySizes.badgeSize / 2,
+                      },
+                    ]}
+                  >
+                    <Ionicons name="happy-outline" size={emptySizes.iconSize} color={colors.primary} />
+                  </View>
+                  <View style={styles.emptyTipText}>
+                    <Text style={[styles.emptyTipTitle, { fontSize: emptySizes.tipTitle }]}>
+                      Log how you're feeling
+                    </Text>
+                    <Text
+                      style={[
+                        styles.emptyTipSub,
+                        { fontSize: emptySizes.tipSub, lineHeight: emptySizes.tipSubLine },
+                      ]}
+                    >
+                      Tap "Log mood" above — it only takes a few seconds.
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={emptySizes.chevronSize} color={colors.textDisabled} />
+                </Pressable>
+
+                <Pressable
+                  style={[
+                    styles.emptyTipRow,
+                    { paddingVertical: emptySizes.rowPadV, paddingHorizontal: emptySizes.rowPadH },
+                  ]}
+                  onPress={() => router.push('/manage-habits' as Href)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Set up daily habits to track"
+                >
+                  <View
+                    style={[
+                      styles.emptyTipBadge,
+                      {
+                        width: emptySizes.badgeSize,
+                        height: emptySizes.badgeSize,
+                        borderRadius: emptySizes.badgeSize / 2,
+                      },
+                    ]}
+                  >
+                    <Ionicons name="leaf-outline" size={emptySizes.iconSize} color={colors.primary} />
+                  </View>
+                  <View style={styles.emptyTipText}>
+                    <Text style={[styles.emptyTipTitle, { fontSize: emptySizes.tipTitle }]}>
+                      Track daily habits
+                    </Text>
+                    <Text
+                      style={[
+                        styles.emptyTipSub,
+                        { fontSize: emptySizes.tipSub, lineHeight: emptySizes.tipSubLine },
+                      ]}
+                    >
+                      Add sleep, water, or movement to spot what lifts you up.
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={emptySizes.chevronSize} color={colors.textDisabled} />
+                </Pressable>
+              </View>
+
+              <Text style={[styles.emptyAffirmation, { fontSize: emptySizes.affirmation }]}>
+                {emptyVariant.affirmation}
+              </Text>
+            </View>
           ) : (
             todayEntries.map((entry) => {
               const entryMood = MOOD_MAP[entry.moodId as MoodId];
@@ -690,15 +888,80 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.ui,
     color: '#B07000',
   },
-  emptyText: {
-    fontSize: typography.sizes.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    paddingVertical: spacing.xl,
+  emptyState: {
     backgroundColor: '#FFF6EC',
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#FFE4BF',
+    padding: spacing.md,
+    gap: spacing.sm,
+  },
+  emptyHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+  },
+  emptyEmoji: {
+    fontSize: 26,
+  },
+  emptyTitle: {
+    fontSize: typography.sizes.xl,
+    fontFamily: typography.fonts.display,
+    color: '#7A4A00',
+  },
+  emptyBody: {
+    fontSize: typography.sizes.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: spacing.sm,
+  },
+  emptyTips: {
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  emptyTipRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    borderWidth: 1,
+    borderColor: '#FFE4BF',
+    borderRadius: radius.md,
+    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
+  },
+  emptyTipBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTipText: {
+    flex: 1,
+  },
+  emptyTipTitle: {
+    fontSize: typography.sizes.body,
+    fontFamily: typography.fonts.ui,
+    fontWeight: typography.weights.semibold,
+    color: colors.text,
+  },
+  emptyTipSub: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    marginTop: 3,
+    lineHeight: 18,
+  },
+  emptyAffirmation: {
+    fontSize: typography.sizes.sm,
+    color: '#B07000',
+    textAlign: 'center',
+    fontFamily: typography.fonts.ui,
+    fontWeight: typography.weights.semibold,
+    marginTop: spacing.xs,
   },
   entryCard: {
     borderWidth: 1,

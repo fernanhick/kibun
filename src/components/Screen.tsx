@@ -20,9 +20,12 @@ import { colors, spacing } from '@constants/theme';
 import { SCREEN_MAX_WIDTH } from '@constants/breakpoints';
 import { useResponsive } from '@hooks/useResponsive';
 import {
-  KAWAII_TAB_VISUAL_OBSTRUCTION,
+  KAWAII_TAB_BAR_HEIGHT,
+  KAWAII_TAB_CURVE_DEPTH,
+  KAWAII_TAB_MASCOT_OVERLAP,
   KAWAII_TAB_SAFE_BOTTOM_ANDROID,
   KAWAII_TAB_SAFE_BOTTOM_MIN,
+  getKawaiiTabScale,
 } from '@constants/layout';
 import { SparkleOverlay } from './SparkleOverlay';
 
@@ -63,7 +66,11 @@ export function Screen({
       : Math.max(insets.bottom, KAWAII_TAB_SAFE_BOTTOM_MIN);
 
   // Reserve room for the custom tab bar + raised mascot so bottom content can scroll above it.
-  const tabBottomInset = isTabRoute ? KAWAII_TAB_VISUAL_OBSTRUCTION + tabSafeBottom : 0;
+  // Tab bar geometry scales with viewport on tablets — keep this in lockstep with KawaiiTabBar.
+  const tabScale = getKawaiiTabScale(responsive.width);
+  const tabVisualObstruction =
+    KAWAII_TAB_BAR_HEIGHT * tabScale + KAWAII_TAB_CURVE_DEPTH + KAWAII_TAB_MASCOT_OVERLAP * tabScale;
+  const tabBottomInset = isTabRoute ? tabVisualObstruction + tabSafeBottom : 0;
   const flattenedContentStyle = StyleSheet.flatten(contentContainerStyle);
   const requestedPaddingBottom = flattenedContentStyle?.paddingBottom;
   const minPaddingBottom = styles.scrollContent.paddingBottom + tabBottomInset;

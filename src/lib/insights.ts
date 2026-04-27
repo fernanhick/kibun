@@ -10,15 +10,44 @@ export const GROUP_SCORES: Record<MoodGroup, number> = {
   'red-orange': 1,
 };
 
+// Build a YYYY-MM-DD key from an ISO timestamp using the user's local time.
+// loggedAt is stored as UTC via toISOString(); splitting on 'T' would group by
+// UTC date, which causes evening entries (in negative-offset zones) or morning
+// entries (in positive-offset zones) to land on the wrong calendar day.
+function localDateKey(iso: string): string {
+  const d = new Date(iso);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+// Generate the last N local-calendar dates, oldest → newest, as YYYY-MM-DD.
+function localDateRange(days: number): string[] {
+  const out: string[] = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    out.push(`${yyyy}-${mm}-${dd}`);
+  }
+  return out;
+}
+
 /**
- * Filter entries to the last N days using UTC-consistent comparison.
- * Does NOT use setHours(0,0,0,0) — that sets local midnight, but loggedAt
- * is stored via toISOString() (UTC). Lexicographic ISO comparison is correct.
+ * Filter entries to the last N local calendar days (inclusive of today).
+ * Cutoff is the start of (today - days + 1) in the user's local timezone,
+ * converted to ISO for lexicographic comparison against loggedAt.
  */
 export function filterEntriesByDays(entries: MoodEntry[], days: number): MoodEntry[] {
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - days);
-  const cutoffStr = cutoff.toISOString();
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - (days - 1));
+  const cutoffStr = start.toISOString();
   return entries.filter((e) => e.loggedAt >= cutoffStr);
 }
 
@@ -55,34 +84,45 @@ export function getMoodFrequency(entries: MoodEntry[]): MoodFrequencyItem[] {
 
 export interface DailyMoodScore {
   date: string;
-  score: number;
+  score: number | null;
   label: string;
+}
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function formatLabel(date: string): string {
+  const [, month, day] = date.split('-');
+  return `${MONTH_NAMES[parseInt(month, 10) - 1]} ${parseInt(day, 10)}`;
 }
 
 /**
  * Compute daily average mood score for a line chart.
- * Groups by UTC date, maps each entry's mood group to GROUP_SCORES, averages per day.
- * Sorted ascending by date (chronological for chart rendering).
+ * Groups entries by local calendar date and averages per day.
+ *
+ * When `days` is provided, the result spans the full N-day window (oldest →
+ * newest, including today), with `score: null` for days that have no entries.
+ * Without `days`, only days with entries are returned (legacy callers).
  */
-export function getDailyMoodScores(entries: MoodEntry[]): DailyMoodScore[] {
+export function getDailyMoodScores(entries: MoodEntry[], days?: number): DailyMoodScore[] {
   const byDate: Record<string, number[]> = {};
   for (const e of entries) {
-    const date = e.loggedAt.split('T')[0];
+    const date = localDateKey(e.loggedAt);
     const mood = MOOD_MAP[e.moodId as keyof typeof MOOD_MAP];
     const score = mood ? GROUP_SCORES[mood.group] : 3; // default neutral if unknown
     (byDate[date] ??= []).push(score);
   }
 
-  const result: DailyMoodScore[] = Object.entries(byDate)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, scores]) => {
-      const avg = scores.reduce((sum, s) => sum + s, 0) / scores.length;
-      // Format label as short date: "Apr 3" style
-      const [, month, day] = date.split('-');
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const label = `${monthNames[parseInt(month, 10) - 1]} ${parseInt(day, 10)}`;
-      return { date, score: Math.round(avg * 10) / 10, label };
-    });
+  const dateKeys = days
+    ? localDateRange(days)
+    : Object.keys(byDate).sort((a, b) => a.localeCompare(b));
 
-  return result;
+  return dateKeys.map((date) => {
+    const scores = byDate[date];
+    const label = formatLabel(date);
+    if (!scores || scores.length === 0) {
+      return { date, score: null, label };
+    }
+    const avg = scores.reduce((sum, s) => sum + s, 0) / scores.length;
+    return { date, score: Math.round(avg * 10) / 10, label };
+  });
 }

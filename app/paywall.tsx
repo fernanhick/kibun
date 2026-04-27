@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Linking, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import Purchases from 'react-native-purchases';
+import type { PurchasesPackage } from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
@@ -10,8 +11,10 @@ import { useSessionStore } from '@store/index';
 import {
   getSubscriptionStatusFromCustomerInfo,
   REVENUECAT_ENTITLEMENT_ID,
+  restorePurchases,
 } from '@lib/revenuecat';
 import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
+import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '@constants/legal';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
 const FREE_FEATURES = [
@@ -30,13 +33,48 @@ const PRO_FEATURES = [
   { emoji: '🎨', text: 'Custom moods with personalised colours' },
 ];
 
+// Fallback strings used only if RevenueCat offerings are unavailable on first
+// render (network failure, sandbox not configured). The localized strings from
+// PurchasesPackage.product.priceString are preferred everywhere they're available.
+const FALLBACK_TRIAL_LINE = 'then $5.99 / month or $39.99 / year · cancel anytime';
+
+function formatTrialLine(monthly?: PurchasesPackage, yearly?: PurchasesPackage): string {
+  const m = monthly?.product.priceString;
+  const y = yearly?.product.priceString;
+  if (m && y) return `then ${m} / month or ${y} / year · cancel anytime`;
+  if (m) return `then ${m} / month · cancel anytime`;
+  if (y) return `then ${y} / year · cancel anytime`;
+  return FALLBACK_TRIAL_LINE;
+}
+
 export default function PaywallScreen() {
   const router = useRouter();
   const { setPaywallSeen } = useOnboardingGateStore();
   const session = useSessionStore((s) => s.session);
   const { setSubscriptionStatus } = useSessionStore();
   const [purchasing, setPurchasing] = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [trialLine, setTrialLine] = useState<string>(FALLBACK_TRIAL_LINE);
+
+  useEffect(() => {
+    let cancelled = false;
+    Purchases.getOfferings()
+      .then((offerings) => {
+        if (cancelled) return;
+        const current = offerings.current;
+        if (!current) return;
+        const monthly = current.monthly ?? current.availablePackages.find((p) => p.packageType === 'MONTHLY');
+        const yearly = current.annual ?? current.availablePackages.find((p) => p.packageType === 'ANNUAL');
+        setTrialLine(formatTrialLine(monthly ?? undefined, yearly ?? undefined));
+      })
+      .catch((err) => {
+        if (__DEV__) console.warn('[kibun:rc] getOfferings failed:', err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handlePurchase = async () => {
     if (purchasing) return;
@@ -97,6 +135,27 @@ export default function PaywallScreen() {
         console.warn('[kibun:rc] Purchase failed:', error);
       }
       setPurchasing(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (restoring || purchasing) return;
+    setRestoring(true);
+    setPurchaseError(null);
+    try {
+      const subscriptionStatus = await restorePurchases();
+      if (subscriptionStatus !== 'none') {
+        setSubscriptionStatus(subscriptionStatus);
+        if (session?.userId) {
+          syncSubscriptionStatusToSupabase(session.userId, subscriptionStatus);
+        }
+        setPaywallSeen();
+        router.replace(session?.authStatus === 'registered' ? '/(tabs)' : '/register');
+      } else {
+        setPurchaseError('No previous purchases found for this account.');
+      }
+    } finally {
+      setRestoring(false);
     }
   };
 
@@ -173,9 +232,7 @@ export default function PaywallScreen() {
           style={styles.trialBox}
         >
           <Text style={styles.trialDays}>🎀 7 days free</Text>
-          <Text style={styles.trialTerms}>
-            then $5.99 / month or $39.99 / year · cancel anytime
-          </Text>
+          <Text style={styles.trialTerms}>{trialLine}</Text>
         </LinearGradient>
 
         <Button
@@ -189,6 +246,46 @@ export default function PaywallScreen() {
         {purchaseError && (
           <Text style={styles.errorText}>{purchaseError}</Text>
         )}
+
+        <Text style={styles.disclosure}>
+          Payment is charged to your account at confirmation of purchase. Your
+          subscription automatically renews unless cancelled at least 24 hours
+          before the current period ends. Manage or cancel anytime in your
+          account settings.
+        </Text>
+
+        <View style={styles.legalRow}>
+          <Pressable
+            onPress={handleRestore}
+            accessibilityRole="button"
+            accessibilityLabel="Restore previous purchases"
+            disabled={restoring || purchasing}
+            hitSlop={8}
+          >
+            <Text style={styles.legalLink}>
+              {restoring ? 'Restoring…' : 'Restore purchases'}
+            </Text>
+          </Pressable>
+          <Text style={styles.legalSep}>·</Text>
+          <Pressable
+            onPress={() => Linking.openURL(TERMS_OF_USE_URL)}
+            accessibilityRole="link"
+            accessibilityLabel="Terms of Use"
+            hitSlop={8}
+          >
+            <Text style={styles.legalLink}>Terms of Use</Text>
+          </Pressable>
+          <Text style={styles.legalSep}>·</Text>
+          <Pressable
+            onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
+            accessibilityRole="link"
+            accessibilityLabel="Privacy Policy"
+            hitSlop={8}
+          >
+            <Text style={styles.legalLink}>Privacy Policy</Text>
+          </Pressable>
+        </View>
+
         <View style={styles.skipRow}>
           <Button
             label="Maybe later"
@@ -342,5 +439,30 @@ const styles = StyleSheet.create({
     color: colors.error ?? '#E53E3E',
     textAlign: 'center',
     marginTop: spacing.sm,
+  },
+  disclosure: {
+    fontSize: typography.sizes.xs,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: typography.sizes.xs * typography.lineHeights.relaxed,
+    paddingHorizontal: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  legalRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.xs,
+    flexWrap: 'wrap',
+    marginTop: spacing.xs,
+  },
+  legalLink: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    textDecorationLine: 'underline',
+  },
+  legalSep: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
   },
 });

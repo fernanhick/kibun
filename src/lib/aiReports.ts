@@ -1,9 +1,72 @@
 import { supabase } from '@lib/supabase';
-import { AIReport, OnboardingProfile } from '@models/index';
+import { AIReport, AIReportStructured, AIReportTone, OnboardingProfile } from '@models/index';
 
 export type RequestReportResult =
   | { ok: true; report: AIReport }
   | { ok: false; reason: 'no_entries' | 'subscription_required' | 'ai_unavailable' | 'error' };
+
+const ALLOWED_TONES: ReadonlySet<AIReportTone> = new Set(['positive', 'neutral', 'mixed', 'tough']);
+
+function asString(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function normalizeMoodSummary(raw: unknown): AIReport['moodSummary'] {
+  if (!raw || typeof raw !== 'object') return null;
+  const r = raw as Record<string, unknown>;
+  const totalEntries = typeof r.totalEntries === 'number' ? r.totalEntries : 0;
+  const avgEntriesPerDay = typeof r.avgEntriesPerDay === 'number' ? r.avgEntriesPerDay : 0;
+  const topMoods = Array.isArray(r.topMoods)
+    ? (r.topMoods.filter(
+        (m): m is { moodId: string; count: number } =>
+          !!m && typeof m === 'object' && typeof (m as { moodId?: unknown }).moodId === 'string' && typeof (m as { count?: unknown }).count === 'number',
+      ))
+    : [];
+  if (totalEntries === 0 && topMoods.length === 0 && avgEntriesPerDay === 0) return null;
+  return { totalEntries, avgEntriesPerDay, topMoods };
+}
+
+function normalizeStructured(raw: unknown): AIReportStructured | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const r = raw as Record<string, unknown>;
+
+  const summary = asString(r.summary);
+  if (!summary) return null;
+
+  const nudgeRaw = r.nudge && typeof r.nudge === 'object' ? (r.nudge as Record<string, unknown>) : null;
+  const nudgeTitle = nudgeRaw ? asString(nudgeRaw.title) : null;
+  const nudgeBody = nudgeRaw ? asString(nudgeRaw.body) : null;
+  if (!nudgeTitle || !nudgeBody) return null;
+
+  const patterns = Array.isArray(r.patterns)
+    ? r.patterns.map(asString).filter((p): p is string => !!p).slice(0, 6)
+    : [];
+
+  let highlight: AIReportStructured['highlight'] = null;
+  if (r.highlight && typeof r.highlight === 'object') {
+    const h = r.highlight as Record<string, unknown>;
+    const label = asString(h.label);
+    const detail = asString(h.detail);
+    if (label && detail) highlight = { label, detail };
+  }
+
+  const toneStr = asString(r.tone);
+  const tone: AIReportTone = toneStr && (ALLOWED_TONES as Set<string>).has(toneStr)
+    ? (toneStr as AIReportTone)
+    : 'neutral';
+
+  return {
+    schemaVersion: typeof r.schemaVersion === 'number' ? r.schemaVersion : 1,
+    headline: asString(r.headline),
+    summary,
+    patterns,
+    highlight,
+    nudge: { title: nudgeTitle, body: nudgeBody },
+    tone,
+  };
+}
 
 function mapRow(row: Record<string, unknown>): AIReport {
   return {
@@ -13,7 +76,8 @@ function mapRow(row: Record<string, unknown>): AIReport {
     periodStart: row.period_start as string,
     periodEnd: row.period_end as string,
     content: row.content as string,
-    moodSummary: row.mood_summary as AIReport['moodSummary'],
+    structured: normalizeStructured(row.structured),
+    moodSummary: normalizeMoodSummary(row.mood_summary),
     createdAt: row.created_at as string,
   };
 }

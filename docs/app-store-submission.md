@@ -72,61 +72,61 @@ mental,health,diary,wellness,anxiety,depression,stress,mindfulness,therapy,grati
 ### 2.4 Promotional Text  *(170 char max · editable anytime without resubmitting · NOT indexed for search — use for time-sensitive marketing)*
 
 ```
-Meet Kibun — your gentle mood tracker with a Shiba Inu guide. Log how you feel, see your patterns, and unlock AI-powered insights. Try Pro free for 7 days.
+Meet Kibun - your gentle mood tracker with a Shiba Inu guide. Log how you feel, see your patterns, and unlock AI-powered insights. Try Pro free for 7 days.
 ```
 **Length: 158 / 170**
 
 ### 2.5 Description  *(4,000 char max · first ~3 lines render above the "more" fold — put the hook there)*
 
 ```
-Kibun (気分) means "mood" in Japanese — and that is exactly what this app helps you understand.
+Kibun (Japanese for "mood") is exactly what this app helps you understand.
 
-Log how you feel in seconds, up to four times a day. No paragraphs, no judgement — just a tap, a color, and an optional note. Over time, Kibun learns your emotional rhythms and surfaces the patterns you would never spot alone.
+Log how you feel in seconds, up to four times a day. No paragraphs, no judgement - just a tap, a color, and an optional note. Over time, Kibun learns your emotional rhythms and surfaces the patterns you would never spot alone.
 
 A gentle, kawaii Shiba Inu mascot guides every check-in and reacts to how you feel, so opening the app feels warm instead of clinical.
 
-— WHY PEOPLE LOVE KIBUN —
+--- WHY PEOPLE LOVE KIBUN ---
 
-• 14 color-coded mood bubbles make logging effortless
-• Four daily slots (morning / afternoon / evening / pre-sleep) — toggle any off
-• Calendar view paints your month in the colors of your feelings
-• Streaks, charts, and pattern cards that actually say something useful
-• Works fully offline — your data stays on your device unless you sign in
-• On-device sentiment AI reads your notes privately, with zero data leaving your phone
+- 14 color-coded mood bubbles make logging effortless
+- Four daily slots (morning / afternoon / evening / pre-sleep) - toggle any off
+- Calendar view paints your month in the colors of your feelings
+- Streaks, charts, and pattern cards that actually say something useful
+- Works fully offline - your data stays on your device unless you sign in
+- On-device sentiment AI reads your notes privately, with zero data leaving your phone
 
-— WHAT IS INCLUDED FREE —
+--- WHAT IS INCLUDED FREE ---
 
-✓ Unlimited mood check-ins — forever
-✓ 7-day history, streak counter, top-moods chart
-✓ Notification reminders (customizable slots)
-✓ Private on-device sentiment analysis
-✓ Optional anonymous mode (no account needed)
+- Unlimited mood check-ins - forever
+- 7-day history, streak counter, top-moods chart
+- Notification reminders (customizable slots)
+- Private on-device sentiment analysis
+- Optional anonymous mode (no account needed)
 
-— KIBUN PRO —
+--- KIBUN PRO ---
 
 Start with a 7-day free trial. Then $5.99/month or $39.99/year.
 
-★ AI Weekly & Monthly Reports — a personalised narrative of your emotional month, written for you alone
-★ AI Journaling Prompts — a custom reflection question after every check-in, built from your recent moods
-★ Correlation Insights — see how sleep, work, and social life move your mood
-★ Custom Notification Times — exact reminder times per slot, not defaults
-★ Full Calendar History — unlimited past entries, no 7-day limit
-★ Export & Share — CSV export and beautiful shareable mood summary cards
-★ Breathing & Grounding Exercises — box breathing, 5-4-3-2-1, and gratitude prompts triggered when you need them most
-★ Achievements & Streak Freeze — badges, monthly recaps, and one freeze per month to protect your streak
+- AI Weekly & Monthly Reports - a personalised narrative of your emotional month, written for you alone
+- AI Journaling Prompts - a custom reflection question after every check-in, built from your recent moods
+- Correlation Insights - see how sleep, work, and social life move your mood
+- Custom Notification Times - exact reminder times per slot, not defaults
+- Full Calendar History - unlimited past entries, no 7-day limit
+- Export & Share - CSV export and beautiful shareable mood summary cards
+- Breathing & Grounding Exercises - box breathing, 5-4-3-2-1, and gratitude prompts triggered when you need them most
+- Achievements & Streak Freeze - badges, monthly recaps, and one freeze per month to protect your streak
 
-— PRIVACY FIRST —
+--- PRIVACY FIRST ---
 
 Kibun is built around the idea that your feelings are private.
-• Use the app fully anonymously — nothing ever leaves your phone
-• If you create an account, your data syncs to your private, encrypted space
-• On-device sentiment model — your notes are analyzed locally, never uploaded
-• Only Pro AI reports send mood data (never raw notes) to a secure AI endpoint for summarization
-• We never sell, share, or advertise with your data
+- Use the app fully anonymously - nothing ever leaves your phone
+- If you create an account, your data syncs to your private, encrypted space
+- On-device sentiment model - your notes are analyzed locally, never uploaded
+- Only Pro AI reports send mood data (never raw notes) to a secure AI endpoint for summarization
+- We never sell, share, or advertise with your data
 
-— BUILT FOR A DAILY HABIT —
+--- BUILT FOR A DAILY HABIT ---
 
-Kibun is not a journaling marathon. It is a 10-second check-in you will actually keep doing — and insights that compound the longer you use it. Whether you are trying to understand anxiety, build self-awareness, improve sleep, or just check in with yourself, Kibun meets you where you are.
+Kibun is not a journaling marathon. It is a 10-second check-in you will actually keep doing - and insights that compound the longer you use it. Whether you are trying to understand anxiety, build self-awareness, improve sleep, or just check in with yourself, Kibun meets you where you are.
 
 Questions? support@kibun.app
 Privacy Policy: https://fernanhick.github.io/kibun/privacy-policy.html
@@ -139,13 +139,13 @@ Subscriptions auto-renew unless cancelled at least 24 hours before the end of th
 ### 2.6 What's New in This Version  *(4,000 char max)*
 
 ```
-Welcome to Kibun 1.0 — we are thrilled to meet you.
+Welcome to Kibun 1.0 - we are thrilled to meet you.
 
 This is our first public release. Everything inside has been handcrafted: 14 color-coded moods, a Shiba Inu mascot who actually reacts to how you feel, on-device sentiment AI that keeps your notes private, and Pro AI reports that read like they were written for you alone.
 
-We are listening. Ideas, feedback, bug reports — send them to support@kibun.app.
+We are listening. Ideas, feedback, bug reports - send them to support@kibun.app.
 
-— The Kibun team
+- The Kibun team
 ```
 
 ### 2.7 Support & Marketing URLs
@@ -435,13 +435,13 @@ The most common rejections for apps in this category — address each **before**
 APP NAME       : Kibun: Mood Tracker & Journal
 SUBTITLE       : Track feelings. Find patterns.
 KEYWORDS       : mental,health,diary,wellness,anxiety,depression,stress,mindfulness,therapy,gratitude,habits,calm,zen
-PROMO TEXT     : Meet Kibun — your gentle mood tracker with a Shiba Inu guide. Log how you feel, see your patterns, and unlock AI-powered insights. Try Pro free for 7 days.
+PROMO TEXT     : Meet Kibun - your gentle mood tracker with a Shiba Inu guide. Log how you feel, see your patterns, and unlock AI-powered insights. Try Pro free for 7 days.
 PRIMARY CAT    : Health & Fitness
 SECONDARY CAT  : Lifestyle
 AGE RATING     : 4+
 PRICE          : Free (with IAP)
-IAP MONTHLY    : kibun.pro.monthly  — $5.99/mo, 7-day trial
-IAP YEARLY     : kibun.pro.yearly   — $39.99/yr, 7-day trial
+IAP MONTHLY    : kibun.pro.monthly  - $5.99/mo, 7-day trial
+IAP YEARLY     : kibun.pro.yearly   - $39.99/yr, 7-day trial
 BUNDLE ID      : com.kibun.app
 VERSION        : 1.0.0 (build 1)
 SUPPORT URL    : https://fernanhick.github.io/kibun/support.html

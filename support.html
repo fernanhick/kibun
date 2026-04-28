@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - Kibun</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #fafafa;
+        }
+        h1 {
+            color: #6C63FF;
+            border-bottom: 3px solid #6C63FF;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #6C63FF;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #444;
+            margin-top: 22px;
+            margin-bottom: 6px;
+        }
+        .last-updated {
+            color: #666;
+            font-style: italic;
+            margin: 20px 0;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        a {
+            color: #6C63FF;
+        }
+        .contact-card {
+            background: #EEF3FF;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+        .contact-card a {
+            font-weight: 600;
+        }
+        details {
+            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+        }
+        details:last-child {
+            border-bottom: none;
+        }
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #202124;
+            padding: 4px 0;
+        }
+        summary:hover {
+            color: #6C63FF;
+        }
+        details p, details ul {
+            margin-top: 8px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kibun Support</h1>
+    <div class="last-updated">Last Updated: April 28, 2026</div>
+
+    <div class="section">
+        <p>
+            Kibun is a gentle mood tracker and journal with a Shiba Inu mascot. Log how you feel
+            in 10 seconds, watch your patterns surface over time, and unlock AI-powered insights
+            with Kibun Pro. This page covers the most common questions — if you don't find
+            your answer here, get in touch using the contact options below.
+        </p>
+
+        <div class="contact-card">
+            <strong>Need help right now?</strong><br>
+            Email <a href="mailto:support@kibun.app">support@kibun.app</a> — we reply within 1 business day.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Frequently Asked Questions</h2>
+
+        <details>
+            <summary>How do I log a mood?</summary>
+            <p>
+                On the Home tab, tap the slot you want (morning, afternoon, night, or pre-sleep),
+                pick one of the 14 mood bubbles, and optionally add a short note. That's it —
+                the whole flow is designed to take under 10 seconds.
+            </p>
+        </details>
+
+        <details>
+            <summary>Do I need an account to use Kibun?</summary>
+            <p>
+                No. Kibun is anonymous-first — you can use the entire app without creating an
+                account, and your data stays on your device only. Creating an account adds
+                cloud sync across devices and unlocks AI Pro reports if you subscribe.
+            </p>
+        </details>
+
+        <details>
+            <summary>How do I start the 7-day free trial of Kibun Pro?</summary>
+            <p>
+                Open the Account tab and tap "Upgrade to Pro", or visit the paywall during
+                onboarding. Choose monthly or yearly, then confirm with Face ID / Touch ID.
+                Apple charges nothing for the first 7 days. Cancel anytime in
+                Settings → Apple ID → Subscriptions to avoid being charged.
+            </p>
+        </details>
+
+        <details>
+            <summary>How do I cancel my subscription?</summary>
+            <p>
+                Subscriptions are managed by Apple, not Kibun. On your iPhone or iPad:
+            </p>
+            <ul>
+                <li>Open <strong>Settings</strong></li>
+                <li>Tap your <strong>Apple ID</strong> at the top</li>
+                <li>Tap <strong>Subscriptions</strong></li>
+                <li>Find <strong>Kibun Pro</strong> and tap <strong>Cancel Subscription</strong></li>
+            </ul>
+            <p>
+                Cancelling at least 24 hours before the end of your trial or current period
+                prevents the next charge. You keep Pro features until the end of the period
+                you've already paid for.
+            </p>
+        </details>
+
+        <details>
+            <summary>How do I restore a previous purchase?</summary>
+            <p>
+                Open the Account tab and tap "Restore Purchases". Make sure you're signed
+                into the same Apple ID that originally purchased Pro.
+            </p>
+        </details>
+
+        <details>
+            <summary>How do AI reports work? Is my data private?</summary>
+            <p>
+                Kibun Pro generates weekly and monthly reports that summarize your emotional
+                patterns. Only aggregated metadata — mood labels, counts, time-of-day buckets
+                and your onboarding profile — is sent to a secure AI endpoint. Your raw notes
+                and journal entries are <strong>never</strong> uploaded; sentiment for notes is
+                analysed locally on your device using a bundled ONNX model.
+            </p>
+            <p>
+                For full details see our
+                <a href="./privacy-policy.html">Privacy Policy</a>.
+            </p>
+        </details>
+
+        <details>
+            <summary>How do I change notification reminder times?</summary>
+            <p>
+                Open the Account tab → Notifications. Toggle each slot (morning, afternoon,
+                night, pre-sleep) on or off. Kibun Pro subscribers can also set exact times
+                per slot; free users get sensible defaults.
+            </p>
+        </details>
+
+        <details>
+            <summary>I'm not getting notifications. What should I check?</summary>
+            <ul>
+                <li>iOS Settings → Notifications → Kibun → make sure "Allow Notifications" is on.</li>
+                <li>Inside Kibun, open Account → Notifications and confirm at least one slot is enabled.</li>
+                <li>Check that Focus / Do Not Disturb isn't filtering Kibun out.</li>
+                <li>If you recently reinstalled, you may need to grant the permission again.</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>How do I export my mood history?</summary>
+            <p>
+                Kibun Pro subscribers can export their full mood history as a CSV file.
+                Open Account → Export Data and pick a destination (email, Files, AirDrop).
+            </p>
+        </details>
+
+        <details>
+            <summary>How do I delete my account or data?</summary>
+            <p>
+                You can delete your account or just your data from inside the app:
+                Account → Danger Zone → "Delete Account" or "Delete My Data".
+            </p>
+            <p>
+                You can also start the deletion flow from the web at our
+                <a href="./delete-account.html">Delete Account page</a>.
+            </p>
+        </details>
+
+        <details>
+            <summary>Can I switch between monthly and yearly plans?</summary>
+            <p>
+                Yes — both plans live in the same subscription group, so you can upgrade or
+                downgrade at any time from iOS Settings → Apple ID → Subscriptions → Kibun Pro.
+                Apple handles the proration automatically.
+            </p>
+        </details>
+
+        <details>
+            <summary>Is Kibun a medical or therapy app?</summary>
+            <p>
+                <strong>No.</strong> Kibun is a wellness and self-reflection tool. It is not
+                a medical device and does not provide diagnosis, treatment, or clinical advice.
+                If you are struggling, please reach out to a licensed professional. In a crisis,
+                contact your local emergency services or a crisis hotline.
+            </p>
+        </details>
+
+        <details>
+            <summary>Which devices does Kibun support?</summary>
+            <p>
+                Kibun runs on iPhone (iOS 15.1+) and iPad (iPadOS 15.1+). It also runs on
+                Apple Silicon Macs through "Designed for iPad". An Android version is on
+                our roadmap.
+            </p>
+        </details>
+
+        <details>
+            <summary>I found a bug or have a feature request.</summary>
+            <p>
+                We genuinely read every email. Send a description (and a screenshot if you can)
+                to <a href="mailto:support@kibun.app">support@kibun.app</a> — bug reports and
+                feature ideas both go to the same inbox.
+            </p>
+        </details>
+    </div>
+
+    <div class="section">
+        <h2>Contact Us</h2>
+        <ul>
+            <li><strong>General support / bug reports / feature requests:</strong>
+                <a href="mailto:support@kibun.app">support@kibun.app</a></li>
+            <li><strong>Privacy or data deletion:</strong>
+                <a href="mailto:privacy@kibun.app">privacy@kibun.app</a></li>
+        </ul>
+        <p>We reply within 1 business day.</p>
+    </div>
+
+    <div class="section">
+        <h2>Legal</h2>
+        <ul>
+            <li><a href="./privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="./delete-account.html">Delete Your Account or Data</a></li>
+            <li><a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms of Use (Apple Standard EULA)</a></li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <p style="text-align: center; color: #999;">
+            &copy; 2026 Kibun. All rights reserved.
+        </p>
+    </div>
+</body>
+</html>

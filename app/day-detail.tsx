@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { View, Text, Pressable, Alert, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen, Card, MoodBubble } from '@components/index';
+import { Screen, Card, MoodBubble, BackButton } from '@components/index';
 import { useMoodEntryStore, useLifeEventsStore } from '@store/index';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { colors, spacing, typography, radius } from '@constants/theme';
@@ -104,14 +104,7 @@ export default function DayDetailScreen() {
   return (
     <Screen scrollable={true} layout="wide">
       <View style={styles.header}>
-        <Pressable
-          onPress={() => router.back()}
-          accessibilityLabel="Go back"
-          accessibilityRole="button"
-          hitSlop={12}
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.text} />
-        </Pressable>
+        <BackButton />
         <Text style={styles.dateHeading} accessibilityRole="header">
           {formatDateHeading(dateParam)}
         </Text>

@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import { Screen, Button } from '@components/index';
+import { Screen, Button, BackButton } from '@components/index';
 import { useSessionStore } from '@store/sessionStore';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { supabase } from '@lib/supabase';
@@ -148,14 +148,7 @@ export default function AccountScreen() {
     <Screen scrollable={false}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable
-          onPress={() => router.back()}
-          accessibilityLabel="Go back"
-          accessibilityRole="button"
-          hitSlop={12}
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.text} />
-        </Pressable>
+        <BackButton />
         <Text style={styles.headerTitle} accessibilityRole="header">
           Account
         </Text>

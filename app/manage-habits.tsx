@@ -3,7 +3,7 @@ import { View, Text, Pressable, TextInput, ScrollView, StyleSheet, Alert } from 
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Screen } from '@components/index';
+import { Screen, BackButton } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useHabitsStore } from '@store/habitsStore';
 import { colors, spacing, typography, radius } from '@constants/theme';
@@ -63,14 +63,7 @@ export default function ManageHabitsScreen() {
       >
         <SparkleOverlay count={12} />
         <View style={styles.heroHeader}>
-          <Pressable
-            onPress={() => router.back()}
-            accessibilityRole="button"
-            accessibilityLabel="Back"
-            hitSlop={12}
-          >
-            <Ionicons name="arrow-back" size={22} color={colors.textInverse} />
-          </Pressable>
+          <BackButton variant="onHero" />
         </View>
         <Text style={styles.heroTitle}>My Habits</Text>
         <Text style={styles.heroSubtitle}>Track daily behaviours alongside your mood</Text>

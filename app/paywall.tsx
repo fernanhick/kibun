@@ -5,7 +5,7 @@ import Purchases from 'react-native-purchases';
 import type { PurchasesPackage } from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Screen, Button } from '@components/index';
+import { Screen, Button, BackButton } from '@components/index';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useSessionStore } from '@store/index';
 import {
@@ -166,6 +166,8 @@ export default function PaywallScreen() {
 
   return (
     <Screen scrollable contentContainerStyle={styles.content}>
+      <BackButton onPress={handleSkip} />
+
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <LinearGradient
         colors={['#FF6B9D', '#C060F0']}

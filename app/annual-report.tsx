@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Screen } from '@components/index';
+import { Screen, BackButton } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useMoodEntryStore, useSessionStore } from '@store/index';
 import { getMoodFrequency, GROUP_SCORES } from '@lib/insights';
@@ -131,9 +131,7 @@ export default function AnnualReportScreen() {
           style={reportStyles.hero}
         >
           <SparkleOverlay count={20} />
-          <Pressable onPress={() => router.back()} style={reportStyles.backBtn} hitSlop={12}>
-            <Ionicons name="arrow-back" size={22} color={colors.textInverse} />
-          </Pressable>
+          <BackButton variant="onHero" style={reportStyles.backBtn} />
           <Text style={reportStyles.heroTitle}>{currentYear} in Mood</Text>
         </LinearGradient>
         <View style={reportStyles.emptyContainer}>

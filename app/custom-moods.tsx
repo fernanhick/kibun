@@ -3,7 +3,7 @@ import { View, Text, Pressable, TextInput, ScrollView, StyleSheet, Alert } from 
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Screen } from '@components/index';
+import { Screen, BackButton } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useCustomMoodsStore } from '@store/customMoodsStore';
 import { colors, spacing, typography, radius } from '@constants/theme';
@@ -67,14 +67,7 @@ export default function CustomMoodsScreen() {
       >
         <SparkleOverlay count={12} />
         <View style={styles.heroHeader}>
-          <Pressable
-            onPress={() => router.back()}
-            accessibilityRole="button"
-            accessibilityLabel="Back"
-            hitSlop={12}
-          >
-            <Ionicons name="arrow-back" size={22} color={colors.textInverse} />
-          </Pressable>
+          <BackButton variant="onHero" />
         </View>
         <Text style={styles.heroTitle}>Custom Moods</Text>
         <Text style={styles.heroSubtitle}>

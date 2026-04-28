@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen, Button } from '@components/index';
+import { Screen, Button, BackButton } from '@components/index';
 import { supabase } from '@lib/supabase';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
@@ -167,14 +167,7 @@ export default function ChangePasswordScreen() {
   return (
     <Screen scrollable={true} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Pressable
-          onPress={() => router.back()}
-          accessibilityLabel="Go back"
-          accessibilityRole="button"
-          hitSlop={12}
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.text} />
-        </Pressable>
+        <BackButton />
         <Text style={styles.headerTitle} accessibilityRole="header">
           {title}
         </Text>

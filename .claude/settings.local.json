@@ -23,7 +23,8 @@
       "Bash(python -c \" import sys, json d = json.load\\(sys.stdin\\) print\\('=== react-native-copilot ==='\\) print\\('Peer deps:', json.dumps\\(d.get\\('peerDependencies', {}\\), indent=2\\)\\) print\\('Dependencies:', json.dumps\\(d.get\\('dependencies', {}\\), indent=2\\)\\) print\\('Keywords:', d.get\\('keywords', []\\)\\) \")",
       "Bash(xargs -I {} basename {})",
       "Bash(supabase functions *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(echo \"EXIT: $?\")"
     ]
   }
 }

@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-nati
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Markdown from 'react-native-markdown-display';
-import { Screen, Card, Button } from '@components/index';
+import { Screen, Card, Button, BackButton } from '@components/index';
 import { useSessionStore } from '@store/sessionStore';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { requestReport, getLatestReport } from '@lib/aiReports';
@@ -70,7 +70,7 @@ export default function AIReportScreen() {
   if (!isSubscribed) {
     return (
       <Screen scrollable={false} layout="wide">
-        <ScreenHeader onBack={() => router.back()} />
+        <ScreenHeader />
         <View style={styles.lockedContainer}>
           <Ionicons
             name="lock-closed-outline"
@@ -94,7 +94,7 @@ export default function AIReportScreen() {
   // ── Subscribed — report type toggle always visible ─────────────────────
   return (
     <Screen scrollable={true} layout="wide">
-      <ScreenHeader onBack={() => router.back()} />
+      <ScreenHeader />
       <ReportTypeToggle
         selected={reportType}
         onSelect={(t) => { setReportType(t); }}
@@ -112,17 +112,10 @@ export default function AIReportScreen() {
 
 // ── Sub-components ───────────────────────────────────────────────────────────
 
-function ScreenHeader({ onBack }: { onBack: () => void }) {
+function ScreenHeader() {
   return (
     <View style={styles.header}>
-      <Pressable
-        onPress={onBack}
-        accessibilityLabel="Go back"
-        accessibilityRole="button"
-        hitSlop={12}
-      >
-        <Ionicons name="chevron-back" size={24} color={colors.text} />
-      </Pressable>
+      <BackButton />
       <Text style={styles.headerTitle} accessibilityRole="header">
         AI Report
       </Text>

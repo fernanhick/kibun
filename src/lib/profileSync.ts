@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase, withFreshAuth } from './supabase';
 import type { OnboardingProfile, SubscriptionStatus } from '@models/index';
 
 /**
@@ -11,30 +11,31 @@ export function saveProfileToSupabase(
 ): void {
   if (!supabase || !userId) return;
 
-  supabase
-    .from('profiles')
-    .upsert(
-      {
-        user_id: userId,
-        name: profile.name || null,
-        age_range: profile.ageRange,
-        gender: profile.gender,
-        employment: profile.employment,
-        work_setting: profile.workSetting,
-        work_hours: profile.workHours,
-        sleep_hours: profile.sleepHours,
-        exercise: profile.exercise,
-        social_frequency: profile.socialFrequency,
-        stress_level: profile.stressLevel,
-        goals: profile.goals.length > 0 ? profile.goals : null,
-      },
-      { onConflict: 'user_id' }
-    )
-    .then(({ error }) => {
-      if (error && __DEV__) {
-        console.error('[kibun:profile] Supabase upsert failed:', error.message);
-      }
-    });
+  void withFreshAuth(() =>
+    supabase!
+      .from('profiles')
+      .upsert(
+        {
+          user_id: userId,
+          name: profile.name || null,
+          age_range: profile.ageRange,
+          gender: profile.gender,
+          employment: profile.employment,
+          work_setting: profile.workSetting,
+          work_hours: profile.workHours,
+          sleep_hours: profile.sleepHours,
+          exercise: profile.exercise,
+          social_frequency: profile.socialFrequency,
+          stress_level: profile.stressLevel,
+          goals: profile.goals.length > 0 ? profile.goals : null,
+        },
+        { onConflict: 'user_id' }
+      )
+  ).then(({ error }) => {
+    if (error && __DEV__) {
+      console.error('[kibun:profile] Supabase upsert failed:', error.message);
+    }
+  });
 }
 
 /**
@@ -48,15 +49,16 @@ export function syncSubscriptionStatusToSupabase(
 ): void {
   if (!supabase || !userId) return;
 
-  supabase
-    .from('profiles')
-    .upsert(
-      { user_id: userId, subscription_status: status },
-      { onConflict: 'user_id' },
-    )
-    .then(({ error }) => {
-      if (error && __DEV__) {
-        console.error('[kibun:profile] Failed to sync subscription_status:', error.message);
-      }
-    });
+  void withFreshAuth(() =>
+    supabase!
+      .from('profiles')
+      .upsert(
+        { user_id: userId, subscription_status: status },
+        { onConflict: 'user_id' },
+      )
+  ).then(({ error }) => {
+    if (error && __DEV__) {
+      console.error('[kibun:profile] Failed to sync subscription_status:', error.message);
+    }
+  });
 }

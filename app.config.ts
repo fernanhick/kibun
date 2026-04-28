@@ -77,7 +77,14 @@ export default ({ config }: ConfigContext) => ({
     ],
     'expo-screen-orientation',
     'expo-sharing',
-    ['expo-splash-screen', { backgroundColor: '#4A86FF' }],
+    [
+      'expo-splash-screen',
+      {
+        backgroundColor: '#4A86FF',
+        image: './assets/splash.png',
+        imageWidth: 200,
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,

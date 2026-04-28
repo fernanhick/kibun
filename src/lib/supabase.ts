@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient, type Session } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
 import { AppState } from 'react-native';
 
@@ -50,24 +50,28 @@ if (supabase) {
   });
 }
 
-// `onAuthStateChange` fires INITIAL_SESSION with whatever's in storage — which
-// can be an already-expired access token on cold start. Call this before using
-// that session for data requests to guarantee a valid JWT.
-//
-// Threshold is 5 minutes: a sync chain (pull → upload → achievements → freeze)
-// can take several seconds, and the JWT must outlast the longest request in it.
-const FRESH_SESSION_THRESHOLD_SEC = 300;
+// Reactive JWT recovery: PostgREST is the only authoritative signal that the
+// access token is bad. Predictive freshness checks race with the SDK's own
+// auto-refresh timer (token rotation produces "Already Used" errors). Instead,
+// run the request, and on `JWT expired` force a refresh and retry exactly once.
+type SupabaseResult = { error: { message?: string; code?: string } | null };
 
-export async function ensureFreshSession(session: Session): Promise<Session> {
-  if (!supabase) return session;
-  const expiresAt = session.expires_at ?? 0;
-  const nowSec = Math.floor(Date.now() / 1000);
-  if (expiresAt - nowSec > FRESH_SESSION_THRESHOLD_SEC) return session;
+export async function withFreshAuth<R extends SupabaseResult>(
+  call: () => PromiseLike<R>,
+): Promise<R> {
+  const first = await call();
+  if (!first.error) return first;
 
-  const { data, error } = await supabase.auth.refreshSession();
-  if (error || !data.session) {
-    if (__DEV__) console.warn('[kibun:auth] refreshSession failed:', error?.message);
-    return session;
+  const isExpired =
+    first.error.code === 'PGRST301' ||
+    /jwt expired/i.test(first.error.message ?? '');
+  if (!isExpired || !supabase) return first;
+
+  const { error: refreshError } = await supabase.auth.refreshSession();
+  // "Already Used" means a concurrent refresh already rotated the token —
+  // the client's in-memory session is now fresh, so the retry will succeed.
+  if (refreshError && __DEV__) {
+    console.warn('[kibun:auth] refreshSession failed:', refreshError.message);
   }
-  return data.session;
+  return await call();
 }

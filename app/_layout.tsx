@@ -22,6 +22,7 @@ import { registerPushToken } from '@lib/pushTokens';
 import { prewarmSentimentModel } from '@lib/sentiment';
 import { getIsTabletDevice } from '@lib/deviceClass';
 import { applyOrientationPolicy } from '@lib/orientation';
+import { initAnalytics, identifyAnalyticsUser } from '@lib/analytics';
 
 // Keep the native splash screen visible until auth is resolved.
 // Without this, the OS auto-dismisses the splash before React is ready,
@@ -47,6 +48,9 @@ configureNotificationHandler();
 // Pre-warm the on-device ONNX sentiment model so the first inference in
 // MoodConfirmScreen is fast. Silently no-ops if model asset is not yet present.
 prewarmSentimentModel();
+
+// Initialize Vexo product analytics. No-ops in __DEV__ or without a key.
+initAnalytics();
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 // Catches unhandled render errors in the navigation tree.
@@ -168,6 +172,14 @@ export default function RootLayout() {
         setSubscriptionStatus(status);
       }
     });
+  }, [isReady]);
+
+  // Tag the Vexo session with the Supabase user id so funnels group sessions
+  // per user. Vexo treats this as opaque — no PII (email/name) is sent.
+  useEffect(() => {
+    if (!isReady) return;
+    const userId = useSessionStore.getState().session?.userId ?? null;
+    identifyAnalyticsUser(userId);
   }, [isReady]);
 
   // Register Expo push token for subscribed registered users.

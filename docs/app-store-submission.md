@@ -214,11 +214,11 @@ Location, Financial Info, Sensitive Info, Contacts, Browsing History, Search His
 ### Tracking (AppTrackingTransparency)
 
 **Answer:** "No, this app does not track users across apps and websites owned by other companies."
-Kibun has no advertising SDKs, no third-party analytics that share with other apps, and does not use IDFA. The `ITSAppUsesNonExemptEncryption: false` flag is already set in `app.config.ts`.
+Kibun has no advertising SDKs and does not use IDFA. Product analytics is provided by Vexo (`vexo-analytics`), which is GDPR-compliant, captures only first-party anonymized usage data (screens, sessions, country, anonymized tap coordinates, Supabase user id), and does not share data across other apps or with advertising networks — so it does not trigger ATT. The `ITSAppUsesNonExemptEncryption: false` flag is already set in `app.config.ts`.
 
 ### Privacy Manifest (`PrivacyInfo.xcprivacy`)
 
-Apple requires a privacy manifest for all apps since May 2024. Declare required reason APIs used by your dependencies (Expo, Supabase, RevenueCat will each declare their own). If you do not have a custom manifest yet, add one at the Expo layer — Expo SDK 55 auto-generates this for core APIs, but verify during the archive step.
+Apple requires a privacy manifest for all apps since May 2024. Declare required reason APIs used by your dependencies (Expo, Supabase, RevenueCat, and Vexo will each declare their own). If you do not have a custom manifest yet, add one at the Expo layer — Expo SDK 55 auto-generates this for core APIs, but verify during the archive step.
 
 ---
 

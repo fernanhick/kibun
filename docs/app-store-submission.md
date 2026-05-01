@@ -104,7 +104,7 @@ A gentle, kawaii Shiba Inu mascot guides every check-in and reacts to how you fe
 
 --- KIBUN PRO ---
 
-Start with a 7-day free trial. Then $5.99/month or $39.99/year.
+Start with a 7-day free trial. Then $5.99/month or $34.99/year.
 
 - AI Weekly & Monthly Reports - a personalised narrative of your emotional month, written for you alone
 - AI Journaling Prompts - a custom reflection question after every check-in, built from your recent moods
@@ -178,7 +178,7 @@ The app currently links to GitHub Pages (`https://fernanhick.github.io/kibun/...
 | Product ID | Type | Reference Name | Display Name | Price Tier |
 |---|---|---|---|---|
 | `kibun.pro.monthly` | Auto-Renewable Subscription | Kibun Pro — Monthly | Kibun Pro | $5.99 / month (7-day free trial) |
-| `kibun.pro.yearly` | Auto-Renewable Subscription | Kibun Pro — Yearly | Kibun Pro | $39.99 / year (7-day free trial) |
+| `kibun.pro.yearly` | Auto-Renewable Subscription | Kibun Pro — Yearly | Kibun Pro | $34.99 / year (7-day free trial) |
 
 **Subscription Group:** `Kibun Pro` (both products in the same group so users can upgrade/downgrade cleanly)
 **Entitlement:** `premium` *(default in `src/lib/revenuecat.ts:DEFAULT_ENTITLEMENT_ID`; `kibun Pro` is also accepted as a fallback. Whichever string you create in the RevenueCat dashboard, set `EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID` to match.)*
@@ -302,7 +302,7 @@ HOW TO TEST THE SUBSCRIPTION (Guideline 3.1.2)
 5. Restore Purchases is available on the Account screen.
 
 Monthly product:  kibun.pro.monthly  ($5.99, 7-day free trial)
-Yearly product:   kibun.pro.yearly   ($39.99, 7-day free trial)
+Yearly product:   kibun.pro.yearly   ($34.99, 7-day free trial)
 
 ============================================================
 HOW TO TEST AI FEATURES
@@ -390,7 +390,7 @@ Caption text overlay on each screenshot — the App Store cuts off text below th
 | 3 | History calendar colored by mood | **Watch your month paint itself.** | Every day a color. Every pattern revealed. |
 | 4 | Insights tab with trend chart + pattern cards | **See the patterns you would never spot.** | Day-of-week, time-of-day, trends, more |
 | 5 | AI Report narrative screen | **AI that reads your rhythms.** *(Pro)* | A personal weekly story, written for you |
-| 6 | Paywall / feature comparison | **7 days of Pro — free.** | Then $5.99/mo or $39.99/yr · cancel anytime |
+| 6 | Paywall / feature comparison | **7 days of Pro — free.** | Then $5.99/mo or $34.99/yr · cancel anytime |
 
 ### 8.3 App Preview Video (Optional — But Boosts Conversion ~25%)
 
@@ -441,7 +441,7 @@ SECONDARY CAT  : Lifestyle
 AGE RATING     : 4+
 PRICE          : Free (with IAP)
 IAP MONTHLY    : kibun.pro.monthly  - $5.99/mo, 7-day trial
-IAP YEARLY     : kibun.pro.yearly   - $39.99/yr, 7-day trial
+IAP YEARLY     : kibun.pro.yearly   - $34.99/yr, 7-day trial
 BUNDLE ID      : com.kibun.app
 VERSION        : 1.0.0 (build 1)
 SUPPORT URL    : https://fernanhick.github.io/kibun/support.html

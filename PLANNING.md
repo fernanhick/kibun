@@ -104,7 +104,7 @@ This profile data is stored in Supabase and passed as context to the AI analysis
 | 8 | Profile Goals | ``(onboarding)/profile-goals.tsx`` | Multi-select goals |
 | 9 | Notification Permission | ``(onboarding)/notification-permission.tsx`` | Request push notification permissions |
 | 10 | Disclaimer | ``(onboarding)/disclaimer.tsx`` | Privacy and data use disclosure |
-| 11 | Paywall | ``paywall.tsx`` | Subscription offer — 7-day free trial, then $5.99/month or $39.99/year |
+| 11 | Paywall | ``paywall.tsx`` | Subscription offer — 7-day free trial, then $5.99/month or $34.99/year |
 | 12 | Registration | ``register.tsx`` | Email / Google / Apple sign-up — after trial/subscription accepted |
 
 If user skips the paywall: they continue with free features and a persistent data-loss banner.
@@ -145,7 +145,7 @@ If user skips the paywall: they continue with free features and a persistent dat
 ## Monetization
 
 - **Model:** 7-day free trial → subscription required for Pro features
-- **Pricing:** $5.99/month or $39.99/year
+- **Pricing:** $5.99/month or $34.99/year
 - **Payment:** RevenueCat (``react-native-purchases``) — entitlement: ``kibun Pro``
 - **Skip option available** — free users keep unlimited check-ins with feature restrictions
 
@@ -357,7 +357,7 @@ Custom notification times (Pro): per-slot HH:mm overrides stored in ``notificati
 - AI weekly/monthly report (GPT-4o-mini via Edge Function)
 - Anonymous-first auth with Supabase + OAuth sign-in
 - Anonymous → registered account conversion
-- RevenueCat paywall — 7-day trial, $5.99/month / $39.99/year
+- RevenueCat paywall — 7-day trial, $5.99/month / $34.99/year
 - Account management: sign-out, delete account
 - App icon: full-bleed, app name "Kibun" (capital K)
 

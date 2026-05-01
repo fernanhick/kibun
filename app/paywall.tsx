@@ -36,7 +36,7 @@ const PRO_FEATURES = [
 // Fallback strings used only if RevenueCat offerings are unavailable on first
 // render (network failure, sandbox not configured). The localized strings from
 // PurchasesPackage.product.priceString are preferred everywhere they're available.
-const FALLBACK_TRIAL_LINE = 'then $5.99 / month or $39.99 / year · cancel anytime';
+const FALLBACK_TRIAL_LINE = 'then $5.99 / month or $34.99 / year · cancel anytime';
 
 function formatTrialLine(monthly?: PurchasesPackage, yearly?: PurchasesPackage): string {
   const m = monthly?.product.priceString;

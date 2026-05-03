@@ -5,6 +5,7 @@ export { KawaiiTabBar } from './KawaiiTabBar';
 export { MoodBubble } from './MoodBubble';
 export { OptionPicker } from './OptionPicker';
 export { PersistentMascotOverlay } from './PersistentMascotOverlay';
+export { ReviewPromptModal } from './ReviewPromptModal';
 export { Screen } from './Screen';
 export { Shiba } from './Shiba';
 export { TabletSplit } from './TabletSplit';

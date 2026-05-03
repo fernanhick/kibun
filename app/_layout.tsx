@@ -14,6 +14,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
 import { PersistentMascotOverlay } from '@components/PersistentMascotOverlay';
+import { ReviewPromptModal } from '@components/ReviewPromptModal';
 import { initPurchases, refreshSubscriptionStatus } from '@lib/revenuecat';
 import { configureNotificationHandler, scheduleSlotNotifications } from '@lib/notifications';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
@@ -277,6 +278,7 @@ export default function RootLayout() {
             <Stack.Screen name="annual-report" options={{ headerShown: false }} />
           </Stack>
           <PersistentMascotOverlay />
+          <ReviewPromptModal />
         </View>
       </ErrorBoundary>
     </SafeAreaProvider>

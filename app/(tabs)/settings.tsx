@@ -11,6 +11,7 @@ import { useSessionStore } from '@store/sessionStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
 import { restorePurchases } from '@lib/revenuecat';
 import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
+import { requestStoreReviewDirect, openSupportFeedback } from '@lib/reviewPrompt';
 import type { NotificationSlot } from '@models/index';
 import {
   PRIVACY_POLICY_URL,
@@ -397,6 +398,24 @@ export default function SettingsScreen() {
         >
           <Text style={styles.rowLabel}>Manage subscription</Text>
           <Ionicons name="open-outline" size={20} color={colors.textSecondary} />
+        </Pressable>
+        <Pressable
+          style={styles.row}
+          onPress={() => requestStoreReviewDirect('settings')}
+          accessibilityRole="button"
+          accessibilityLabel="Rate kibun"
+        >
+          <Text style={styles.rowLabel}>Rate kibun ⭐</Text>
+          <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+        </Pressable>
+        <Pressable
+          style={styles.row}
+          onPress={() => openSupportFeedback('settings')}
+          accessibilityRole="button"
+          accessibilityLabel="Send feedback"
+        >
+          <Text style={styles.rowLabel}>Send feedback</Text>
+          <Ionicons name="mail-outline" size={20} color={colors.textSecondary} />
         </Pressable>
         <Pressable
           style={styles.row}

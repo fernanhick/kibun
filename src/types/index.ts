@@ -33,6 +33,7 @@ export interface OnboardingProfile {
   // Social / Mental / Goals — filled in 02-03
   socialFrequency: string | null;
   stressLevel: string | null;
+  copingStrategies: string[];
   goals: string[];
 }
 

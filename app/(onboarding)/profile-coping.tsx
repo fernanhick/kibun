@@ -5,40 +5,30 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OnboardingProgress } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
+import { COPING_OPTIONS } from '@constants/copingOptions';
 import { colors, typography, spacing, radius } from '@constants/theme';
-import { PickerOption } from '@models/index';
 
-const GOAL_OPTIONS: PickerOption[] = [
-  { label: 'Understand my emotions', value: 'understand-emotions' },
-  { label: 'Reduce stress', value: 'reduce-stress' },
-  { label: 'Improve sleep', value: 'improve-sleep' },
-  { label: 'Track my energy', value: 'track-energy' },
-  { label: 'Build self-awareness', value: 'self-awareness' },
-  { label: 'Notice mood patterns', value: 'mood-patterns' },
-];
-
-// Multi-select toggle — module-level pure function (no stale closure risk)
-function toggleGoal(prev: string[], value: string): string[] {
+function toggleCoping(prev: string[], value: string): string[] {
   return prev.includes(value)
-    ? prev.filter((g) => g !== value)
+    ? prev.filter((v) => v !== value)
     : [...prev, value];
 }
 
-export default function ProfileGoalsScreen() {
+export default function ProfileCopingScreen() {
   const { profile, updateProfile } = useOnboardingStore();
-  const [selectedGoals, setSelectedGoals] = useState<string[]>(profile.goals);
+  const [selected, setSelected] = useState<string[]>(profile.copingStrategies);
   const router = useRouter();
 
-  const canContinue = selectedGoals.length > 0;
+  const canContinue = selected.length > 0;
 
-  const handleGoalToggle = (value: string) => {
-    setSelectedGoals((prev) => toggleGoal(prev, value));
+  const handleToggle = (value: string) => {
+    setSelected((prev) => toggleCoping(prev, value));
   };
 
   const handleContinue = () => {
     if (!canContinue) return;
-    updateProfile({ goals: selectedGoals });
-    router.push('/(onboarding)/wisdom-small-shifts');
+    updateProfile({ copingStrategies: selected });
+    router.push('/(onboarding)/profile-goals');
   };
 
   return (
@@ -49,7 +39,7 @@ export default function ProfileGoalsScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <OnboardingProgress current={12} total={14} style={styles.progress} />
+        <OnboardingProgress current={11} total={14} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
@@ -59,23 +49,23 @@ export default function ProfileGoalsScreen() {
         >
           <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
         </Pressable>
-        <Text style={styles.title}>What are you hoping for?</Text>
-        <Text style={styles.subtitle}>Pick everything that feels right.</Text>
+        <Text style={styles.title}>When things feel heavy</Text>
+        <Text style={styles.subtitle}>What usually helps you ride it out? Pick all that fit.</Text>
       </LinearGradient>
 
       <View style={styles.sectionCard}>
-        <Text style={styles.groupLabel}>Your goals</Text>
+        <Text style={styles.groupLabel}>Your coping moves</Text>
         <View
           style={styles.chipsRow}
           accessibilityRole="none"
-          accessibilityLabel="Goals"
+          accessibilityLabel="Coping strategies"
         >
-          {GOAL_OPTIONS.map((option) => {
-            const isSelected = selectedGoals.includes(option.value);
+          {COPING_OPTIONS.map((option) => {
+            const isSelected = selected.includes(option.value);
             return (
               <Pressable
                 key={option.value}
-                onPress={() => handleGoalToggle(option.value)}
+                onPress={() => handleToggle(option.value)}
                 hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                 style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
                 accessibilityRole="checkbox"
@@ -106,13 +96,13 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
   },
-  backButton: {
-    alignSelf: 'flex-start',
-    padding: spacing.xs,
-  },
   progress: {
     alignSelf: 'flex-end',
     marginBottom: spacing.xs,
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    padding: spacing.xs,
   },
   heroCard: {
     borderRadius: 28,

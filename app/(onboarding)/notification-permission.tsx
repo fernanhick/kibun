@@ -5,7 +5,7 @@ import * as Crypto from 'expo-crypto';
 import * as Notifications from 'expo-notifications';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen, Button } from '@components/index';
+import { Screen, Button, OnboardingProgress } from '@components/index';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useOnboardingStore } from '@store/onboardingStore';
@@ -110,6 +110,7 @@ export default function NotificationPermissionScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
+        <OnboardingProgress current={14} total={14} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
@@ -178,6 +179,10 @@ const styles = StyleSheet.create({
   backButton: {
     alignSelf: 'flex-start',
     padding: spacing.xs,
+  },
+  progress: {
+    alignSelf: 'flex-end',
+    marginBottom: spacing.xs,
   },
   heroCard: {
     borderRadius: 28,

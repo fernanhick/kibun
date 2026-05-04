@@ -27,6 +27,8 @@ export function saveProfileToSupabase(
           exercise: profile.exercise,
           social_frequency: profile.socialFrequency,
           stress_level: profile.stressLevel,
+          coping_strategies:
+            profile.copingStrategies.length > 0 ? profile.copingStrategies : null,
           goals: profile.goals.length > 0 ? profile.goals : null,
         },
         { onConflict: 'user_id' }

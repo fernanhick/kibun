@@ -7,6 +7,7 @@ import { Button } from '@components/Button';
 import { MoodBubble } from '@components/MoodBubble';
 import { Shiba } from '@components/Shiba';
 import { SparkleOverlay } from '@components/SparkleOverlay';
+import { OnboardingProgress } from '@components/OnboardingProgress';
 import { Ionicons } from '@expo/vector-icons';
 import { MOODS, type MoodDefinition } from '@constants/moods';
 import { colors, typography, spacing } from '@constants/theme';
@@ -32,6 +33,7 @@ export default function FirstMoodScreen() {
         style={styles.heroCard}
       >
         <SparkleOverlay count={20} />
+        <OnboardingProgress current={2} total={14} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
@@ -79,6 +81,10 @@ const styles = StyleSheet.create({
   backButton: {
     alignSelf: 'flex-start',
     padding: spacing.xs,
+  },
+  progress: {
+    alignSelf: 'flex-end',
+    marginBottom: spacing.xs,
   },
   heroCard: {
     borderRadius: 28,

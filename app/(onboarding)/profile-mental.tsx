@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen, Button, OptionPicker } from '@components/index';
+import { Screen, Button, OptionPicker, OnboardingProgress } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing } from '@constants/theme';
 import { PickerOption } from '@models/index';
@@ -26,7 +26,7 @@ export default function ProfileMentalScreen() {
   const handleContinue = () => {
     if (!canContinue) return;
     updateProfile({ stressLevel });
-    router.push('/(onboarding)/profile-goals');
+    router.push('/(onboarding)/profile-coping');
   };
 
   return (
@@ -37,6 +37,7 @@ export default function ProfileMentalScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
+        <OnboardingProgress current={10} total={14} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
@@ -79,6 +80,10 @@ const styles = StyleSheet.create({
   backButton: {
     alignSelf: 'flex-start',
     padding: spacing.xs,
+  },
+  progress: {
+    alignSelf: 'flex-end',
+    marginBottom: spacing.xs,
   },
   heroCard: {
     borderRadius: 28,

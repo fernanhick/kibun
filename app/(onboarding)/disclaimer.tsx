@@ -6,6 +6,7 @@ import { Screen } from '@components/Screen';
 import { Button } from '@components/Button';
 import { Shiba } from '@components/Shiba';
 import { Card } from '@components/Card';
+import { OnboardingProgress } from '@components/OnboardingProgress';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
 export default function DisclaimerScreen() {
@@ -24,6 +25,7 @@ export default function DisclaimerScreen() {
   return (
     <Screen scrollable edgePadding="large">
       <View style={styles.container}>
+        <OnboardingProgress current={1} total={14} tone="dark" style={styles.progress} />
         <Shiba variant="neutral" size={180} style={styles.shiba} />
 
         <Text style={styles.title}>Before We Begin… 🌸</Text>
@@ -115,6 +117,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: spacing.lg,
     alignItems: 'center',
+  },
+  progress: {
+    marginBottom: spacing.md,
   },
   shiba: {
     marginBottom: spacing.sm,

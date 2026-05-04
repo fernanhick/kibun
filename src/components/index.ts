@@ -6,6 +6,8 @@ export { MoodBubble } from './MoodBubble';
 export { OptionPicker } from './OptionPicker';
 export { PersistentMascotOverlay } from './PersistentMascotOverlay';
 export { ReviewPromptModal } from './ReviewPromptModal';
+export { OnboardingProgress } from './OnboardingProgress';
+export { WisdomScreen } from './WisdomScreen';
 export { Screen } from './Screen';
 export { Shiba } from './Shiba';
 export { TabletSplit } from './TabletSplit';

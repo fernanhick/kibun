@@ -4,6 +4,7 @@ import { Screen } from '@components/Screen';
 import { Button } from '@components/Button';
 import { Shiba, type ShibaVariant } from '@components/Shiba';
 import { MoodBubble } from '@components/MoodBubble';
+import { OnboardingProgress } from '@components/OnboardingProgress';
 import { Ionicons } from '@expo/vector-icons';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { MOOD_RESPONSES } from '@constants/moodResponses';
@@ -26,15 +27,18 @@ export default function MoodResponseScreen() {
 
   return (
     <Screen edgePadding="large">
-      <Pressable
-        onPress={() => router.back()}
-        accessibilityRole="button"
-        accessibilityLabel="Go back"
-        hitSlop={12}
-        style={styles.backButton}
-      >
-        <Ionicons name="chevron-back" size={24} color={colors.text} />
-      </Pressable>
+      <View style={styles.headerRow}>
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          hitSlop={12}
+          style={styles.backButton}
+        >
+          <Ionicons name="chevron-back" size={24} color={colors.text} />
+        </Pressable>
+        <OnboardingProgress current={3} total={14} tone="dark" />
+      </View>
       <View style={styles.container}>
         <Shiba variant={variant} size={220} loop={false} autoPlay />
         <View style={styles.bubbleRow}>
@@ -44,7 +48,7 @@ export default function MoodResponseScreen() {
         <View style={styles.ctaContainer}>
           <Button
             label="Continue"
-            onPress={() => router.push('/(onboarding)/profile-personal')}
+            onPress={() => router.push('/(onboarding)/wisdom-awareness')}
             fullWidth
           />
         </View>
@@ -54,8 +58,13 @@ export default function MoodResponseScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.xs,
+  },
   backButton: {
-    alignSelf: 'flex-start',
     padding: spacing.xs,
   },
   container: {

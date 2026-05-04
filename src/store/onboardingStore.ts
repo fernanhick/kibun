@@ -15,6 +15,7 @@ const INITIAL_PROFILE: OnboardingProfile = {
   exercise: null,
   socialFrequency: null,
   stressLevel: null,
+  copingStrategies: [],
   goals: [],
 };
 

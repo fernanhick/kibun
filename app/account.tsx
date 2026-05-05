@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { File, Paths } from 'expo-file-system';
@@ -175,7 +175,10 @@ export default function AccountScreen() {
         </View>
       ) : (
         /* ── Registered state ────────────────────────────────────────── */
-        <View style={styles.registeredContent}>
+        <ScrollView
+          contentContainerStyle={styles.registeredContent}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.accountCard}>
             <Ionicons
               name="checkmark-circle-outline"
@@ -316,7 +319,7 @@ export default function AccountScreen() {
               </Pressable>
             </View>
           </View>
-        </View>
+        </ScrollView>
       )}
     </Screen>
   );
@@ -377,6 +380,7 @@ const styles = StyleSheet.create({
   registeredContent: {
     paddingHorizontal: spacing.md,
     paddingTop: spacing.md,
+    paddingBottom: spacing.xxl,
     gap: spacing.md,
   },
   accountCard: {

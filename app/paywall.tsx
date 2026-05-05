@@ -36,15 +36,15 @@ const PRO_FEATURES = [
 // Fallback strings used only if RevenueCat offerings are unavailable on first
 // render (network failure, sandbox not configured). The localized strings from
 // PurchasesPackage.product.priceString are preferred everywhere they're available.
-const FALLBACK_TRIAL_LINE = 'then $5.99 / month or $34.99 / year · cancel anytime';
+const FALLBACK_PRICE_LINE = '$5.99 / month or $34.99 / year';
 
-function formatTrialLine(monthly?: PurchasesPackage, yearly?: PurchasesPackage): string {
+function formatPriceLine(monthly?: PurchasesPackage, yearly?: PurchasesPackage): string {
   const m = monthly?.product.priceString;
   const y = yearly?.product.priceString;
-  if (m && y) return `then ${m} / month or ${y} / year · cancel anytime`;
-  if (m) return `then ${m} / month · cancel anytime`;
-  if (y) return `then ${y} / year · cancel anytime`;
-  return FALLBACK_TRIAL_LINE;
+  if (m && y) return `${m} / month or ${y} / year`;
+  if (m) return `${m} / month`;
+  if (y) return `${y} / year`;
+  return FALLBACK_PRICE_LINE;
 }
 
 export default function PaywallScreen() {
@@ -55,7 +55,7 @@ export default function PaywallScreen() {
   const [purchasing, setPurchasing] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
-  const [trialLine, setTrialLine] = useState<string>(FALLBACK_TRIAL_LINE);
+  const [priceLine, setPriceLine] = useState<string>(FALLBACK_PRICE_LINE);
 
   useEffect(() => {
     let cancelled = false;
@@ -66,7 +66,7 @@ export default function PaywallScreen() {
         if (!current) return;
         const monthly = current.monthly ?? current.availablePackages.find((p) => p.packageType === 'MONTHLY');
         const yearly = current.annual ?? current.availablePackages.find((p) => p.packageType === 'ANNUAL');
-        setTrialLine(formatTrialLine(monthly ?? undefined, yearly ?? undefined));
+        setPriceLine(formatPriceLine(monthly ?? undefined, yearly ?? undefined));
       })
       .catch((err) => {
         if (__DEV__) console.warn('[kibun:rc] getOfferings failed:', err);
@@ -233,17 +233,17 @@ export default function PaywallScreen() {
           end={{ x: 1, y: 1 }}
           style={styles.trialBox}
         >
-          <Text style={styles.trialDays}>🎀 7 days free</Text>
-          <Text style={styles.trialTerms}>{trialLine}</Text>
+          <Text style={styles.priceMain}>{priceLine}</Text>
+          <Text style={styles.priceSub}>Includes 7-day free trial · Cancel anytime</Text>
         </LinearGradient>
 
         <Button
-          label="Start my free trial 🌸"
+          label="Subscribe — 7 days free 🌸"
           onPress={handlePurchase}
           variant="sunrise"
           loading={purchasing}
           fullWidth
-          accessibilityHint="Begins your free trial. No charge for 7 days."
+          accessibilityHint="Starts your subscription with a 7-day free trial. Cancel anytime in account settings."
         />
         {purchaseError && (
           <Text style={styles.errorText}>{purchaseError}</Text>
@@ -423,15 +423,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
   },
-  trialDays: {
+  priceMain: {
     fontSize: typography.sizes.xl,
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
-  },
-  trialTerms: {
-    fontSize: typography.sizes.sm,
-    color: 'rgba(255,255,255,0.85)',
     textAlign: 'center',
+  },
+  priceSub: {
+    fontSize: typography.sizes.md,
+    fontFamily: typography.fonts.body,
+    color: colors.textInverse,
+    textAlign: 'center',
+    opacity: 0.92,
   },
   skipRow: {
     marginTop: spacing.xs,

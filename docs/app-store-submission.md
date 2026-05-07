@@ -57,17 +57,18 @@ Track feelings. Find patterns.
 ### 2.3 Keywords  *(100 char max · comma-separated, NO spaces after commas to maximize density · Apple dedupes vs. name + subtitle automatically, so these avoid overlap)*
 
 ```
-mental,health,diary,wellness,anxiety,depression,stress,mindfulness,therapy,gratitude,habits,calm,zen
+mental,health,wellness,selfcare,emotions,stress,mindfulness,journaling,gratitude,habits,calm,zen
 ```
-**Length: 97 / 100**
+**Length: 96 / 100**
 
 **Why these specifically:**
-- `mental`, `health`, `wellness`, `wellbeing` — broad health category terms
-- `anxiety`, `depression`, `stress` — the intent-rich problem searches mood-trackers rank for
-- `diary`, `gratitude`, `mindfulness` — co-purchase/co-install categories
-- `therapy`, `habits` — high-volume adjacent queries
+- `mental`, `health`, `wellness` — broad health category terms (kept — non-clinical phrasing)
+- `selfcare`, `emotions`, `stress` — emotion-state and lifestyle searches (replaced clinical condition names)
+- `mindfulness`, `journaling`, `gratitude` — co-purchase/co-install categories
+- `habits` — high-volume adjacent query
 - `calm`, `zen` — competitor/brand-adjacent soft targets
-- **Already covered by name/subtitle (do NOT repeat here):** kibun, mood, tracker, journal, track, feelings, find, patterns
+- **Removed for Guideline 1.1 compliance:** `anxiety`, `depression`, `therapy` — Apple flagged the description for clinical condition / treatment references; these keywords compounded the signal. Do not reintroduce.
+- **Already covered by name/subtitle (do NOT repeat here):** kibun, mood, tracker, journal, diary, track, feelings, find, patterns
 
 ### 2.4 Promotional Text  *(170 char max · editable anytime without resubmitting · NOT indexed for search — use for time-sensitive marketing)*
 
@@ -83,7 +84,7 @@ Kibun (Japanese for "mood") is exactly what this app helps you understand.
 
 Log how you feel in seconds, up to four times a day. No paragraphs, no judgement - just a tap, a color, and an optional note. Over time, Kibun learns your emotional rhythms and surfaces the patterns you would never spot alone.
 
-A gentle, kawaii Shiba Inu mascot guides every check-in and reacts to how you feel, so opening the app feels warm instead of clinical.
+A gentle, kawaii Shiba Inu mascot guides every check-in and reacts to how you feel, so opening the app feels warm instead of cold.
 
 --- WHY PEOPLE LOVE KIBUN ---
 
@@ -112,7 +113,7 @@ Start with a 7-day free trial. Then $5.99/month or $34.99/year.
 - Custom Notification Times - exact reminder times per slot, not defaults
 - Full Calendar History - unlimited past entries, no 7-day limit
 - Export & Share - CSV export and beautiful shareable mood summary cards
-- Breathing & Grounding Exercises - box breathing, 5-4-3-2-1, and gratitude prompts triggered when you need them most
+- Breathing & Calming Exercises - box breathing, gentle sensory pauses, and gratitude prompts whenever you want a quick reset
 - Achievements & Streak Freeze - badges, monthly recaps, and one freeze per month to protect your streak
 
 --- PRIVACY FIRST ---
@@ -126,7 +127,7 @@ Kibun is built around the idea that your feelings are private.
 
 --- BUILT FOR A DAILY HABIT ---
 
-Kibun is not a journaling marathon. It is a 10-second check-in you will actually keep doing - and insights that compound the longer you use it. Whether you are trying to understand anxiety, build self-awareness, improve sleep, or just check in with yourself, Kibun meets you where you are.
+Kibun is not a journaling marathon. It is a 10-second check-in you will actually keep doing - and insights that compound the longer you use it. Whether you want to build self-awareness, notice your emotional rhythms, improve sleep habits, or just check in with yourself, Kibun meets you where you are.
 
 Questions? support@kibun.app
 Privacy Policy: https://fernanhick.github.io/kibun/privacy-policy.html
@@ -321,7 +322,7 @@ Web:    https://fernanhick.github.io/kibun/delete-account.html
 ============================================================
 CONTENT & MEDICAL DISCLAIMER
 ============================================================
-Kibun is a wellness / self-reflection app and is explicitly NOT a medical or diagnostic tool. This is made clear in the onboarding "Disclaimer" screen (screen 10 of onboarding) which the user must acknowledge before continuing. Kibun does not provide treatment, diagnosis, or clinical advice.
+Kibun is a wellness / self-reflection app and is explicitly NOT a medical or diagnostic tool. This is made clear in the onboarding "Disclaimer" screen — the very FIRST screen of the 14-step onboarding flow — which the user must explicitly acknowledge ("I understand Kibun is for wellness only") before continuing. Kibun does not provide treatment, diagnosis, or clinical advice. The disclaimer also surfaces a crisis-resource note directing users to local emergency services / licensed professionals if needed.
 
 ============================================================
 ENCRYPTION
@@ -413,6 +414,44 @@ Caption text overlay on each screenshot — the App Store cuts off text below th
 
 ---
 
+## 9b. Guideline 1.1 — Past Rejection (Submission ad08bcc1, 2026-05-07)
+
+Apple rejected build 1.0 (13) under **Guideline 1.1 — Safety / Objectionable Content**, citing the **description** field "including, but not limited to" — meaning multiple triggers across multiple metadata fields. A second-pass audit found four:
+
+1. **Keywords** contained `anxiety`, `depression`, `therapy` — three named clinical conditions / treatment terms for a non-clinical app.
+2. **Description (§2.5) closing paragraph** — "trying to understand **anxiety**" framed the app as helping with a named clinical condition.
+3. **Description (§2.5) hero paragraph** — "feels warm instead of **clinical**" used `clinical` as a flagged keyword even though contextually it was a positive contrast.
+4. **Description (§2.5) Pro feature bullet** — "Breathing & **Grounding** Exercises - box breathing, **5-4-3-2-1**, and gratitude prompts **triggered when you need them most**" was the most concentrated trigger: `Grounding` is a clinical/therapy term, `5-4-3-2-1` is the literal name of an anxiety/PTSD grounding technique, and `triggered when you need them most` reads as symptom intervention.
+
+**Fix applied (this revision):**
+- Keywords: dropped `anxiety`, `depression`, `therapy`. Added `selfcare`, `emotions`, `journaling`. Kept `stress` — usually accepted as an emotional state, not a clinical diagnosis.
+- Description §2.5 closing paragraph: removed `anxiety`. Reframed around "emotional rhythms" and "self-awareness."
+- Description §2.5 hero paragraph: replaced `clinical` with `cold` — same contrast, no flagged keyword.
+- Description §2.5 Pro bullet: rewrote as "Breathing & Calming Exercises - box breathing, gentle sensory pauses, and gratitude prompts whenever you want a quick reset." Removed `Grounding`, `5-4-3-2-1`, `triggered`.
+- Promo, subtitle, name, screenshot captions, IAP description, what's new: audited and untouched — already clean.
+
+**In-app follow-up (ships in next build, not required for resubmission):**
+- `app/exercise.tsx:133` — visible copy "The 5-4-3-2-1 grounding technique brings you back to the present moment" softened to "Use your senses to gently bring yourself back to the present moment."
+- `app/mood-confirm.tsx:98` — Pro CTA button label `Grounding` → `Five Senses`. This button is shown after logging negative-group moods (anxious / frustrated / angry / sad), so the demo Pro reviewer is highly likely to see it.
+- `app/exercise.tsx:533` — exercise screen title `Grounding` → `Five Senses` (route param `type: 'grounding'` kept for routing — internal-only).
+- `app/(onboarding)/wisdom-awareness.tsx:12` — body "Studies show...quiet the brain's stress response...is already healing" softened to "Simply naming an emotion can soften how it feels. The act of noticing is its own kind of care." — removed pseudo-clinical framing.
+
+The reviewer testing the Pro entitlement on the demo account would have seen `Grounding` as a button on mood-confirm and as a screen title — the in-app footprint compounded the metadata signal. These fixes ship in the next binary; the metadata-only resubmission of build 13 is sufficient to clear the rejection.
+
+**Reply template for App Store Connect:**
+
+> Thank you for the feedback. We have removed clinical condition and treatment terminology from our metadata across multiple fields. Specifically: removed "anxiety," "depression," and "therapy" from keywords; revised the description so it no longer references specific mental health conditions or named clinical techniques (e.g., 5-4-3-2-1, grounding); replaced "clinical" with neutral wording. Kibun is a self-reflection / mood-journaling wellness tool and is explicitly not a medical or therapeutic service — this is the very first screen of our onboarding ("Kibun is a Wellness Tool" disclaimer) which the user must explicitly acknowledge before any other interaction, and it is also reiterated in our privacy policy (§9 Medical Disclaimer) and support FAQ.
+
+**Do not reintroduce** any of these into visible metadata (name, subtitle, keywords, promo, description, screenshot captions, IAP display name/description, what's new):
+- Clinical condition names: `anxiety`, `depression`, `panic`, `PTSD`, `ADHD`, `OCD`, `bipolar`, `trauma`, `disorder`
+- Treatment / clinical claim words: `therapy`, `therapeutic`, `treat`, `cure`, `heal`, `healing`, `diagnose`, `clinical`, `medical`
+- Named clinical techniques: `grounding`, `5-4-3-2-1`, `EMDR`, `CBT`, `DBT`, `exposure therapy`
+- Symptom-intervention framing: `triggered when you need them most`, `relief from`, `combat`, `cope with [condition]`
+
+The in-app medical disclaimer (`(onboarding)/disclaimer.tsx`), privacy policy §9, and support FAQ are the only places these terms are safe, and only in disclaiming form ("Kibun is NOT a medical app / therapy / treatment").
+
+---
+
 ## 10. Post-Submission: Fast-Rejection Avoidance Checklist
 
 The most common rejections for apps in this category — address each **before** you submit:
@@ -434,7 +473,7 @@ The most common rejections for apps in this category — address each **before**
 ```
 APP NAME       : Kibun: Mood Tracker & Journal
 SUBTITLE       : Track feelings. Find patterns.
-KEYWORDS       : mental,health,diary,wellness,anxiety,depression,stress,mindfulness,therapy,gratitude,habits,calm,zen
+KEYWORDS       : mental,health,wellness,selfcare,emotions,stress,mindfulness,journaling,gratitude,habits,calm,zen
 PROMO TEXT     : Meet Kibun - your gentle mood tracker with a Shiba Inu guide. Log how you feel, see your patterns, and unlock AI-powered insights. Try Pro free for 7 days.
 PRIMARY CAT    : Health & Fitness
 SECONDARY CAT  : Lifestyle
@@ -451,4 +490,75 @@ PRIVACY URL    : https://fernanhick.github.io/kibun/privacy-policy.html
 
 ---
 
-*Generated 2026-04-25 · Verified against App Store Connect Help, App Review Guidelines, and Screenshot Specifications as of this date. Re-verify the 6.9" iPhone required size and iOS 26 SDK mandate before your actual upload — Apple rotates these requirements annually.*
+## 12. Full App Store Review Guidelines Audit (preventative)
+
+Status as of 2026-05-07 second-pass audit. Update before each major submission.
+
+### Section 1 — Safety
+| Guideline | Status | Notes / Action |
+|---|---|---|
+| 1.1 Objectionable Content | PASS (post-fix) | See §9b. Do not reintroduce flagged terms. |
+| 1.1.6 False Information | PASS | Disclaimer + privacy §9 + support FAQ all disclaim treatment. |
+| 1.2 User-Generated Content | PASS (current) | Mood notes private. **Triggers if v2 adds any public sharing — then need report/block/24h SLA.** |
+| 1.4 Physical Harm | PASS | Crisis-resource note in onboarding disclaimer + privacy §9. |
+| 1.5 Developer Information | NEEDS USER ACTION | Fill `{{ YOUR_FIRST_NAME }}` etc. in §6.1 inside App Store Connect. |
+| 1.6 Data Security | PASS | TLS, SecureStore, RLS. |
+
+### Section 2 — Performance
+| Guideline | Status | Notes / Action |
+|---|---|---|
+| 2.1 Completeness | NEEDS USER ACTION | Create demo account, run `scripts/seed-screenshot-user.mjs`, fill §6.3. |
+| 2.3.3 Screenshots | NEEDS USER ACTION | Generate 6 × iPhone 6.9" + 6 × iPad 13" per §8.2. |
+| 2.3.7 Keyword Stuffing | PASS | Post-fix keywords are 96/100 chars, no overlap. |
+| 2.3.10 Other Platforms | NEEDS USER ACTION | When generating screenshots, no Android/Windows refs. |
+| 2.5.1 Private APIs | PASS | Expo managed only. |
+| 2.5.2 Code Download | PASS | No `expo-updates` / EAS Update wired. |
+| Privacy Manifest (May 2024 mandate) | NEEDS USER ACTION | Confirm `PrivacyInfo.xcprivacy` in built `.ipa` after EAS build. |
+
+### Section 3 — Business (highest residual risk)
+| Guideline | Status | Notes / Action |
+|---|---|---|
+| 3.1.1 IAP only | PASS | All Pro features via RevenueCat → StoreKit. |
+| 3.1.2 Subscription Disclosure | NEEDS USER ACTION | **Verify RevenueCat dashboard paywall shows: title, length, content/services, price, Terms link, Privacy link — all in one frame.** Custom `paywall.tsx` is already compliant; the RC hosted paywall is the binding screen. |
+| 3.1.2(a) Auto-renew disclosure | PASS | `paywall.tsx:252-257` block. |
+| 3.1.2(b) Trial conversion clarity | PASS | "Includes 7-day free trial · Cancel anytime" + "Subscribe — 7 days free" CTA. |
+| 3.1.3 No external purchase | PASS | No "subscribe on our website" links. |
+
+### Section 4 — Design
+| Guideline | Status | Notes / Action |
+|---|---|---|
+| 4.0 General | PASS | No placeholder text in production routes (`_layout.tsx:262-279` audited). |
+| 4.2 Minimum Functionality | PASS | Substantial features. |
+| 4.5.4 Push Notifications | PASS | Permission asked with value-prop context in `(onboarding)/notification-permission.tsx`. |
+| 4.8 Sign in with Apple | RISK (low-medium) | Currently web OAuth via Supabase, not native `expo-apple-authentication`. Apple has historically accepted this; if they flag it, swap iOS to `AppleAuthentication.signInAsync` + `supabase.auth.signInWithIdToken`. Plan documented in §10. |
+
+### Section 5 — Legal
+| Guideline | Status | Notes / Action |
+|---|---|---|
+| 5.1.1(i) Privacy Policy | PASS (content) / NEEDS USER ACTION (hosting) | Confirm `https://fernanhick.github.io/kibun/privacy-policy.html` is live. |
+| 5.1.1(v) Account Deletion | PASS | In-app `account.tsx:66-94` and web `delete-account.html`. RPCs `delete_user` + `delete_user_data` confirmed in `supabase/migrations/20260424000001` + `20260424000002`. |
+| 5.1.1(viii) Health/Wellness | PASS | No HealthKit. Self-reported wellness data treated as Sensitive in privacy nutrition labels. |
+| 5.1.2 Data Use | PASS | Third parties listed in privacy §6 (Supabase, RevenueCat, OpenAI, Expo, Vexo). |
+| 5.1.5 Location | PASS | No location permission requested. |
+| 5.1.6 App Tracking | PASS | No IDFA, no ATT prompt. Vexo is first-party. |
+| 5.2 Intellectual Property | NEEDS USER ACTION | **Lottie assets at `src/assets/lottie/shiba-{happy,excited,sad,neutral}.json` — verify each was downloaded under a license that permits commercial use.** If any are CC-BY, add attribution in Settings → About or in support.html acknowledgements section. |
+
+### Resubmission punch list (carry-over)
+
+**Blocking — must do before resubmission:**
+1. Fill §6.1 reviewer contact + §6.3 demo account in App Store Connect.
+2. Generate iPhone 6.9" + iPad 13" screenshots.
+3. Confirm `privacy-policy.html`, `support.html`, `delete-account.html` are live on GitHub Pages.
+4. Run a manual end-to-end test of `delete_user` and `delete_user_data` RPCs via the demo account.
+
+**Should verify (avoid future rejections):**
+5. RevenueCat hosted paywall has all 5 required 3.1.2 elements visible in one frame.
+6. Privacy Manifest present in built `.ipa`.
+7. Lottie license attribution decision.
+
+**For v2:**
+8. If you add public sharing, build a UGC report/block flow and 24h response SLA.
+
+---
+
+*Generated 2026-04-25 · Audit §9b/§12 added 2026-05-07 after Submission ad08bcc1 rejection. Re-verify the 6.9" iPhone required size, iOS 26 SDK mandate, and privacy-manifest auto-rejection rules before each upload — Apple rotates these annually.*

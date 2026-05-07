@@ -95,7 +95,7 @@ const MOOD_EXERCISES: Record<MoodGroup, MoodExerciseConfig> = {
     chipBorder: '#FFCC80',
     options: [
       { type: 'box_breathing',  label: 'Box Breathing',   emoji: '🫁' },
-      { type: 'grounding',      label: 'Grounding',       emoji: '🌱' },
+      { type: 'grounding',      label: 'Five Senses',     emoji: '🌱' },
       { type: 'body_scan',      label: 'Body Scan',       emoji: '🫀' },
     ],
   },

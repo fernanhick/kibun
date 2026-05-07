@@ -130,7 +130,7 @@ function Grounding() {
   return (
     <View style={styles.groundingContainer}>
       <Text style={styles.exerciseDescription}>
-        The 5-4-3-2-1 grounding technique brings you back to the present moment.
+        Use your senses to gently bring yourself back to the present moment.
       </Text>
       <View style={styles.groundingCard}>
         <Text style={styles.groundingCount}>{current.count}</Text>
@@ -530,7 +530,7 @@ function ComfortList() {
 
 const EXERCISE_META: Record<string, { title: string; emoji: string }> = {
   box_breathing:   { title: 'Box Breathing',    emoji: '🫁' },
-  grounding:       { title: 'Grounding',        emoji: '🌱' },
+  grounding:       { title: 'Five Senses',      emoji: '🌱' },
   gratitude:       { title: 'Gratitude',        emoji: '🙏' },
   joy_capture:     { title: 'Joy Capture',      emoji: '✨' },
   savoring:        { title: 'Savoring',         emoji: '🌸' },

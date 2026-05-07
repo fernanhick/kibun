@@ -9,7 +9,7 @@ export default function WisdomAwarenessScreen() {
       total={14}
       mascot="calm"
       headline="Naming what you feel is the first step."
-      body="Studies show that simply labelling an emotion can quiet the brain's stress response. The act of noticing is already healing."
+      body="Simply naming an emotion can soften how it feels. The act of noticing is its own kind of care."
       onContinue={() => router.push('/(onboarding)/profile-personal')}
     />
   );

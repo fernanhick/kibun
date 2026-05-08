@@ -259,9 +259,12 @@ async function seedNotificationPrefs(userId) {
 // ─── Step 3: Custom moods ─────────────────────────────────────────────────────
 async function seedCustomMoods(userId) {
   console.log('[seed] Seeding custom moods...');
+  // custom_moods.id is a GLOBAL primary key (text), not (user_id, id) — so
+  // hardcoded suffixes collide across seeded accounts. Derive a per-user suffix.
+  const suffix = userId.replace(/-/g, '').slice(0, 6);
   const rows = [
-    { id: 'custom_cozy01', user_id: userId, label: 'Cozy', color: '#FFCDD2', mood_group: 'green' },
-    { id: 'custom_drnd02', user_id: userId, label: 'Drained', color: '#90A4AE', mood_group: 'blue' },
+    { id: `custom_cz${suffix}`, user_id: userId, label: 'Cozy',    color: '#FFCDD2', mood_group: 'green' },
+    { id: `custom_dr${suffix}`, user_id: userId, label: 'Drained', color: '#90A4AE', mood_group: 'blue'  },
   ];
   const { error } = await admin.from('custom_moods').insert(rows);
   if (error) throw error;

@@ -2,93 +2,99 @@
 
 ## Project Reference
 
-See: .paul/PROJECT.md (updated 2026-04-05)
+See: .paul/PROJECT.md (updated 2026-05-07)
 
-**Core value:** A person who wants to understand their emotional patterns gets a frictionless daily check-in habit and AI-driven insights that reveal patterns they wouldn't notice themselves.
-**Current focus:** Phase 9 — Settings & Polish
+**Core value:** A person who wants to understand their emotional patterns gets a frictionless 10-second daily check-in habit and AI-driven insights that reveal patterns they wouldn't notice themselves — without the app ever feeling clinical.
+**Current focus:** App Store launch — iOS build 13 in review after Apple Guideline 1.1 metadata fix.
 
 ## Current Position
 
-Milestone: v0.1 MVP (v0.1.0)
-Phase: 9 of 9 (Settings & Polish) — Active
-Plan: 09-01 complete — ready to plan 09-02
-Status: Phase 9 in progress; 09-01 loop closed
-Last activity: 2026-04-05 — Closed loop for .paul/phases/09-settings-polish/09-01-PLAN.md
+Milestone: v1.0 App Store launch
+Phase: post-MVP polish + compliance
+Build: iOS 1.0 (13) — submission `ad08bcc1` rejected under 1.1; metadata-only fix submitted 2026-05-07
+Status: awaiting Apple re-review; in-app copy fix shipping in next binary (commit `06b3a99`)
+Last activity: 2026-05-07 — Committed and pushed in-app copy scrub for clinical terms (`fix: scrub clinical terms from in-app copy for Apple 1.1`, commit `06b3a99`)
 
 Progress:
-- Milestone: [█████████░] 94%
-- Phase 9:   [█████░░░░░] 50%
+- v0.1 MVP:        [██████████] 100% (Phases 1–9 complete, 2026-04-05)
+- Post-MVP polish: [██████████] 100% (achievements, life events, habits, custom moods, AI report v2, wisdom screens, Vexo, in-app review, native Apple Sign In, Apple 3.1.2 paywall, Apple 1.1 scrub)
+- iOS launch:      [█████████░] 95% (build 13 in re-review)
+- Android launch:  [██████░░░░] 60% (listing prepared, not submitted)
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [09-01 loop closed — ready for 09-02]
+  ✓        ✓        ✓     [v0.1 milestone closed; post-MVP and compliance fixes shipped through master]
 ```
+
+The `.paul` plan/apply/unify cadence ended at the close of v0.1 (Phase 9-02). All post-MVP work (achievements, life events, habits, custom moods, wisdom screens, Vexo, paywall and 1.1 compliance) shipped as direct commits on master without re-entering the formal loop.
 
 ## Accumulated Context
 
-### Decisions
+### Decisions (most recent first)
 
-| Decision | Phase | Impact |
-|----------|-------|--------|
-| 2026-04-05: Plan 09-01 APPLY — uiPrefsStore (banner timestamp). AccountScreen (anonymous/registered/sign-out). SettingsScreen hub (Account + About sections). Dismissible banner (7-day reappear). Notification deep link (_layout.tsx). Auto-fixed: '/account' as Href cast. Resolved Phase 8 D-3 (push token revocation) + D-4 (deep link). | Phase 9, Plan 01 | Settings area complete; sign-out flow complete; two Phase 8 deferred items resolved |
-|----------|-------|--------|
-| 2026-04-05: Plan 08-02 APPLY — AIReportScreen (5-state machine, subscription gate, weekly/monthly toggle). Push tokens in user_metadata. Edge Function push notification fire-and-forget. InsightsScreen AI Report CTA. Auto-fixed: Button label= prop; Constants.easConfig cast removed. | Phase 8, Plan 02 | Phase 8 complete; full cloud AI loop delivered |
-|----------|-------|--------|
-| 2026-04-05: Audit 08-02 — Applied 1 must-have (accessibilityLiveRegion on View not Text — TS2322) + 3 strongly-recommended (remove redundant content accessibilityLabel; loadReport catch logging; push API response status check). Deferred 3 (Constants.easConfig cast; client-side-only subscription gate; no token revocation on sign-out). Verdict: Ready. | Phase 8, Plan 02 | AIReportScreen a11y correct; push monitoring improved |
-|----------|-------|--------|
-| 2026-04-05: Plan 08-01 APPLY — Edge Function with JWT auth extraction, Deno.serve() natively, duplicate report prevention, OpenAI GPT-4o-mini, sanitized errors. Client service with requestReport/getReports/getLatestReport. tsconfig exclude supabase/. | Phase 8, Plan 01 | Backend AI pipeline ready; client service ready for 08-02 AIReportScreen |
-|----------|-------|--------|
-| 2026-04-05: Audit 08-01 — Applied 3 must-have (JWT auth extraction not client user_id; Deno.serve() natively; sanitized error responses) + 2 strongly-recommended (duplicate report prevention; invoke() response handling). Deferred 2 (prompt injection, content moderation). Verdict: Ready. | Phase 8, Plan 01 | Edge Function secured against auth bypass and cost abuse |
-|----------|-------|--------|
-| 2026-04-05: Plan 07-01 APPLY — InsightsScreen with BarChart (top 6 moods, bubbleColor), LineChart (daily mood score 1-4, curved area), streak + check-in stats, 7d/30d toggle, empty state. react-native-gifted-charts installed. Pure insights.ts utilities. UTC-consistent filtering. Zero TS errors. | Phase 7, Plan 01 | InsightsScreen ships; utilities ready for 07-02 pattern detection |
-|----------|-------|--------|
-| 2026-04-05: Plan 07-02 APPLY — Pattern detection: detectDayOfWeekPatterns, detectTimeOfDayPatterns, detectTrendPattern. 1.5x ratio + min 3, sort ascending before trend split, div-by-zero guards. PatternFlag cards on InsightsScreen. | Phase 7, Plan 02 | Pattern detection complete; on-device insights fully shipped |
-|----------|-------|--------|
-| 2026-04-05: Plan 06-02 — streakNudgeEnabled in store, streak nudge at 20:00, NotificationSetupScreen replaces settings stub, useFocusEffect for permission re-check, 300ms debounced reschedule. | Phase 6, Plan 02 | Phase 6 complete — full notification system with settings UI |
-|----------|-------|--------|
-| 2026-04-05: Plan 06-01 — notificationPrefsStore (persisted Zustand), notifications.ts scheduling service, module-level handler, hydration-aware reschedule. Expo SDK 55 requires shouldShowBanner+shouldShowList. | Phase 6, Plan 01 | Notification infrastructure complete |
-|----------|-------|--------|
-| 2026-04-05: Plan 05-01 — HomeScreen, HistoryScreen (calendar grid), DayDetailScreen. Zustand stable-selector pattern (s.entries + useMemo). Custom calendar grid. | Phase 5, Plan 01 | Three data-driven screens ship; stable selector pattern required for all future store reads |
-|----------|-------|--------|
-| 2026-04-04: Plan 04-01 — Supabase insert explicit field mapping, invalid moodId guard, submitting state prevents double-tap. | Phase 4, Plan 01 | Supabase inserts succeed; no duplicate entries |
-|----------|-------|--------|
-| React Native + Expo (cross-platform) | Init | All UI phases use Expo patterns |
-| Supabase (auth + db + edge functions) | Init | Single backend for all data layers |
-| Anonymous-first auth | Init | All phases must handle both auth states |
-| OpenAI API for cloud AI | Init | Phase 8 uses OpenAI SDK in Edge Function |
-| RevenueCat for subscriptions | Init | Phase 3 integration required before paywalled features |
-| Shiba Inu mascot (Lottie) | Init | Phase 1 Plan 05 requires Lottie assets |
+| Decision | Date | Impact |
+|----------|------|--------|
+| 2026-05-07: Apple 1.1 metadata fix + in-app copy scrub. Removed `anxiety / depression / therapy / clinical / grounding / 5-4-3-2-1 / triggered` from keywords + description + visible UI strings. Renamed exercise "Grounding" → "Five Senses" in `app/exercise.tsx` and `app/mood-confirm.tsx`. Softened pseudo-clinical wisdom-awareness body. Documented the rejection + reply template + don't-reintroduce list in `docs/app-store-submission.md` §9b/§12. | 2026-05-07 | iOS build 13 resubmitted; in-app fix ships in next binary |
+| 2026-05-XX: Paywall 3.1.2 compliance — price-first hero, Subscribe CTA, Restore + Terms + Privacy in one frame, RevenueCat hosted paywall as binding disclosure surface | 2026-05-XX | Cleared 3.1.2(c) on prior submission |
+| 2026-05-XX: Account screen made scrollable; profile-upsert retry on missing column; splash image fix | 2026-05-XX | Production-quality post-launch tweaks |
+| 2026-04-26: AI Reports v2 — structured payload (`AIReportStructured`: headline / summary / patterns / highlight / nudge / tone). Annual report support added. | 2026-04-26 | Reports render as visual cards instead of plain markdown |
+| 2026-04-2X: Native Apple Sign In via `expo-apple-authentication` replacing web OAuth fallback | 2026-04-XX | Stronger 4.8 compliance posture |
+| 2026-04-2X: Vexo product analytics integrated as first-party analytics (no IDFA, no ATT) | 2026-04-XX | Funnel + retention tracking without ATT prompt |
+| 2026-04-2X: In-app review prompt with happy/sad gate (`reviewPromptStore.ts` + `ReviewPromptModal.tsx`) | 2026-04-XX | Star ratings only routed via `expo-store-review` for happy users |
+| 2026-04-20: Phase 2 (multi-dim check-ins + life events) + Phase 3 (habits) + Phase 4 (custom moods) post-MVP additions, with Supabase migrations and Pro gating | 2026-04-20 | Premium feature surface tripled |
+| 2026-04-09: Achievements + streak freeze | 2026-04-09 | 7 achievements wired; streak freeze stored in profiles |
+| 2026-04-09: Journal AI prompts (`journal-reflect.tsx` + `journalPrompt`/`journalResponse` on MoodEntry) | 2026-04-09 | Pro feature added |
+| 2026-04-05: v0.1 MVP code-complete (Phase 9-02) — quality gate, app icon, splash, store prep | 2026-04-05 | Closed v0.1 |
+| 2026-04-05: Phase 9-01 — Settings + Account screens, anonymous banner, sign-out flow, notification deep link | 2026-04-05 | |
+| 2026-04-05: Phase 8 — Edge Function with JWT auth extraction, OpenAI GPT-4o-mini, AIReportScreen 5-state machine, push tokens in user_metadata | 2026-04-05 | Cloud AI loop |
+| 2026-04-05: Phase 7 — Insights screen with Bar + Line charts via react-native-gifted-charts; on-device pattern detection (1.5× ratio + min 3) | 2026-04-05 | |
+| 2026-04-05: Phase 6 — Notification scheduling, streak nudge, NotificationSetupScreen, hydration-aware reschedule | 2026-04-05 | |
+| 2026-04-05: Phase 5 — Home / History / DayDetail with stable-selector Zustand pattern (s.entries + useMemo) | 2026-04-05 | Required for all future store reads |
+| 2026-04-04: Phase 4 — Mood check-in flow (selection grid + confirm + note + AsyncStorage + Supabase + slot detection) | 2026-04-04 | |
+| 2026-04-04: Phase 3 — RevenueCat trial paywall + RegistrationScreen + Email + Google + Apple OAuth via linkIdentity + anonymous banner | 2026-04-04 | |
+| 2026-04-04: Phase 2 — Onboarding (FirstMoodScreen, MoodResponseScreen, 6 profile screens, notification permission, gate) | 2026-04-04 | |
+| 2026-04-03: Phase 1 — Project foundation, navigation, design tokens, MoodBubble, Lottie/Shiba | 2026-04-03 | |
 
-### Deferred Issues
+### Resolved (formerly Deferred) Issues
 
-| Issue | From Plan | Resolution Path |
-|-------|-----------|-----------------|
-| Shiba anxious + tired variants — no confirmed LottieFiles assets | 01-05 | Source before Phase 2 APPLY; add to ANIMATIONS map + ShibaVariant union |
-| Prompt injection mitigation for OpenAI reports | 08-01 audit D-1 | Phase 9 polish — validate/sanitize user notes before including in prompt |
-| Content moderation for AI-generated report text | 08-01 audit D-2 | Phase 9 polish — add OpenAI moderation endpoint check |
-| Constants.easConfig fallback for push token — removed due to TS2339 | 08-02 audit D-1 | Phase 9 — add typed fallback when EAS projectId is confirmed |
-| Subscription gate is client-side only — Edge Function accepts any authenticated JWT | 08-02 audit D-2 | Phase 9 — RevenueCat webhook → Supabase subscription_status column |
-| PRIVACY_POLICY_URL placeholder in settings.tsx | 09-01 SR-1 | Phase 9 Plan 02 store prep — replace with real URL before App Store submission |
-| Cold-start notification routing edge case | 09-01 audit D-1 | Phase 9 Plan 02 quality gate — verify on real device; guard router.push behind isReady if broken |
+| Issue | Resolution | Resolved In |
+|-------|-----------|-------------|
+| Streak nudge as smart vs simple timer | Simple timer at 8 pm, toggle in Settings — sufficient for v1 | Phase 6-02 |
+| Cold-start notification routing edge case | Routing guarded behind isReady; verified on real device | Phase 9-02 |
+| PRIVACY_POLICY_URL placeholder | Replaced with `https://fernanhick.github.io/kibun/privacy-policy.html` (in `src/constants/legal.ts`) | Pre-launch |
+| Constants.easConfig fallback for push token | EAS projectId pinned in app.config.ts; no fallback needed | Pre-launch |
+| Subscription gate is client-side only | RevenueCat customer info → `subscription_status` column on `profiles` via `syncSubscriptionStatusToSupabase` (`src/lib/profileSync.ts`); Edge Function now checks the column | Migration `20260416120001_add_subscription_status_to_profiles.sql` + `20260420_drop_client_subscription_update_policy.sql` |
+| Account deletion RPC coverage | Full cascade across all tables (profiles, mood_entries, ai_reports, habits, habit_logs, life_events, custom_moods) | Migrations `20260424000001` + `20260424000002` |
+| Shiba anxious + tired Lottie variants | Sourced + integrated in mascot animation map | Phase 1-05 |
 
-### Blockers/Concerns
+### Active Deferred Issues
 
-| Blocker | Impact | Resolution Path |
-|---------|--------|-----------------|
-| .env not configured with real Supabase credentials | Auth runtime verification pending | Set EXPO_PUBLIC_SUPABASE_URL + EXPO_PUBLIC_SUPABASE_ANON_KEY in .env before simulator testing |
-| expo-secure-store + lottie-react-native require native rebuild | Cannot test SecureStore or Lottie in Expo Go | Run `npx expo prebuild` and use custom dev client for full verification |
-| Shiba Anxious + Tired variants have no confirmed assets | Phase 2 FirstMoodScreen / MoodResponseScreen need all 6 variants | Source style-matched assets before Phase 2 APPLY begins |
-| Edge Function requires Supabase CLI deployment + secrets | generate-report not auto-deployed | Run `supabase functions deploy generate-report` + set OPENAI_API_KEY secret |
+| Issue | From | Resolution Path |
+|-------|------|-----------------|
+| Prompt injection mitigation for OpenAI reports | 08-01 audit D-1 | Add note sanitization before prompt assembly. Lower priority — server-side sanitised at model call site, not user-controlled metadata. |
+| Content moderation on AI-generated report text | 08-01 audit D-2 | Optional OpenAI moderation endpoint check; reports are user-private so risk surface is small. |
+| Lottie license attribution decision | App Store §12 5.2 | Verify each `src/assets/lottie/shiba-{happy,excited,sad,neutral}.json` was downloaded under a license permitting commercial use; add Settings → About attribution if any are CC-BY. |
+| Public sharing UGC flow (v2) | App Store §12 1.2 | If v2 adds any sharing, build report/block + 24h SLA before submission. |
+
+### Blockers / Watchlist
+
+| Item | Impact | Mitigation |
+|---|---|---|
+| Apple re-review of build 13 | Launch | Submitted 2026-05-07 with metadata fix; in-app copy fix lands in next binary regardless |
+| RevenueCat hosted paywall must show all 5 required 3.1.2 elements in one frame | Compliance | Verify in RC dashboard before next submission |
+| Privacy Manifest must remain in built `.ipa` | Auto-rejection | Confirm post-EAS-build before each upload |
+| Android launch | Distribution | Listing prepared; awaits screenshot generation + final smoke test |
 
 ## Session Continuity
 
-Last session: 2026-04-05
-Stopped at: Phase 9 Plan 09-01 UNIFY done
-Next action: Run /paul:plan for Phase 9 Plan 02 (quality gate, app icon, splash screen, store prep)
-Resume file: .paul/phases/09-settings-polish/09-01-SUMMARY.md
+Last session: 2026-05-07
+Stopped at: committed and pushed in-app copy scrub for Apple 1.1 (`06b3a99`)
+Next action: Generate iPhone 6.9" + iPad 13" screenshots; verify RevenueCat hosted paywall in dashboard; await Apple re-review verdict.
+Resume file: `docs/app-store-submission.md` §9b + §12 (the operative resubmission punch list).
 
 ---
 *STATE.md — Updated after every significant action*
+*Last updated: 2026-05-07*

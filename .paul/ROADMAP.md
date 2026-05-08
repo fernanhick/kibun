@@ -2,15 +2,18 @@
 
 ## Overview
 
-Kibun ships in one milestone (v0.1 MVP) covering nine phases: from project foundation through to a fully functional mood tracker with onboarding, paywall, core check-in loop, history, notifications, on-device insights, and cloud AI reports. Each phase builds on the last — auth before check-in, check-in before history, history before insights. The cloud AI layer is the final phase, making it easy to defer if needed without blocking the core product.
+Kibun shipped its v0.1 MVP across 9 phases (project foundation → cloud AI), then expanded into v1.0 with achievements, multi-dim check-ins, life events, habit tracking, custom moods, AI report v2, the wisdom onboarding screens, and Apple-launch compliance work. v1.0 is the App Store launch milestone, currently in re-review after a Guideline 1.1 metadata fix.
 
-## Current Milestone
+## Milestones
 
-**v0.1 MVP** (v0.1.0)
-Status: Complete
-Phases: 9 of 9 complete
+| Milestone | Status | Completed |
+|---|---|---|
+| **v0.1 MVP** — 9 phases, foundation through cloud AI | Complete | 2026-04-05 |
+| **v1.0 App Store launch** — post-MVP features, store metadata, Apple compliance | In review | iOS build 13 submitted 2026-05-07 |
+| **Android launch** | Pending | Listing prepared; not submitted |
+| **v2** — public sharing, conversational AI, widgets, Watch / WearOS | Future | — |
 
-## Phases
+## v0.1 MVP — Complete (2026-04-03 → 2026-04-05)
 
 | Phase | Name | Plans | Status | Completed |
 |-------|------|-------|--------|-----------|
@@ -18,171 +21,68 @@ Phases: 9 of 9 complete
 | 2 | Onboarding | 3 | Complete | 2026-04-04 |
 | 3 | Paywall & Auth | 3 | Complete | 2026-04-04 |
 | 4 | Mood Check-in | 1 | Complete | 2026-04-04 |
-| 5 | Main App Screens | 1 | Complete | 2026-04-05 |
+| 5 | Main App Screens (Home, History, DayDetail) | 1 | Complete | 2026-04-05 |
 | 6 | Notifications | 2 | Complete | 2026-04-05 |
 | 7 | On-Device Insights | 2 | Complete | 2026-04-05 |
 | 8 | Cloud AI Layer | 2 | Complete | 2026-04-05 |
 | 9 | Settings & Polish | 2 | Complete | 2026-04-05 |
 
-## Phase Details
+Detailed plans live in `.paul/phases/<phase>/<plan>-*.md` (PLAN, AUDIT, SUMMARY per loop).
 
-### Phase 1: Foundation & UI Primitives ✓ (Complete — 2026-04-03)
+## v1.0 — Post-MVP feature additions (Complete)
 
-**Goal:** Working Expo project with navigation, Supabase auth, design tokens, mood bubble component, Lottie integration, and SplashScreen — everything Phase 2 needs to just assemble screens
-**Depends on:** Nothing (first phase)
-**Research:** Likely (Expo Router setup, Supabase anonymous auth config, Zustand integration, Lottie for React Native)
+These shipped as direct commits on master after the formal `.paul` loop closed at end of v0.1. Each line is a self-contained feature pack rather than a planned phase.
 
-**Scope:**
-- Expo project initialized with TypeScript and Expo Router
-- Supabase client configured, anonymous session created on first launch
-- Bottom tab navigation shell (Home, History, Insights, Settings)
-- Design token system: mood color palette, typography, spacing
-- Base theme and shared component primitives (Button, Card, Screen)
-- MoodBubble shared component — color-coded, tappable, reusable across onboarding + check-in
-- Lottie integration configured + all confirmed Shiba assets loaded and tested
-- SplashScreen — app logo + Shiba animation
+| Feature pack | Notes | Shipped |
+|---|---|---|
+| **Achievements + streak freeze** | 7 achievements (`first_week`, `month_warrior`, `mood_explorer`, `reflector`, `early_bird`, `night_owl`, `consistent`); streak freeze on profiles. Migration `20260409120001_add_achievements_streak_freeze.sql` | 2026-04-09 |
+| **Journal AI prompts** | Pro feature. `journalPrompt` / `journalResponse` on MoodEntry; `journal-reflect.tsx` route. Migration `20260409_add_journal_fields.sql` | 2026-04-09 |
+| **Multi-dim check-ins + Life events** | Energy + focus 1–5 (Pro); life events with 6 categories. Migration `20260420000002_phase2_multidim_life_events.sql` | 2026-04-20 |
+| **Habit tracking** | Boolean + 1–5 scale habits with daily logs. Migration `20260420000003_phase3_habits.sql` | 2026-04-20 |
+| **Custom moods** | User-defined mood label + colour + group. Migration `20260420000004_phase4_custom_moods.sql` | 2026-04-20 |
+| **AI Reports v2 — structured payload** | `AIReportStructured` schema (headline / summary / patterns / highlight / nudge / tone). Migration `20260426000002_ai_reports_add_structured.sql` | 2026-04-26 |
+| **Annual report support** | "Year in Mood" — `report_type='annual'`. Migration `20260426000001_ai_reports_allow_annual.sql` | 2026-04-26 |
+| **Wisdom onboarding screens** | 3 wisdom screens (Awareness, Mind & Body, Small Shifts) added between disclaimer and first-mood | 2026-05-03 |
+| **Coping strategies onboarding step** | New `profile-coping.tsx` screen. Migration `20260503000001_add_coping_strategies_to_profiles.sql` | 2026-05-03 |
+| **Onboarding progress indicators** | Step counter component shown across onboarding flow | 2026-04-2X |
+| **Daily AI insight** | Pro home-screen feature; cached via `dailyInsightStore` | 2026-04-2X |
+| **Coping exercises (free)** | Box Breathing, Five Senses, Body Scan, Gratitude, Joy Capture, Savoring, Comfort List | 2026-04-2X |
+| **Pattern detection v2 + Resilience score + Correlation heatmap** | Pro Pattern detection algorithms in `src/lib/patterns.ts`; heatmap on Insights tab | 2026-04-2X |
+| **Habit × Mood correlations (Pearson)** | Pro Insights tab section | 2026-04-2X |
+| **Smart Timing (adaptive reminders)** | Pro feature in Settings; learns from actual check-in pattern | 2026-04-2X |
+| **In-app review prompt with happy/sad gate** | `reviewPromptStore.ts` + `ReviewPromptModal.tsx`; routes happy users to `expo-store-review`, sad users to support email | 2026-04-2X |
+| **Vexo product analytics** | First-party only, no IDFA, no ATT prompt | 2026-04-2X |
+| **Native Apple Sign In** | `expo-apple-authentication` replacing web OAuth fallback | 2026-04-2X |
+| **Tablet support** | `supportsTablet: true`, `TabletSplit` layout primitive, Insights two-column on wide viewports | 2026-04-2X |
+| **Account deletion full coverage** | RPC cascade across all tables. Migrations `20260424000001` + `20260424000002` | 2026-04-24 |
+| **Subscription status sync to Supabase** | `subscription_status` column on profiles, set via `syncSubscriptionStatusToSupabase`. Migrations `20260416120001` + `20260420_drop_client_subscription_update_policy.sql` | 2026-04-16 |
+| **Apple paywall 3.1.2(c) compliance** | Price-first, Subscribe CTA, Restore + Terms + Privacy in one frame. Commit `70b5464` | 2026-05-XX |
+| **Apple Guideline 1.1 metadata + in-app copy scrub** | Removed clinical condition / treatment / named-technique terms from keywords, description, and visible UI. Commits `06b3a99` + the prior submission docs in `docs/app-store-submission.md` §9b/§12 | 2026-05-07 |
 
-**Plans:**
-- [ ] 01-01: Expo project init, Expo Router setup, TypeScript config
-- [ ] 01-02: Supabase client, anonymous auth, session persistence
-- [ ] 01-03: Design tokens, base theme, shared component primitives
-- [ ] 01-04: MoodBubble component + mood color system (14 moods, all color variants)
-- [ ] 01-05: Lottie integration, Shiba assets, SplashScreen
+## v1.0 — Launch tasks (active)
 
-### Phase 2: Onboarding ✓ (Complete — 2026-04-04)
+| Task | Status |
+|---|---|
+| Apple re-review of build 13 (metadata fix) | In review |
+| In-app copy fix in next binary | Shipping with next build (commit `06b3a99` already on master) |
+| Generate iPhone 6.9" + iPad 13" screenshots | Pending |
+| Verify RevenueCat hosted paywall has all 5 required 3.1.2 elements | Pending |
+| Confirm Privacy Manifest in built `.ipa` | Pending — verify post-EAS |
+| Run end-to-end demo-account test of `delete_user` RPC | Pending |
+| Lottie license attribution decision | Pending |
+| Android Play Store submission | Pending — listing prepared, screenshots + smoke test outstanding |
 
-**Goal:** Full onboarding flow assembled from Phase 1 primitives — first mood entry, mascot reactions, profile collection, notification permission
-**Depends on:** Phase 1 (MoodBubble, Lottie/Shiba, Supabase, design tokens all ready)
-**Research:** Unlikely (all components built in Phase 1 — Phase 2 is assembly and wiring)
+## v2 — Future (not started)
 
-**Scope:**
-- FirstMoodScreen — Shiba prompts first mood input using MoodBubble component
-- MoodResponseScreen — Shiba reacts with fact/phrase based on mood selected
-- Profile screens (Personal, Work, Physical, Social, Mental, Goals)
-- NotificationPermissionScreen — slot selection + permission request
-- Onboarding gate logic (Expo Router) — prevents skipping to main app
-
-**Plans:**
-- [x] 02-01: FirstMoodScreen + MoodResponseScreen (bubble wiring + Shiba reactions)
-- [x] 02-02: Profile collection screens (Personal, Work, Physical)
-- [x] 02-03: Profile collection screens (Social, Mental, Goals) + notification permission + onboarding gate
-
-### Phase 3: Paywall & Auth ✓ (Complete — 2026-04-04)
-
-**Goal:** RevenueCat 7-day trial paywall, registration screen, and anonymous → registered conversion
-**Depends on:** Phase 2 (onboarding completes before paywall)
-**Research:** Likely (RevenueCat Expo SDK, Supabase OAuth, anonymous account conversion)
-
-**Scope:**
-- RevenueCat SDK integrated, products configured
-- PaywallScreen with trial offer and skip option
-- RegistrationScreen (email, Google, Apple) — shown only post-payment
-- Anonymous → registered account conversion (data preserved)
-- Anonymous data-loss warning banner (persistent for anonymous users)
-
-**Plans:**
-- [x] 03-01: RevenueCat setup, PaywallScreen, trial flow
-- [x] 03-02: RegistrationScreen UI, anonymous banner, auth stubs
-- [x] 03-03: Real Supabase auth handlers (email updateUser, Google + Apple web OAuth via linkIdentity)
-
-### Phase 4: Mood Check-in ✓ (Complete — 2026-04-04)
-
-**Goal:** Full mood check-in experience — bubble UI, note field, Supabase save, local persistence
-**Depends on:** Phase 3 (user has auth state before saving entries)
-**Research:** Unlikely (established RN patterns)
-
-**Scope:**
-- MoodSelectionScreen — 14 color-coded mood bubbles, grouped grid layout
-- MoodConfirmScreen — optional note field, Shiba reaction, submit
-- Mood entry saved to AsyncStorage (always) + Supabase (registered users, fire-and-forget)
-- Check-in slot auto-detection (morning/afternoon/night/pre_sleep)
-- Check-in modal accessible from HomeScreen CTA
-
-**Plans:**
-- [x] 04-01: Full check-in flow (selection grid + confirm + note + save + Supabase sync + slot detection)
-
-### Phase 5: Main App Screens ✓ (Complete — 2026-04-05)
-
-**Goal:** HomeScreen, HistoryScreen, DayDetailScreen, and bottom tab navigation wired to real data
-**Depends on:** Phase 4 (real mood entries needed to populate screens)
-**Research:** Unlikely (CRUD queries, calendar UI)
-
-**Scope:**
-- HomeScreen — today's check-ins, streak counter, next reminder time, "Log mood" CTA
-- HistoryScreen — monthly calendar with color-coded days based on dominant mood
-- DayDetailScreen — all check-ins for a tapped day
-- Navigation between tabs and into modal check-in flow
-
-**Plans:**
-- [x] 05-01: HomeScreen (today entries, streak, mood-aware Shiba) + HistoryScreen (calendar grid) + DayDetailScreen
-
-### Phase 6: Notifications ✓ (Complete — 2026-04-05)
-
-**Goal:** Local scheduled check-in reminders and streak nudges configured from onboarding preferences
-**Depends on:** Phase 5 (app screens exist; preferences stored from onboarding)
-**Research:** Likely (Expo Notifications scheduling, background tasks on iOS/Android)
-
-**Scope:**
-- Local notifications scheduled at user-configured slots (up to 4/day)
-- Streak nudge: "You haven't checked in today" if no entry by evening
-- notification_preferences table read on launch to (re)schedule notifications
-- NotificationSetupScreen in Settings for post-onboarding configuration
-- Permission decline handled gracefully with in-app fallback prompts
-
-**Plans:**
-- [x] 06-01: Notification prefs store + scheduling service + onboarding/launch wiring
-- [x] 06-02: Streak nudge logic, NotificationSetupScreen, permission decline handling
-
-### Phase 7: On-Device Insights
-
-**Goal:** InsightsScreen with trend chart, streak stats, and basic pattern detection — all users
-**Depends on:** Phase 5 (mood history data), Phase 6 (streak data)
-**Research:** Likely (TensorFlow Lite / ML Kit for React Native, charting library selection)
-
-**Scope:**
-- InsightsScreen — mood frequency chart, streak display, 7/30-day trend line
-- On-device pattern flags (e.g. "You often log Tired on Mondays")
-- Data aggregation queries from Supabase (registered) or AsyncStorage (anonymous)
-- Charts built with a lightweight RN charting library (Victory Native or similar)
-
-**Plans:**
-- [ ] 07-01: InsightsScreen layout, charting library, trend data queries
-- [ ] 07-02: On-device pattern detection, pattern flag display
-
-### Phase 8: Cloud AI Layer
-
-**Goal:** Supabase Edge Function triggers weekly/monthly OpenAI report; AIReportScreen displays it; server push notification delivered
-**Depends on:** Phase 7 (insights baseline), Phase 3 (subscription gating)
-**Research:** Likely (Supabase Edge Functions with OpenAI SDK, server-side push via Expo)
-
-**Scope:**
-- Supabase Edge Function: aggregates user mood data + profile, calls OpenAI API, stores report
-- Scheduled trigger: weekly (Sunday) and monthly (1st)
-- AIReportScreen — displays latest report with narrative insights (subscribed users only)
-- Server-pushed notification: "Your weekly kibun report is ready"
-- Graceful failure: AIReportScreen shows placeholder if no report yet
-
-**Plans:**
-- [ ] 08-01: Supabase Edge Function, OpenAI prompt design, report storage
-- [ ] 08-02: AIReportScreen, server push notification, subscription gate
-
-### Phase 9: Settings & Polish
-
-**Goal:** Full settings area, account management, anonymous warnings, quality gate pass
-**Depends on:** All prior phases
-**Research:** Unlikely (internal wiring)
-
-**Scope:**
-- SettingsScreen — notification prefs, theme (light/dark), app version
-- AccountScreen — anonymous → registration CTA, subscription status, sign out
-- Persistent anonymous data-loss banner (dismissible, reappears weekly)
-- All quality gates verified (offline sync, trial expiry, WCAG contrast, iOS 15+ / Android 10+)
-- App icon, splash screen, store metadata prep
-
-**Plans:**
-- [x] 09-01: SettingsScreen, AccountScreen, anonymous warning banner
-- [x] 09-02: Quality gate pass, app icon, splash screen, store prep
+| Theme | Notes |
+|---|---|
+| Public sharing | Triggers App Review §1.2 UGC requirements (report/block + 24h SLA). Needs UGC flow before any sharing surface ships. |
+| Conversational AI chat | Therapy-adjacent — careful Apple 1.1 framing required if it ever ships |
+| Home screen widgets | iOS (WidgetKit) + Android |
+| Apple Watch / WearOS | Companion check-in surface |
+| Multiple themes | Dark mode + colour themes |
+| Direct OAuth providers beyond Google + Apple | If demand surfaces |
 
 ---
-*Roadmap created: 2026-04-02*
-*Last updated: 2026-04-05 — Phase 9 complete — v0.1 MVP code-complete*
+*Roadmap updated 2026-05-07 — v1.0 in App Store re-review.*
+*Original roadmap created 2026-04-02; original 9-phase MVP completed 2026-04-05.*

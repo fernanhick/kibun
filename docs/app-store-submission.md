@@ -9,18 +9,20 @@
 
 ## 0. Pre-Submission Checklist
 
-Complete these before opening App Store Connect:
+Complete these remaining tasks before opening App Store Connect.
+
+Repo-verified baseline items are tracked in §12 (Resubmission punch list), so this section focuses on external/manual steps.
 
 - [ ] Apple Developer Program membership active ($99/year)
 - [ ] Bundle ID `com.kibun.app` registered in Certificates, Identifiers & Profiles
 - [ ] App record created in App Store Connect (name reservation)
 - [ ] Production build uploaded via EAS / Xcode / Transporter and processed (~30 min)
-- [ ] `privacy-policy.html` hosted at a public URL (currently in repo — needs hosting)
-- [ ] `delete-account.html` hosted at a public URL — **required by Apple Guideline 5.1.1(v) for any app with account creation**
+- [ ] Public URLs verified live for `privacy-policy.html`, `support.html`, and `delete-account.html`
 - [ ] RevenueCat entitlement `kibun Pro` wired to In-App Purchase products approved in App Store Connect
 - [ ] Sandbox tester account created for reviewer to test the 7-day trial + subscription
-- [ ] Screenshots generated at required sizes (see §8)
+- [ ] Final screenshots generated and uploaded at required sizes (see §8)
 - [ ] Age rating questionnaire filled (see §9 answers)
+- [ ] `PrivacyInfo.xcprivacy` confirmed inside the built `.ipa`
 
 ---
 
@@ -322,7 +324,7 @@ Web:    https://fernanhick.github.io/kibun/delete-account.html
 ============================================================
 CONTENT & MEDICAL DISCLAIMER
 ============================================================
-Kibun is a wellness / self-reflection app and is explicitly NOT a medical or diagnostic tool. This is made clear in the onboarding "Disclaimer" screen — the very FIRST screen of the 14-step onboarding flow — which the user must explicitly acknowledge ("I understand Kibun is for wellness only") before continuing. Kibun does not provide treatment, diagnosis, or clinical advice. The disclaimer also surfaces a crisis-resource note directing users to local emergency services / licensed professionals if needed.
+Kibun is a wellness / self-reflection app and is explicitly NOT a medical or diagnostic tool. During first-run onboarding, the first required step is the "Kibun is a Wellness Tool" disclaimer, which the user must explicitly acknowledge ("I understand Kibun is for wellness only") before proceeding. Kibun does not provide treatment, diagnosis, or clinical advice. The disclaimer also surfaces a crisis-resource note directing users to local emergency services / licensed professionals if needed.
 
 ============================================================
 ENCRYPTION
@@ -431,16 +433,16 @@ Apple rejected build 1.0 (13) under **Guideline 1.1 — Safety / Objectionable C
 - Promo, subtitle, name, screenshot captions, IAP description, what's new: audited and untouched — already clean.
 
 **In-app follow-up (ships in next build, not required for resubmission):**
-- `app/exercise.tsx:133` — visible copy "The 5-4-3-2-1 grounding technique brings you back to the present moment" softened to "Use your senses to gently bring yourself back to the present moment."
-- `app/mood-confirm.tsx:98` — Pro CTA button label `Grounding` → `Five Senses`. This button is shown after logging negative-group moods (anxious / frustrated / angry / sad), so the demo Pro reviewer is highly likely to see it.
-- `app/exercise.tsx:533` — exercise screen title `Grounding` → `Five Senses` (route param `type: 'grounding'` kept for routing — internal-only).
-- `app/(onboarding)/wisdom-awareness.tsx:12` — body "Studies show...quiet the brain's stress response...is already healing" softened to "Simply naming an emotion can soften how it feels. The act of noticing is its own kind of care." — removed pseudo-clinical framing.
+- `src/i18n/locales/en/screens.json` (`exercise.grounding.description`) — visible copy "The 5-4-3-2-1 grounding technique brings you back to the present moment" softened to "Use your senses to gently bring yourself back to the present moment." (rendered in `app/exercise.tsx` via i18n).
+- `src/i18n/locales/en/screens.json` (`moodConfirm.exercises.options.grounding`) — Pro CTA label shown as `Five Senses` (route type remains `grounding` for internal routing).
+- `app/exercise.tsx` title derives from `screens:moodConfirm.exercises.options.${type}`, so the exercise screen title also shows `Five Senses` for `type: 'grounding'`.
+- `src/i18n/locales/en/onboarding.json` (`wisdomAwareness.body`) — body softened to "Simply naming an emotion can soften how it feels. The act of noticing is its own kind of care." — removed pseudo-clinical framing.
 
 The reviewer testing the Pro entitlement on the demo account would have seen `Grounding` as a button on mood-confirm and as a screen title — the in-app footprint compounded the metadata signal. These fixes ship in the next binary; the metadata-only resubmission of build 13 is sufficient to clear the rejection.
 
 **Reply template for App Store Connect:**
 
-> Thank you for the feedback. We have removed clinical condition and treatment terminology from our metadata across multiple fields. Specifically: removed "anxiety," "depression," and "therapy" from keywords; revised the description so it no longer references specific mental health conditions or named clinical techniques (e.g., 5-4-3-2-1, grounding); replaced "clinical" with neutral wording. Kibun is a self-reflection / mood-journaling wellness tool and is explicitly not a medical or therapeutic service — this is the very first screen of our onboarding ("Kibun is a Wellness Tool" disclaimer) which the user must explicitly acknowledge before any other interaction, and it is also reiterated in our privacy policy (§9 Medical Disclaimer) and support FAQ.
+> Thank you for the feedback. We have removed clinical condition and treatment terminology from our metadata across multiple fields. Specifically: removed "anxiety," "depression," and "therapy" from keywords; revised the description so it no longer references specific mental health conditions or named clinical techniques (e.g., 5-4-3-2-1, grounding); replaced "clinical" with neutral wording. Kibun is a self-reflection / mood-journaling wellness tool and is explicitly not a medical or therapeutic service. During first-run onboarding, the first required step is our "Kibun is a Wellness Tool" disclaimer, which users must explicitly acknowledge before proceeding; the same position is reiterated in our privacy policy (§9 Medical Disclaimer) and support FAQ.
 
 **Do not reintroduce** any of these into visible metadata (name, subtitle, keywords, promo, description, screenshot captions, IAP display name/description, what's new):
 - Clinical condition names: `anxiety`, `depression`, `panic`, `PTSD`, `ADHD`, `OCD`, `bipolar`, `trauma`, `disorder`
@@ -543,21 +545,27 @@ Status as of 2026-05-07 second-pass audit. Update before each major submission.
 | 5.1.6 App Tracking | PASS | No IDFA, no ATT prompt. Vexo is first-party. |
 | 5.2 Intellectual Property | NEEDS USER ACTION | **Lottie assets at `src/assets/lottie/shiba-{happy,excited,sad,neutral}.json` — verify each was downloaded under a license that permits commercial use.** If any are CC-BY, add attribution in Settings → About or in support.html acknowledgements section. |
 
-### Resubmission punch list (carry-over)
+### Resubmission punch list (remaining)
+
+**Repo-verified baseline (done as of 2026-05-10):**
+- Legal/support pages exist in repo (`privacy-policy.html`, `delete-account.html`, `support.html`).
+- Legal host constants align with submitted URLs (`src/constants/legal.ts`).
+- App metadata config aligns with submission pack (`app.config.ts`: bundle id, iPad support, build number, encryption flag).
+- EN/ES locale key parity is clean (no missing keys across `src/i18n/locales/en` vs `src/i18n/locales/es`).
 
 **Blocking — must do before resubmission:**
-1. Fill §6.1 reviewer contact + §6.3 demo account in App Store Connect.
-2. Generate iPhone 6.9" + iPad 13" screenshots.
-3. Confirm `privacy-policy.html`, `support.html`, `delete-account.html` are live on GitHub Pages.
-4. Run a manual end-to-end test of `delete_user` and `delete_user_data` RPCs via the demo account.
+1. Fill §6.1 reviewer contact and finalize §6.3 demo account credentials in App Store Connect.
+2. Generate final screenshot sets (iPhone 6.9" and iPad 13") and upload to the listing.
+3. Verify live hosting for `privacy-policy.html`, `support.html`, and `delete-account.html` at the public URLs.
+4. Run an end-to-end deletion test on the review account (`delete_user` and `delete_user_data`) and re-verify post-delete app behavior.
 
-**Should verify (avoid future rejections):**
-5. RevenueCat hosted paywall has all 5 required 3.1.2 elements visible in one frame.
-6. Privacy Manifest present in built `.ipa`.
-7. Lottie license attribution decision.
+**High-priority manual verification (App Review risk reducers):**
+5. Confirm RevenueCat hosted paywall presents all required 3.1.2 disclosures in one frame (title, length, content/services, price, Terms, Privacy).
+6. Confirm `PrivacyInfo.xcprivacy` is present in the built `.ipa` (post-EAS artifact check).
+7. Confirm license terms for `src/assets/lottie/shiba-*.json` and add attribution if required.
 
 **For v2:**
-8. If you add public sharing, build a UGC report/block flow and 24h response SLA.
+8. If public sharing is introduced, add full UGC moderation (report/block/review SLA).
 
 ---
 

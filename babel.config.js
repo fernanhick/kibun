@@ -14,6 +14,7 @@ module.exports = function (api) {
             '@constants': './src/constants',
             '@hooks': './src/hooks',
             '@lib': './src/lib',
+            '@i18n': './src/i18n',
           },
           extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
         },

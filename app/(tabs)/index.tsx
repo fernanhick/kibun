@@ -2,6 +2,7 @@ import { useMemo, useEffect, useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, Href } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSessionStore, useMoodEntryStore, useAchievementsStore, useDailyInsightStore } from '@store/index';
@@ -16,134 +17,25 @@ import { colors, spacing, typography, radius } from '@constants/theme';
 import { ACHIEVEMENT_DEFINITIONS } from '@lib/achievements';
 import { fetchDailyInsight } from '@lib/dailyInsight';
 import { computeAdaptiveTimes } from '@lib/notifications';
+import { getMoodLabel } from '@lib/moodLabels';
+import { formatTime as formatLocaleTime } from '@i18n/dateFormat';
 import { useResponsive } from '@hooks/useResponsive';
-import type { MoodSlot, Habit, HabitLog } from '@models/index';
+import type { Habit, HabitLog } from '@models/index';
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
-const SLOT_LABELS: Record<MoodSlot, string> = {
-  morning: 'Morning',
-  afternoon: 'Afternoon',
-  night: 'Evening',
-  pre_sleep: 'Night',
-};
-
 function formatTime(isoString: string): string {
-  const date = new Date(isoString);
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return formatLocaleTime(new Date(isoString), { hour: '2-digit', minute: '2-digit' });
 }
 
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour <= 11) return 'Good morning';
-  if (hour >= 12 && hour <= 16) return 'Good afternoon';
-  if (hour >= 17 && hour <= 20) return 'Good evening';
-  return 'Time to wind down';
-}
+type MoodSentiment = 'positive' | 'struggling' | 'neutral';
 
-const MOTIVATIONAL_MESSAGES = {
-  positive: [
-    "You're on a roll — keep that energy going!",
-    "Yesterday was a good one. Let's build on it!",
-    "Good vibes all around. You've got this!",
-    "Your positivity is shining through. Keep it up!",
-    "Yesterday felt bright — let today be even better.",
-    "You're in a great flow. Embrace every moment.",
-    "Riding the good wave — stay with it!",
-    "Great days deserve to be celebrated. You did well!",
-  ],
-  struggling: [
-    "Every day is a fresh start. You've got this.",
-    "It's okay to not be okay — take it one breath at a time.",
-    "Be gentle with yourself today. You're doing better than you think.",
-    "Hard moments build resilience. We're here with you.",
-    "You showed up — and that's what counts.",
-    "Tough times don't last. You're stronger than you know.",
-    "Even the smallest win counts today. What's one good thing?",
-    "You're not alone in this. Take a breath — you've got today.",
-    "Healing isn't linear. Every moment forward matters.",
-  ],
-  neutral: [
-    "Check in with yourself — every moment counts.",
-    "A new day, a fresh chapter. How are you feeling?",
-    "Your feelings matter. Let's explore them together.",
-    "Ready to tune in? Let's see how you're doing.",
-    "Small check-ins lead to big self-awareness.",
-    "How's your inner world today?",
-    "Take a moment — how are you really feeling?",
-    "Today's a great day to understand yourself better.",
-  ],
-} as const;
-
-type MoodSentiment = keyof typeof MOTIVATIONAL_MESSAGES;
-
-const EMPTY_STATE_VARIANTS: Record<MoodSentiment, ReadonlyArray<{
+interface EmptyStateVariant {
   emoji: string;
   title: string;
   body: string;
   affirmation: string;
-}>> = {
-  positive: [
-    {
-      emoji: '🌞',
-      title: 'Welcome back',
-      body: "Recent days have felt bright. Want to keep that good energy going?",
-      affirmation: 'Today is yours to shine. ✨',
-    },
-    {
-      emoji: '🌻',
-      title: "Glad you're here",
-      body: "You've been on a lovely streak. A quick check-in keeps the momentum.",
-      affirmation: 'Small moments, big wins. 💛',
-    },
-    {
-      emoji: '🌈',
-      title: 'Keep it going',
-      body: "Things have felt good lately. Capture how today is treating you.",
-      affirmation: 'Your light matters. ✨',
-    },
-  ],
-  struggling: [
-    {
-      emoji: '🌷',
-      title: "We're here with you",
-      body: "Recent days have felt heavy. Even one small check-in helps you understand what you need.",
-      affirmation: "You're stronger than you know. 🤍",
-    },
-    {
-      emoji: '🍃',
-      title: 'One breath at a time',
-      body: "Hard moments don't last forever. Logging how you feel is a quiet act of self-care.",
-      affirmation: 'Be tender with yourself today. 🤍',
-    },
-    {
-      emoji: '☁️',
-      title: 'You showed up',
-      body: "And that's enough. Tracking your mood, even on tough days, is how you start to see yourself clearly.",
-      affirmation: "Healing isn't linear — every step counts. ✨",
-    },
-  ],
-  neutral: [
-    {
-      emoji: '🌸',
-      title: 'You matter',
-      body: "No moods logged yet — and that's okay. Just showing up here is a kind thing to do for yourself.",
-      affirmation: 'Be gentle with yourself today. ✨',
-    },
-    {
-      emoji: '🪷',
-      title: 'A fresh page',
-      body: "Each day is a new chapter. Take a moment to check in with yourself.",
-      affirmation: 'Your feelings are valid — whatever they are. ✨',
-    },
-    {
-      emoji: '✨',
-      title: 'Hi there',
-      body: "How's your inner world today? A quick log helps you spot patterns over time.",
-      affirmation: "You're worth paying attention to. 💛",
-    },
-  ],
-};
+}
 
 function dayHash(dateStr: string): number {
   let h = 0;
@@ -167,8 +59,17 @@ function getMoodSentiment(recentEntries: Array<{ moodId: string }>): MoodSentime
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const insets = useSafeAreaInsets();
   const responsive = useResponsive();
+
+  const getGreeting = (): string => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour <= 11) return t('home.greeting.morning');
+    if (hour >= 12 && hour <= 16) return t('home.greeting.afternoon');
+    if (hour >= 17 && hour <= 20) return t('home.greeting.evening');
+    return t('home.greeting.windDown');
+  };
   const emptySizes = {
     title: responsive.select({ phone: 24, phoneWide: 26, tablet: 30, tabletLg: 34 }),
     body: responsive.select({ phone: 17, phoneWide: 18, tablet: 20, tabletLg: 22 }),
@@ -211,11 +112,11 @@ export default function HomeScreen() {
       (e) => e.loggedAt.startsWith(yesterdayStr) || e.loggedAt.startsWith(today)
     );
     const sentiment = getMoodSentiment(recentEntries);
-    const pool = MOTIVATIONAL_MESSAGES[sentiment];
+    const pool = t(`home.motivational.${sentiment}`, { returnObjects: true }) as string[];
     return pool[msgSeed % pool.length];
-  }, [entries, today, msgSeed]);
+  }, [entries, today, msgSeed, t]);
 
-  const emptyVariant = useMemo(() => {
+  const emptyVariant = useMemo<EmptyStateVariant>(() => {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 3);
     const cutoffIso = cutoff.toISOString();
@@ -223,9 +124,9 @@ export default function HomeScreen() {
       (e) => e.loggedAt >= cutoffIso && !e.loggedAt.startsWith(today)
     );
     const sentiment = getMoodSentiment(recent);
-    const pool = EMPTY_STATE_VARIANTS[sentiment];
+    const pool = t(`home.emptyVariants.${sentiment}`, { returnObjects: true }) as EmptyStateVariant[];
     return pool[dayHash(today) % pool.length];
-  }, [entries, today]);
+  }, [entries, today, t]);
 
   const streak = useMemo(() => {
     if (entries.length === 0) return 0;
@@ -300,18 +201,18 @@ export default function HomeScreen() {
             style={styles.anonBannerContent}
             onPress={() => router.push('/register')}
             accessibilityRole="button"
-            accessibilityLabel="Sign up to save your data"
-            accessibilityHint="Your mood data is stored on this device only. Tap to create an account."
+            accessibilityLabel={t('home.anonBanner.a11ySignup')}
+            accessibilityHint={t('home.anonBanner.a11yHint')}
           >
             <Text style={styles.anonBannerText}>
-              Your data is on this device only.{' '}
-              <Text style={styles.anonBannerLink}>Sign up to sync it →</Text>
+              {t('home.anonBanner.text')}{' '}
+              <Text style={styles.anonBannerLink}>{t('home.anonBanner.link')}</Text>
             </Text>
           </Pressable>
           <Pressable
             onPress={dismissBanner}
             accessibilityRole="button"
-            accessibilityLabel="Dismiss banner"
+            accessibilityLabel={t('home.anonBanner.a11yDismiss')}
             hitSlop={12}
             style={styles.anonBannerDismiss}
           >
@@ -334,16 +235,16 @@ export default function HomeScreen() {
             {streak > 0 && (
               <Text
                 style={styles.streakBadge}
-                accessibilityLabel={`Current streak: ${streak} days`}
+                accessibilityLabel={t('home.streakA11y', { count: streak })}
               >
-                {streak} day streak 🔥
+                {t('home.streak', { count: streak })}
               </Text>
             )}
           </View>
 
           <View style={styles.ctaSection}>
             <Button
-              label="Log mood"
+              label={t('home.logMoodCta')}
               onPress={() => router.push('/check-in' as Href)}
               variant="sunrise"
               fullWidth
@@ -370,7 +271,7 @@ export default function HomeScreen() {
         {unlockedDefs.length > 0 && (
           <View style={styles.achievementsSection}>
             <View style={styles.sectionHeaderChip}>
-              <Text style={styles.sectionHeader}>Achievements</Text>
+              <Text style={styles.sectionHeader}>{t('home.achievementsHeader')}</Text>
             </View>
             <ScrollView
               horizontal
@@ -378,7 +279,7 @@ export default function HomeScreen() {
               contentContainerStyle={styles.achievementsRow}
             >
               {unlockedDefs.map((def) => (
-                <View key={def.id} style={styles.achievementBadge} accessibilityLabel={`${def.label}: ${def.description}`}>
+                <View key={def.id} style={styles.achievementBadge} accessibilityLabel={t('home.achievementA11y', { label: def.label, description: def.description })}>
                   <Text style={styles.achievementEmoji}>{def.emoji}</Text>
                   <Text style={styles.achievementLabel}>{def.label}</Text>
                 </View>
@@ -393,7 +294,9 @@ export default function HomeScreen() {
               style={styles.sectionHeader}
               accessibilityRole="header"
             >
-              Today{todayEntries.length > 0 ? ` (${todayEntries.length})` : ''}
+              {todayEntries.length > 0
+                ? t('home.todayHeaderCount', { count: todayEntries.length })
+                : t('home.todayHeader')}
             </Text>
           </View>
 
@@ -424,7 +327,7 @@ export default function HomeScreen() {
                   ]}
                   onPress={() => router.push('/check-in' as Href)}
                   accessibilityRole="button"
-                  accessibilityLabel="Log your first mood of the day"
+                  accessibilityLabel={t('home.tipLogA11y')}
                 >
                   <View
                     style={[
@@ -440,7 +343,7 @@ export default function HomeScreen() {
                   </View>
                   <View style={styles.emptyTipText}>
                     <Text style={[styles.emptyTipTitle, { fontSize: emptySizes.tipTitle }]}>
-                      Log how you're feeling
+                      {t('home.tipLogTitle')}
                     </Text>
                     <Text
                       style={[
@@ -448,7 +351,7 @@ export default function HomeScreen() {
                         { fontSize: emptySizes.tipSub, lineHeight: emptySizes.tipSubLine },
                       ]}
                     >
-                      Tap "Log mood" above — it only takes a few seconds.
+                      {t('home.tipLogSub')}
                     </Text>
                   </View>
                   <Ionicons name="chevron-forward" size={emptySizes.chevronSize} color={colors.textDisabled} />
@@ -461,7 +364,7 @@ export default function HomeScreen() {
                   ]}
                   onPress={() => router.push('/manage-habits' as Href)}
                   accessibilityRole="button"
-                  accessibilityLabel="Set up daily habits to track"
+                  accessibilityLabel={t('home.tipHabitsA11y')}
                 >
                   <View
                     style={[
@@ -477,7 +380,7 @@ export default function HomeScreen() {
                   </View>
                   <View style={styles.emptyTipText}>
                     <Text style={[styles.emptyTipTitle, { fontSize: emptySizes.tipTitle }]}>
-                      Track daily habits
+                      {t('home.tipHabitsTitle')}
                     </Text>
                     <Text
                       style={[
@@ -485,7 +388,7 @@ export default function HomeScreen() {
                         { fontSize: emptySizes.tipSub, lineHeight: emptySizes.tipSubLine },
                       ]}
                     >
-                      Add sleep, water, or movement to spot what lifts you up.
+                      {t('home.tipHabitsSub')}
                     </Text>
                   </View>
                   <Ionicons name="chevron-forward" size={emptySizes.chevronSize} color={colors.textDisabled} />
@@ -499,11 +402,12 @@ export default function HomeScreen() {
           ) : (
             todayEntries.map((entry) => {
               const entryMood = MOOD_MAP[entry.moodId as MoodId];
+              const moodLabel = getMoodLabel(entry.moodId);
               return (
                 <Pressable
                   key={entry.id}
                   onPress={() => router.push(`/day-detail?date=${today}` as Href)}
-                  accessibilityLabel={`${entryMood?.label ?? entry.moodId} at ${formatTime(entry.loggedAt)}. Tap to view details.`}
+                  accessibilityLabel={t('home.entryA11y', { mood: moodLabel, time: formatTime(entry.loggedAt) })}
                   accessibilityRole="button"
                 >
                   <View style={styles.entryCard}>
@@ -512,10 +416,10 @@ export default function HomeScreen() {
                         <MoodBubble mood={entryMood} size="sm" />
                       )}
                       <Text style={styles.entryMoodLabel}>
-                        {entryMood?.label ?? entry.moodId}
+                        {moodLabel}
                       </Text>
                       <Text style={styles.entrySlotInline}>
-                        {SLOT_LABELS[entry.slot]}
+                        {t(`home.slot.${entry.slot}`)}
                       </Text>
                       <View style={styles.entryRight}>
                         <Text style={styles.entryTime}>
@@ -547,16 +451,17 @@ interface HabitsSectionProps {
 }
 
 function HabitsSection({ habits, todayLogs, today, onLog, onClear, onManage }: HabitsSectionProps) {
+  const { t } = useTranslation('screens');
   if (habits.length === 0) {
     return (
       <Pressable
         style={habitStyles.emptyRow}
         onPress={onManage}
         accessibilityRole="button"
-        accessibilityLabel="Set up habits to track alongside your mood"
+        accessibilityLabel={t('home.habitsEmptyA11y')}
       >
         <Ionicons name="add-circle-outline" size={16} color={colors.primary} />
-        <Text style={habitStyles.emptyText}>Track daily habits</Text>
+        <Text style={habitStyles.emptyText}>{t('home.habitsTrackDaily')}</Text>
       </Pressable>
     );
   }
@@ -565,10 +470,10 @@ function HabitsSection({ habits, todayLogs, today, onLog, onClear, onManage }: H
     <View style={habitStyles.wrapper}>
       <View style={habitStyles.headerRow}>
         <View style={styles.sectionHeaderChip}>
-          <Text style={styles.sectionHeader}>Habits</Text>
+          <Text style={styles.sectionHeader}>{t('home.habitsHeader')}</Text>
         </View>
-        <Pressable onPress={onManage} hitSlop={8} accessibilityRole="button" accessibilityLabel="Manage habits">
-          <Text style={habitStyles.manageLink}>Manage</Text>
+        <Pressable onPress={onManage} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('home.habitsManageA11y')}>
+          <Text style={habitStyles.manageLink}>{t('home.habitsManage')}</Text>
         </Pressable>
       </View>
       {habits.map((h) => {
@@ -582,7 +487,7 @@ function HabitsSection({ habits, todayLogs, today, onLog, onClear, onManage }: H
               onPress={() => done ? onClear(h.id, today) : onLog(h.id, today, 1)}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: done }}
-              accessibilityLabel={`${h.name}: ${done ? 'done, tap to unmark' : 'not done, tap to mark'}`}
+              accessibilityLabel={done ? t('home.habitDoneA11y', { name: h.name }) : t('home.habitNotDoneA11y', { name: h.name })}
             >
               <Text style={habitStyles.habitIcon}>{h.icon}</Text>
               <Text style={[habitStyles.habitName, done && habitStyles.habitNameDone]}>{h.name}</Text>
@@ -605,7 +510,7 @@ function HabitsSection({ habits, todayLogs, today, onLog, onClear, onManage }: H
                   onPress={() => currentValue === v ? onClear(h.id, today) : onLog(h.id, today, v)}
                   style={[habitStyles.scaleDot, currentValue >= v && habitStyles.scaleDotActive]}
                   accessibilityRole="button"
-                  accessibilityLabel={`${h.name} level ${v}`}
+                  accessibilityLabel={t('home.habitLevelA11y', { name: h.name, n: v })}
                   accessibilityState={{ selected: currentValue >= v }}
                 />
               ))}
@@ -713,16 +618,17 @@ const habitStyles = StyleSheet.create({
 // ─── Daily Insight Card ───────────────────────────────────────────────────────
 
 function DailyInsightCard({ content, isLoading }: { content: string | null; isLoading: boolean }) {
+  const { t } = useTranslation('screens');
   return (
     <View style={insightStyles.wrapper}>
       <View style={insightStyles.header}>
         <Ionicons name="sparkles" size={12} color={colors.primary} />
-        <Text style={insightStyles.headerText}>Today's Insight</Text>
+        <Text style={insightStyles.headerText}>{t('home.insightHeader')}</Text>
       </View>
       {isLoading && !content ? (
         <View style={insightStyles.loadingRow}>
           <ActivityIndicator size="small" color={colors.pink} />
-          <Text style={insightStyles.loadingText}>Personalising your insight…</Text>
+          <Text style={insightStyles.loadingText}>{t('home.insightLoading')}</Text>
         </View>
       ) : content ? (
         <Text style={insightStyles.body}>{content}</Text>

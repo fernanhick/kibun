@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OptionPicker, OnboardingProgress } from '@components/index';
@@ -8,35 +9,28 @@ import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing } from '@constants/theme';
 import { PickerOption } from '@models/index';
 
-const EMPLOYMENT_OPTIONS: PickerOption[] = [
-  { label: 'Employed', value: 'employed' },
-  { label: 'Self-employed', value: 'self-employed' },
-  { label: 'Student', value: 'student' },
-  { label: 'Not working', value: 'not-working' },
-  { label: 'Retired', value: 'retired' },
-];
-
-const WORK_SETTING_OPTIONS: PickerOption[] = [
-  { label: 'Office', value: 'office' },
-  { label: 'Remote', value: 'remote' },
-  { label: 'Hybrid', value: 'hybrid' },
-];
-
-const HOURS_OPTIONS: PickerOption[] = [
-  { label: '<20h', value: 'under-20' },
-  { label: '20–35h', value: '20-35' },
-  { label: '35–45h', value: '35-45' },
-  { label: '45h+', value: 'over-45' },
-];
-
-const SHOWS_WORK_DETAIL = new Set(['employed', 'self-employed']);
+const EMPLOYMENT_VALUES = ['employed', 'self-employed', 'student', 'not-working', 'retired'] as const;
+const SETTING_VALUES = ['office', 'remote', 'hybrid'] as const;
+const HOURS_VALUES = ['under-20', '20-35', '35-45', 'over-45'] as const;
+const SHOWS_WORK_DETAIL = new Set<string>(['employed', 'self-employed']);
 
 export default function ProfileWorkScreen() {
+  const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
   const [employment, setEmployment] = useState<string | null>(profile.employment);
   const [workSetting, setWorkSetting] = useState<string | null>(profile.workSetting);
   const [workHours, setWorkHours] = useState<string | null>(profile.workHours);
   const router = useRouter();
+
+  const employmentOptions: PickerOption[] = EMPLOYMENT_VALUES.map((value) => ({
+    value, label: t(`onboarding:profileWork.employmentOpt.${value}`),
+  }));
+  const settingOptions: PickerOption[] = SETTING_VALUES.map((value) => ({
+    value, label: t(`onboarding:profileWork.settingOpt.${value}`),
+  }));
+  const hoursOptions: PickerOption[] = HOURS_VALUES.map((value) => ({
+    value, label: t(`onboarding:profileWork.hoursOpt.${value}`),
+  }));
 
   const showWorkDetail = employment !== null && SHOWS_WORK_DETAIL.has(employment);
   const canContinue = employment !== null;
@@ -72,21 +66,21 @@ export default function ProfileWorkScreen() {
           <Pressable
             onPress={() => router.back()}
             accessibilityRole="button"
-            accessibilityLabel="Go back"
+            accessibilityLabel={t('onboarding:a11y.goBack')}
             hitSlop={12}
             style={styles.backButton}
           >
             <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
           </Pressable>
-          <Text style={styles.title}>How do you work?</Text>
-          <Text style={styles.subtitle}>Your work style can shape your mood patterns.</Text>
+          <Text style={styles.title}>{t('onboarding:profileWork.title')}</Text>
+          <Text style={styles.subtitle}>{t('onboarding:profileWork.subtitle')}</Text>
         </LinearGradient>
 
         <View style={styles.sectionCard}>
           <View style={styles.pickerGroup}>
             <OptionPicker
-              label="Employment"
-              options={EMPLOYMENT_OPTIONS}
+              label={t('onboarding:profileWork.employment')}
+              options={employmentOptions}
               selected={employment}
               onSelect={handleEmploymentSelect}
             />
@@ -96,8 +90,8 @@ export default function ProfileWorkScreen() {
             <>
               <View style={styles.pickerGroup}>
                 <OptionPicker
-                  label="Work setting"
-                  options={WORK_SETTING_OPTIONS}
+                  label={t('onboarding:profileWork.workSetting')}
+                  options={settingOptions}
                   selected={workSetting}
                   onSelect={setWorkSetting}
                 />
@@ -105,8 +99,8 @@ export default function ProfileWorkScreen() {
 
               <View style={styles.pickerGroup}>
                 <OptionPicker
-                  label="Hours per week (optional)"
-                  options={HOURS_OPTIONS}
+                  label={t('onboarding:profileWork.workHours')}
+                  options={hoursOptions}
                   selected={workHours}
                   onSelect={setWorkHours}
                 />
@@ -117,7 +111,7 @@ export default function ProfileWorkScreen() {
 
         <View style={styles.cta}>
           <Button
-            label="Continue"
+            label={t('common:actions.continue')}
             onPress={handleContinue}
             variant="sunrise"
             disabled={!canContinue}

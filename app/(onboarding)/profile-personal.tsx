@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Keyboard } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OptionPicker, OnboardingProgress } from '@components/index';
@@ -8,29 +9,25 @@ import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing, radius } from '@constants/theme';
 import { PickerOption } from '@models/index';
 
-const AGE_OPTIONS: PickerOption[] = [
-  { label: 'Under 18', value: 'under-18' },
-  { label: '18–24', value: '18-24' },
-  { label: '25–34', value: '25-34' },
-  { label: '35–44', value: '35-44' },
-  { label: '45–54', value: '45-54' },
-  { label: '55–64', value: '55-64' },
-  { label: '65+', value: '65+' },
-];
-
-const GENDER_OPTIONS: PickerOption[] = [
-  { label: 'Man', value: 'man' },
-  { label: 'Woman', value: 'woman' },
-  { label: 'Non-binary', value: 'non-binary' },
-  { label: 'Prefer not to say', value: 'prefer-not-to-say' },
-];
+const AGE_VALUES = ['under-18', '18-24', '25-34', '35-44', '45-54', '55-64', '65+'] as const;
+const GENDER_VALUES = ['man', 'woman', 'non-binary', 'prefer-not-to-say'] as const;
 
 export default function ProfilePersonalScreen() {
+  const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
   const [name, setName] = useState(profile.name);
   const [ageRange, setAgeRange] = useState<string | null>(profile.ageRange);
   const [gender, setGender] = useState<string | null>(profile.gender);
   const router = useRouter();
+
+  const ageOptions: PickerOption[] = AGE_VALUES.map((value) => ({
+    value,
+    label: t(`onboarding:profilePersonal.age.${value}`),
+  }));
+  const genderOptions: PickerOption[] = GENDER_VALUES.map((value) => ({
+    value,
+    label: t(`onboarding:profilePersonal.genderOpt.${value}`),
+  }));
 
   const canContinue = name.trim().length > 0 && ageRange !== null;
 
@@ -52,37 +49,37 @@ export default function ProfilePersonalScreen() {
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('onboarding:a11y.goBack')}
           hitSlop={12}
           style={styles.backButton}
         >
           <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
         </Pressable>
-        <Text style={styles.title}>Tell us about yourself</Text>
-        <Text style={styles.subtitle}>This helps Kibun personalise your insights.</Text>
+        <Text style={styles.title}>{t('onboarding:profilePersonal.title')}</Text>
+        <Text style={styles.subtitle}>{t('onboarding:profilePersonal.subtitle')}</Text>
       </LinearGradient>
 
       <View style={styles.sectionCard}>
         <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>First name</Text>
+          <Text style={styles.fieldLabel}>{t('onboarding:profilePersonal.fieldName')}</Text>
           <TextInput
             style={styles.textInput}
             value={name}
             onChangeText={setName}
-            placeholder="e.g. Alex"
+            placeholder={t('onboarding:profilePersonal.namePlaceholder')}
             placeholderTextColor={colors.textDisabled}
             autoCapitalize="words"
             returnKeyType="done"
             maxLength={50}
             onSubmitEditing={() => Keyboard.dismiss()}
-            accessibilityLabel="First name"
+            accessibilityLabel={t('onboarding:profilePersonal.fieldName')}
           />
         </View>
 
         <View style={styles.pickerGroup}>
           <OptionPicker
-            label="Age range"
-            options={AGE_OPTIONS}
+            label={t('onboarding:profilePersonal.ageRange')}
+            options={ageOptions}
             selected={ageRange}
             onSelect={setAgeRange}
           />
@@ -90,8 +87,8 @@ export default function ProfilePersonalScreen() {
 
         <View style={styles.pickerGroupLast}>
           <OptionPicker
-            label="Gender (optional)"
-            options={GENDER_OPTIONS}
+            label={t('onboarding:profilePersonal.gender')}
+            options={genderOptions}
             selected={gender}
             onSelect={setGender}
           />
@@ -99,7 +96,7 @@ export default function ProfilePersonalScreen() {
       </View>
 
       <Button
-        label="Continue"
+        label={t('common:actions.continue')}
         onPress={handleContinue}
         variant="sunrise"
         disabled={!canContinue}

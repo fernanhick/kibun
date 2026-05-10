@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, BackButton } from '@components/index';
@@ -9,16 +10,17 @@ import { useHabitsStore } from '@store/habitsStore';
 import { colors, spacing, typography, radius } from '@constants/theme';
 import type { HabitTrackingType } from '@models/index';
 
-const PRESET_HABITS: { name: string; icon: string; trackingType: HabitTrackingType }[] = [
-  { name: 'Sleep quality', icon: '😴', trackingType: 'scale' },
-  { name: 'Exercise',      icon: '🏃', trackingType: 'boolean' },
-  { name: 'Meditated',     icon: '🧘', trackingType: 'boolean' },
-  { name: 'Socialised',    icon: '👫', trackingType: 'boolean' },
-  { name: 'Alcohol',       icon: '🍺', trackingType: 'boolean' },
+const PRESET_HABITS: { key: string; name: string; icon: string; trackingType: HabitTrackingType }[] = [
+  { key: 'sleepQuality', name: 'Sleep quality', icon: '😴', trackingType: 'scale' },
+  { key: 'exercise', name: 'Exercise', icon: '🏃', trackingType: 'boolean' },
+  { key: 'meditated', name: 'Meditated', icon: '🧘', trackingType: 'boolean' },
+  { key: 'socialised', name: 'Socialised', icon: '👫', trackingType: 'boolean' },
+  { key: 'alcohol', name: 'Alcohol', icon: '🍺', trackingType: 'boolean' },
 ];
 
 export default function ManageHabitsScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const habits = useHabitsStore((s) => s.habits);
   const addHabit = useHabitsStore((s) => s.addHabit);
   const deleteHabit = useHabitsStore((s) => s.deleteHabit);
@@ -47,10 +49,15 @@ export default function ManageHabitsScreen() {
   };
 
   const handleDelete = (habitId: string, name: string) => {
-    Alert.alert('Delete habit', `Remove "${name}" and all its logs?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => deleteHabit(habitId) },
+    Alert.alert(t('manageHabits.deleteTitle'), t('manageHabits.deleteMessage', { name }), [
+      { text: t('common:actions.cancel'), style: 'cancel' },
+      { text: t('manageHabits.deleteAction'), style: 'destructive', onPress: () => deleteHabit(habitId) },
     ]);
+  };
+
+  const getHabitDisplayName = (name: string) => {
+    const preset = PRESET_HABITS.find((p) => p.name.toLowerCase() === name.toLowerCase());
+    return preset ? t(`manageHabits.preset.${preset.key}`) : name;
   };
 
   return (
@@ -65,28 +72,28 @@ export default function ManageHabitsScreen() {
         <View style={styles.heroHeader}>
           <BackButton variant="onHero" />
         </View>
-        <Text style={styles.heroTitle}>My Habits</Text>
-        <Text style={styles.heroSubtitle}>Track daily behaviours alongside your mood</Text>
+        <Text style={styles.heroTitle}>{t('manageHabits.heroTitle')}</Text>
+        <Text style={styles.heroSubtitle}>{t('manageHabits.heroSubtitle')}</Text>
       </LinearGradient>
 
       <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
         {habits.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Your habits</Text>
+            <Text style={styles.sectionLabel}>{t('manageHabits.yourHabits')}</Text>
             {habits.map((h) => (
               <View key={h.id} style={styles.habitRow}>
                 <Text style={styles.habitIcon}>{h.icon}</Text>
                 <View style={styles.habitInfo}>
-                  <Text style={styles.habitName}>{h.name}</Text>
+                  <Text style={styles.habitName}>{getHabitDisplayName(h.name)}</Text>
                   <Text style={styles.habitType}>
-                    {h.trackingType === 'scale' ? '1–5 scale' : 'Yes / No'}
+                    {h.trackingType === 'scale' ? t('manageHabits.scaleType') : t('manageHabits.booleanType')}
                   </Text>
                 </View>
                 <Pressable
                   onPress={() => handleDelete(h.id, h.name)}
                   hitSlop={12}
                   accessibilityRole="button"
-                  accessibilityLabel={`Delete ${h.name}`}
+                  accessibilityLabel={t('manageHabits.deleteA11y', { name: getHabitDisplayName(h.name) })}
                 >
                   <Ionicons name="trash-outline" size={18} color={colors.textSecondary} />
                 </Pressable>
@@ -96,23 +103,24 @@ export default function ManageHabitsScreen() {
         )}
 
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Quick add</Text>
+          <Text style={styles.sectionLabel}>{t('manageHabits.quickAdd')}</Text>
           <View style={styles.presetGrid}>
             {PRESET_HABITS.map((p) => {
               const exists = existingNames.has(p.name.toLowerCase());
+              const presetLabel = t(`manageHabits.preset.${p.key}`);
               return (
                 <Pressable
-                  key={p.name}
+                  key={p.key}
                   onPress={() => handleAddPreset(p)}
                   disabled={exists}
                   style={[styles.presetChip, exists && styles.presetChipDisabled]}
                   accessibilityRole="button"
-                  accessibilityLabel={exists ? `${p.name} already added` : `Add ${p.name}`}
+                  accessibilityLabel={exists ? t('manageHabits.alreadyAddedA11y', { name: presetLabel }) : t('manageHabits.addA11y', { name: presetLabel })}
                   accessibilityState={{ disabled: exists }}
                 >
                   <Text style={styles.presetIcon}>{p.icon}</Text>
                   <Text style={[styles.presetLabel, exists && styles.presetLabelDisabled]}>
-                    {p.name}
+                    {presetLabel}
                   </Text>
                   {!exists && <Ionicons name="add" size={14} color={colors.primary} />}
                 </Pressable>
@@ -122,16 +130,16 @@ export default function ManageHabitsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Custom habit</Text>
+          <Text style={styles.sectionLabel}>{t('manageHabits.customHabit')}</Text>
           {!showCustomForm ? (
             <Pressable
               style={styles.addCustomButton}
               onPress={() => setShowCustomForm(true)}
               accessibilityRole="button"
-              accessibilityLabel="Add a custom habit"
+              accessibilityLabel={t('manageHabits.addCustomA11y')}
             >
               <Ionicons name="add-circle-outline" size={18} color={colors.primary} />
-              <Text style={styles.addCustomText}>Add custom habit</Text>
+              <Text style={styles.addCustomText}>{t('manageHabits.addCustom')}</Text>
             </Pressable>
           ) : (
             <View style={styles.customForm}>
@@ -143,16 +151,16 @@ export default function ManageHabitsScreen() {
                   placeholder="🌟"
                   placeholderTextColor={colors.textDisabled}
                   maxLength={2}
-                  accessibilityLabel="Habit emoji icon"
+                  accessibilityLabel={t('manageHabits.iconA11y')}
                 />
                 <TextInput
                   style={[styles.input, styles.nameInput]}
                   value={customName}
                   onChangeText={setCustomName}
-                  placeholder="Habit name"
+                  placeholder={t('manageHabits.namePlaceholder')}
                   placeholderTextColor={colors.textDisabled}
                   maxLength={30}
-                  accessibilityLabel="Habit name"
+                  accessibilityLabel={t('manageHabits.nameA11y')}
                 />
               </View>
               <View style={styles.typeRow}>
@@ -165,7 +173,7 @@ export default function ManageHabitsScreen() {
                     accessibilityState={{ selected: customType === t }}
                   >
                     <Text style={[styles.typeText, customType === t && styles.typeTextSelected]}>
-                      {t === 'boolean' ? 'Yes / No' : '1–5 Scale'}
+                      {t === 'boolean' ? t('manageHabits.booleanType') : t('manageHabits.scaleType')}
                     </Text>
                   </Pressable>
                 ))}
@@ -176,7 +184,7 @@ export default function ManageHabitsScreen() {
                   onPress={() => setShowCustomForm(false)}
                   accessibilityRole="button"
                 >
-                  <Text style={styles.cancelText}>Cancel</Text>
+                  <Text style={styles.cancelText}>{t('common:actions.cancel')}</Text>
                 </Pressable>
                 <Pressable
                   style={[
@@ -186,9 +194,9 @@ export default function ManageHabitsScreen() {
                   onPress={handleAddCustom}
                   disabled={customName.trim().length < 2}
                   accessibilityRole="button"
-                  accessibilityLabel="Add habit"
+                  accessibilityLabel={t('manageHabits.addHabitA11y')}
                 >
-                  <Text style={styles.addBtnText}>Add</Text>
+                  <Text style={styles.addBtnText}>{t('manageHabits.add')}</Text>
                 </Pressable>
               </View>
             </View>

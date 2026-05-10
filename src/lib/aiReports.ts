@@ -1,5 +1,6 @@
 import { supabase } from '@lib/supabase';
 import { AIReport, AIReportStructured, AIReportTone, OnboardingProfile } from '@models/index';
+import i18n from '@i18n/index';
 
 export type RequestReportResult =
   | { ok: true; report: AIReport }
@@ -92,6 +93,7 @@ export async function requestReport(params: {
     body: {
       report_type: params.reportType,
       profile: params.profile,
+      language: i18n.language,
     },
   });
 

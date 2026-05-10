@@ -1,0 +1,973 @@
+{
+  "appErrors": {
+    "title": "Algo salio mal",
+    "restart": "Reiniciar app"
+  },
+  "tabs": {
+    "home": "Inicio",
+    "history": "Historial",
+    "insights": "Análisis",
+    "settings": "Ajustes",
+    "logMoodA11y": "Registrar ánimo"
+  },
+  "home": {
+    "anonBanner": {
+      "text": "Tus datos están solo en este dispositivo.",
+      "link": "Regístrate para sincronizarlos →",
+      "a11ySignup": "Regístrate para guardar tus datos",
+      "a11yHint": "Tus datos de ánimo se guardan solo en este dispositivo. Toca para crear una cuenta.",
+      "a11yDismiss": "Cerrar aviso"
+    },
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches",
+      "windDown": "Hora de bajar el ritmo"
+    },
+    "streak": "Racha de {{count}} días 🔥",
+    "streakA11y": "Racha actual: {{count}} días",
+    "logMoodCta": "Registrar ánimo",
+    "todayHeader": "Hoy",
+    "todayHeaderCount": "Hoy ({{count}})",
+    "achievementsHeader": "Logros",
+    "achievementA11y": "{{label}}: {{description}}",
+    "habitsHeader": "Hábitos",
+    "habitsManage": "Gestionar",
+    "habitsManageA11y": "Gestionar hábitos",
+    "habitsTrackDaily": "Seguir hábitos diarios",
+    "habitsEmptyA11y": "Configura hábitos para seguirlos junto a tu ánimo",
+    "habitDoneA11y": "{{name}}: hecho, toca para desmarcar",
+    "habitNotDoneA11y": "{{name}}: pendiente, toca para marcar",
+    "habitLevelA11y": "{{name}} nivel {{n}}",
+    "entryA11y": "{{mood}} a las {{time}}. Toca para ver detalles.",
+    "slot": {
+      "morning": "Mañana",
+      "afternoon": "Tarde",
+      "night": "Noche",
+      "pre_sleep": "Madrugada"
+    },
+    "insightHeader": "Análisis de hoy",
+    "insightLoading": "Personalizando tu análisis…",
+    "tipLogTitle": "Registra cómo te sientes",
+    "tipLogSub": "Toca «Registrar ánimo» arriba — solo lleva unos segundos.",
+    "tipLogA11y": "Registra tu primer ánimo del día",
+    "tipHabitsTitle": "Sigue hábitos diarios",
+    "tipHabitsSub": "Añade sueño, agua o movimiento para ver qué te impulsa.",
+    "tipHabitsA11y": "Configurar hábitos diarios para seguir",
+    "motivational": {
+      "positive": [
+        "¡Estás en racha — sigue así!",
+        "Ayer fue un buen día. ¡Construyamos sobre eso!",
+        "Buena vibra por todas partes. ¡Tú puedes!",
+        "Tu positividad brilla. ¡Sigue así!",
+        "Ayer se sintió luminoso — que hoy sea aún mejor.",
+        "Estás en un gran flujo. Disfruta cada momento.",
+        "Cabalgando la buena ola — quédate ahí.",
+        "Los días buenos merecen celebrarse. ¡Lo hiciste bien!"
+      ],
+      "struggling": [
+        "Cada día es un nuevo comienzo. Tú puedes.",
+        "Está bien no estar bien — respira a tu ritmo.",
+        "Sé amable contigo hoy. Lo estás haciendo mejor de lo que crees.",
+        "Los momentos difíciles construyen resiliencia. Estamos contigo.",
+        "Apareciste — y eso es lo que cuenta.",
+        "Los tiempos duros no duran. Eres más fuerte de lo que sabes.",
+        "Hasta la victoria más pequeña cuenta hoy. ¿Qué es una cosa buena?",
+        "No estás solo en esto. Respira — tienes este día.",
+        "Sanar no es lineal. Cada paso adelante importa."
+      ],
+      "neutral": [
+        "Chequea contigo mismo — cada momento cuenta.",
+        "Un nuevo día, un capítulo nuevo. ¿Cómo te sientes?",
+        "Tus sentimientos importan. Vamos a explorarlos juntos.",
+        "¿Listo para sintonizar? Veamos cómo estás.",
+        "Pequeños check-ins llevan a una gran autoconciencia.",
+        "¿Cómo está tu mundo interior hoy?",
+        "Tómate un momento — ¿cómo te sientes en realidad?",
+        "Hoy es un gran día para entenderte mejor."
+      ]
+    },
+    "emptyVariants": {
+      "positive": [
+        { "emoji": "🌞", "title": "Bienvenido de vuelta", "body": "Los últimos días se han sentido luminosos. ¿Quieres mantener esa buena energía?", "affirmation": "Hoy es tuyo para brillar. ✨" },
+        { "emoji": "🌻", "title": "Qué bueno verte",      "body": "Has tenido una racha encantadora. Un check-in rápido mantiene el ritmo.", "affirmation": "Pequeños momentos, grandes victorias. 💛" },
+        { "emoji": "🌈", "title": "Sigue así",            "body": "Las cosas se han sentido bien últimamente. Captura cómo te trata el día.", "affirmation": "Tu luz importa. ✨" }
+      ],
+      "struggling": [
+        { "emoji": "🌷", "title": "Estamos contigo",      "body": "Los últimos días se han sentido pesados. Aunque sea un pequeño check-in, te ayuda a entender lo que necesitas.", "affirmation": "Eres más fuerte de lo que sabes. 🤍" },
+        { "emoji": "🍃", "title": "Una respiración a la vez", "body": "Los momentos difíciles no duran para siempre. Registrar cómo te sientes es un acto silencioso de autocuidado.", "affirmation": "Sé amable contigo hoy. 🤍" },
+        { "emoji": "☁️", "title": "Apareciste",           "body": "Y eso es suficiente. Seguir tu ánimo, incluso en días difíciles, es cómo empiezas a verte con claridad.", "affirmation": "Sanar no es lineal — cada paso cuenta. ✨" }
+      ],
+      "neutral": [
+        { "emoji": "🌸", "title": "Importas",             "body": "Aún no hay ánimos registrados — y está bien. Solo aparecer aquí es algo amable contigo mismo.", "affirmation": "Sé amable contigo hoy. ✨" },
+        { "emoji": "🪷", "title": "Una página nueva",     "body": "Cada día es un capítulo nuevo. Tómate un momento para chequear contigo mismo.", "affirmation": "Tus sentimientos son válidos — sean los que sean. ✨" },
+        { "emoji": "✨", "title": "Hola",                 "body": "¿Cómo está tu mundo interior hoy? Un registro rápido te ayuda a notar patrones con el tiempo.", "affirmation": "Vale la pena prestarte atención. 💛" }
+      ]
+    }
+  },
+  "insights": {
+    "patterns": {
+      "dayOfWeek": "A menudo te sientes {{mood}} los {{day}}",
+      "timeOfDay": "Sueles sentirte {{mood}} por {{slot}}",
+      "trendUp": "Tu ánimo ha estado mejorando últimamente 🌱",
+      "trendDown": "Tu ánimo ha estado bajando últimamente"
+    },
+    "hero": {
+      "title": "Análisis",
+      "subtitle": "Sigue tus patrones de ánimo en el tiempo",
+      "badge": "Tu historia"
+    },
+    "period": {
+      "label": "{{n}}d",
+      "a11y": "Mostrar últimos {{n}} días"
+    },
+    "stats": {
+      "streak": "días de racha",
+      "streakA11y": "Racha de {{count}} días",
+      "checkIns": "registros",
+      "checkInsA11y": "{{count}} registros"
+    },
+    "sections": {
+      "topMoods": "Ánimos más frecuentes",
+      "trend": "Tendencia de ánimo",
+      "patterns": "Patrones",
+      "resilience": "Resiliencia",
+      "correlations": "Correlaciones",
+      "habitsAndMood": "Hábitos y ánimo",
+      "aiReport": "Informe de IA",
+      "yearInMood": "Año en ánimos"
+    },
+    "charts": {
+      "barA11y": "Gráfico de frecuencia con los {{count}} ánimos más frecuentes",
+      "trendA11y": "Gráfico de tendencia de ánimo durante {{count}} días"
+    },
+    "patternsHint": "Registra más check-ins para ver patrones",
+    "resilienceCard": {
+      "title": "Resiliencia emocional",
+      "scoreA11y": "Puntuación de resiliencia emocional: {{score}} de 100",
+      "lockedTitle": "Puntuación de resiliencia emocional",
+      "lockedSubtitle": "Mira con qué rapidez te recuperas de los ánimos difíciles. Función Pro.",
+      "lockedA11y": "Mejora a Pro para desbloquear la puntuación de resiliencia emocional",
+      "empty": "Registra más ánimos —incluso algunos difíciles— para ver tu puntuación de resiliencia.",
+      "recoveryMinutes": "{{n}} min de recuperación media",
+      "recoveryHours": "{{n}} h de recuperación media",
+      "recoveryDays": "{{n}} d de recuperación media",
+      "basedOn_one": "basado en {{count}} recuperación",
+      "basedOn_other": "basado en {{count}} recuperaciones"
+    },
+    "correlationsCard": {
+      "lockedTitle": "Correlaciones",
+      "lockedSubtitle": "Descubre en qué momentos y días te sientes mejor. Función Pro.",
+      "lockedA11y": "Mejora a Pro para desbloquear correlaciones",
+      "heatmapA11y": "Mapa de calor con el ánimo medio por franja del día y día de la semana",
+      "cellA11y": "puntuación {{score}}",
+      "noDataA11y": "sin datos",
+      "slotShort": {
+        "morning": "Mañ",
+        "afternoon": "Tar",
+        "night": "Noc",
+        "pre_sleep": "Madr"
+      },
+      "legend": {
+        "low": "Bajo",
+        "mixed": "Mixto",
+        "good": "Bien",
+        "great": "Genial",
+        "noData": "Sin datos"
+      }
+    },
+    "habitCorrelations": {
+      "lockedTitle": "Correlaciones hábito × ánimo",
+      "lockedSubtitle": "Descubre qué hábitos influyen más en tu ánimo. Función Pro.",
+      "lockedA11y": "Mejora a Pro para desbloquear correlaciones de hábitos",
+      "needsMoreTitle": "Aún no hay suficientes datos",
+      "needsMoreSubtitle": "Registra hábitos durante al menos 5 días para ver correlaciones.",
+      "rowA11y": "{{habit}}: {{label}}",
+      "strength": {
+        "strongPositive": "Fuerte positiva",
+        "strongNegative": "Fuerte negativa",
+        "moderatePositive": "Moderada positiva",
+        "moderateNegative": "Moderada negativa",
+        "weakPositive": "Débil positiva",
+        "weakNegative": "Débil negativa",
+        "none": "Sin relación clara"
+      }
+    },
+    "aiReport": {
+      "title": "Análisis personalizado",
+      "subtitle": "Análisis semanal y mensual con IA",
+      "a11y": "Ver el informe de IA — recibe análisis de ánimo personalizado"
+    },
+    "yearInMood": {
+      "title": "Tu {{year}} en ánimos",
+      "subtitle": "Tu historia anual con narrativa de IA",
+      "a11y": "Ver tu informe anual de ánimos"
+    },
+    "proBadge": "Pro",
+    "empty": {
+      "title": "Aún no has registrado ánimos",
+      "subtitle": "Empieza a hacer check-in para ver tus patrones aquí"
+    }
+  },
+  "history": {
+    "header": {
+      "badge": "Calendario de ánimos",
+      "monthYear": "{{month}} {{year}}",
+      "prevMonthA11y": "Mes anterior",
+      "nextMonthA11y": "Mes siguiente"
+    },
+    "actions": {
+      "event": "Evento",
+      "eventA11y": "Registrar un evento de vida",
+      "export": "Exportar",
+      "exportA11y": "Exportar el historial de ánimos como CSV",
+      "exportLockedA11y": "Mejora a Pro para exportar el historial de ánimos"
+    },
+    "exportTitle": "Exportación de ánimos de Kibun",
+    "calendar": {
+      "today": "hoy",
+      "tapToLog": "toca para registrar ánimo",
+      "noEntries": "sin registros",
+      "cellA11y": "{{day}} de {{month}}"
+    },
+    "snapshot": {
+      "badge": "Resumen mensual",
+      "emptyTitle": "Aún no hay ánimos en {{month}}",
+      "emptySubtitle": "Toca un día arriba para registrar cómo te sientes.",
+      "moodsLogged": "ánimos registrados",
+      "activeDays": "días activos",
+      "topMood": "principal: {{mood}}"
+    }
+  },
+  "register": {
+    "hero": {
+      "registerTitle": "Crea tu cuenta",
+      "loginTitle": "¡Bienvenido de vuelta!",
+      "registerSubtitle": "Vincula tus datos a una cuenta para no perderlos",
+      "loginSubtitle": "Inicia sesión para retomar donde lo dejaste",
+      "fromOnboardingNote": "Puedes saltar la introducción ahora. Completar esas preguntas más tarde nos ayuda a personalizar tu análisis."
+    },
+    "social": {
+      "apple": "Continuar con Apple",
+      "google": "Continuar con Google"
+    },
+    "divider": "o",
+    "form": {
+      "emailLabel": "Correo",
+      "emailA11y": "Dirección de correo",
+      "emailPlaceholder": "tu@ejemplo.com",
+      "passwordLabel": "Contraseña",
+      "passwordA11y": "Contraseña",
+      "passwordPlaceholderRegister": "Mín. 8 caracteres",
+      "passwordPlaceholderLogin": "Tu contraseña",
+      "submitRegister": "Crear cuenta",
+      "submitLogin": "Iniciar sesión",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "forgotA11y": "Olvidé mi contraseña",
+      "legalIntro": "Al crear una cuenta aceptas nuestros ",
+      "legalAnd": " y ",
+      "legalSuffix": ".",
+      "termsOfUse": "Términos de uso",
+      "privacyPolicy": "Política de privacidad"
+    },
+    "toggle": {
+      "haveAccount": "¿Ya tienes cuenta? ",
+      "noAccount": "¿No tienes cuenta? ",
+      "linkLogin": "Inicia sesión",
+      "linkRegister": "Crea una"
+    },
+    "skip": "Saltar por ahora",
+    "skipA11yHint": "Continuar sin crear una cuenta",
+    "errors": {
+      "configMissing": "Error de configuración: Supabase no está configurado en esta versión.",
+      "differentPassword": "Elige una contraseña diferente e inténtalo de nuevo.",
+      "alreadyRegistered": "Ya existe una cuenta con este correo. Mejor inicia sesión.",
+      "incorrectCredentials": "Correo o contraseña incorrectos.",
+      "confirmFirst": "Revisa tu bandeja y confirma tu correo antes.",
+      "signupDisabled": "La creación de cuentas no está disponible ahora. Inténtalo más tarde.",
+      "tooManyRequests": "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
+      "networkError": "Error de conexión. Revisa tu internet e inténtalo de nuevo.",
+      "passwordTooShort": "La contraseña debe tener al menos 8 caracteres.",
+      "invalidEmail": "Introduce una dirección de correo válida.",
+      "enterEmailFirst": "Primero introduce tu dirección de correo arriba.",
+      "oauthUnavailable": "Inicio de sesión con {{provider}} no disponible",
+      "oauthFailedGoogle": "Error al iniciar sesión con Google. Inténtalo de nuevo.",
+      "oauthFailedApple": "Error al iniciar sesión con Apple. Inténtalo de nuevo.",
+      "signInIncomplete": "No se pudo completar el inicio de sesión. Inténtalo de nuevo."
+    },
+    "info": {
+      "accountCreated": "Cuenta creada. Confirma tu correo y luego inicia sesión.",
+      "confirmBeforeSignIn": "Revisa tu bandeja y confirma tu correo antes de iniciar sesión.",
+      "confirmFirstThenSignIn": "Confirma tu correo primero y luego inicia sesión.",
+      "resetEmailSent": "Te enviamos un correo para restablecer la contraseña. Revisa tu bandeja."
+    }
+  },
+  "account": {
+    "title": "Cuenta",
+    "anonymous": {
+      "title": "Sin sesión iniciada",
+      "subtitle": "Tus datos de ánimo se guardan solo en este dispositivo. Crea una cuenta para mantenerlos a salvo entre dispositivos.",
+      "createAccount": "Crear cuenta"
+    },
+    "connected": "Cuenta conectada",
+    "sections": {
+      "subscription": "SUSCRIPCIÓN",
+      "security": "SEGURIDAD",
+      "privacy": "PRIVACIDAD",
+      "danger": "ZONA DE PELIGRO"
+    },
+    "subscription": {
+      "statusLabel": "Estado",
+      "manage": "Gestionar suscripción",
+      "manageA11y": "Gestionar suscripción",
+      "badge": {
+        "trial": "Prueba gratis",
+        "active": "Activa",
+        "expired": "Caducada",
+        "none": "Sin plan"
+      }
+    },
+    "security": {
+      "change": "Cambiar contraseña",
+      "set": "Configurar contraseña",
+      "setHint": "Añade una contraseña como respaldo del inicio de sesión con Google o Apple.",
+      "changeA11y": "Cambiar contraseña",
+      "setA11y": "Configurar contraseña"
+    },
+    "signOut": {
+      "label": "Cerrar sesión",
+      "loading": "Cerrando sesión...",
+      "hint": "Al cerrar sesión finalizará tu sesión. Tus datos de ánimo permanecerán en este dispositivo."
+    },
+    "export": {
+      "label": "Exportar mis datos",
+      "loading": "Preparando exportación...",
+      "hint": "Descarga una copia JSON de tus ánimos, diarios, hábitos y perfil.",
+      "a11y": "Exportar mis datos",
+      "savedTitle": "Exportación guardada",
+      "savedFallback": "Compartir no está disponible en este dispositivo. Archivo: {{uri}}",
+      "dialogTitle": "Exportar datos de Kibun",
+      "failedTitle": "Error al exportar",
+      "failedBody": "No se pudieron exportar tus datos. Inténtalo de nuevo."
+    },
+    "deleteData": {
+      "title": "Eliminar mis datos",
+      "loading": "Eliminando datos...",
+      "subtitle": "Elimina el historial de ánimos y el perfil, conserva la cuenta",
+      "a11y": "Eliminar mis datos",
+      "confirmTitle": "Eliminar mis datos",
+      "confirmBody": "Esto eliminará permanentemente todos tus registros de ánimo, informes de IA y datos del perfil. Tu cuenta seguirá activa. Esta acción no se puede deshacer.",
+      "confirmAction": "Eliminar datos",
+      "errorTitle": "Error",
+      "errorBody": "No se pudieron eliminar los datos. Inténtalo de nuevo."
+    },
+    "deleteAccount": {
+      "title": "Eliminar cuenta",
+      "loading": "Eliminando...",
+      "subtitle": "Elimina permanentemente la cuenta y todos los datos",
+      "a11y": "Eliminar cuenta",
+      "confirmTitle": "Eliminar cuenta",
+      "confirmBody": "Esto eliminará permanentemente tu cuenta y todos tus datos de ánimo. Esta acción no se puede deshacer.",
+      "confirmAction": "Eliminar",
+      "errorTitle": "Error",
+      "errorBody": "No se pudo eliminar la cuenta. Inténtalo de nuevo."
+    },
+    "common": {
+      "cancel": "Cancelar"
+    }
+  },
+  "changePassword": {
+    "titleChange": "Cambiar contraseña",
+    "titleSet": "Configurar contraseña",
+    "ineligible": "El inicio de sesión con contraseña requiere un correo registrado en esta cuenta. Contacta con soporte si necesitas ayuda.",
+    "goBack": "Volver",
+    "setSubtitle": "Añade una contraseña para iniciar sesión con tu correo como respaldo del inicio con Google o Apple.",
+    "fields": {
+      "currentLabel": "Contraseña actual",
+      "currentA11y": "Contraseña actual",
+      "currentPlaceholder": "Introduce la contraseña actual",
+      "newLabel": "Nueva contraseña",
+      "newA11y": "Nueva contraseña",
+      "newPlaceholder": "Mín. 8 caracteres",
+      "confirmLabel": "Confirmar nueva contraseña",
+      "confirmA11y": "Confirmar nueva contraseña",
+      "confirmPlaceholder": "Repite la nueva contraseña"
+    },
+    "submitChange": "Actualizar contraseña",
+    "submitSet": "Configurar contraseña",
+    "forgot": "¿Olvidaste la contraseña actual?",
+    "forgotA11y": "Olvidé la contraseña actual",
+    "errors": {
+      "incorrectCurrent": "Contraseña actual incorrecta.",
+      "mustDiffer": "La nueva contraseña debe ser distinta de la actual.",
+      "tooShort": "La contraseña debe tener al menos 8 caracteres.",
+      "tooManyRequests": "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
+      "networkError": "Error de conexión. Revisa tu internet e inténtalo de nuevo.",
+      "enterCurrent": "Introduce tu contraseña actual.",
+      "fillBoth": "Rellena los dos campos de contraseña.",
+      "noMatch": "Las contraseñas no coinciden."
+    },
+    "info": {
+      "passwordSet": "Contraseña configurada. Ya puedes iniciar sesión con {{email}} y esta contraseña.",
+      "updated": "Contraseña actualizada.",
+      "resetEmailSent": "Te enviamos un correo para restablecer la contraseña. Revisa tu bandeja."
+    }
+  },
+  "checkIn": {
+    "title": "¿Cómo te sientes?",
+    "subtitlePick": "Elige el ánimo que va con este momento.",
+    "subtitleBackdate": "Registrando para {{date}}",
+    "groupHeading": "Ánimos {{group}}",
+    "customSection": "Tus ánimos",
+    "manage": "Gestionar",
+    "create": "+ Crear",
+    "createFirst": "Crear un ánimo personalizado",
+    "a11yCancel": "Cancelar",
+    "a11yManageCustom": "Gestionar ánimos personalizados",
+    "a11yCreateFirst": "Crear tu primer ánimo personalizado"
+  },
+  "moodConfirm": {
+    "vibeToday": "Tu vibra de hoy",
+    "loggingFor": "Registrando para {{date}}",
+    "moodSubLabel": "Esta sensación importa. Vamos a registrarla.",
+    "noteLabel": "Añade una nota",
+    "notePlaceholder": "¿Cómo te sientes? (opcional)",
+    "noteA11y": "Nota de ánimo",
+    "closeA11y": "Cerrar sin guardar",
+    "sentiment": {
+      "positive": "Suena positivo",
+      "neutral": "Suena neutro",
+      "negative": "Suena difícil"
+    },
+    "alignmentHintGreen": "La nota suena difícil — está bien sentirlo.",
+    "alignmentHintNegative": "La nota suena esperanzadora — vale la pena notarlo.",
+    "energy": {
+      "title": "Energía y enfoque",
+      "subtitle": "Opcional — ayuda a revelar patrones más profundos",
+      "energy": "Energía",
+      "focus": "Enfoque",
+      "level": "{{label}} nivel {{n}}",
+      "clear": "Limpiar {{label}}"
+    },
+    "energyTeaser": "Registra niveles de energía y enfoque",
+    "energyTeaserA11y": "Registrar niveles de energía y enfoque — función Pro",
+    "exercises": {
+      "green": {
+        "title": "¡Aprovecha la ola! 🌟",
+        "subtitle": "Captura esta buena energía mientras dura."
+      },
+      "neutral": {
+        "title": "Un suave empujón 🍃",
+        "subtitle": "Pequeños cambios pueden transformar tu día."
+      },
+      "red-orange": {
+        "title": "¿Necesitas un momento? 💛",
+        "subtitle": "Prueba un ejercicio rápido para reiniciar."
+      },
+      "blue": {
+        "title": "No estás solo 💙",
+        "subtitle": "A veces, sentarte con la emoción es suficiente."
+      },
+      "options": {
+        "gratitude": "Gratitud",
+        "joy_capture": "Captura de alegría",
+        "savoring": "Saborear",
+        "energy_boost": "Impulso de energía",
+        "curiosity": "Chispa de curiosidad",
+        "mindful_pause": "Pausa consciente",
+        "box_breathing": "Respiración cuadrada",
+        "grounding": "Cinco sentidos",
+        "body_scan": "Escaneo corporal",
+        "self_compassion": "Autocompasión",
+        "comfort_list": "Lista de consuelo"
+      },
+      "requiresPro": "{{label}} — requiere Pro",
+      "unlockPro": "Desbloquear con Pro",
+      "unlockProA11y": "Desbloquear ejercicios con Pro"
+    },
+    "save": "Guardar",
+    "changeMood": "Cambiar ánimo",
+    "proBadge": "Pro"
+  },
+  "journalReflect": {
+    "promptLabel": "Reflexiona",
+    "placeholder": "Escribe libremente — esto es solo para ti.",
+    "a11y": "Respuesta del diario",
+    "save": "Guardar reflexión",
+    "skip": "Omitir por ahora"
+  },
+  "exercise": {
+    "closeA11y": "Cerrar",
+    "step": "Paso {{n}} de {{total}}",
+    "next": "Siguiente",
+    "continue": "Continuar",
+    "finish": "Terminar",
+    "done": "Listo",
+    "boxBreathing": {
+      "phases": {
+        "inhale": "Inhala",
+        "hold": "Mantén",
+        "exhale": "Exhala"
+      },
+      "description": "Sigue el círculo. Respira al ritmo — {{count}} ciclos.",
+      "cycle": "Ciclo {{n}} / {{total}}",
+      "doneTitle": "¡Bien hecho!",
+      "doneSubtitle": "Completaste {{count}} ciclos de respiración cuadrada."
+    },
+    "grounding": {
+      "description": "Usa tus sentidos para volver suavemente al momento presente.",
+      "steps": [
+        "Nombra 5 cosas que puedas ver ahora mismo.",
+        "Nombra 4 cosas que puedas tocar físicamente.",
+        "Nombra 3 cosas que puedas oír.",
+        "Nombra 2 cosas que puedas oler.",
+        "Nombra 1 cosa que puedas saborear."
+      ]
+    },
+    "gratitude": {
+      "description": "Enumera tres cosas por las que estés agradecido ahora mismo.",
+      "prompts": [
+        "Algo que te hizo sonreír hoy.",
+        "Una persona que te brinda consuelo.",
+        "Algo en tu cuerpo que está funcionando bien."
+      ],
+      "itemA11y": "Elemento de gratitud {{n}}"
+    },
+    "joyCapture": {
+      "description": "Captura lo que te está haciendo feliz. Escribirlo lo afianza.",
+      "prompts": [
+        "¿Qué te hizo sonreír o reír hoy?",
+        "¿Qué es lo que más ilusión te hace ahora mismo?",
+        "¿Quién te ha traído alegría últimamente?"
+      ],
+      "itemA11y": "Elemento de alegría {{n}}"
+    },
+    "savoring": {
+      "description": "Saborear te ayuda a sostener emociones positivas, deteniéndote y notándolas.",
+      "steps": [
+        "Cierra los ojos. Reproduce un momento feliz de hoy con todo detalle.",
+        "Nota cómo siente tu cuerpo ahora mismo — calor, ligereza, soltura.",
+        "Sonríe suavemente. Deja que la sensación se quede un poco más."
+      ]
+    },
+    "energyBoost": {
+      "description": "Reinicios físicos rápidos para sacudir la niebla y recuperar tu energía.",
+      "steps": [
+        "Ponte de pie y estira los brazos hacia arriba durante 10 segundos.",
+        "Haz 5 respiraciones profundas — entra por la nariz, sale por la boca.",
+        "Sacude las manos y rota los hombros hacia atrás.",
+        "Échate agua fría en la cara o sostén un cubito de hielo."
+      ]
+    },
+    "curiosity": {
+      "description": "La curiosidad te saca del piloto automático. Responde estas para reconectar con el mundo.",
+      "prompts": [
+        "¿Qué es una cosa sobre la que te gustaría aprender más hoy?",
+        "¿Qué hay a tu alrededor que nunca has mirado de cerca?",
+        "Si pudieras hacer una pregunta a alguien ahora, ¿cuál sería?"
+      ],
+      "itemA11y": "Elemento de curiosidad {{n}}"
+    },
+    "mindfulPause": {
+      "description": "Un reinicio rápido para volver al momento presente.",
+      "steps": [
+        "Pausa lo que estás haciendo. Quédate quieto un momento.",
+        "Nota tres sonidos a tu alrededor sin juzgarlos.",
+        "Siente el peso de tu cuerpo sobre la silla o el suelo.",
+        "Toma una respiración lenta y profunda y suéltala suavemente."
+      ]
+    },
+    "bodyScan": {
+      "description": "Escanea lentamente tu cuerpo de la cabeza a los pies. Suelta la tensión donde la encuentres.",
+      "steps": [
+        "Cierra los ojos. Empieza por la parte superior de la cabeza. Nota cualquier tensión.",
+        "Lleva la atención a tu cara y mandíbula. Déjalas suavizarse.",
+        "Baja los hombros. Deja que tus brazos se sientan pesados.",
+        "Nota tu pecho y vientre. Deja que tu respiración se vuelva más lenta de forma natural.",
+        "Baja a las piernas y los pies. Siéntelos firmes en el suelo."
+      ]
+    },
+    "selfCompassion": {
+      "description": "La práctica de autocompasión de Kristin Neff — sé tu propio mejor amigo por un momento.",
+      "steps": [
+        "Pon una mano sobre tu pecho. Reconoce: «Este es un momento difícil».",
+        "Recuerda: «El sufrimiento es parte de ser humano. No estoy solo en esto».",
+        "Dite a ti mismo: «Que sea amable conmigo mismo en este momento».",
+        "Toma una respiración lenta y deja que aparezca lo que tenga que aparecer."
+      ]
+    },
+    "comfortList": {
+      "description": "Construye un kit de consuelo. Saber qué te ayuda hace que los momentos difíciles sean más fáciles de transitar.",
+      "prompts": [
+        "Un lugar donde te sientes seguro.",
+        "Una canción, serie o libro que te reconforta.",
+        "Algo pequeño que puedas hacer por ti hoy."
+      ],
+      "itemA11y": "Elemento de consuelo {{n}}"
+    }
+  },
+  "settings": {
+    "hero": {
+      "title": "Ajustes",
+      "subtitle": "Ajusta los recordatorios y tu rutina diaria"
+    },
+    "sections": {
+      "account": "CUENTA",
+      "reminderTimes": "HORAS DE RECORDATORIO",
+      "customTimes": "HORAS PERSONALIZADAS",
+      "streakReminder": "AVISO DE RACHA",
+      "smartTiming": "HORARIO INTELIGENTE",
+      "language": "IDIOMA",
+      "about": "ACERCA DE"
+    },
+    "account": {
+      "label": "Cuenta",
+      "notSignedIn": "Sin sesión iniciada",
+      "manage": "Gestionar cuenta y suscripción",
+      "a11y": "Gestionar cuenta"
+    },
+    "permissionBanner": {
+      "text": "Las notificaciones están desactivadas. Actívalas en Ajustes para recibir recordatorios.",
+      "link": "Abrir Ajustes",
+      "a11yHint": "Abre los ajustes del dispositivo para activar las notificaciones"
+    },
+    "slots": {
+      "morning": { "label": "Mañana", "hint": "Hacia las 9 a. m." },
+      "afternoon": { "label": "Tarde", "hint": "Hacia las 2 p. m." },
+      "evening": { "label": "Noche", "hint": "Hacia las 7 p. m." },
+      "preSleep": { "label": "Antes de dormir", "hint": "Hacia las 10 p. m." }
+    },
+    "reminders": {
+      "rowA11y": "Recordatorio de {{label}} a las {{hint}}"
+    },
+    "customTimes": {
+      "setTo": "Configurado a las {{time}}",
+      "placeholder": "HH:MM",
+      "inputA11y": "Hora personalizada para el recordatorio de {{label}}",
+      "inputA11yHint": "Introduce la hora en formato 24h HH:MM",
+      "empty": "Activa franjas arriba para fijar horas personalizadas."
+    },
+    "streak": {
+      "label": "Aviso vespertino",
+      "hint": "Te recuerda a las 8 p. m. si aún no has registrado hoy",
+      "a11y": "Aviso de racha por la noche a las 8 p. m."
+    },
+    "smartTiming": {
+      "label": "Recordatorios adaptativos",
+      "hint": "Ajusta los recordatorios a la hora en que sueles registrarte",
+      "a11y": "Activar horario adaptativo de recordatorios",
+      "overridden": "La hora personalizada anula el horario inteligente ({{time}} calculado)",
+      "smartTime": "Hora inteligente: {{time}}",
+      "active": "Activo",
+      "needsMore": "Registra más check-ins para activar el horario inteligente.",
+      "lockedHint": "Aprende cuándo te registras y ajusta los recordatorios. Función Pro.",
+      "proBadge": "Pro",
+      "lockedA11y": "Mejora a Pro para desbloquear el horario inteligente"
+    },
+    "language": {
+      "label": "Idioma de la app",
+      "hint": "Los cambios se aplican al instante",
+      "options": {
+        "system": "Predeterminado del sistema",
+        "en": "English",
+        "es": "Español"
+      },
+      "optionA11y": "Cambiar idioma a {{label}}"
+    },
+    "about": {
+      "version": "Versión",
+      "restore": "Restaurar compras",
+      "restoreA11y": "Restaurar compras",
+      "restored": "Suscripción restaurada.",
+      "restoreNone": "No se encontraron compras anteriores.",
+      "manageSubscription": "Gestionar suscripción",
+      "manageSubscriptionA11y": "Gestionar suscripción",
+      "rate": "Valorar kibun ⭐",
+      "rateA11y": "Valorar kibun",
+      "feedback": "Enviar comentarios",
+      "feedbackA11y": "Enviar comentarios",
+      "terms": "Términos de uso",
+      "termsA11y": "Términos de uso",
+      "privacy": "Política de privacidad",
+      "privacyA11y": "Política de privacidad"
+    }
+  },
+  "paywall": {
+    "hero": {
+      "title": "kibun Premium",
+      "subtitle": "Tus emociones merecen la imagen completa.\nVamos a darle sentido juntas 💕"
+    },
+    "tier": {
+      "free": { "badge": "GRATIS", "label": "Siempre incluido" },
+      "pro": { "badge": "PREMIUM", "label": "Desbloquea con prueba" }
+    },
+    "features": {
+      "free": [
+        "Registro diario de tu ánimo",
+        "Horarios de recordatorio personalizados",
+        "Historial completo de ánimo y calendario"
+      ],
+      "pro": [
+        "Insight de bienestar diario con IA, solo para ti",
+        "Reportes de ánimo semanales y mensuales con IA",
+        "Reporte anual y resumen del año",
+        "Insights de patrones y puntuación de resiliencia",
+        "Seguimiento de hábitos (sueño, ejercicio y más)",
+        "Eventos vitales y correlación con tu ánimo",
+        "Ánimos personalizados con tus colores"
+      ]
+    },
+    "price": {
+      "both": "{{monthly}} / mes o {{yearly}} / año",
+      "monthlyOnly": "{{monthly}} / mes",
+      "yearlyOnly": "{{yearly}} / año",
+      "fallbackMonthly": "$5.99",
+      "fallbackYearly": "$34.99",
+      "trial": "Incluye 7 días de prueba gratis · Cancela cuando quieras"
+    },
+    "cta": {
+      "subscribe": "Suscribirme — 7 días gratis 🌸",
+      "subscribeA11yHint": "Inicia tu suscripción con 7 días de prueba gratis. Cancela cuando quieras desde los ajustes de cuenta.",
+      "skip": "Quizás más tarde",
+      "skipA11yHint": "Omitir suscripción y continuar con funciones limitadas"
+    },
+    "disclosure": "El pago se cobra a tu cuenta al confirmar la compra. Tu suscripción se renueva automáticamente a menos que la canceles al menos 24 horas antes del fin del período actual. Gestiona o cancela cuando quieras desde los ajustes de tu cuenta.",
+    "restore": {
+      "label": "Restaurar compras",
+      "loading": "Restaurando…",
+      "a11y": "Restaurar compras anteriores"
+    },
+    "legal": {
+      "terms": "Términos de uso",
+      "termsA11y": "Términos de uso",
+      "privacy": "Política de privacidad",
+      "privacyA11y": "Política de privacidad"
+    },
+    "errors": {
+      "notConfigured": "Premium no está configurado. Inténtalo de nuevo más tarde.",
+      "loadFailed": "No se pudo cargar la suscripción. Inténtalo de nuevo.",
+      "noEntitlement": "La compra se completó pero no se encontró la suscripción. Contacta al soporte.",
+      "nativeMissing": "La interfaz de Premium no está disponible en esta versión. Actualiza la app e inténtalo de nuevo.",
+      "billingUnavailable": "Las compras dentro de la app no están disponibles en este dispositivo. Asegúrate de tener sesión iniciada en Google Play.",
+      "generic": "Algo salió mal. Inténtalo de nuevo.",
+      "noPriorPurchases": "No se encontraron compras anteriores en esta cuenta."
+    }
+  },
+  "event": {
+    "category": {
+      "work": "Trabajo",
+      "social": "Social",
+      "health": "Salud",
+      "travel": "Viaje",
+      "relationship": "Relación",
+      "personal": "Personal"
+    }
+  },
+  "sentiment": {
+    "positive": "Positivo",
+    "neutral": "Neutral",
+    "negative": "Difícil"
+  },
+  "dayDetail": {
+    "deleteEntryTitle": "Eliminar registro",
+    "deleteEntryMessage": "¿Seguro que quieres eliminar el registro \"{{moodLabel}}\"? Esta acción no se puede deshacer.",
+    "deleteAction": "Eliminar",
+    "lifeEvents": "Eventos vitales",
+    "deleteEventTitle": "Eliminar evento",
+    "deleteEventMessage": "¿Eliminar \"{{title}}\"?",
+    "deleteEventA11y": "Eliminar evento",
+    "empty": "Sin registros de ánimo en este día",
+    "entryA11y": "{{mood}} a las {{time}}{{note}}. Toca para {{action}}.",
+    "expand": "expandir",
+    "collapse": "colapsar",
+    "slot": {
+      "morning": "Mañana",
+      "afternoon": "Tarde",
+      "night": "Noche",
+      "pre_sleep": "Madrugada"
+    },
+    "note": "Nota",
+    "noNote": "Sin nota",
+    "sentimentLabel": "Sentimiento",
+    "sentiment": {
+      "positive": "Positivo",
+      "neutral": "Neutral",
+      "negative": "Difícil"
+    },
+    "journalPrompt": "Pregunta de diario",
+    "yourReflection": "Tu reflexión",
+    "energyFocus": "Energía y concentración",
+    "energyValue": "Energía {{value}}/5",
+    "focusValue": "Concentración {{value}}/5",
+    "deleteEntryA11y": "Eliminar este registro",
+    "deleteEntryAction": "Eliminar registro",
+    "logAnother": "Registrar otro ánimo",
+    "logAnotherA11y": "Registrar otro ánimo para este día"
+  },
+  "logEvent": {
+    "closeA11y": "Cerrar",
+    "heroTitle": "Registrar evento vital",
+    "heroSubtitle": "Etiqueta momentos que influyen en tus patrones de ánimo",
+    "whatHappened": "¿Qué pasó?",
+    "titlePlaceholder": "p. ej. Gran presentación, Primera cita, Visita médica",
+    "titleA11y": "Título del evento",
+    "category": "Categoría",
+    "notes": "Notas (opcional)",
+    "notesPlaceholder": "Cualquier contexto adicional...",
+    "notesA11y": "Notas del evento",
+    "save": "Guardar evento",
+    "cancel": "Cancelar"
+  },
+  "aiReport": {
+    "premiumTitle": "Función Premium",
+    "premiumSubtitle": "Obtén análisis semanales y mensuales personalizados con IA",
+    "startTrial": "Iniciar prueba gratis",
+    "title": "Informe de IA",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "reportTypeA11y": "Informe {{label}}",
+    "generating": "Analizando tus patrones de ánimo...",
+    "loadErrorTitle": "No se pudo cargar el informe",
+    "loadErrorSubtitle": "Revisa tu conexión e inténtalo de nuevo",
+    "tryAgain": "Intentar de nuevo",
+    "notEnoughData": "Aún no hay suficientes datos",
+    "noEntriesSubtitle": "Registra tu ánimo durante algunos días y vuelve para generar tu informe.",
+    "subscriptionErrorTitle": "Suscripción no verificada",
+    "subscriptionErrorSubtitle": "No se pudo confirmar tu suscripción en el servidor. Cierra y abre la app de nuevo. Si persiste, restaura tu compra.",
+    "noReportYet": "Aún no hay informe {{period}}",
+    "noReportSubtitle": "Genera tu primer análisis de ánimo {{period}}",
+    "generateMyReport": "Generar mi informe",
+    "periodA11y": "Período del informe: {{period}}",
+    "moodSummary": "Resumen de ánimo",
+    "checkInsA11y": "{{count}} registros",
+    "checkIns": "registros",
+    "perDayA11y": "promedio de {{value}} por día",
+    "perDayAvg": "promedio diario",
+    "moodTimesA11y": "{{moodId}}, {{count}} veces",
+    "generated": "Generado {{date}}",
+    "generateNewReport": "Generar nuevo informe",
+    "patterns": "Patrones que notamos",
+    "tone": {
+      "positive": "Mayormente positivo",
+      "neutral": "Estable",
+      "mixed": "Mixto",
+      "tough": "Una etapa difícil"
+    }
+  },
+  "annualReport": {
+    "heroTitle": "{{year}} en ánimos",
+    "notEnoughData": "Aún no hay suficientes datos",
+    "emptySubtitle": "Sigue registrándote: tu historia de {{year}} aparecerá aquí.",
+    "badge": "Resumen del año",
+    "heroSubtitle": "{{total}} momentos de autoconciencia",
+    "statCheckIns": "Registros",
+    "streakDays": "{{days}}d",
+    "statBestStreak": "Mejor racha",
+    "statMoodsUsed": "Ánimos usados",
+    "statBestMonth": "Mejor mes",
+    "topMoods": "Ánimos más frecuentes",
+    "timesCount": "{{count}}×",
+    "monthHighlights": "Momentos del mes",
+    "bestMonthHint": "Mejor mes",
+    "toughestMonthHint": "Mes más difícil",
+    "yourStory": "Tu historia",
+    "writingStory": "Escribiendo tu año en palabras...",
+    "unlockStoryHint": "Registra al menos 10 check-ins este año para desbloquear tu historia con IA.",
+    "upgradeA11y": "Mejora a Pro para desbloquear tu narrativa anual con IA",
+    "upgradeTitle": "Tu año en palabras",
+    "upgradeSubtitle": "Desbloquea una narrativa de IA personalizada de tu {{year}}. Función Pro.",
+    "pro": "Pro",
+    "storyError": "No se pudo generar tu historia. Inténtalo más tarde."
+  },
+  "customMoods": {
+    "deleteTitle": "Eliminar ánimo",
+    "deleteMessage": "¿Quitar \"{{name}}\" de tus ánimos personalizados?",
+    "deleteAction": "Eliminar",
+    "heroTitle": "Ánimos personalizados",
+    "heroSubtitle": "Crea hasta {{max}} ánimos que se sientan tuyos",
+    "yourMoods": "Tus ánimos personalizados",
+    "deleteA11y": "Eliminar {{name}}",
+    "createA11y": "Crear un nuevo ánimo personalizado",
+    "createMood": "Crear ánimo ({{count}}/{{max}})",
+    "limitReached": "Has alcanzado el límite de {{max}} ánimos personalizados.",
+    "newMood": "Nuevo ánimo",
+    "nameLabel": "Nombre (máx. 12 caracteres)",
+    "namePlaceholder": "p. ej. Nostálgico",
+    "nameA11y": "Nombre del ánimo",
+    "colour": "Color",
+    "moodType": "Tipo de ánimo",
+    "preview": "Vista previa:",
+    "saveA11y": "Guardar ánimo personalizado",
+    "saveMood": "Guardar ánimo",
+    "group": {
+      "green": {
+        "label": "Positivo",
+        "hint": "Reconfortante, buena energía"
+      },
+      "neutral": {
+        "label": "Neutral",
+        "hint": "Sensaciones mixtas o tranquilas"
+      },
+      "blue": {
+        "label": "Reflexivo",
+        "hint": "Introspectivo, calmado"
+      },
+      "red-orange": {
+        "label": "Difícil",
+        "hint": "Emociones desafiantes"
+      }
+    }
+  },
+  "manageHabits": {
+    "deleteTitle": "Eliminar hábito",
+    "deleteMessage": "¿Quitar \"{{name}}\" y todos sus registros?",
+    "deleteAction": "Eliminar",
+    "heroTitle": "Mis hábitos",
+    "heroSubtitle": "Sigue comportamientos diarios junto a tu ánimo",
+    "yourHabits": "Tus hábitos",
+    "scaleType": "escala 1-5",
+    "booleanType": "Sí / No",
+    "deleteA11y": "Eliminar {{name}}",
+    "quickAdd": "Añadir rápido",
+    "alreadyAddedA11y": "{{name}} ya añadido",
+    "addA11y": "Añadir {{name}}",
+    "customHabit": "Hábito personalizado",
+    "addCustomA11y": "Añadir un hábito personalizado",
+    "addCustom": "Añadir hábito personalizado",
+    "iconA11y": "Icono emoji del hábito",
+    "namePlaceholder": "Nombre del hábito",
+    "nameA11y": "Nombre del hábito",
+    "addHabitA11y": "Añadir hábito",
+    "add": "Añadir",
+    "preset": {
+      "sleepQuality": "Calidad de sueño",
+      "exercise": "Ejercicio",
+      "meditated": "Medité",
+      "socialised": "Socialicé",
+      "alcohol": "Alcohol"
+    }
+  },
+  "components": {
+    "backButton": {
+      "defaultLabel": "Inicio",
+      "a11y": "Ir a {{label}}"
+    },
+    "onboardingProgress": {
+      "a11y": "Paso {{current}} de {{total}}"
+    },
+    "wisdomScreen": {
+      "mascotA11y": "Mascota {{mascot}}"
+    },
+    "reviewPrompt": {
+      "dismissA11y": "Cerrar",
+      "title": "¿Cómo va kibun?",
+      "subtitle": "Tu respuesta honesta nos ayuda a mejorarlo.",
+      "ctaHappy": "Me encanta 💖",
+      "ctaHappyA11y": "Me encanta",
+      "ctaUnhappy": "No mucho",
+      "ctaUnhappyA11y": "No mucho",
+      "ctaLater": "Quizá más tarde",
+      "ctaLaterA11y": "Quizá más tarde"
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OptionPicker, OnboardingProgress } from '@components/index';
@@ -8,27 +9,22 @@ import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing } from '@constants/theme';
 import { PickerOption } from '@models/index';
 
-const SLEEP_OPTIONS: PickerOption[] = [
-  { label: '<5h', value: 'under-5' },
-  { label: '5–6h', value: '5-6' },
-  { label: '6–7h', value: '6-7' },
-  { label: '7–8h', value: '7-8' },
-  { label: '8–9h', value: '8-9' },
-  { label: '9h+', value: 'over-9' },
-];
-
-const EXERCISE_OPTIONS: PickerOption[] = [
-  { label: 'Never', value: 'never' },
-  { label: '1–2×/week', value: '1-2-week' },
-  { label: '3–4×/week', value: '3-4-week' },
-  { label: 'Daily', value: 'daily' },
-];
+const SLEEP_VALUES = ['under-5', '5-6', '6-7', '7-8', '8-9', 'over-9'] as const;
+const EXERCISE_VALUES = ['never', '1-2-week', '3-4-week', 'daily'] as const;
 
 export default function ProfilePhysicalScreen() {
+  const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
   const [sleepHours, setSleepHours] = useState<string | null>(profile.sleepHours);
   const [exercise, setExercise] = useState<string | null>(profile.exercise);
   const router = useRouter();
+
+  const sleepOptions: PickerOption[] = SLEEP_VALUES.map((value) => ({
+    value, label: t(`onboarding:profilePhysical.sleepOpt.${value}`),
+  }));
+  const exerciseOptions: PickerOption[] = EXERCISE_VALUES.map((value) => ({
+    value, label: t(`onboarding:profilePhysical.exerciseOpt.${value}`),
+  }));
 
   const canContinue = sleepHours !== null && exercise !== null;
 
@@ -51,21 +47,21 @@ export default function ProfilePhysicalScreen() {
           <Pressable
             onPress={() => router.back()}
             accessibilityRole="button"
-            accessibilityLabel="Go back"
+            accessibilityLabel={t('onboarding:a11y.goBack')}
             hitSlop={12}
             style={styles.backButton}
           >
             <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
           </Pressable>
-          <Text style={styles.title}>Your physical routine</Text>
-          <Text style={styles.subtitle}>Sleep and movement have a big impact on how we feel.</Text>
+          <Text style={styles.title}>{t('onboarding:profilePhysical.title')}</Text>
+          <Text style={styles.subtitle}>{t('onboarding:profilePhysical.subtitle')}</Text>
         </LinearGradient>
 
         <View style={styles.sectionCard}>
           <View style={styles.pickerGroup}>
             <OptionPicker
-              label="Sleep per night (average)"
-              options={SLEEP_OPTIONS}
+              label={t('onboarding:profilePhysical.sleep')}
+              options={sleepOptions}
               selected={sleepHours}
               onSelect={setSleepHours}
             />
@@ -73,8 +69,8 @@ export default function ProfilePhysicalScreen() {
 
           <View style={styles.pickerGroupLast}>
             <OptionPicker
-              label="Exercise frequency"
-              options={EXERCISE_OPTIONS}
+              label={t('onboarding:profilePhysical.exercise')}
+              options={exerciseOptions}
               selected={exercise}
               onSelect={setExercise}
             />
@@ -82,7 +78,7 @@ export default function ProfilePhysicalScreen() {
         </View>
 
         <Button
-          label="Continue"
+          label={t('common:actions.continue')}
           onPress={handleContinue}
           variant="sunrise"
           disabled={!canContinue}

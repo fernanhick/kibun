@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import * as StoreReview from 'expo-store-review';
 import { Shiba } from './Shiba';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
@@ -12,6 +13,7 @@ import {
 import { trackEvent } from '@lib/analytics';
 
 export function ReviewPromptModal() {
+  const { t } = useTranslation('screens');
   const [visible, setVisible] = useState(false);
   const sourceRef = useRef<ReviewPromptSource>('achievement_unlock');
   const opacity = useRef(new Animated.Value(0)).current;
@@ -90,16 +92,16 @@ export function ReviewPromptModal() {
       statusBarTranslucent
     >
       <Animated.View style={[styles.backdrop, { opacity }]}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={handleLater} accessibilityLabel="Dismiss" />
+        <Pressable style={StyleSheet.absoluteFill} onPress={handleLater} accessibilityLabel={t('components.reviewPrompt.dismissA11y')} />
         <Animated.View style={[styles.card, { transform: [{ scale }] }]}>
           <View style={styles.mascotWrap}>
             <Shiba variant="happy" size={96} floating />
           </View>
           <Text style={styles.title} accessibilityRole="header">
-            How&apos;s kibun going?
+            {t('components.reviewPrompt.title')}
           </Text>
           <Text style={styles.subtitle}>
-            Your honest answer helps us make it better.
+            {t('components.reviewPrompt.subtitle')}
           </Text>
 
           <View style={styles.buttonRow}>
@@ -107,17 +109,17 @@ export function ReviewPromptModal() {
               style={({ pressed }) => [styles.primaryBtn, pressed && styles.pressed]}
               onPress={handleHappy}
               accessibilityRole="button"
-              accessibilityLabel="Loving it"
+              accessibilityLabel={t('components.reviewPrompt.ctaHappyA11y')}
             >
-              <Text style={styles.primaryBtnText}>Loving it 💖</Text>
+              <Text style={styles.primaryBtnText}>{t('components.reviewPrompt.ctaHappy')}</Text>
             </Pressable>
             <Pressable
               style={({ pressed }) => [styles.secondaryBtn, pressed && styles.pressed]}
               onPress={handleUnhappy}
               accessibilityRole="button"
-              accessibilityLabel="Not really"
+              accessibilityLabel={t('components.reviewPrompt.ctaUnhappyA11y')}
             >
-              <Text style={styles.secondaryBtnText}>Not really</Text>
+              <Text style={styles.secondaryBtnText}>{t('components.reviewPrompt.ctaUnhappy')}</Text>
             </Pressable>
           </View>
 
@@ -125,9 +127,9 @@ export function ReviewPromptModal() {
             style={styles.tertiaryBtn}
             onPress={handleLater}
             accessibilityRole="button"
-            accessibilityLabel="Maybe later"
+            accessibilityLabel={t('components.reviewPrompt.ctaLaterA11y')}
           >
-            <Text style={styles.tertiaryBtnText}>Maybe later</Text>
+            <Text style={styles.tertiaryBtnText}>{t('components.reviewPrompt.ctaLater')}</Text>
           </Pressable>
         </Animated.View>
       </Animated.View>

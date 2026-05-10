@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, BackButton } from '@components/index';
 import { supabase } from '@lib/supabase';
@@ -8,27 +10,28 @@ import { colors, typography, spacing, radius } from '@constants/theme';
 
 type Mode = 'change' | 'set';
 
-function friendlyAuthError(message: string): string {
+function friendlyAuthError(message: string, t: TFunction<'screens'>): string {
   if (/invalid.*login.*credentials|invalid.*email.*password|invalid.*credentials/i.test(message)) {
-    return 'Incorrect current password.';
+    return t('changePassword.errors.incorrectCurrent');
   }
   if (/same.*previous|password.*reuse/i.test(message)) {
-    return 'New password must differ from current.';
+    return t('changePassword.errors.mustDiffer');
   }
   if (/password.*length|should be at least|at least.*character/i.test(message)) {
-    return 'Password must be at least 8 characters.';
+    return t('changePassword.errors.tooShort');
   }
   if (/too many requests|rate.*limit/i.test(message)) {
-    return 'Too many attempts. Please wait a moment and try again.';
+    return t('changePassword.errors.tooManyRequests');
   }
   if (/network.*failed|fetch.*failed|failed to fetch/i.test(message)) {
-    return 'Connection error. Please check your internet and try again.';
+    return t('changePassword.errors.networkError');
   }
   return message;
 }
 
 export default function ChangePasswordScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
 
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState<string | null>(null);
@@ -88,23 +91,23 @@ export default function ChangePasswordScreen() {
     const nextCurrent = currentPassword.trim();
 
     if (mode === 'change' && !nextCurrent) {
-      setError('Please enter your current password.');
+      setError(t('changePassword.errors.enterCurrent'));
       return;
     }
     if (!nextNew || !nextConfirm) {
-      setError('Please fill in both password fields.');
+      setError(t('changePassword.errors.fillBoth'));
       return;
     }
     if (nextNew.length < 8) {
-      setError('Password must be at least 8 characters.');
+      setError(t('changePassword.errors.tooShort'));
       return;
     }
     if (nextNew !== nextConfirm) {
-      setError('Passwords do not match.');
+      setError(t('changePassword.errors.noMatch'));
       return;
     }
     if (mode === 'change' && nextNew === nextCurrent) {
-      setError('New password must differ from current.');
+      setError(t('changePassword.errors.mustDiffer'));
       return;
     }
 
@@ -118,7 +121,7 @@ export default function ChangePasswordScreen() {
         password: nextCurrent,
       });
       if (reauthError) {
-        setError(friendlyAuthError(reauthError.message));
+        setError(friendlyAuthError(reauthError.message, t));
         setSubmitting(false);
         return;
       }
@@ -126,15 +129,15 @@ export default function ChangePasswordScreen() {
 
     const { error: updateError } = await supabase.auth.updateUser({ password: nextNew });
     if (updateError) {
-      setError(friendlyAuthError(updateError.message));
+      setError(friendlyAuthError(updateError.message, t));
       setSubmitting(false);
       return;
     }
 
     if (mode === 'set') {
-      setInfo(`Password set. You can now sign in with ${email} and this password.`);
+      setInfo(t('changePassword.info.passwordSet', { email }));
     } else {
-      setInfo('Password updated.');
+      setInfo(t('changePassword.info.updated'));
     }
     setCurrentPassword('');
     setNewPassword('');
@@ -149,14 +152,14 @@ export default function ChangePasswordScreen() {
     clearMessages();
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email);
     if (resetError) {
-      setError(friendlyAuthError(resetError.message));
+      setError(friendlyAuthError(resetError.message, t));
     } else {
-      setInfo('Password reset email sent. Check your inbox.');
+      setInfo(t('changePassword.info.resetEmailSent'));
     }
   };
 
-  const title = mode === 'set' ? 'Set a password' : 'Change password';
-  const primaryLabel = mode === 'set' ? 'Set password' : 'Update password';
+  const title = mode === 'set' ? t('changePassword.titleSet') : t('changePassword.titleChange');
+  const primaryLabel = mode === 'set' ? t('changePassword.submitSet') : t('changePassword.submitChange');
 
   const primaryDisabled =
     submitting ||
@@ -179,10 +182,8 @@ export default function ChangePasswordScreen() {
         </View>
       ) : ineligible ? (
         <View style={styles.centered}>
-          <Text style={styles.ineligibleText}>
-            Password sign-in needs an email address on file for this account. Please contact support if you need help.
-          </Text>
-          <Button label="Go back" onPress={() => router.back()} variant="ghost" fullWidth />
+          <Text style={styles.ineligibleText}>{t('changePassword.ineligible')}</Text>
+          <Button label={t('changePassword.goBack')} onPress={() => router.back()} variant="ghost" fullWidth />
         </View>
       ) : (
         <View style={styles.body}>
@@ -199,15 +200,13 @@ export default function ChangePasswordScreen() {
           </View>
 
           {mode === 'set' && (
-            <Text style={styles.subtitle}>
-              Add a password so you can sign in with your email as a backup to Google or Apple sign-in.
-            </Text>
+            <Text style={styles.subtitle}>{t('changePassword.setSubtitle')}</Text>
           )}
 
           <View style={styles.form}>
             {mode === 'change' && (
               <View style={styles.fieldGroup}>
-                <Text style={styles.fieldLabel}>Current password</Text>
+                <Text style={styles.fieldLabel}>{t('changePassword.fields.currentLabel')}</Text>
                 <TextInput
                   style={styles.input}
                   value={currentPassword}
@@ -219,15 +218,15 @@ export default function ChangePasswordScreen() {
                   autoCapitalize="none"
                   autoComplete="current-password"
                   textContentType="password"
-                  accessibilityLabel="Current password"
-                  placeholder="Enter current password"
+                  accessibilityLabel={t('changePassword.fields.currentA11y')}
+                  placeholder={t('changePassword.fields.currentPlaceholder')}
                   placeholderTextColor={colors.textDisabled}
                 />
               </View>
             )}
 
             <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>New password</Text>
+              <Text style={styles.fieldLabel}>{t('changePassword.fields.newLabel')}</Text>
               <TextInput
                 style={styles.input}
                 value={newPassword}
@@ -239,14 +238,14 @@ export default function ChangePasswordScreen() {
                 autoCapitalize="none"
                 autoComplete="new-password"
                 textContentType="newPassword"
-                accessibilityLabel="New password"
-                placeholder="Min. 8 characters"
+                accessibilityLabel={t('changePassword.fields.newA11y')}
+                placeholder={t('changePassword.fields.newPlaceholder')}
                 placeholderTextColor={colors.textDisabled}
               />
             </View>
 
             <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Confirm new password</Text>
+              <Text style={styles.fieldLabel}>{t('changePassword.fields.confirmLabel')}</Text>
               <TextInput
                 style={styles.input}
                 value={confirmPassword}
@@ -258,8 +257,8 @@ export default function ChangePasswordScreen() {
                 autoCapitalize="none"
                 autoComplete="new-password"
                 textContentType="newPassword"
-                accessibilityLabel="Confirm new password"
-                placeholder="Re-enter new password"
+                accessibilityLabel={t('changePassword.fields.confirmA11y')}
+                placeholder={t('changePassword.fields.confirmPlaceholder')}
                 placeholderTextColor={colors.textDisabled}
               />
             </View>
@@ -278,9 +277,9 @@ export default function ChangePasswordScreen() {
                 onPress={handleForgot}
                 style={styles.forgotRow}
                 accessibilityRole="button"
-                accessibilityLabel="Forgot current password"
+                accessibilityLabel={t('changePassword.forgotA11y')}
               >
-                <Text style={styles.forgotText}>Forgot current password?</Text>
+                <Text style={styles.forgotText}>{t('changePassword.forgot')}</Text>
               </Pressable>
             )}
           </View>

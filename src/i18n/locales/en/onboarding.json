@@ -1,0 +1,177 @@
+{
+  "a11y": {
+    "goBack": "Go back",
+    "reminderHint": "{{label}} reminder, {{hint}}"
+  },
+  "disclaimer": {
+    "title": "Before We Begin… 🌸",
+    "subtitle": "Just a few things to know about Kibun",
+    "cardTitle": "Kibun is a Wellness Tool",
+    "body": "Kibun is here to help you with self-reflection and mood tracking — think of it as a cozy journal companion! 📝",
+    "notSection": "What Kibun Is NOT:",
+    "bullets": {
+      "medicalDevice": "A medical device or app",
+      "medicalAdvice": "Medical advice or diagnosis",
+      "treatment": "A treatment for any condition",
+      "professionalCare": "A substitute for professional mental health care",
+      "emergency": "An emergency service"
+    },
+    "crisisTitle": "If You're in Crisis",
+    "crisisBody": "Please contact local emergency services or a licensed professional immediately. You matter. 💙",
+    "checkbox": "I understand Kibun is for wellness only ✨",
+    "cta": "Let's Go! 🎉",
+    "loginLink": "Already have an account? Sign in and skip onboarding",
+    "personalizationNote": "Heads up: these onboarding answers improve personalized insights later."
+  },
+  "firstMood": {
+    "headline": "How are you feeling?",
+    "subline": "Pick the mood that feels closest right now.",
+    "cta": "Let's go"
+  },
+  "wisdomAwareness": {
+    "headline": "Naming what you feel is the first step.",
+    "body": "Simply naming an emotion can soften how it feels. The act of noticing is its own kind of care."
+  },
+  "wisdomMindBody": {
+    "headline": "Your body keeps the score.",
+    "body": "Sleep, movement, and breath shape your mood as much as any thought you'll ever have. Caring for one cares for the other."
+  },
+  "wisdomSmallShifts": {
+    "headline": "Big change rarely happens at once.",
+    "body": "Tiny moments of attention — even ten seconds a day — compound into real shifts over time. That's why we're here."
+  },
+  "profilePersonal": {
+    "title": "Tell us about yourself",
+    "subtitle": "This helps Kibun personalise your insights.",
+    "fieldName": "First name",
+    "namePlaceholder": "e.g. Alex",
+    "ageRange": "Age range",
+    "gender": "Gender (optional)",
+    "age": {
+      "under-18": "Under 18",
+      "18-24": "18–24",
+      "25-34": "25–34",
+      "35-44": "35–44",
+      "45-54": "45–54",
+      "55-64": "55–64",
+      "65+": "65+"
+    },
+    "genderOpt": {
+      "man": "Man",
+      "woman": "Woman",
+      "non-binary": "Non-binary",
+      "prefer-not-to-say": "Prefer not to say"
+    }
+  },
+  "profileWork": {
+    "title": "How do you work?",
+    "subtitle": "Your work style can shape your mood patterns.",
+    "employment": "Employment",
+    "workSetting": "Work setting",
+    "workHours": "Hours per week (optional)",
+    "employmentOpt": {
+      "employed": "Employed",
+      "self-employed": "Self-employed",
+      "student": "Student",
+      "not-working": "Not working",
+      "retired": "Retired"
+    },
+    "settingOpt": {
+      "office": "Office",
+      "remote": "Remote",
+      "hybrid": "Hybrid"
+    },
+    "hoursOpt": {
+      "under-20": "<20h",
+      "20-35": "20–35h",
+      "35-45": "35–45h",
+      "over-45": "45h+"
+    }
+  },
+  "profilePhysical": {
+    "title": "Your physical routine",
+    "subtitle": "Sleep and movement have a big impact on how we feel.",
+    "sleep": "Sleep per night (average)",
+    "exercise": "Exercise frequency",
+    "sleepOpt": {
+      "under-5": "<5h",
+      "5-6": "5–6h",
+      "6-7": "6–7h",
+      "7-8": "7–8h",
+      "8-9": "8–9h",
+      "over-9": "9h+"
+    },
+    "exerciseOpt": {
+      "never": "Never",
+      "1-2-week": "1–2×/week",
+      "3-4-week": "3–4×/week",
+      "daily": "Daily"
+    }
+  },
+  "profileSocial": {
+    "title": "Your social life",
+    "subtitle": "Social connection shapes how we feel day to day.",
+    "frequency": "How often do you socialise?",
+    "frequencyOpt": {
+      "rarely": "Rarely",
+      "few-times-week": "A few times a week",
+      "most-days": "Most days",
+      "daily": "Daily"
+    }
+  },
+  "profileMental": {
+    "title": "Your stress baseline",
+    "subtitle": "Everyone's baseline is different. There's no wrong answer.",
+    "stress": "Your typical stress level",
+    "stressOpt": {
+      "very-low": "Very low",
+      "low": "Low",
+      "moderate": "Moderate",
+      "high": "High",
+      "very-high": "Very high"
+    }
+  },
+  "profileCoping": {
+    "title": "When things feel heavy",
+    "subtitle": "What usually helps you ride it out? Pick all that fit.",
+    "groupLabel": "Your coping moves",
+    "a11yLabel": "Coping strategies",
+    "options": {
+      "talk": "Talk to someone I trust",
+      "move": "Move my body",
+      "music": "Listen to music",
+      "journal": "Write or journal",
+      "breathe": "Breathe slowly",
+      "nature": "Time in nature",
+      "rest": "Rest or sleep",
+      "hobby": "A hobby or distraction"
+    }
+  },
+  "profileGoals": {
+    "title": "What are you hoping for?",
+    "subtitle": "Pick everything that feels right.",
+    "groupLabel": "Your goals",
+    "a11yLabel": "Goals",
+    "options": {
+      "understand-emotions": "Understand my emotions",
+      "reduce-stress": "Reduce stress",
+      "improve-sleep": "Improve sleep",
+      "track-energy": "Track my energy",
+      "self-awareness": "Build self-awareness",
+      "mood-patterns": "Notice mood patterns"
+    }
+  },
+  "notificationPermission": {
+    "title": "Stay on track",
+    "subtitle": "Kibun works best with daily check-ins. Pick your reminder times.",
+    "groupLabel": "Reminder times",
+    "ctaEnable": "Enable reminders",
+    "ctaSkip": "Maybe later",
+    "slotOpt": {
+      "morning": { "label": "Morning", "hint": "around 9am" },
+      "afternoon": { "label": "Afternoon", "hint": "around 2pm" },
+      "evening": { "label": "Evening", "hint": "around 7pm" },
+      "pre-sleep": { "label": "Pre-sleep", "hint": "around 10pm" }
+    }
+  }
+}

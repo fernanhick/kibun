@@ -1,30 +1,33 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useLifeEventsStore } from '@store/index';
+import { formatDate } from '@i18n/dateFormat';
 import { colors, spacing, typography, radius } from '@constants/theme';
 import type { LifeEventCategory } from '@models/index';
 
-const CATEGORIES: { value: LifeEventCategory; label: string; emoji: string; color: string }[] = [
-  { value: 'work',         label: 'Work',         emoji: '💼', color: '#5C7CFA' },
-  { value: 'social',       label: 'Social',       emoji: '👥', color: '#F06595' },
-  { value: 'health',       label: 'Health',       emoji: '🏥', color: '#51CF66' },
-  { value: 'travel',       label: 'Travel',       emoji: '✈️', color: '#339AF0' },
-  { value: 'relationship', label: 'Relationship', emoji: '❤️', color: '#FF6B6B' },
-  { value: 'personal',     label: 'Personal',     emoji: '🌟', color: '#CC5DE8' },
+const CATEGORIES: { value: LifeEventCategory; emoji: string; color: string }[] = [
+  { value: 'work',         emoji: '💼', color: '#5C7CFA' },
+  { value: 'social',       emoji: '👥', color: '#F06595' },
+  { value: 'health',       emoji: '🏥', color: '#51CF66' },
+  { value: 'travel',       emoji: '✈️', color: '#339AF0' },
+  { value: 'relationship', emoji: '❤️', color: '#FF6B6B' },
+  { value: 'personal',     emoji: '🌟', color: '#CC5DE8' },
 ];
 
 function formatDisplayDate(dateStr: string): string {
   const d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+  return formatDate(d, { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
 export default function LogEventScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{ date?: string }>();
   const today = new Date().toISOString().split('T')[0];
   const eventDate = params.date ?? today;
@@ -58,7 +61,7 @@ export default function LogEventScreen() {
           <Pressable
             onPress={() => router.back()}
             accessibilityRole="button"
-            accessibilityLabel="Close"
+            accessibilityLabel={t('logEvent.closeA11y')}
             hitSlop={12}
           >
             <Ionicons name="close" size={22} color={colors.textInverse} />
@@ -68,30 +71,31 @@ export default function LogEventScreen() {
           <Ionicons name="calendar-outline" size={12} color={colors.textInverse} />
           <Text style={styles.heroBadgeText}>{formatDisplayDate(eventDate)}</Text>
         </View>
-        <Text style={styles.heroTitle}>Log a Life Event</Text>
-        <Text style={styles.heroSubtitle}>Tag moments that shape your mood patterns</Text>
+        <Text style={styles.heroTitle}>{t('logEvent.heroTitle')}</Text>
+        <Text style={styles.heroSubtitle}>{t('logEvent.heroSubtitle')}</Text>
       </LinearGradient>
 
       <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>What happened?</Text>
+          <Text style={styles.sectionLabel}>{t('logEvent.whatHappened')}</Text>
           <TextInput
             style={styles.titleInput}
             value={title}
             onChangeText={setTitle}
-            placeholder="e.g. Big presentation, First date, Doctor visit"
+            placeholder={t('logEvent.titlePlaceholder')}
             placeholderTextColor={colors.textDisabled}
             returnKeyType="done"
             maxLength={80}
-            accessibilityLabel="Event title"
+            accessibilityLabel={t('logEvent.titleA11y')}
           />
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Category</Text>
+          <Text style={styles.sectionLabel}>{t('logEvent.category')}</Text>
           <View style={styles.categoryGrid}>
             {CATEGORIES.map((cat) => {
               const selected = category === cat.value;
+              const categoryLabel = t(`event.category.${cat.value}`);
               return (
                 <Pressable
                   key={cat.value}
@@ -102,11 +106,11 @@ export default function LogEventScreen() {
                   ]}
                   accessibilityRole="button"
                   accessibilityState={{ selected }}
-                  accessibilityLabel={cat.label}
+                  accessibilityLabel={categoryLabel}
                 >
                   <Text style={styles.categoryEmoji}>{cat.emoji}</Text>
                   <Text style={[styles.categoryLabel, selected && { color: cat.color }]}>
-                    {cat.label}
+                    {categoryLabel}
                   </Text>
                 </Pressable>
               );
@@ -115,24 +119,24 @@ export default function LogEventScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Notes (optional)</Text>
+          <Text style={styles.sectionLabel}>{t('logEvent.notes')}</Text>
           <TextInput
             style={styles.notesInput}
             value={notes}
             onChangeText={setNotes}
-            placeholder="Any extra context..."
+            placeholder={t('logEvent.notesPlaceholder')}
             placeholderTextColor={colors.textDisabled}
             multiline
             numberOfLines={3}
             textAlignVertical="top"
             maxLength={300}
-            accessibilityLabel="Event notes"
+            accessibilityLabel={t('logEvent.notesA11y')}
           />
         </View>
 
         <View style={styles.actions}>
           <Button
-            label="Save event"
+            label={t('logEvent.save')}
             onPress={handleSave}
             variant="sunrise"
             fullWidth
@@ -140,7 +144,7 @@ export default function LogEventScreen() {
             disabled={!canSave || saving}
           />
           <Button
-            label="Cancel"
+            label={t('logEvent.cancel')}
             onPress={() => router.back()}
             variant="ghost"
             fullWidth

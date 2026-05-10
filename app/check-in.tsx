@@ -1,5 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams, Href } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@components/index';
@@ -9,34 +10,31 @@ import { colors, typography, spacing, radius } from '@constants/theme';
 import { useSessionStore } from '@store/sessionStore';
 import { useCustomMoodsStore } from '@store/customMoodsStore';
 import { getMoodDef } from '@lib/moodUtils';
-
-const GROUP_LABELS: Record<MoodGroup, string> = {
-  green: 'Positive',
-  neutral: 'Neutral',
-  'red-orange': 'Intense',
-  blue: 'Reflective',
-};
+import { getMoodGroupLabel } from '@lib/moodLabels';
+import { formatDate } from '@i18n/dateFormat';
 
 const GROUP_ORDER: MoodGroup[] = ['green', 'neutral', 'red-orange', 'blue'];
 
 function groupMoods(): { group: MoodGroup; label: string; moods: MoodDefinition[] }[] {
   return GROUP_ORDER.map((group) => ({
     group,
-    label: GROUP_LABELS[group],
+    label: getMoodGroupLabel(group),
     moods: MOODS.filter((m) => m.group === group),
   }));
 }
 
-const MONTHS = ['January','February','March','April','May','June','July',
-  'August','September','October','November','December'];
-
 function formatBackdate(d: string) {
-  const [, m, day] = d.split('-');
-  return `${MONTHS[parseInt(m) - 1]} ${parseInt(day)}`;
+  const [y, m, day] = d.split('-');
+  // Noon timestamp avoids timezone-edge dates landing on the wrong day.
+  return formatDate(
+    new Date(parseInt(y), parseInt(m) - 1, parseInt(day), 12),
+    { month: 'long', day: 'numeric' },
+  );
 }
 
 export default function MoodSelectionScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{ date?: string }>();
   const groups = groupMoods();
   const session = useSessionStore((s) => s.session);
@@ -62,25 +60,27 @@ export default function MoodSelectionScreen() {
         style={styles.heroCard}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>How are you feeling?</Text>
+          <Text style={styles.title}>{t('checkIn.title')}</Text>
           <Pressable
             onPress={() => router.back()}
             accessibilityRole="button"
-            accessibilityLabel="Cancel"
+            accessibilityLabel={t('checkIn.a11yCancel')}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
             <Ionicons name="close" size={22} color={colors.textInverse} />
           </Pressable>
         </View>
         <Text style={styles.subtitle}>
-          {params.date ? `Logging for ${formatBackdate(params.date)}` : 'Pick the mood that matches this moment.'}
+          {params.date
+            ? t('checkIn.subtitleBackdate', { date: formatBackdate(params.date) })
+            : t('checkIn.subtitlePick')}
         </Text>
       </LinearGradient>
 
       {groups.map(({ group, label, moods }) => (
         <View key={group} style={styles.groupSection}>
           <Text style={styles.groupLabel} accessibilityRole="header">
-            {label} moods
+            {t('checkIn.groupHeading', { group: label })}
           </Text>
           <View style={styles.bubbleRow}>
             {moods.map((mood) => (
@@ -100,16 +100,16 @@ export default function MoodSelectionScreen() {
         <View style={styles.groupSection}>
           <View style={styles.customGroupHeader}>
             <Text style={styles.groupLabel} accessibilityRole="header">
-              Your moods
+              {t('checkIn.customSection')}
             </Text>
             <Pressable
               onPress={() => router.push('/custom-moods' as Href)}
               hitSlop={8}
               accessibilityRole="button"
-              accessibilityLabel="Manage custom moods"
+              accessibilityLabel={t('checkIn.a11yManageCustom')}
             >
               <Text style={styles.manageLink}>
-                {customMoods.length > 0 ? 'Manage' : '+ Create'}
+                {customMoods.length > 0 ? t('checkIn.manage') : t('checkIn.create')}
               </Text>
             </Pressable>
           </View>
@@ -118,10 +118,10 @@ export default function MoodSelectionScreen() {
               style={styles.createCustomPill}
               onPress={() => router.push('/custom-moods' as Href)}
               accessibilityRole="button"
-              accessibilityLabel="Create your first custom mood"
+              accessibilityLabel={t('checkIn.a11yCreateFirst')}
             >
               <Ionicons name="add" size={16} color={colors.primary} />
-              <Text style={styles.createCustomText}>Create a custom mood</Text>
+              <Text style={styles.createCustomText}>{t('checkIn.createFirst')}</Text>
             </Pressable>
           ) : (
             <View style={styles.bubbleRow}>

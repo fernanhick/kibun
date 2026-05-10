@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo } from 'react';
 import { View, Pressable, Text, Animated, StyleSheet, Platform } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -112,6 +113,7 @@ function TabIcon({
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const { t } = useTranslation('screens');
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { width } = useResponsive();
@@ -181,7 +183,7 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
           <View style={[styles.centerSlot, { width: mascotSize }]}>
             <Pressable
               onPress={() => router.push('/check-in' as Href)}
-              accessibilityLabel="Log mood"
+              accessibilityLabel={t('tabs.logMoodA11y')}
               accessibilityRole="button"
               style={{ width: mascotSize, height: mascotSize, alignItems: 'center', justifyContent: 'center' }}
             >

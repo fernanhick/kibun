@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { Shiba } from '@components/Shiba';
@@ -10,6 +11,7 @@ import { useMoodEntryStore } from '@store/index';
 
 export default function JournalReflectScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{
     entryId: string;
     prompt: string;
@@ -49,7 +51,7 @@ export default function JournalReflectScreen() {
           />
         </View>
         <View style={styles.promptContainer}>
-          <Text style={styles.promptLabel}>Reflect</Text>
+          <Text style={styles.promptLabel}>{t('journalReflect.promptLabel')}</Text>
           <Text style={styles.promptText}>{prompt}</Text>
         </View>
       </LinearGradient>
@@ -59,18 +61,18 @@ export default function JournalReflectScreen() {
           style={styles.input}
           value={response}
           onChangeText={setResponse}
-          placeholder="Write freely — this is just for you."
+          placeholder={t('journalReflect.placeholder')}
           placeholderTextColor={colors.textDisabled}
           multiline
           textAlignVertical="top"
-          accessibilityLabel="Journal response"
+          accessibilityLabel={t('journalReflect.a11y')}
           autoFocus
         />
       </View>
 
       <View style={styles.actions}>
         <Button
-          label="Save reflection"
+          label={t('journalReflect.save')}
           onPress={handleSave}
           variant="sunrise"
           loading={saving}
@@ -78,7 +80,7 @@ export default function JournalReflectScreen() {
           fullWidth
         />
         <Button
-          label="Skip for now"
+          label={t('journalReflect.skip')}
           onPress={handleSkip}
           variant="ghost"
           fullWidth

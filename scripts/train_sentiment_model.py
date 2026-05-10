@@ -14,7 +14,8 @@ Requirements
 
 Usage
 ─────
-  python scripts/train_sentiment_model.py
+    python scripts/train_sentiment_model.py --language en
+    python scripts/train_sentiment_model.py --language es
 
 Run from the repository root (d:/Projects/gorhick workspace/apps/kibun).
 """
@@ -22,6 +23,8 @@ Run from the repository root (d:/Projects/gorhick workspace/apps/kibun).
 import json
 import os
 import re
+import argparse
+import random
 import collections
 from pathlib import Path
 
@@ -41,6 +44,8 @@ MAX_SEQ_LEN   = 128
 BATCH_SIZE    = 256
 EPOCHS        = 8
 LR            = 1e-3
+DEFAULT_MAX_SAMPLES_EN = 60_000
+DEFAULT_MAX_SAMPLES_ES = 40_000
 
 OUT_DIR       = Path("assets/models")
 MODEL_PATH    = OUT_DIR / "sentiment.onnx"
@@ -48,18 +53,144 @@ VOCAB_PATH    = OUT_DIR / "vocab.json"
 
 # ─── Tokenizer (must match src/lib/sentiment.ts) ─────────────────────────────
 
-def tokenize(text: str) -> list[str]:
+def tokenize(text: str, language: str = "en") -> list[str]:
     text = text.lower()
-    text = re.sub(r"[^a-z0-9\s']", " ", text)
+    if language == "es":
+        text = re.sub(r"[^a-z0-9\u00c0-\u024f\s']", " ", text)
+    else:
+        text = re.sub(r"[^a-z0-9\s']", " ", text)
     return [t for t in text.split() if t]
 
 # ─── Dataset ─────────────────────────────────────────────────────────────────
 
-def load_dataset():
+def _truncate_dataset(
+    texts: list[str],
+    labels: list[int],
+    max_samples: int | None,
+    *,
+    seed: int = 42,
+):
+    if not max_samples or len(texts) <= max_samples:
+        return texts, labels
+    rng = random.Random(seed)
+    idx = list(range(len(texts)))
+    rng.shuffle(idx)
+    keep = idx[:max_samples]
+    return [texts[i] for i in keep], [labels[i] for i in keep]
+
+
+def _sample_balanced_by_label(
+    texts: list[str],
+    labels: list[int],
+    target_total: int,
+    *,
+    seed: int = 42,
+):
+    if target_total <= 0 or len(texts) <= target_total:
+        return texts, labels
+
+    rng = random.Random(seed)
+    by_label: dict[int, list[int]] = {0: [], 1: [], 2: []}
+    for i, lbl in enumerate(labels):
+        if lbl in by_label:
+            by_label[lbl].append(i)
+
+    for idxs in by_label.values():
+        rng.shuffle(idxs)
+
+    # Aim for a roughly balanced subset across classes.
+    quota = target_total // NUM_CLASSES
+    selected: list[int] = []
+    leftovers: list[int] = []
+
+    for lbl in (0, 1, 2):
+        idxs = by_label[lbl]
+        take = min(len(idxs), quota)
+        selected.extend(idxs[:take])
+        leftovers.extend(idxs[take:])
+
+    if len(selected) < target_total:
+        rng.shuffle(leftovers)
+        selected.extend(leftovers[: target_total - len(selected)])
+
+    rng.shuffle(selected)
+    return [texts[i] for i in selected], [labels[i] for i in selected]
+
+
+def _load_spanish_dataset(texts: list[str], labels: list[int], max_samples: int | None):
+    from datasets import load_dataset as hf_load
+
+    target = max_samples or DEFAULT_MAX_SAMPLES_ES
+    loaded_sources: list[str] = []
+
+    def add_example(text: str, lbl: int):
+        txt = (text or "").strip()
+        if lbl not in (0, 1, 2):
+            return
+        if 5 < len(txt) < 400:
+            texts.append(txt)
+            labels.append(lbl)
+
+    # Source 1: 3-class corpus (negative/neutral/positive)
+    try:
+        print("Loading Spanish sentiment dataset (AntoineBlanot/sentiment-es)...")
+        ds = hf_load("AntoineBlanot/sentiment-es", split="train")
+        label_map = {"negative": 0, "neutral": 1, "positive": 2}
+        for row in ds:
+            lbl = label_map.get(str(row.get("label_name", "")).strip().lower())
+            if lbl is not None:
+                add_example(row.get("text", ""), lbl)
+        loaded_sources.append("AntoineBlanot/sentiment-es")
+    except Exception as err:
+        print(f"Spanish source failed (AntoineBlanot/sentiment-es): {err}")
+
+    # Source 2: 3-class targeted headlines.
+    try:
+        print("Loading Spanish headlines dataset (pysentimiento/spanish-targeted-sentiment-headlines)...")
+        ds = hf_load("pysentimiento/spanish-targeted-sentiment-headlines", split="train")
+        for row in ds:
+            lbl = row.get("label")
+            if isinstance(lbl, (int, np.integer)) and 0 <= int(lbl) <= 2:
+                add_example(row.get("titulo", ""), int(lbl))
+        loaded_sources.append("pysentimiento/spanish-targeted-sentiment-headlines")
+    except Exception as err:
+        print(f"Spanish source failed (pysentimiento/spanish-targeted-sentiment-headlines): {err}")
+
+    # Source 3: large binary corpus to expand positive/negative coverage.
+    try:
+        sst2_target = max(target, 20_000)
+        split = f"train[:{sst2_target}]"
+        print(f"Loading Spanish SST2 translation (mrm8488/sst2-es-mt, split={split})...")
+        ds = hf_load("mrm8488/sst2-es-mt", split=split)
+        for row in ds:
+            raw_lbl = row.get("label")
+            if raw_lbl in (0, 1):
+                mapped = 0 if int(raw_lbl) == 0 else 2
+                add_example(row.get("sentence_es") or row.get("sentence") or "", mapped)
+        loaded_sources.append("mrm8488/sst2-es-mt")
+    except Exception as err:
+        print(f"Spanish source failed (mrm8488/sst2-es-mt): {err}")
+
+    if not loaded_sources:
+        raise RuntimeError("No external Spanish datasets could be loaded")
+
+    # External corpora are often binary-heavy; keep a healthier neutral floor.
+    neutral_count = sum(1 for lbl in labels if lbl == 1)
+    min_neutral = max(600, target // 5)
+    if neutral_count < min_neutral:
+        _add_spanish_neutral_boost(texts, labels, min_neutral - neutral_count)
+
+    print(f"Spanish external sources used: {', '.join(loaded_sources)}")
+    sampled_texts, sampled_labels = _sample_balanced_by_label(texts, labels, target)
+    texts[:] = sampled_texts
+    labels[:] = sampled_labels
+
+
+def load_dataset(language: str, max_samples: int | None = None):
     """
-    Loads SST-2 (binary) + a neutral sentences subset from Wikipedia.
-    SST-2: label 0 = negative → class 0, label 1 = positive → class 2.
-    Wikipedia neutral sentences: assigned class 1.
+    Loads language-specific sentiment datasets from Hugging Face.
+    English: SST-2 (binary) + neutral subset from Wikipedia.
+    Spanish: script-less external corpora with label mapping and balancing.
 
     Falls back to a tiny synthetic dataset if datasets library is not available.
     """
@@ -67,8 +198,15 @@ def load_dataset():
 
     try:
         from datasets import load_dataset as hf_load
+        if language == "es":
+            _load_spanish_dataset(texts, labels, max_samples)
+            if len(texts) < 500:
+                raise RuntimeError("Spanish dataset yielded too few usable samples")
+            return texts, labels
+
         print("Loading SST-2 from Hugging Face...")
-        sst2 = hf_load("sst2", split="train")
+        split = f"train[:{max_samples or DEFAULT_MAX_SAMPLES_EN}]"
+        sst2 = hf_load("sst2", split=split)
         for row in sst2:
             lbl = 0 if row["label"] == 0 else 2  # SST-2: 0=neg, 1=pos → our 0=neg, 2=pos
             texts.append(row["sentence"])
@@ -97,12 +235,15 @@ def load_dataset():
         print("WARNING: 'datasets' library not found. Using synthetic data.")
         print("Install with: pip install datasets")
         print("Continuing with small synthetic dataset (accuracy will be lower)...")
-        _add_synthetic(texts, labels)
+        _add_synthetic(texts, labels, language)
+    except Exception as err:
+        print(f"WARNING: dataset load failed ({err}). Using synthetic data.")
+        _add_synthetic(texts, labels, language)
 
-    return texts, labels
+    return _truncate_dataset(texts, labels, max_samples)
 
 
-def _add_synthetic(texts, labels):
+def _add_synthetic(texts, labels, language: str = "en"):
     """Minimal synthetic dataset for offline/quick testing."""
     positive = [
         "I feel amazing today", "This is wonderful news", "feeling grateful and happy",
@@ -122,6 +263,26 @@ def _add_synthetic(texts, labels):
         "attended a meeting", "read for an hour", "cooked dinner",
         "went for a walk",
     ]
+    if language == "es":
+        positive = [
+            "hoy me siento increible", "que buena noticia", "me siento agradecido y feliz",
+            "tuve un gran dia", "estoy muy emocionado", "me encanta esta sensacion",
+            "todo va bien", "me siento muy bien", "dia genial", "me siento bendecido",
+        ]
+        negative = [
+            "hoy me siento fatal", "esto es horrible", "me siento muy ansioso",
+            "tuve un dia duro", "estoy muy frustrado", "me siento decaido",
+            "nada sale bien", "me siento triste y solo", "experiencia horrible",
+            "me siento agotado y estresado",
+        ]
+        neutral = [
+            "hoy es lunes", "fui a la tienda", "almorce al mediodia",
+            "vi una pelicula", "hoy llovio", "trabaje desde casa",
+            "asisti a una reunion", "lei una hora", "cocine la cena",
+            "sali a caminar",
+        ]
+        _add_spanish_synthetic_expanded(texts, labels)
+        return
     for s in positive:
         texts.append(s); labels.append(2)
     for s in negative:
@@ -129,9 +290,102 @@ def _add_synthetic(texts, labels):
     for s in neutral:
         texts.append(s); labels.append(1)
 
+
+def _add_spanish_synthetic_expanded(texts, labels):
+    """Larger synthetic Spanish corpus used when remote datasets are unavailable."""
+    positive_states = [
+        "feliz", "tranquilo", "motivado", "agradecido", "optimista", "entusiasmado",
+        "en paz", "con energia", "esperanzado", "contento", "animado", "sereno",
+    ]
+    negative_states = [
+        "agotado", "triste", "ansioso", "frustrado", "abrumado", "decaido",
+        "desanimado", "irritable", "estresado", "tenso", "inquieto", "vacio",
+    ]
+    neutral_states = [
+        "normal", "estable", "en piloto automatico", "sin cambios", "mas o menos",
+        "neutral", "sin mucho que reportar", "igual que ayer", "en rutina", "tranquilo sin picos",
+    ]
+    positive_contexts = [
+        "despues de hablar con un amigo", "tras terminar mis pendientes", "luego de caminar",
+        "porque dormi bien", "despues de hacer ejercicio", "tras un buen cafe",
+        "al cerrar el dia", "al empezar la manana", "despues de meditar", "tras escuchar musica",
+    ]
+    negative_contexts = [
+        "por falta de descanso", "despues de una reunion dificil", "por mucha presion",
+        "tras una mala noche", "por demasiadas tareas", "despues de discutir",
+        "al final de la tarde", "por preocupaciones acumuladas", "con la mente acelerada", "con poco tiempo",
+    ]
+    neutral_contexts = [
+        "en un dia habitual", "durante la rutina", "sin novedades importantes",
+        "entre tareas normales", "con una jornada tranquila", "sin eventos especiales",
+        "en una tarde comun", "en un dia de trabajo regular", "como cualquier otro dia", "en modo automatico",
+    ]
+
+    max_per_class = 3500
+
+    def build_samples(states, contexts, templates):
+        out = []
+        for tpl in templates:
+            for st in states:
+                for cx in contexts:
+                    out.append(tpl.format(state=st, context=cx))
+                    if len(out) >= max_per_class:
+                        return out
+        return out
+
+    pos_templates = [
+        "hoy me siento {state} {context}",
+        "me noto {state} {context}",
+        "estoy {state} y con buena vibra {context}",
+        "ahora mismo estoy {state} {context}",
+    ]
+    neg_templates = [
+        "hoy me siento {state} {context}",
+        "me noto {state} {context}",
+        "estoy {state} y me cuesta concentrarme {context}",
+        "ahora mismo estoy {state} {context}",
+    ]
+    neu_templates = [
+        "hoy me siento {state} {context}",
+        "me noto {state} {context}",
+        "estoy {state} {context}",
+        "ahora mismo sigo {state} {context}",
+    ]
+
+    positive = build_samples(positive_states, positive_contexts, pos_templates)
+    negative = build_samples(negative_states, negative_contexts, neg_templates)
+    neutral = build_samples(neutral_states, neutral_contexts, neu_templates)
+
+    for s in positive:
+        texts.append(s); labels.append(2)
+    for s in negative:
+        texts.append(s); labels.append(0)
+    for s in neutral:
+        texts.append(s); labels.append(1)
+
+
+def _add_spanish_neutral_boost(texts: list[str], labels: list[int], needed: int):
+    if needed <= 0:
+        return
+    templates = [
+        "hoy me siento en calma, sin grandes cambios y con una rutina estable",
+        "mi energia esta estable y el dia transcurre normal",
+        "estoy en un punto neutral, ni arriba ni abajo",
+        "todo va en orden, sin novedades importantes",
+        "me mantengo equilibrado durante una jornada comun",
+        "hoy ha sido un dia normal, con tareas de siempre",
+        "sigo mi rutina habitual y me siento estable",
+        "mi estado de animo se mantiene parejo en este momento",
+        "no noto cambios fuertes, me siento mas o menos igual",
+        "estoy tranquilo y enfocado en actividades cotidianas",
+    ]
+    for i in range(needed):
+        texts.append(templates[i % len(templates)])
+        labels.append(1)
+
 # ─── Vocabulary ───────────────────────────────────────────────────────────────
 
-def build_vocab(texts: list[str], vocab_size: int) -> dict[str, int]:
+def build_vocab(texts: list[str], vocab_size: int, language: str) -> dict[str, int]:
     """
     Build vocabulary from training corpus.
     Index 0 = PAD (padding)
@@ -140,15 +394,15 @@ def build_vocab(texts: list[str], vocab_size: int) -> dict[str, int]:
     """
     counter = collections.Counter()
     for text in texts:
-        counter.update(tokenize(text))
+        counter.update(tokenize(text, language))
     # Reserve 0=PAD, 1=UNK
     vocab = {"<PAD>": 0, "<UNK>": 1}
     for word, _ in counter.most_common(vocab_size - 2):
         vocab[word] = len(vocab)
     return vocab
 
-def encode(text: str, vocab: dict[str, int], max_len: int) -> list[int]:
-    tokens = tokenize(text)[:max_len]
+def encode(text: str, vocab: dict[str, int], max_len: int, language: str) -> list[int]:
+    tokens = tokenize(text, language)[:max_len]
     ids = [vocab.get(t, 1) for t in tokens]  # 1 = UNK
     ids += [0] * (max_len - len(ids))        # 0 = PAD
     return ids
@@ -181,9 +435,9 @@ class TinySentimentModel(nn.Module):
 
 # ─── Training ─────────────────────────────────────────────────────────────────
 
-def train(texts, labels, vocab):
+def train(texts, labels, vocab, language: str):
     print(f"Encoding {len(texts)} samples...")
-    X = torch.tensor([encode(t, vocab, MAX_SEQ_LEN) for t in texts], dtype=torch.int32)
+    X = torch.tensor([encode(t, vocab, MAX_SEQ_LEN, language) for t in texts], dtype=torch.int32)
     y = torch.tensor(labels, dtype=torch.long)
 
     dataset = TensorDataset(X, y)
@@ -320,6 +574,15 @@ def export_onnx(model: nn.Module, path: Path):
 
 WEIGHTS_PATH = OUT_DIR / "weights.json"
 
+def paths_for_language(language: str) -> tuple[Path, Path, Path]:
+    if language == "es":
+        return (
+            OUT_DIR / "sentiment.es.onnx",
+            OUT_DIR / "vocab.es.json",
+            OUT_DIR / "weights.es.json",
+        )
+    return (MODEL_PATH, VOCAB_PATH, WEIGHTS_PATH)
+
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def export_weights_json(model: nn.Module, path: Path):
@@ -348,26 +611,33 @@ def export_weights_json(model: nn.Module, path: Path):
 
 
 def main():
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    parser = argparse.ArgumentParser(description="Train Kibun on-device sentiment model")
+    parser.add_argument("--language", choices=["en", "es"], default="en")
+    parser.add_argument("--max-samples", type=int, default=None)
+    args = parser.parse_args()
+    language = args.language
 
-    texts, labels = load_dataset()
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    model_path, vocab_path, weights_path = paths_for_language(language)
+
+    texts, labels = load_dataset(language, args.max_samples)
     print(f"Dataset: {len(texts)} samples  "
           f"(neg={labels.count(0)}, neu={labels.count(1)}, pos={labels.count(2)})")
 
-    vocab = build_vocab(texts, VOCAB_SIZE)
+    vocab = build_vocab(texts, VOCAB_SIZE, language)
 
     # Save vocab (excluding special tokens <PAD> and <UNK>)
     word_vocab = {k: v for k, v in vocab.items() if k not in ("<PAD>", "<UNK>")}
-    with open(VOCAB_PATH, "w", encoding="utf-8") as f:
+    with open(vocab_path, "w", encoding="utf-8") as f:
         json.dump(word_vocab, f, ensure_ascii=False, separators=(",", ":"))
-    print(f"Vocabulary saved: {VOCAB_PATH}  ({len(word_vocab)} words)")
+    print(f"Vocabulary saved: {vocab_path}  ({len(word_vocab)} words)")
 
-    model = train(texts, labels, vocab)
-    export_onnx(model, MODEL_PATH)
-    export_weights_json(model, WEIGHTS_PATH)
+    model = train(texts, labels, vocab, language)
+    export_onnx(model, model_path)
+    export_weights_json(model, weights_path)
 
     print("\nDone. Add to git:")
-    print(f"  git add {MODEL_PATH} {VOCAB_PATH} {WEIGHTS_PATH}")
+    print(f"  git add {model_path} {vocab_path} {weights_path}")
     print("\nTo run the app:")
     print("  npx expo run:android")
 

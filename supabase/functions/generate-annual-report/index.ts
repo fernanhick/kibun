@@ -6,6 +6,15 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+type AppLanguage = "en" | "es";
+
+function toSupportedLanguage(value: unknown): AppLanguage {
+  if (typeof value !== "string") return "en";
+  const normalized = value.toLowerCase();
+  if (normalized.startsWith("es")) return "es";
+  return "en";
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -88,6 +97,7 @@ Deno.serve(async (req: Request) => {
       bestMonth: string;
       worstMonth: string;
     } = body;
+    const language = toSupportedLanguage(body?.language);
 
     if (!totalCheckIns || totalCheckIns < 10) {
       return new Response(
@@ -105,12 +115,19 @@ Deno.serve(async (req: Request) => {
       `Hardest month: ${worstMonth}`,
     ].join('\n');
 
-    const prompt = `You are a warm, thoughtful wellness companion summarising a user's year of mood tracking.
-Based on the following stats, write a personalised 3-sentence narrative that feels reflective and encouraging.
-Focus on growth, patterns, and resilience. Do not use bullet points. Keep it under 80 words.
+    const prompt = language === "es"
+      ? `Eres un acompanante de bienestar calido y reflexivo que resume el ano de seguimiento emocional de una persona.
+  Con estas estadisticas, escribe una narrativa personalizada de 3 frases con tono reflexivo y alentador.
+  Enfocate en crecimiento, patrones y resiliencia. No uses vietas. Maximo 80 palabras.
 
-Stats:
-${statsContext}`;
+  Estadisticas:
+  ${statsContext}`
+      : `You are a warm, thoughtful wellness companion summarising a user's year of mood tracking.
+  Based on the following stats, write a personalised 3-sentence narrative that feels reflective and encouraging.
+  Focus on growth, patterns, and resilience. Do not use bullet points. Keep it under 80 words.
+
+  Stats:
+  ${statsContext}`;
 
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OptionPicker, OnboardingProgress } from '@components/index';
@@ -8,17 +9,17 @@ import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing } from '@constants/theme';
 import { PickerOption } from '@models/index';
 
-const SOCIAL_OPTIONS: PickerOption[] = [
-  { label: 'Rarely', value: 'rarely' },
-  { label: 'A few times a week', value: 'few-times-week' },
-  { label: 'Most days', value: 'most-days' },
-  { label: 'Daily', value: 'daily' },
-];
+const SOCIAL_VALUES = ['rarely', 'few-times-week', 'most-days', 'daily'] as const;
 
 export default function ProfileSocialScreen() {
+  const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
   const [socialFrequency, setSocialFrequency] = useState<string | null>(profile.socialFrequency);
   const router = useRouter();
+
+  const socialOptions: PickerOption[] = SOCIAL_VALUES.map((value) => ({
+    value, label: t(`onboarding:profileSocial.frequencyOpt.${value}`),
+  }));
 
   const canContinue = socialFrequency !== null;
 
@@ -40,21 +41,21 @@ export default function ProfileSocialScreen() {
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('onboarding:a11y.goBack')}
           hitSlop={12}
           style={styles.backButton}
         >
           <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
         </Pressable>
-        <Text style={styles.title}>Your social life</Text>
-        <Text style={styles.subtitle}>Social connection shapes how we feel day to day.</Text>
+        <Text style={styles.title}>{t('onboarding:profileSocial.title')}</Text>
+        <Text style={styles.subtitle}>{t('onboarding:profileSocial.subtitle')}</Text>
       </LinearGradient>
 
       <View style={styles.sectionCard}>
         <View style={styles.pickerGroup}>
           <OptionPicker
-            label="How often do you socialise?"
-            options={SOCIAL_OPTIONS}
+            label={t('onboarding:profileSocial.frequency')}
+            options={socialOptions}
             selected={socialFrequency}
             onSelect={setSocialFrequency}
           />
@@ -62,7 +63,7 @@ export default function ProfileSocialScreen() {
       </View>
 
       <Button
-        label="Continue"
+        label={t('common:actions.continue')}
         onPress={handleContinue}
         variant="sunrise"
         disabled={!canContinue}

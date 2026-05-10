@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OptionPicker, OnboardingProgress } from '@components/index';
@@ -8,18 +9,17 @@ import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing } from '@constants/theme';
 import { PickerOption } from '@models/index';
 
-const STRESS_OPTIONS: PickerOption[] = [
-  { label: 'Very low', value: 'very-low' },
-  { label: 'Low', value: 'low' },
-  { label: 'Moderate', value: 'moderate' },
-  { label: 'High', value: 'high' },
-  { label: 'Very high', value: 'very-high' },
-];
+const STRESS_VALUES = ['very-low', 'low', 'moderate', 'high', 'very-high'] as const;
 
 export default function ProfileMentalScreen() {
+  const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
   const [stressLevel, setStressLevel] = useState<string | null>(profile.stressLevel);
   const router = useRouter();
+
+  const stressOptions: PickerOption[] = STRESS_VALUES.map((value) => ({
+    value, label: t(`onboarding:profileMental.stressOpt.${value}`),
+  }));
 
   const canContinue = stressLevel !== null;
 
@@ -41,21 +41,21 @@ export default function ProfileMentalScreen() {
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('onboarding:a11y.goBack')}
           hitSlop={12}
           style={styles.backButton}
         >
           <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
         </Pressable>
-        <Text style={styles.title}>Your stress baseline</Text>
-        <Text style={styles.subtitle}>Everyone's baseline is different. There's no wrong answer.</Text>
+        <Text style={styles.title}>{t('onboarding:profileMental.title')}</Text>
+        <Text style={styles.subtitle}>{t('onboarding:profileMental.subtitle')}</Text>
       </LinearGradient>
 
       <View style={styles.sectionCard}>
         <View style={styles.pickerGroup}>
           <OptionPicker
-            label="Your typical stress level"
-            options={STRESS_OPTIONS}
+            label={t('onboarding:profileMental.stress')}
+            options={stressOptions}
             selected={stressLevel}
             onSelect={setStressLevel}
           />
@@ -63,7 +63,7 @@ export default function ProfileMentalScreen() {
       </View>
 
       <Button
-        label="Continue"
+        label={t('common:actions.continue')}
         onPress={handleContinue}
         variant="sunrise"
         disabled={!canContinue}

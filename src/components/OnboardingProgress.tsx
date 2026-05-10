@@ -1,4 +1,5 @@
 import { View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors } from '@constants/theme';
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function OnboardingProgress({ current, total, tone = 'light', style }: Props) {
+  const { t } = useTranslation('screens');
   const filledColor = tone === 'light' ? colors.textInverse : colors.primary;
   const emptyColor =
     tone === 'light' ? 'rgba(255,255,255,0.35)' : 'rgba(74,134,255,0.25)';
@@ -18,7 +20,7 @@ export function OnboardingProgress({ current, total, tone = 'light', style }: Pr
     <View
       style={[styles.row, style]}
       accessibilityRole="progressbar"
-      accessibilityLabel={`Step ${current} of ${total}`}
+      accessibilityLabel={t('components.onboardingProgress.a11y', { current, total })}
       accessibilityValue={{ min: 1, max: total, now: current }}
     >
       {Array.from({ length: total }, (_, i) => (

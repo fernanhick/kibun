@@ -1,0 +1,22 @@
+{
+  "happy":      { "label": "Feliz",        "response": "¡Qué maravilla! Aférrate a esa sensación." },
+  "excited":    { "label": "Emocionado",   "response": "¡Mucha energía! Algo bueno está pasando." },
+  "grateful":   { "label": "Agradecido",   "response": "La gratitud es poderosa — ya la estás practicando." },
+  "calm":       { "label": "Tranquilo",    "response": "Los momentos de calma valen la pena notar." },
+  "meh":        { "label": "Indiferente",  "response": "No todos los días tienen que brillar. Estuviste presente." },
+  "tired":      { "label": "Cansado",      "response": "Descansar es productivo. Tu cuerpo te está diciendo algo." },
+  "bored":      { "label": "Aburrido",     "response": "El aburrimiento es creatividad esperando una chispa." },
+  "confused":   { "label": "Confundido",   "response": "La incertidumbre significa que estás pensando — eso es buena señal." },
+  "sad":        { "label": "Triste",       "response": "Está bien sentirte así. No estás solo." },
+  "anxious":    { "label": "Ansioso",      "response": "Respira. Estás aquí, y eso es suficiente." },
+  "frustrated": { "label": "Frustrado",    "response": "La fricción significa que te importa. Eso vale." },
+  "angry":      { "label": "Enojado",      "response": "Las emociones fuertes merecen espacio. Vamos a registrarlas." },
+  "melancholy": { "label": "Melancólico",  "response": "Un dolor silencioso — a veces difícil de nombrar, siempre válido." },
+  "lonely":     { "label": "Solo",         "response": "Conectarse requiere valentía. Notar el sentimiento es el primer paso." },
+  "groups": {
+    "green":      "Positivos",
+    "neutral":    "Reflexivos",
+    "red-orange": "Intensos",
+    "blue":       "Tiernos"
+  }
+}

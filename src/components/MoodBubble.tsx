@@ -1,7 +1,8 @@
 import { useRef, useEffect } from 'react';
 import { Animated, Pressable, Text, StyleSheet, Image } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
-import { MoodDefinition } from '@constants/moods';
+import { MoodDefinition, MOOD_MAP } from '@constants/moods';
 import { typography } from '@constants/theme';
 
 interface MoodBubbleProps {
@@ -33,6 +34,9 @@ export function MoodBubble({
   onPress,
   disabled = false,
 }: MoodBubbleProps) {
+  const { t } = useTranslation();
+  // Built-in moods resolve through i18n; custom moods carry user-typed labels.
+  const label = mood.id in MOOD_MAP ? t(`moods:${mood.id}.label`) : mood.label;
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -79,7 +83,7 @@ export function MoodBubble({
           pressed && !disabled && styles.pressed,
         ]}
         accessibilityRole={onPress ? 'button' : 'text'}
-        accessibilityLabel={mood.label}
+        accessibilityLabel={label}
         accessibilityState={onPress ? { selected, disabled } : undefined}
       >
         <Svg width={width} height="100%" style={StyleSheet.absoluteFill}>
@@ -108,7 +112,7 @@ export function MoodBubble({
           numberOfLines={1}
           adjustsFontSizeToFit
         >
-          {mood.label}
+          {label}
         </Text>
       </Pressable>
     </Animated.View>

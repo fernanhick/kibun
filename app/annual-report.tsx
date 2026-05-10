@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, BackButton } from '@components/index';
@@ -9,12 +10,14 @@ import { useMoodEntryStore, useSessionStore } from '@store/index';
 import { getMoodFrequency, GROUP_SCORES } from '@lib/insights';
 import { MOOD_MAP } from '@constants/moods';
 import { supabase } from '@lib/supabase';
+import i18n from '@i18n/index';
 import { colors, spacing, typography, radius } from '@constants/theme';
+import { getMonthNames } from '@i18n/dateFormat';
 
-const MONTH_LABELS = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-];
+// Locale-aware: re-resolved per render so language switches reflow the chart.
+function getMonthLabels() {
+  return getMonthNames('short');
+}
 
 function computeStreakAll(entries: { loggedAt: string }[]): number {
   const days = new Set(entries.map((e) => e.loggedAt.split('T')[0]));
@@ -52,6 +55,7 @@ function computeMonthAvg(entries: { loggedAt: string; moodId: string }[]) {
 
 export default function AnnualReportScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const session = useSessionStore((s) => s.session);
   const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
   const entries = useMoodEntryStore((s) => s.entries);
@@ -65,6 +69,7 @@ export default function AnnualReportScreen() {
 
   const stats = useMemo(() => {
     if (yearEntries.length === 0) return null;
+    const monthLabels = getMonthLabels();
     const frequency = getMoodFrequency(yearEntries);
     const distinctMoods = new Set(yearEntries.map((e) => e.moodId)).size;
     const longestStreak = computeStreakAll(yearEntries);
@@ -76,8 +81,8 @@ export default function AnnualReportScreen() {
       topMoods: frequency.slice(0, 3).map((f) => ({ label: f.label, count: f.count })),
       emotionalRange: distinctMoods,
       longestStreak,
-      bestMonth: bestMonth ? MONTH_LABELS[parseInt(bestMonth.month.split('-')[1]) - 1] : '—',
-      worstMonth: worstMonth ? MONTH_LABELS[parseInt(worstMonth.month.split('-')[1]) - 1] : '—',
+      bestMonth: bestMonth ? monthLabels[parseInt(bestMonth.month.split('-')[1]) - 1] : '—',
+      worstMonth: worstMonth ? monthLabels[parseInt(worstMonth.month.split('-')[1]) - 1] : '—',
     };
   }, [yearEntries]);
 
@@ -104,7 +109,7 @@ export default function AnnualReportScreen() {
       setLoading(true);
       try {
         const { data, error: fnError } = await supabase!.functions.invoke('generate-annual-report', {
-          body: stats,
+          body: { ...stats, language: i18n.language },
         });
         if (fnError) throw fnError;
         setNarrative(data?.narrative ?? null);
@@ -112,14 +117,14 @@ export default function AnnualReportScreen() {
         if (__DEV__) {
           console.error('[kibun:annual-report] generate-annual-report failed:', e);
         }
-        setError('Could not generate your story. Try again later.');
+        setError(t('annualReport.storyError'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchNarrative();
-  }, [isPro, stats]);
+  }, [isPro, stats, t]);
 
   if (!stats || yearEntries.length === 0) {
     return (
@@ -132,12 +137,12 @@ export default function AnnualReportScreen() {
         >
           <SparkleOverlay count={20} />
           <BackButton variant="onHero" style={reportStyles.backBtn} />
-          <Text style={reportStyles.heroTitle}>{currentYear} in Mood</Text>
+          <Text style={reportStyles.heroTitle}>{t('annualReport.heroTitle', { year: currentYear })}</Text>
         </LinearGradient>
         <View style={reportStyles.emptyContainer}>
-          <Text style={reportStyles.emptyTitle}>Not enough data yet</Text>
+          <Text style={reportStyles.emptyTitle}>{t('annualReport.notEnoughData')}</Text>
           <Text style={reportStyles.emptySubtitle}>
-            Keep checking in — your {currentYear} story will appear here.
+            {t('annualReport.emptySubtitle', { year: currentYear })}
           </Text>
         </View>
       </Screen>
@@ -158,11 +163,11 @@ export default function AnnualReportScreen() {
         </Pressable>
         <View style={reportStyles.badge}>
           <Ionicons name="sparkles" size={12} color={colors.textInverse} />
-          <Text style={reportStyles.badgeText}>Year in Review</Text>
+          <Text style={reportStyles.badgeText}>{t('annualReport.badge')}</Text>
         </View>
-        <Text style={reportStyles.heroTitle}>{currentYear} in Mood</Text>
+        <Text style={reportStyles.heroTitle}>{t('annualReport.heroTitle', { year: currentYear })}</Text>
         <Text style={reportStyles.heroSubtitle}>
-          {stats.totalCheckIns} moments of self-awareness
+          {t('annualReport.heroSubtitle', { total: stats.totalCheckIns })}
         </Text>
       </LinearGradient>
 
@@ -170,37 +175,37 @@ export default function AnnualReportScreen() {
 
         {/* Stats grid */}
         <View style={reportStyles.statsGrid}>
-          <StatCard emoji="📝" value={`${stats.totalCheckIns}`} label="Check-ins" />
-          <StatCard emoji="🔥" value={`${stats.longestStreak}d`} label="Best streak" />
-          <StatCard emoji="🎨" value={`${stats.emotionalRange}`} label="Moods used" />
-          <StatCard emoji="✨" value={stats.bestMonth} label="Best month" />
+          <StatCard emoji="📝" value={`${stats.totalCheckIns}`} label={t('annualReport.statCheckIns')} />
+          <StatCard emoji="🔥" value={t('annualReport.streakDays', { days: stats.longestStreak })} label={t('annualReport.statBestStreak')} />
+          <StatCard emoji="🎨" value={`${stats.emotionalRange}`} label={t('annualReport.statMoodsUsed')} />
+          <StatCard emoji="✨" value={stats.bestMonth} label={t('annualReport.statBestMonth')} />
         </View>
 
         {/* Top moods */}
         <View style={reportStyles.section}>
-          <Text style={reportStyles.sectionTitle}>Top moods</Text>
+          <Text style={reportStyles.sectionTitle}>{t('annualReport.topMoods')}</Text>
           {stats.topMoods.map((m, i) => (
             <View key={m.label} style={reportStyles.topMoodRow}>
               <Text style={reportStyles.topMoodRank}>#{i + 1}</Text>
               <Text style={reportStyles.topMoodLabel}>{m.label}</Text>
-              <Text style={reportStyles.topMoodCount}>{m.count}×</Text>
+              <Text style={reportStyles.topMoodCount}>{t('annualReport.timesCount', { count: m.count })}</Text>
             </View>
           ))}
         </View>
 
         {/* Months */}
         <View style={reportStyles.section}>
-          <Text style={reportStyles.sectionTitle}>Month highlights</Text>
+          <Text style={reportStyles.sectionTitle}>{t('annualReport.monthHighlights')}</Text>
           <View style={reportStyles.monthRow}>
             <View style={[reportStyles.monthCard, reportStyles.monthCardGood]}>
               <Text style={reportStyles.monthCardEmoji}>☀️</Text>
               <Text style={reportStyles.monthCardLabel}>{stats.bestMonth}</Text>
-              <Text style={reportStyles.monthCardHint}>Best month</Text>
+              <Text style={reportStyles.monthCardHint}>{t('annualReport.bestMonthHint')}</Text>
             </View>
             <View style={[reportStyles.monthCard, reportStyles.monthCardTough]}>
               <Text style={reportStyles.monthCardEmoji}>🌧️</Text>
               <Text style={reportStyles.monthCardLabel}>{stats.worstMonth}</Text>
-              <Text style={reportStyles.monthCardHint}>Toughest month</Text>
+              <Text style={reportStyles.monthCardHint}>{t('annualReport.toughestMonthHint')}</Text>
             </View>
           </View>
         </View>
@@ -208,11 +213,11 @@ export default function AnnualReportScreen() {
         {/* AI Narrative */}
         {isPro && (
           <View style={reportStyles.section}>
-            <Text style={reportStyles.sectionTitle}>Your story</Text>
+            <Text style={reportStyles.sectionTitle}>{t('annualReport.yourStory')}</Text>
             {loading ? (
               <View style={reportStyles.narrativeCard}>
                 <ActivityIndicator size="small" color={colors.primary} />
-                <Text style={reportStyles.narrativeLoading}>Writing your year in words…</Text>
+                <Text style={reportStyles.narrativeLoading}>{t('annualReport.writingStory')}</Text>
               </View>
             ) : error ? (
               <View style={reportStyles.narrativeCard}>
@@ -226,7 +231,7 @@ export default function AnnualReportScreen() {
             ) : stats.totalCheckIns < 10 ? (
               <View style={reportStyles.narrativeCard}>
                 <Text style={reportStyles.narrativeLoading}>
-                  Log at least 10 check-ins this year to unlock your AI story.
+                  {t('annualReport.unlockStoryHint')}
                 </Text>
               </View>
             ) : null}
@@ -238,17 +243,17 @@ export default function AnnualReportScreen() {
             style={reportStyles.upgradeCard}
             onPress={() => router.push('/paywall')}
             accessibilityRole="button"
-            accessibilityLabel="Upgrade to Pro to unlock your Year in Words AI narrative"
+            accessibilityLabel={t('annualReport.upgradeA11y')}
           >
             <Text style={reportStyles.upgradeIcon}>✨</Text>
             <View style={reportStyles.upgradeInfo}>
-              <Text style={reportStyles.upgradeTitle}>Your year in words</Text>
+              <Text style={reportStyles.upgradeTitle}>{t('annualReport.upgradeTitle')}</Text>
               <Text style={reportStyles.upgradeSubtitle}>
-                Unlock a personalised AI narrative of your {currentYear}. Pro feature.
+                {t('annualReport.upgradeSubtitle', { year: currentYear })}
               </Text>
             </View>
             <View style={reportStyles.proBadge}>
-              <Text style={reportStyles.proBadgeText}>Pro</Text>
+              <Text style={reportStyles.proBadgeText}>{t('annualReport.pro')}</Text>
             </View>
           </Pressable>
         )}

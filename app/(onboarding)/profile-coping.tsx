@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OnboardingProgress } from '@components/index';
@@ -15,6 +16,7 @@ function toggleCoping(prev: string[], value: string): string[] {
 }
 
 export default function ProfileCopingScreen() {
+  const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
   const [selected, setSelected] = useState<string[]>(profile.copingStrategies);
   const router = useRouter();
@@ -43,25 +45,26 @@ export default function ProfileCopingScreen() {
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('onboarding:a11y.goBack')}
           hitSlop={12}
           style={styles.backButton}
         >
           <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
         </Pressable>
-        <Text style={styles.title}>When things feel heavy</Text>
-        <Text style={styles.subtitle}>What usually helps you ride it out? Pick all that fit.</Text>
+        <Text style={styles.title}>{t('onboarding:profileCoping.title')}</Text>
+        <Text style={styles.subtitle}>{t('onboarding:profileCoping.subtitle')}</Text>
       </LinearGradient>
 
       <View style={styles.sectionCard}>
-        <Text style={styles.groupLabel}>Your coping moves</Text>
+        <Text style={styles.groupLabel}>{t('onboarding:profileCoping.groupLabel')}</Text>
         <View
           style={styles.chipsRow}
           accessibilityRole="none"
-          accessibilityLabel="Coping strategies"
+          accessibilityLabel={t('onboarding:profileCoping.a11yLabel')}
         >
           {COPING_OPTIONS.map((option) => {
             const isSelected = selected.includes(option.value);
+            const label = t(`onboarding:profileCoping.options.${option.value}`);
             return (
               <Pressable
                 key={option.value}
@@ -70,10 +73,10 @@ export default function ProfileCopingScreen() {
                 style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: isSelected }}
-                accessibilityLabel={option.label}
+                accessibilityLabel={label}
               >
                 <Text style={[styles.chipText, isSelected ? styles.chipTextSelected : styles.chipTextUnselected]}>
-                  {option.label}
+                  {label}
                 </Text>
               </Pressable>
             );
@@ -82,7 +85,7 @@ export default function ProfileCopingScreen() {
       </View>
 
       <Button
-        label="Continue"
+        label={t('common:actions.continue')}
         onPress={handleContinue}
         variant="sunrise"
         disabled={!canContinue}

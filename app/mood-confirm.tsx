@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams, type Href } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import * as Crypto from 'expo-crypto';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,15 +16,17 @@ import { getCheckInSlot } from '@lib/checkInSlot';
 import { analyseSentiment, getMoodSentimentAlignment } from '@lib/sentiment';
 import { getMoodDef } from '@lib/moodUtils';
 import { supabase } from '@lib/supabase';
+import i18n from '@i18n/index';
+import { formatDate } from '@i18n/dateFormat';
 import type { SentimentResult } from '@lib/sentiment';
 import type { SentimentLabel } from '@models/index';
 
-const MONTHS = ['January','February','March','April','May','June','July',
-  'August','September','October','November','December'];
-
 function formatBackdate(d: string) {
-  const [, m, day] = d.split('-');
-  return `${MONTHS[parseInt(m) - 1]} ${parseInt(day)}`;
+  const [y, m, day] = d.split('-');
+  return formatDate(
+    new Date(parseInt(y), parseInt(m) - 1, parseInt(day), 12),
+    { month: 'long', day: 'numeric' },
+  );
 }
 
 const SHIBA_MAP: Record<MoodGroup, ShibaVariant> = {
@@ -33,11 +36,11 @@ const SHIBA_MAP: Record<MoodGroup, ShibaVariant> = {
   blue: 'sad',
 };
 
-// Sentiment chip config
-const SENTIMENT_CONFIG: Record<SentimentLabel, { emoji: string; label: string; color: string }> = {
-  positive: { emoji: '😊', label: 'Sounds positive', color: colors.success },
-  neutral:  { emoji: '😐', label: 'Sounds neutral',  color: colors.textSecondary },
-  negative: { emoji: '😔', label: 'Sounds difficult', color: colors.error },
+// Sentiment chip styling — labels resolved via i18n at render time.
+const SENTIMENT_STYLE: Record<SentimentLabel, { emoji: string; color: string }> = {
+  positive: { emoji: '😊', color: colors.success },
+  neutral:  { emoji: '😐', color: colors.textSecondary },
+  negative: { emoji: '😔', color: colors.error },
 };
 
 function getMoodAwareSentimentLabel(
@@ -53,68 +56,61 @@ function getMoodAwareSentimentLabel(
 }
 
 // ─── Mood-specific exercise suggestions (Pro feature) ─────────────────────────
-interface MoodExerciseConfig {
-  title: string;
-  subtitle: string;
+// Visual styling per mood group. title/subtitle and option labels resolved via
+// i18n in-component; option types stay as ids for routing.
+interface MoodExerciseStyle {
   borderColor: string;
   chipBg: string;
   chipBorder: string;
-  options: { type: string; label: string; emoji: string }[];
+  optionTypes: { type: string; emoji: string }[];
 }
 
-const MOOD_EXERCISES: Record<MoodGroup, MoodExerciseConfig> = {
+const MOOD_EXERCISE_STYLE: Record<MoodGroup, MoodExerciseStyle> = {
   green: {
-    title: 'Ride the wave! 🌟',
-    subtitle: 'Capture this good energy while it lasts.',
     borderColor: '#A5D6A7',
     chipBg: '#E8F5E9',
     chipBorder: '#81C784',
-    options: [
-      { type: 'gratitude',      label: 'Gratitude',       emoji: '🙏' },
-      { type: 'joy_capture',    label: 'Joy Capture',     emoji: '✨' },
-      { type: 'savoring',       label: 'Savoring',        emoji: '🌸' },
+    optionTypes: [
+      { type: 'gratitude',      emoji: '🙏' },
+      { type: 'joy_capture',    emoji: '✨' },
+      { type: 'savoring',       emoji: '🌸' },
     ],
   },
   neutral: {
-    title: 'A gentle nudge 🍃',
-    subtitle: 'Small shifts can change your whole day.',
     borderColor: '#CFD8DC',
     chipBg: '#ECEFF1',
     chipBorder: '#B0BEC5',
-    options: [
-      { type: 'energy_boost',   label: 'Energy Boost',    emoji: '⚡' },
-      { type: 'curiosity',      label: 'Curiosity Spark', emoji: '🔍' },
-      { type: 'mindful_pause',  label: 'Mindful Pause',   emoji: '🧘' },
+    optionTypes: [
+      { type: 'energy_boost',   emoji: '⚡' },
+      { type: 'curiosity',      emoji: '🔍' },
+      { type: 'mindful_pause',  emoji: '🧘' },
     ],
   },
   'red-orange': {
-    title: 'Need a moment? 💛',
-    subtitle: 'Try a quick exercise to help reset.',
     borderColor: '#FFD8B0',
     chipBg: '#FFF3E0',
     chipBorder: '#FFCC80',
-    options: [
-      { type: 'box_breathing',  label: 'Box Breathing',   emoji: '🫁' },
-      { type: 'grounding',      label: 'Five Senses',     emoji: '🌱' },
-      { type: 'body_scan',      label: 'Body Scan',       emoji: '🫀' },
+    optionTypes: [
+      { type: 'box_breathing',  emoji: '🫁' },
+      { type: 'grounding',      emoji: '🌱' },
+      { type: 'body_scan',      emoji: '🫀' },
     ],
   },
   blue: {
-    title: 'You are not alone 💙',
-    subtitle: 'Sometimes sitting with feelings is enough.',
     borderColor: '#90CAF9',
     chipBg: '#E3F2FD',
     chipBorder: '#64B5F6',
-    options: [
-      { type: 'self_compassion', label: 'Self Compassion', emoji: '💜' },
-      { type: 'comfort_list',    label: 'Comfort List',    emoji: '🧸' },
-      { type: 'box_breathing',   label: 'Box Breathing',   emoji: '🫁' },
+    optionTypes: [
+      { type: 'self_compassion', emoji: '💜' },
+      { type: 'comfort_list',    emoji: '🧸' },
+      { type: 'box_breathing',   emoji: '🫁' },
     ],
   },
 };
 
 export default function MoodConfirmScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{ moodId: string; date?: string }>();
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -207,6 +203,7 @@ export default function MoodConfirmScreen() {
               logged_at:  e.loggedAt,
               note:       e.note ?? undefined,
             })),
+            language: i18n.language,
           },
         });
         if (data?.prompt) {
@@ -238,7 +235,7 @@ export default function MoodConfirmScreen() {
           <Pressable
             onPress={() => router.replace('/(tabs)')}
             accessibilityRole="button"
-            accessibilityLabel="Close without saving"
+            accessibilityLabel={t('moodConfirm.closeA11y')}
             hitSlop={12}
           >
             <Ionicons name="close" size={22} color={colors.textInverse} />
@@ -247,14 +244,16 @@ export default function MoodConfirmScreen() {
         <View style={styles.heroBadge}>
           <Ionicons name="sparkles" size={12} color={colors.textInverse} />
           <Text style={styles.heroBadgeText}>
-            {params.date ? `Logging for ${formatBackdate(params.date)}` : 'Your vibe today'}
+            {params.date
+              ? t('moodConfirm.loggingFor', { date: formatBackdate(params.date) })
+              : t('moodConfirm.vibeToday')}
           </Text>
         </View>
         <View style={styles.moodDisplay}>
           <MoodBubble mood={mood} size="lg" />
           <View style={styles.titleColumn}>
             <Text style={styles.moodLabel}>{mood.label}</Text>
-            <Text style={styles.moodSubLabel}>This feeling matters. Let us log it.</Text>
+            <Text style={styles.moodSubLabel}>{t('moodConfirm.moodSubLabel')}</Text>
           </View>
         </View>
 
@@ -264,55 +263,57 @@ export default function MoodConfirmScreen() {
       </LinearGradient>
 
       <View style={styles.noteSection}>
-        <Text style={styles.noteLabel}>Add a note</Text>
+        <Text style={styles.noteLabel}>{t('moodConfirm.noteLabel')}</Text>
         <TextInput
           style={styles.noteInput}
           value={note}
           onChangeText={handleNoteChange}
-          placeholder="How are you feeling? (optional)"
+          placeholder={t('moodConfirm.notePlaceholder')}
           placeholderTextColor={colors.textDisabled}
           multiline
           numberOfLines={4}
           textAlignVertical="top"
-          accessibilityLabel="Mood note"
+          accessibilityLabel={t('moodConfirm.noteA11y')}
         />
         {/* Sentiment chip — only shown when ONNX model is available + note is long enough */}
-        {sentiment && (
-          <View style={styles.sentimentRow}>
-            <View style={[styles.sentimentChip, { borderColor: SENTIMENT_CONFIG[moodAwareSentimentLabel ?? 'neutral'].color }]}>
-              <Text style={styles.sentimentEmoji}>
-                {SENTIMENT_CONFIG[moodAwareSentimentLabel ?? 'neutral'].emoji}
-              </Text>
-              <Text style={[styles.sentimentLabel, { color: SENTIMENT_CONFIG[moodAwareSentimentLabel ?? 'neutral'].color }]}>
-                {SENTIMENT_CONFIG[moodAwareSentimentLabel ?? 'neutral'].label}
-              </Text>
+        {sentiment && (() => {
+          const sentimentKey = moodAwareSentimentLabel ?? 'neutral';
+          const sStyle = SENTIMENT_STYLE[sentimentKey];
+          return (
+            <View style={styles.sentimentRow}>
+              <View style={[styles.sentimentChip, { borderColor: sStyle.color }]}>
+                <Text style={styles.sentimentEmoji}>{sStyle.emoji}</Text>
+                <Text style={[styles.sentimentLabel, { color: sStyle.color }]}>
+                  {t(`moodConfirm.sentiment.${sentimentKey}`)}
+                </Text>
+              </View>
+              {/* Gentle contradiction hint */}
+              {alignment === 'contrary' && (
+                <Text style={styles.alignmentHint}>
+                  {mood.group === 'green'
+                    ? t('moodConfirm.alignmentHintGreen')
+                    : t('moodConfirm.alignmentHintNegative')}
+                </Text>
+              )}
             </View>
-            {/* Gentle contradiction hint */}
-            {alignment === 'contrary' && (
-              <Text style={styles.alignmentHint}>
-                {mood.group === 'green'
-                  ? "Note sounds difficult \u2014 that\u2019s okay to feel."
-                  : "Note sounds hopeful \u2014 that\u2019s worth noticing."}
-              </Text>
-            )}
-          </View>
-        )}
+          );
+        })()}
       </View>
 
       {/* Energy & Focus — Pro feature */}
       {isPro ? (
         <View style={styles.efCard}>
-          <Text style={styles.efTitle}>Energy & Focus</Text>
-          <Text style={styles.efSubtitle}>Optional — helps reveal deeper patterns</Text>
+          <Text style={styles.efTitle}>{t('moodConfirm.energy.title')}</Text>
+          <Text style={styles.efSubtitle}>{t('moodConfirm.energy.subtitle')}</Text>
           <DotPicker
-            label="Energy"
+            label={t('moodConfirm.energy.energy')}
             emoji="⚡"
             value={energyLevel}
             onChange={setEnergyLevel}
             activeColor={colors.accent}
           />
           <DotPicker
-            label="Focus"
+            label={t('moodConfirm.energy.focus')}
             emoji="🎯"
             value={focusLevel}
             onChange={setFocusLevel}
@@ -324,12 +325,12 @@ export default function MoodConfirmScreen() {
           style={styles.efTeaser}
           onPress={() => router.push('/paywall' as Href)}
           accessibilityRole="button"
-          accessibilityLabel="Track energy and focus levels — Pro feature"
+          accessibilityLabel={t('moodConfirm.energyTeaserA11y')}
         >
           <Ionicons name="sparkles" size={13} color={colors.primary} />
-          <Text style={styles.efTeaserText}>Track energy & focus levels</Text>
+          <Text style={styles.efTeaserText}>{t('moodConfirm.energyTeaser')}</Text>
           <View style={styles.efProBadge}>
-            <Text style={styles.efProBadgeText}>Pro</Text>
+            <Text style={styles.efProBadgeText}>{t('moodConfirm.proBadge')}</Text>
           </View>
         </TouchableOpacity>
       )}
@@ -337,53 +338,56 @@ export default function MoodConfirmScreen() {
       <View style={styles.actions}>
         {/* Exercise CTA — visible to all, functional for Pro only */}
         {(() => {
-          const config = MOOD_EXERCISES[mood.group];
+          const style = MOOD_EXERCISE_STYLE[mood.group];
           return (
-            <View style={[styles.exerciseCard, { borderColor: config.borderColor }]}>
+            <View style={[styles.exerciseCard, { borderColor: style.borderColor }]}>
               <View style={styles.exerciseTitleRow}>
-                <Text style={styles.exerciseTitle}>{config.title}</Text>
+                <Text style={styles.exerciseTitle}>{t(`moodConfirm.exercises.${mood.group}.title`)}</Text>
                 {!isPro && (
                   <View style={styles.proBadge}>
                     <Ionicons name="lock-closed" size={10} color="#fff" />
-                    <Text style={styles.proBadgeText}>Pro</Text>
+                    <Text style={styles.proBadgeText}>{t('moodConfirm.proBadge')}</Text>
                   </View>
                 )}
               </View>
-              <Text style={styles.exerciseSubtitle}>{config.subtitle}</Text>
+              <Text style={styles.exerciseSubtitle}>{t(`moodConfirm.exercises.${mood.group}.subtitle`)}</Text>
               <View style={[styles.exerciseRow, !isPro && { opacity: 0.5 }]}>
-                {config.options.map((opt) => (
-                  <TouchableOpacity
-                    key={opt.type}
-                    style={[styles.exerciseChip, { backgroundColor: config.chipBg, borderColor: config.chipBorder }]}
-                    onPress={() => {
-                      if (isPro) {
-                        router.push({ pathname: '/exercise', params: { type: opt.type } } as unknown as Href);
-                      } else {
-                        router.push('/paywall' as Href);
-                      }
-                    }}
-                    accessibilityLabel={isPro ? opt.label : `${opt.label} — requires Pro`}
-                  >
-                    <Text style={styles.exerciseEmoji}>{opt.emoji}</Text>
-                    <Text style={styles.exerciseChipLabel}>{opt.label}</Text>
-                  </TouchableOpacity>
-                ))}
+                {style.optionTypes.map((opt) => {
+                  const optLabel = t(`moodConfirm.exercises.options.${opt.type}`);
+                  return (
+                    <TouchableOpacity
+                      key={opt.type}
+                      style={[styles.exerciseChip, { backgroundColor: style.chipBg, borderColor: style.chipBorder }]}
+                      onPress={() => {
+                        if (isPro) {
+                          router.push({ pathname: '/exercise', params: { type: opt.type } } as unknown as Href);
+                        } else {
+                          router.push('/paywall' as Href);
+                        }
+                      }}
+                      accessibilityLabel={isPro ? optLabel : t('moodConfirm.exercises.requiresPro', { label: optLabel })}
+                    >
+                      <Text style={styles.exerciseEmoji}>{opt.emoji}</Text>
+                      <Text style={styles.exerciseChipLabel}>{optLabel}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
               {!isPro && (
                 <TouchableOpacity
                   style={styles.unlockButton}
                   onPress={() => router.push('/paywall' as Href)}
-                  accessibilityLabel="Unlock exercises with Pro"
+                  accessibilityLabel={t('moodConfirm.exercises.unlockProA11y')}
                 >
                   <Ionicons name="sparkles" size={14} color="#fff" />
-                  <Text style={styles.unlockButtonText}>Unlock with Pro</Text>
+                  <Text style={styles.unlockButtonText}>{t('moodConfirm.exercises.unlockPro')}</Text>
                 </TouchableOpacity>
               )}
             </View>
           );
         })()}
         <Button
-          label="Save"
+          label={t('moodConfirm.save')}
           onPress={handleSave}
           variant="sunrise"
           loading={submitting}
@@ -391,7 +395,7 @@ export default function MoodConfirmScreen() {
           fullWidth
         />
         <Button
-          label="Change mood"
+          label={t('moodConfirm.changeMood')}
           onPress={() => router.back()}
           variant="ghost"
           fullWidth

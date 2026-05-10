@@ -16,6 +16,15 @@ const MOOD_GROUPS: Record<string, string> = {
   melancholy: "blue", lonely: "blue",
 };
 
+type AppLanguage = "en" | "es";
+
+function toSupportedLanguage(value: unknown): AppLanguage {
+  if (typeof value !== "string") return "en";
+  const normalized = value.toLowerCase();
+  if (normalized.startsWith("es")) return "es";
+  return "en";
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -120,6 +129,7 @@ Deno.serve(async (req: Request) => {
     // Profile context from request body
     const body = await req.json().catch(() => ({}));
     const { profile } = body;
+    const language = toSupportedLanguage(body?.language);
     const profileLines = profile
       ? [
           profile.name ? `Name: ${profile.name}` : null,
@@ -128,13 +138,19 @@ Deno.serve(async (req: Request) => {
         ].filter(Boolean).join("\n")
       : "";
 
-    const systemMessage =
-      "You are a warm, perceptive daily companion for the Kibun mood tracking app. " +
-      "Generate exactly 2 short sentences: one specific observation about the user's recent mood pattern, " +
-      "and one gentle encouragement or nudge relevant to today. " +
-      "Reference actual mood names and time patterns when relevant. " +
-      "Be conversational and uplifting, never clinical or generic. " +
-      "Do not open with 'I notice' or 'It looks like'. No bullet points or headers.";
+    const systemMessage = language === "es"
+      ? "Eres un acompanante diario calido y perspicaz para la app de seguimiento de animo Kibun. " +
+        "Genera exactamente 2 frases cortas: una observacion especifica sobre el patron emocional reciente de la persona, " +
+        "y un aliento o sugerencia suave para hoy. " +
+        "Haz referencia a nombres de animo y patrones de horario cuando aporte valor. " +
+        "Usa un tono cercano y optimista, nunca clinico ni generico. " +
+        "No comiences con 'Noto que' ni 'Parece que'. Sin listas ni encabezados."
+      : "You are a warm, perceptive daily companion for the Kibun mood tracking app. " +
+        "Generate exactly 2 short sentences: one specific observation about the user's recent mood pattern, " +
+        "and one gentle encouragement or nudge relevant to today. " +
+        "Reference actual mood names and time patterns when relevant. " +
+        "Be conversational and uplifting, never clinical or generic. " +
+        "Do not open with 'I notice' or 'It looks like'. No bullet points or headers.";
 
     const userMessage = [
       `Top moods (last 14 days): ${topMoods}`,
@@ -142,7 +158,9 @@ Deno.serve(async (req: Request) => {
       `Most recent mood: ${latestMood}`,
       `Total check-ins: ${entries.length}`,
       profileLines ? `\nProfile:\n${profileLines}` : "",
-      "\nGenerate exactly 2 sentences of personalized daily insight.",
+      language === "es"
+        ? "\nGenera exactamente 2 frases de insight diario personalizado."
+        : "\nGenerate exactly 2 sentences of personalized daily insight.",
     ].filter(Boolean).join("\n");
 
     let insight: string;

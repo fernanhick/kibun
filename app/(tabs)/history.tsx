@@ -1,12 +1,15 @@
 import { useMemo, useState, useCallback } from 'react';
 import { View, Text, Pressable, Share, StyleSheet, type LayoutChangeEvent } from 'react-native';
 import { useRouter, Href } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Shiba } from '@components/index';
 import { useMoodEntryStore, useSessionStore, useLifeEventsStore } from '@store/index';
 import { useResponsive } from '@hooks/useResponsive';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { colors, spacing, typography, radius } from '@constants/theme';
+import { getMonthNames, getWeekdayLabels } from '@i18n/dateFormat';
+import { getMoodLabel, getMoodGroupLabel } from '@lib/moodLabels';
 
 // Representative tones per mood group used in the balance bar / legend.
 const GROUP_COLORS: Record<MoodGroup, string> = {
@@ -16,21 +19,16 @@ const GROUP_COLORS: Record<MoodGroup, string> = {
   blue: '#90CAF9',
 };
 
-const GROUP_LABELS: Record<MoodGroup, string> = {
-  green: 'Positive',
-  neutral: 'Mixed',
-  'red-orange': 'Stormy',
-  blue: 'Tender',
-};
-
 const GROUP_ORDER: MoodGroup[] = ['green', 'neutral', 'red-orange', 'blue'];
 
-const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
+// Locale-aware: re-resolved on every render so language switches in Settings
+// reflow the calendar header without needing to remount the screen.
+function getDateLabels() {
+  return {
+    weekdays: getWeekdayLabels('initial'),
+    monthNames: getMonthNames('long'),
+  };
+}
 
 type ResponsiveSelect = ReturnType<typeof useResponsive>['select'];
 
@@ -85,8 +83,10 @@ function buildCalendarGrid(year: number, month: number): (number | null)[][] {
 
 export default function HistoryScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const responsive = useResponsive();
   const r = useMemo(() => buildResponsiveSizes(responsive.select), [responsive.select]);
+  const { weekdays: WEEKDAYS, monthNames: MONTH_NAMES } = getDateLabels();
   // The calendar panel measures its own width via onLayout; cellSize is derived
   // from that so the grid stays correct when Screen clamps content on tablets.
   const [calendarWidth, setCalendarWidth] = useState(0);
@@ -243,19 +243,19 @@ export default function HistoryScreen() {
       const csv = [header, ...rows].join('\n');
       await Share.share({
         message: csv,
-        title: 'Kibun Mood Export',
+        title: t('history.exportTitle'),
       });
     } finally {
       setExporting(false);
     }
-  }, [entries, exporting]);
+  }, [entries, exporting, t]);
 
   return (
     <Screen scrollable={true} layout="wide" contentContainerStyle={styles.scrollPadding}>
       <View style={styles.headerCard}>
         <View style={styles.headerTopRow}>
           <View style={styles.headerBadge}>
-            <Text style={[styles.headerBadgeText, { fontSize: r.badgeText }]}>Mood Calendar</Text>
+            <Text style={[styles.headerBadgeText, { fontSize: r.badgeText }]}>{t('history.header.badge')}</Text>
           </View>
           <View style={styles.headerTopRight}>
             {isPro && (
@@ -263,10 +263,10 @@ export default function HistoryScreen() {
                 onPress={() => router.push('/log-event' as Href)}
                 style={styles.addEventBtn}
                 accessibilityRole="button"
-                accessibilityLabel="Log a life event"
+                accessibilityLabel={t('history.actions.eventA11y')}
               >
                 <Ionicons name="add" size={r.actionIcon} color={colors.primaryDark} />
-                <Text style={[styles.exportBtnLabel, { fontSize: r.btnLabel }]}>Event</Text>
+                <Text style={[styles.exportBtnLabel, { fontSize: r.btnLabel }]}>{t('history.actions.event')}</Text>
               </Pressable>
             )}
             {isPro ? (
@@ -275,21 +275,21 @@ export default function HistoryScreen() {
                 disabled={exporting || entries.length === 0}
                 style={[styles.exportBtn, (exporting || entries.length === 0) && styles.exportBtnDisabled]}
                 accessibilityRole="button"
-                accessibilityLabel="Export mood history as CSV"
+                accessibilityLabel={t('history.actions.exportA11y')}
               >
                 <Ionicons name="share-outline" size={r.actionIcon} color={colors.primaryDark} />
-                <Text style={[styles.exportBtnLabel, { fontSize: r.btnLabel }]}>Export</Text>
+                <Text style={[styles.exportBtnLabel, { fontSize: r.btnLabel }]}>{t('history.actions.export')}</Text>
               </Pressable>
             ) : (
               <Pressable
                 onPress={() => router.push('/paywall' as Href)}
                 style={styles.exportProLock}
                 accessibilityRole="button"
-                accessibilityLabel="Upgrade to Pro to export mood history"
+                accessibilityLabel={t('history.actions.exportLockedA11y')}
               >
-                <Text style={[styles.exportProLockText, { fontSize: r.btnLabel }]}>Export</Text>
+                <Text style={[styles.exportProLockText, { fontSize: r.btnLabel }]}>{t('history.actions.export')}</Text>
                 <View style={styles.proLockBadge}>
-                  <Text style={[styles.proLockBadgeText, { fontSize: r.proLockBadge }]}>Pro</Text>
+                  <Text style={[styles.proLockBadgeText, { fontSize: r.proLockBadge }]}>{t('insights.proBadge')}</Text>
                 </View>
               </Pressable>
             )}
@@ -299,7 +299,7 @@ export default function HistoryScreen() {
         <View style={styles.header}>
           <Pressable
             onPress={goToPrevMonth}
-            accessibilityLabel="Previous month"
+            accessibilityLabel={t('history.header.prevMonthA11y')}
             accessibilityRole="button"
             hitSlop={12}
           >
@@ -307,13 +307,13 @@ export default function HistoryScreen() {
           </Pressable>
 
           <Text style={[styles.monthLabel, { fontSize: r.monthLabel }]} accessibilityRole="header">
-            {MONTH_NAMES[currentMonth.month]} {currentMonth.year}
+            {t('history.header.monthYear', { month: MONTH_NAMES[currentMonth.month], year: currentMonth.year })}
           </Text>
 
           <Pressable
             onPress={goToNextMonth}
             disabled={isCurrentMonth}
-            accessibilityLabel="Next month"
+            accessibilityLabel={t('history.header.nextMonthA11y')}
             accessibilityRole="button"
             hitSlop={12}
             style={isCurrentMonth ? styles.disabledArrow : undefined}
@@ -356,9 +356,11 @@ export default function HistoryScreen() {
               const monthName = MONTH_NAMES[currentMonth.month];
 
               const cellA11yLabel = [
-                `${monthName} ${day}`,
-                isToday ? 'today' : '',
-                hasEntries ? mood.label : (!isFuture ? 'tap to log mood' : 'no entries'),
+                t('history.calendar.cellA11y', { month: monthName, day }),
+                isToday ? t('history.calendar.today') : '',
+                hasEntries
+                  ? getMoodLabel(moodId)
+                  : (!isFuture ? t('history.calendar.tapToLog') : t('history.calendar.noEntries')),
               ]
                 .filter(Boolean)
                 .join(', ');
@@ -425,6 +427,7 @@ interface MonthSnapshotProps {
 }
 
 function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
+  const { t } = useTranslation('screens');
   const { total, activeDays, groupCounts, topMoodId } = summary;
   const topMood = topMoodId ? MOOD_MAP[topMoodId] : null;
 
@@ -432,13 +435,15 @@ function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
     return (
       <View style={styles.snapshotCard}>
         <View style={styles.snapshotBadge}>
-          <Text style={[styles.snapshotBadgeText, { fontSize: r.badgeText }]}>Monthly Snapshot</Text>
+          <Text style={[styles.snapshotBadgeText, { fontSize: r.badgeText }]}>{t('history.snapshot.badge')}</Text>
         </View>
         <View style={styles.emptyState}>
           <Shiba variant="neutral" size={r.shibaEmpty} />
-          <Text style={[styles.emptyTitle, { fontSize: r.emptyTitle }]}>No moods yet for {monthLabel}</Text>
+          <Text style={[styles.emptyTitle, { fontSize: r.emptyTitle }]}>
+            {t('history.snapshot.emptyTitle', { month: monthLabel })}
+          </Text>
           <Text style={[styles.emptySubtitle, { fontSize: r.emptySubtitle }]}>
-            Tap a day above to log how you're feeling.
+            {t('history.snapshot.emptySubtitle')}
           </Text>
         </View>
       </View>
@@ -452,20 +457,20 @@ function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
   return (
     <View style={styles.snapshotCard}>
       <View style={styles.snapshotBadge}>
-        <Text style={[styles.snapshotBadgeText, { fontSize: r.badgeText }]}>Monthly Snapshot</Text>
+        <Text style={[styles.snapshotBadgeText, { fontSize: r.badgeText }]}>{t('history.snapshot.badge')}</Text>
       </View>
 
       <View style={styles.statsRow}>
         <View style={styles.statCell}>
           <Text style={[styles.statValue, { fontSize: r.statValue }]}>{total}</Text>
-          <Text style={[styles.statLabel, { fontSize: r.statLabel }]}>moods logged</Text>
+          <Text style={[styles.statLabel, { fontSize: r.statLabel }]}>{t('history.snapshot.moodsLogged')}</Text>
         </View>
         <View style={[styles.statDivider, { height: r.statDividerHeight }]} />
         <View style={styles.statCell}>
           <Text style={[styles.statValue, { fontSize: r.statValue }]}>{activeDays}</Text>
-          <Text style={[styles.statLabel, { fontSize: r.statLabel }]}>active days</Text>
+          <Text style={[styles.statLabel, { fontSize: r.statLabel }]}>{t('history.snapshot.activeDays')}</Text>
         </View>
-        {topMood && (
+        {topMood && topMoodId && (
           <>
             <View style={[styles.statDivider, { height: r.statDividerHeight }]} />
             <View style={[styles.statCell, styles.topMoodCell]}>
@@ -474,7 +479,7 @@ function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
                 { backgroundColor: topMood.bubbleColor, width: r.topMoodBubble, height: r.topMoodBubble },
               ]} />
               <Text style={[styles.statLabel, { fontSize: r.statLabel }]} numberOfLines={1}>
-                top: {topMood.label.toLowerCase()}
+                {t('history.snapshot.topMood', { mood: getMoodLabel(topMoodId).toLowerCase() })}
               </Text>
             </View>
           </>
@@ -515,7 +520,7 @@ function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
                 { backgroundColor: GROUP_COLORS[group], width: r.legendSwatch, height: r.legendSwatch },
               ]} />
               <Text style={[styles.legendLabel, { fontSize: r.legendLabel }]}>
-                {GROUP_LABELS[group]} <Text style={styles.legendPct}>{pct}%</Text>
+                {getMoodGroupLabel(group)} <Text style={styles.legendPct}>{pct}%</Text>
               </Text>
             </View>
           );

@@ -1,0 +1,22 @@
+{
+  "happy":      { "label": "Happy",      "response": "That's wonderful! Let's hold onto that feeling." },
+  "excited":    { "label": "Excited",    "response": "Big energy! Something good is happening." },
+  "grateful":   { "label": "Grateful",   "response": "Gratitude is powerful — you're already practicing it." },
+  "calm":       { "label": "Calm",       "response": "Peaceful moments are worth noticing." },
+  "meh":        { "label": "Meh",        "response": "Not every day needs to sparkle. You showed up." },
+  "tired":      { "label": "Tired",      "response": "Rest is productive. Your body is telling you something." },
+  "bored":      { "label": "Bored",      "response": "Boredom is creativity waiting for a spark." },
+  "confused":   { "label": "Confused",   "response": "Uncertainty means you're thinking — that's a good sign." },
+  "sad":        { "label": "Sad",        "response": "It's okay to feel this way. You're not alone." },
+  "anxious":    { "label": "Anxious",    "response": "Take a breath. You're here, and that's enough." },
+  "frustrated": { "label": "Frustrated", "response": "Friction means you care. That matters." },
+  "angry":      { "label": "Angry",      "response": "Strong feelings deserve space. Let's track them." },
+  "melancholy": { "label": "Melancholy", "response": "A quiet ache — sometimes hard to name, always valid." },
+  "lonely":     { "label": "Lonely",     "response": "Connection takes courage. Noticing the feeling is the first step." },
+  "groups": {
+    "green":      "Positive",
+    "neutral":    "Reflective",
+    "red-orange": "Intense",
+    "blue":       "Tender"
+  }
+}

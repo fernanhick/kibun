@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@components/Screen';
 import { Button } from '@components/Button';
@@ -14,6 +15,7 @@ import { colors, typography, spacing } from '@constants/theme';
 import { useOnboardingStore } from '@store/onboardingStore';
 
 export default function FirstMoodScreen() {
+  const { t } = useTranslation('onboarding');
   const [selectedMood, setSelectedMood] = useState<MoodDefinition | null>(null);
   const router = useRouter();
   const setFirstMoodId = useOnboardingStore((s) => s.setFirstMoodId);
@@ -37,7 +39,7 @@ export default function FirstMoodScreen() {
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('a11y.goBack')}
           hitSlop={12}
           style={styles.backButton}
         >
@@ -46,8 +48,8 @@ export default function FirstMoodScreen() {
         <View style={styles.shibaContainer}>
           <Shiba variant="neutral" size={180} loop autoPlay />
         </View>
-        <Text style={styles.headline}>How are you feeling?</Text>
-        <Text style={styles.subline}>Pick the mood that feels closest right now.</Text>
+        <Text style={styles.headline}>{t('firstMood.headline')}</Text>
+        <Text style={styles.subline}>{t('firstMood.subline')}</Text>
       </LinearGradient>
 
       <View style={styles.gridCard}>
@@ -66,7 +68,7 @@ export default function FirstMoodScreen() {
 
       <View style={styles.ctaContainer}>
         <Button
-          label="Let's go"
+          label={t('firstMood.cta')}
           onPress={handleContinue}
           variant="sunrise"
           disabled={selectedMood === null}

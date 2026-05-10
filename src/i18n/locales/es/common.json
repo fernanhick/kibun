@@ -1,0 +1,27 @@
+{
+  "actions": {
+    "continue": "Continuar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "skip": "Omitir",
+    "done": "Listo",
+    "close": "Cerrar",
+    "retry": "Reintentar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "confirm": "Confirmar",
+    "ok": "OK"
+  },
+  "errors": {
+    "somethingWentWrong": "Algo salió mal",
+    "restartApp": "Reiniciar la app",
+    "tryAgain": "Inténtalo de nuevo",
+    "noConnection": "Sin conexión. Revisa tu red e inténtalo de nuevo."
+  },
+  "placeholders": {
+    "loading": "Cargando…",
+    "empty": "Aún no hay nada aquí."
+  }
+}

@@ -23,6 +23,8 @@
 
 import type { SentimentLabel } from '@models/index';
 
+type SentimentLanguage = 'en' | 'es';
+
 // â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const EMBED_DIM   = 64;
@@ -49,7 +51,49 @@ interface ModelWeights {
 let weights: ModelWeights | null = null;
 let vocab: Record<string, number> | null = null;
 let initPromise: Promise<void> | null = null;
-let modelUnavailable = false;
+let loadedLanguage: SentimentLanguage | null = null;
+let activeLanguage: SentimentLanguage = 'en';
+const unavailableLanguages = new Set<SentimentLanguage>();
+
+function normalizeLanguage(language?: string): SentimentLanguage {
+  if (!language) return 'en';
+  return language.toLowerCase().startsWith('es') ? 'es' : 'en';
+}
+
+const vocabLoaders: Record<SentimentLanguage, () => Record<string, number>> = {
+  en: () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return require('../../assets/models/vocab.json') as Record<string, number>;
+  },
+  es: () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return require('../../assets/models/vocab.es.json') as Record<string, number>;
+  },
+};
+
+const weightLoaders: Record<SentimentLanguage, () => Record<string, string>> = {
+  en: () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return require('../../assets/models/weights.json') as Record<string, string>;
+  },
+  es: () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return require('../../assets/models/weights.es.json') as Record<string, string>;
+  },
+};
+
+function isValidWeightBlob(raw: Record<string, string>): boolean {
+  return typeof raw.emb === 'string'
+    && typeof raw.fc1_w === 'string'
+    && typeof raw.fc1_b === 'string'
+    && typeof raw.fc2_w === 'string'
+    && typeof raw.fc2_b === 'string'
+    && raw.emb.length > 0
+    && raw.fc1_w.length > 0
+    && raw.fc1_b.length > 0
+    && raw.fc2_w.length > 0
+    && raw.fc2_b.length > 0;
+}
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -82,16 +126,19 @@ function gelu(x: number): number {
 
 // â”€â”€â”€ Initialization â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-async function init(): Promise<void> {
-  if (weights || modelUnavailable) return;
+async function init(language: SentimentLanguage = activeLanguage): Promise<void> {
+  if (weights && vocab && loadedLanguage === language) return;
+  if (unavailableLanguages.has(language)) return;
   if (initPromise) return initPromise;
 
   initPromise = (async () => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const vocabData = require('../../assets/models/vocab.json') as Record<string, number>;
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const raw = require('../../assets/models/weights.json') as Record<string, string>;
+      const vocabData = vocabLoaders[language]();
+      const raw = weightLoaders[language]();
+
+      if (!vocabData || typeof vocabData !== 'object' || !isValidWeightBlob(raw)) {
+        throw new Error(`Missing or invalid sentiment assets for language: ${language}`);
+      }
 
       vocab   = vocabData;
       weights = {
@@ -101,15 +148,24 @@ async function init(): Promise<void> {
         fc2w: b64ToF32(raw.fc2_w),
         fc2b: b64ToF32(raw.fc2_b),
       };
+      loadedLanguage = language;
 
       if (__DEV__) {
-        console.log('[kibun:sentiment] Weights loaded (pure JS inference)');
+        console.log(`[kibun:sentiment] Weights loaded for '${language}' (pure JS inference)`);
       }
     } catch (err) {
-      modelUnavailable = true;
+      unavailableLanguages.add(language);
+      weights = null;
+      vocab = null;
+      loadedLanguage = null;
       if (__DEV__) {
-        console.warn('[kibun:sentiment] Model not available \u2014 run scripts/train_sentiment_model.py to generate assets/models/weights.json', err);
+        console.warn(
+          `[kibun:sentiment] Model not available for '${language}' - run scripts/train_sentiment_model.py --language ${language} to generate locale assets`,
+          err,
+        );
       }
+    } finally {
+      initPromise = null;
     }
   })();
 
@@ -121,7 +177,7 @@ async function init(): Promise<void> {
 function tokenize(text: string): string[] {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9\s']/g, ' ')
+    .replace(/[^a-z0-9\u00C0-\u024F\s']/g, ' ')
     .split(/\s+/)
     .filter(Boolean);
 }
@@ -197,7 +253,7 @@ export async function analyseSentiment(text: string): Promise<SentimentResult | 
   if (tokens.length < 3) return null;
 
   try {
-    await init();
+    await init(activeLanguage);
     if (!weights || !vocab) return null;
 
     const probs      = forward(tokens);
@@ -225,7 +281,21 @@ export async function analyseSentiment(text: string): Promise<SentimentResult | 
  * Fire-and-forget â€” never throws.
  */
 export function prewarmSentimentModel(): void {
-  init().catch(() => {});
+  init(activeLanguage).catch(() => {});
+}
+
+/**
+ * Switch active sentiment locale. If locale assets are unavailable,
+ * analyseSentiment() returns null and UI falls back gracefully.
+ */
+export function setSentimentLanguage(language?: string): void {
+  const next = normalizeLanguage(language);
+  if (activeLanguage === next) return;
+  activeLanguage = next;
+  weights = null;
+  vocab = null;
+  loadedLanguage = null;
+  initPromise = null;
 }
 
 // â”€â”€â”€ Moodâ€“Sentiment Alignment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

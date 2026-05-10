@@ -66,6 +66,7 @@ export default ({ config }: ConfigContext) => ({
     'expo-asset',
     'expo-image',
     'expo-font',
+    'expo-localization',
     'expo-router',
     'expo-secure-store',
     [

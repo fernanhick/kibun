@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
@@ -14,6 +15,7 @@ import { colors, typography, spacing, radius } from '@constants/theme';
 
 export default function AccountScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const session = useSessionStore((s) => s.session);
   const isAnonymous = !session || session.authStatus === 'anonymous';
   const subscriptionStatus = session?.subscriptionStatus ?? 'none';
@@ -36,12 +38,12 @@ export default function AccountScreen() {
 
   const handleDeleteData = () => {
     Alert.alert(
-      'Delete My Data',
-      'This will permanently delete all your mood entries, AI reports, and profile information. Your account will remain active. This cannot be undone.',
+      t('account.deleteData.confirmTitle'),
+      t('account.deleteData.confirmBody'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('account.common.cancel'), style: 'cancel' },
         {
-          text: 'Delete Data',
+          text: t('account.deleteData.confirmAction'),
           style: 'destructive',
           onPress: async () => {
             if (!supabase || deletingData) return;
@@ -54,7 +56,7 @@ export default function AccountScreen() {
               router.replace('/(onboarding)/first-mood');
             } catch (err) {
               if (__DEV__) console.error('[kibun:account] Delete data failed:', err);
-              Alert.alert('Error', 'Failed to delete data. Please try again.');
+              Alert.alert(t('account.deleteData.errorTitle'), t('account.deleteData.errorBody'));
               setDeletingData(false);
             }
           },
@@ -65,12 +67,12 @@ export default function AccountScreen() {
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      'Delete Account',
-      'This will permanently delete your account and all your mood data. This action cannot be undone.',
+      t('account.deleteAccount.confirmTitle'),
+      t('account.deleteAccount.confirmBody'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('account.common.cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('account.deleteAccount.confirmAction'),
           style: 'destructive',
           onPress: async () => {
             if (!supabase || deleting) return;
@@ -84,7 +86,7 @@ export default function AccountScreen() {
               router.replace('/(onboarding)/first-mood');
             } catch (err) {
               if (__DEV__) console.error('[kibun:account] Delete account failed:', err);
-              Alert.alert('Error', 'Failed to delete account. Please try again.');
+              Alert.alert(t('account.deleteAccount.errorTitle'), t('account.deleteAccount.errorBody'));
               setDeleting(false);
             }
           },
@@ -128,17 +130,17 @@ export default function AccountScreen() {
       file.write(json);
 
       if (!(await Sharing.isAvailableAsync())) {
-        Alert.alert('Export saved', `Sharing is not available on this device. File: ${file.uri}`);
+        Alert.alert(t('account.export.savedTitle'), t('account.export.savedFallback', { uri: file.uri }));
         return;
       }
       await Sharing.shareAsync(file.uri, {
         mimeType: 'application/json',
-        dialogTitle: 'Export Kibun data',
+        dialogTitle: t('account.export.dialogTitle'),
         UTI: 'public.json',
       });
     } catch (err) {
       if (__DEV__) console.error('[kibun:account] Export failed:', err);
-      Alert.alert('Export failed', 'Could not export your data. Please try again.');
+      Alert.alert(t('account.export.failedTitle'), t('account.export.failedBody'));
     } finally {
       setExporting(false);
     }
@@ -150,7 +152,7 @@ export default function AccountScreen() {
       <View style={styles.header}>
         <BackButton />
         <Text style={styles.headerTitle} accessibilityRole="header">
-          Account
+          {t('account.title')}
         </Text>
       </View>
 
@@ -163,12 +165,10 @@ export default function AccountScreen() {
             color={colors.textSecondary}
             accessibilityElementsHidden
           />
-          <Text style={styles.stateTitle}>Not signed in</Text>
-          <Text style={styles.stateSubtitle}>
-            Your mood data is stored on this device only. Create an account to keep it safe across devices.
-          </Text>
+          <Text style={styles.stateTitle}>{t('account.anonymous.title')}</Text>
+          <Text style={styles.stateSubtitle}>{t('account.anonymous.subtitle')}</Text>
           <Button
-            label="Create account"
+            label={t('account.anonymous.createAccount')}
             onPress={() => router.push('/register')}
             fullWidth
           />
@@ -187,7 +187,7 @@ export default function AccountScreen() {
               accessibilityElementsHidden
             />
             <View style={styles.accountInfo}>
-              <Text style={styles.accountTitle}>Connected account</Text>
+              <Text style={styles.accountTitle}>{t('account.connected')}</Text>
               {email ? (
                 <Text style={styles.accountEmail}>{email}</Text>
               ) : (
@@ -197,11 +197,11 @@ export default function AccountScreen() {
           </View>
 
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            SUBSCRIPTION
+            {t('account.sections.subscription')}
           </Text>
           <View style={styles.section}>
             <View style={styles.subscriptionRow}>
-              <Text style={styles.subscriptionLabel}>Status</Text>
+              <Text style={styles.subscriptionLabel}>{t('account.subscription.statusLabel')}</Text>
               <SubscriptionBadge status={subscriptionStatus} />
             </View>
             {(subscriptionStatus === 'expired' || subscriptionStatus === 'none') && (
@@ -209,32 +209,30 @@ export default function AccountScreen() {
                 style={styles.upgradeRow}
                 onPress={() => router.push('/paywall')}
                 accessibilityRole="button"
-                accessibilityLabel="Manage subscription"
+                accessibilityLabel={t('account.subscription.manageA11y')}
               >
-                <Text style={styles.upgradeText}>Manage subscription</Text>
+                <Text style={styles.upgradeText}>{t('account.subscription.manage')}</Text>
                 <Ionicons name="chevron-forward" size={16} color={colors.primary} />
               </Pressable>
             )}
           </View>
 
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            SECURITY
+            {t('account.sections.security')}
           </Text>
           <View style={styles.section}>
             <Pressable
               style={styles.securityRow}
               onPress={() => router.push('/change-password')}
               accessibilityRole="button"
-              accessibilityLabel={hasEmailPassword ? 'Change password' : 'Set a password'}
+              accessibilityLabel={hasEmailPassword ? t('account.security.changeA11y') : t('account.security.setA11y')}
             >
               <View style={styles.securityTextGroup}>
                 <Text style={styles.securityLabel}>
-                  {hasEmailPassword ? 'Change password' : 'Set a password'}
+                  {hasEmailPassword ? t('account.security.change') : t('account.security.set')}
                 </Text>
                 {!hasEmailPassword && (
-                  <Text style={styles.securityHint}>
-                    Add a password as a backup to Google or Apple sign-in.
-                  </Text>
+                  <Text style={styles.securityHint}>{t('account.security.setHint')}</Text>
                 )}
               </View>
               <Ionicons name="chevron-forward" size={16} color={colors.primary} />
@@ -243,19 +241,17 @@ export default function AccountScreen() {
 
           <View style={styles.signOutSection}>
             <Button
-              label={signingOut ? 'Signing out...' : 'Sign out'}
+              label={signingOut ? t('account.signOut.loading') : t('account.signOut.label')}
               onPress={handleSignOut}
               variant="ghost"
               disabled={signingOut || deleting}
               fullWidth
             />
-            <Text style={styles.signOutHint}>
-              Signing out will end your session. Your mood data will remain on this device.
-            </Text>
+            <Text style={styles.signOutHint}>{t('account.signOut.hint')}</Text>
           </View>
 
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            PRIVACY
+            {t('account.sections.privacy')}
           </Text>
           <View style={styles.section}>
             <Pressable
@@ -263,15 +259,13 @@ export default function AccountScreen() {
               onPress={handleExport}
               disabled={exporting}
               accessibilityRole="button"
-              accessibilityLabel="Export my data"
+              accessibilityLabel={t('account.export.a11y')}
             >
               <View style={styles.securityTextGroup}>
                 <Text style={styles.securityLabel}>
-                  {exporting ? 'Preparing export...' : 'Export my data'}
+                  {exporting ? t('account.export.loading') : t('account.export.label')}
                 </Text>
-                <Text style={styles.securityHint}>
-                  Download a JSON copy of your moods, journals, habits, and profile.
-                </Text>
+                <Text style={styles.securityHint}>{t('account.export.hint')}</Text>
               </View>
               {exporting
                 ? <ActivityIndicator size="small" color={colors.primary} />
@@ -280,20 +274,20 @@ export default function AccountScreen() {
           </View>
 
           <View style={styles.dangerSection}>
-            <Text style={styles.dangerHeader} accessibilityRole="header">DANGER ZONE</Text>
+            <Text style={styles.dangerHeader} accessibilityRole="header">{t('account.sections.danger')}</Text>
             <View style={styles.dangerCard}>
               <Pressable
                 style={styles.deleteRow}
                 onPress={handleDeleteData}
                 disabled={deletingData || deleting}
                 accessibilityRole="button"
-                accessibilityLabel="Delete my data"
+                accessibilityLabel={t('account.deleteData.a11y')}
               >
                 <View style={styles.deleteTextGroup}>
                   <Text style={styles.deleteTitle}>
-                    {deletingData ? 'Deleting data...' : 'Delete My Data'}
+                    {deletingData ? t('account.deleteData.loading') : t('account.deleteData.title')}
                   </Text>
-                  <Text style={styles.deleteSubtitle}>Removes mood history and profile, keeps account</Text>
+                  <Text style={styles.deleteSubtitle}>{t('account.deleteData.subtitle')}</Text>
                 </View>
                 {deletingData
                   ? <ActivityIndicator size="small" color={colors.error} />
@@ -305,13 +299,13 @@ export default function AccountScreen() {
                 onPress={handleDeleteAccount}
                 disabled={deleting || deletingData}
                 accessibilityRole="button"
-                accessibilityLabel="Delete account"
+                accessibilityLabel={t('account.deleteAccount.a11y')}
               >
                 <View style={styles.deleteTextGroup}>
                   <Text style={styles.deleteTitle}>
-                    {deleting ? 'Deleting...' : 'Delete Account'}
+                    {deleting ? t('account.deleteAccount.loading') : t('account.deleteAccount.title')}
                   </Text>
-                  <Text style={styles.deleteSubtitle}>Permanently removes account and all data</Text>
+                  <Text style={styles.deleteSubtitle}>{t('account.deleteAccount.subtitle')}</Text>
                 </View>
                 {deleting
                   ? <ActivityIndicator size="small" color={colors.error} />
@@ -328,13 +322,16 @@ export default function AccountScreen() {
 // ── Sub-components ─────────────────────────────────────────────────────────
 
 function SubscriptionBadge({ status }: { status: string }) {
-  const config: Record<string, { label: string; style: object; textStyle: object }> = {
-    trial:   { label: 'Free trial', style: styles.badgeTrial,   textStyle: styles.badgeTrialText },
-    active:  { label: 'Active',     style: styles.badgeActive,  textStyle: styles.badgeActiveText },
-    expired: { label: 'Expired',    style: styles.badgeExpired, textStyle: styles.badgeExpiredText },
-    none:    { label: 'No plan',    style: styles.badgeNone,    textStyle: styles.badgeNoneText },
+  const { t } = useTranslation('screens');
+  const styleMap: Record<string, { style: object; textStyle: object }> = {
+    trial:   { style: styles.badgeTrial,   textStyle: styles.badgeTrialText },
+    active:  { style: styles.badgeActive,  textStyle: styles.badgeActiveText },
+    expired: { style: styles.badgeExpired, textStyle: styles.badgeExpiredText },
+    none:    { style: styles.badgeNone,    textStyle: styles.badgeNoneText },
   };
-  const { label, style, textStyle } = config[status] ?? config.none;
+  const key = (status in styleMap) ? status : 'none';
+  const { style, textStyle } = styleMap[key];
+  const label = t(`account.subscription.badge.${key}`);
   return (
     <View style={[styles.badge, style]}>
       <Text style={[styles.badgeText, textStyle]}>{label}</Text>

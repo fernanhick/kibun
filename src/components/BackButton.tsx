@@ -7,6 +7,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, radius } from '@constants/theme';
 
@@ -25,10 +26,12 @@ interface BackButtonProps {
 export function BackButton({
   onPress,
   variant = 'light',
-  label = 'Home',
+  label,
   style,
 }: BackButtonProps) {
   const router = useRouter();
+  const { t } = useTranslation('screens');
+  const resolvedLabel = label ?? t('components.backButton.defaultLabel');
 
   const handlePress = () => {
     if (onPress) {
@@ -51,7 +54,7 @@ export function BackButton({
     <Pressable
       onPress={handlePress}
       accessibilityRole="button"
-      accessibilityLabel={`Go to ${label.toLowerCase()}`}
+      accessibilityLabel={t('components.backButton.a11y', { label: resolvedLabel.toLowerCase() })}
       hitSlop={8}
       style={({ pressed }) => [
         styles.button,
@@ -61,7 +64,7 @@ export function BackButton({
       ]}
     >
       <Ionicons name="chevron-back" size={18} color={fg} />
-      <Text style={[styles.label, { color: fg }]}>{label}</Text>
+      <Text style={[styles.label, { color: fg }]}>{resolvedLabel}</Text>
     </Pressable>
   );
 }

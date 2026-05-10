@@ -1,0 +1,27 @@
+{
+  "actions": {
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "done": "Done",
+    "close": "Close",
+    "retry": "Retry",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "ok": "OK"
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong",
+    "restartApp": "Restart app",
+    "tryAgain": "Try again",
+    "noConnection": "No connection. Check your network and retry."
+  },
+  "placeholders": {
+    "loading": "Loading…",
+    "empty": "Nothing here yet."
+  }
+}

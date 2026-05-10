@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OnboardingProgress } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { colors, typography, spacing, radius } from '@constants/theme';
-import { PickerOption } from '@models/index';
 
-const GOAL_OPTIONS: PickerOption[] = [
-  { label: 'Understand my emotions', value: 'understand-emotions' },
-  { label: 'Reduce stress', value: 'reduce-stress' },
-  { label: 'Improve sleep', value: 'improve-sleep' },
-  { label: 'Track my energy', value: 'track-energy' },
-  { label: 'Build self-awareness', value: 'self-awareness' },
-  { label: 'Notice mood patterns', value: 'mood-patterns' },
-];
+const GOAL_VALUES = [
+  'understand-emotions',
+  'reduce-stress',
+  'improve-sleep',
+  'track-energy',
+  'self-awareness',
+  'mood-patterns',
+] as const;
 
-// Multi-select toggle — module-level pure function (no stale closure risk)
 function toggleGoal(prev: string[], value: string): string[] {
   return prev.includes(value)
     ? prev.filter((g) => g !== value)
@@ -25,6 +24,7 @@ function toggleGoal(prev: string[], value: string): string[] {
 }
 
 export default function ProfileGoalsScreen() {
+  const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
   const [selectedGoals, setSelectedGoals] = useState<string[]>(profile.goals);
   const router = useRouter();
@@ -53,37 +53,38 @@ export default function ProfileGoalsScreen() {
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('onboarding:a11y.goBack')}
           hitSlop={12}
           style={styles.backButton}
         >
           <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
         </Pressable>
-        <Text style={styles.title}>What are you hoping for?</Text>
-        <Text style={styles.subtitle}>Pick everything that feels right.</Text>
+        <Text style={styles.title}>{t('onboarding:profileGoals.title')}</Text>
+        <Text style={styles.subtitle}>{t('onboarding:profileGoals.subtitle')}</Text>
       </LinearGradient>
 
       <View style={styles.sectionCard}>
-        <Text style={styles.groupLabel}>Your goals</Text>
+        <Text style={styles.groupLabel}>{t('onboarding:profileGoals.groupLabel')}</Text>
         <View
           style={styles.chipsRow}
           accessibilityRole="none"
-          accessibilityLabel="Goals"
+          accessibilityLabel={t('onboarding:profileGoals.a11yLabel')}
         >
-          {GOAL_OPTIONS.map((option) => {
-            const isSelected = selectedGoals.includes(option.value);
+          {GOAL_VALUES.map((value) => {
+            const isSelected = selectedGoals.includes(value);
+            const label = t(`onboarding:profileGoals.options.${value}`);
             return (
               <Pressable
-                key={option.value}
-                onPress={() => handleGoalToggle(option.value)}
+                key={value}
+                onPress={() => handleGoalToggle(value)}
                 hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                 style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: isSelected }}
-                accessibilityLabel={option.label}
+                accessibilityLabel={label}
               >
                 <Text style={[styles.chipText, isSelected ? styles.chipTextSelected : styles.chipTextUnselected]}>
-                  {option.label}
+                  {label}
                 </Text>
               </Pressable>
             );
@@ -92,7 +93,7 @@ export default function ProfileGoalsScreen() {
       </View>
 
       <Button
-        label="Continue"
+        label={t('common:actions.continue')}
         onPress={handleContinue}
         variant="sunrise"
         disabled={!canContinue}

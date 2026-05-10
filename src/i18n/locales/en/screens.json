@@ -1,0 +1,973 @@
+{
+  "appErrors": {
+    "title": "Something went wrong",
+    "restart": "Restart app"
+  },
+  "tabs": {
+    "home": "Home",
+    "history": "History",
+    "insights": "Insights",
+    "settings": "Settings",
+    "logMoodA11y": "Log mood"
+  },
+  "home": {
+    "anonBanner": {
+      "text": "Your data is on this device only.",
+      "link": "Sign up to sync it →",
+      "a11ySignup": "Sign up to save your data",
+      "a11yHint": "Your mood data is stored on this device only. Tap to create an account.",
+      "a11yDismiss": "Dismiss banner"
+    },
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "windDown": "Time to wind down"
+    },
+    "streak": "{{count}} day streak 🔥",
+    "streakA11y": "Current streak: {{count}} days",
+    "logMoodCta": "Log mood",
+    "todayHeader": "Today",
+    "todayHeaderCount": "Today ({{count}})",
+    "achievementsHeader": "Achievements",
+    "achievementA11y": "{{label}}: {{description}}",
+    "habitsHeader": "Habits",
+    "habitsManage": "Manage",
+    "habitsManageA11y": "Manage habits",
+    "habitsTrackDaily": "Track daily habits",
+    "habitsEmptyA11y": "Set up habits to track alongside your mood",
+    "habitDoneA11y": "{{name}}: done, tap to unmark",
+    "habitNotDoneA11y": "{{name}}: not done, tap to mark",
+    "habitLevelA11y": "{{name}} level {{n}}",
+    "entryA11y": "{{mood}} at {{time}}. Tap to view details.",
+    "slot": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "night": "Evening",
+      "pre_sleep": "Night"
+    },
+    "insightHeader": "Today's Insight",
+    "insightLoading": "Personalising your insight…",
+    "tipLogTitle": "Log how you're feeling",
+    "tipLogSub": "Tap \"Log mood\" above — it only takes a few seconds.",
+    "tipLogA11y": "Log your first mood of the day",
+    "tipHabitsTitle": "Track daily habits",
+    "tipHabitsSub": "Add sleep, water, or movement to spot what lifts you up.",
+    "tipHabitsA11y": "Set up daily habits to track",
+    "motivational": {
+      "positive": [
+        "You're on a roll — keep that energy going!",
+        "Yesterday was a good one. Let's build on it!",
+        "Good vibes all around. You've got this!",
+        "Your positivity is shining through. Keep it up!",
+        "Yesterday felt bright — let today be even better.",
+        "You're in a great flow. Embrace every moment.",
+        "Riding the good wave — stay with it!",
+        "Great days deserve to be celebrated. You did well!"
+      ],
+      "struggling": [
+        "Every day is a fresh start. You've got this.",
+        "It's okay to not be okay — take it one breath at a time.",
+        "Be gentle with yourself today. You're doing better than you think.",
+        "Hard moments build resilience. We're here with you.",
+        "You showed up — and that's what counts.",
+        "Tough times don't last. You're stronger than you know.",
+        "Even the smallest win counts today. What's one good thing?",
+        "You're not alone in this. Take a breath — you've got today.",
+        "Healing isn't linear. Every moment forward matters."
+      ],
+      "neutral": [
+        "Check in with yourself — every moment counts.",
+        "A new day, a fresh chapter. How are you feeling?",
+        "Your feelings matter. Let's explore them together.",
+        "Ready to tune in? Let's see how you're doing.",
+        "Small check-ins lead to big self-awareness.",
+        "How's your inner world today?",
+        "Take a moment — how are you really feeling?",
+        "Today's a great day to understand yourself better."
+      ]
+    },
+    "emptyVariants": {
+      "positive": [
+        { "emoji": "🌞", "title": "Welcome back",        "body": "Recent days have felt bright. Want to keep that good energy going?", "affirmation": "Today is yours to shine. ✨" },
+        { "emoji": "🌻", "title": "Glad you're here",    "body": "You've been on a lovely streak. A quick check-in keeps the momentum.", "affirmation": "Small moments, big wins. 💛" },
+        { "emoji": "🌈", "title": "Keep it going",       "body": "Things have felt good lately. Capture how today is treating you.", "affirmation": "Your light matters. ✨" }
+      ],
+      "struggling": [
+        { "emoji": "🌷", "title": "We're here with you", "body": "Recent days have felt heavy. Even one small check-in helps you understand what you need.", "affirmation": "You're stronger than you know. 🤍" },
+        { "emoji": "🍃", "title": "One breath at a time","body": "Hard moments don't last forever. Logging how you feel is a quiet act of self-care.", "affirmation": "Be tender with yourself today. 🤍" },
+        { "emoji": "☁️", "title": "You showed up",       "body": "And that's enough. Tracking your mood, even on tough days, is how you start to see yourself clearly.", "affirmation": "Healing isn't linear — every step counts. ✨" }
+      ],
+      "neutral": [
+        { "emoji": "🌸", "title": "You matter",          "body": "No moods logged yet — and that's okay. Just showing up here is a kind thing to do for yourself.", "affirmation": "Be gentle with yourself today. ✨" },
+        { "emoji": "🪷", "title": "A fresh page",        "body": "Each day is a new chapter. Take a moment to check in with yourself.", "affirmation": "Your feelings are valid — whatever they are. ✨" },
+        { "emoji": "✨", "title": "Hi there",            "body": "How's your inner world today? A quick log helps you spot patterns over time.", "affirmation": "You're worth paying attention to. 💛" }
+      ]
+    }
+  },
+  "insights": {
+    "patterns": {
+      "dayOfWeek": "You often feel {{mood}} on {{day}}s",
+      "timeOfDay": "You tend to feel {{mood}} in {{slot}}",
+      "trendUp": "Your mood has been improving lately 🌱",
+      "trendDown": "Your mood has been dipping recently"
+    },
+    "hero": {
+      "title": "Insights",
+      "subtitle": "Track your mood patterns over time",
+      "badge": "Mood Story"
+    },
+    "period": {
+      "label": "{{n}}d",
+      "a11y": "Show last {{n}} days"
+    },
+    "stats": {
+      "streak": "day streak",
+      "streakA11y": "{{count}} day streak",
+      "checkIns": "check-ins",
+      "checkInsA11y": "{{count}} check-ins"
+    },
+    "sections": {
+      "topMoods": "Top moods",
+      "trend": "Mood trend",
+      "patterns": "Patterns",
+      "resilience": "Resilience",
+      "correlations": "Correlations",
+      "habitsAndMood": "Habits & Mood",
+      "aiReport": "AI Report",
+      "yearInMood": "Year in Mood"
+    },
+    "charts": {
+      "barA11y": "Mood frequency chart showing top {{count}} moods",
+      "trendA11y": "Mood trend line chart over {{count}} days"
+    },
+    "patternsHint": "Log more check-ins to see patterns",
+    "resilienceCard": {
+      "title": "Emotional Resilience",
+      "scoreA11y": "Emotional resilience score: {{score}} out of 100",
+      "lockedTitle": "Emotional Resilience Score",
+      "lockedSubtitle": "See how quickly you bounce back from difficult moods. Pro feature.",
+      "lockedA11y": "Upgrade to Pro to unlock Emotional Resilience Score",
+      "empty": "Log more moods — including some difficult ones — to see your resilience score.",
+      "recoveryMinutes": "{{n}}m avg recovery",
+      "recoveryHours": "{{n}}h avg recovery",
+      "recoveryDays": "{{n}}d avg recovery",
+      "basedOn_one": "based on {{count}} recovery",
+      "basedOn_other": "based on {{count}} recoveries"
+    },
+    "correlationsCard": {
+      "lockedTitle": "Correlation Insights",
+      "lockedSubtitle": "See which times and days you feel best. Pro feature.",
+      "lockedA11y": "Upgrade to Pro to unlock Correlation Insights",
+      "heatmapA11y": "Correlation heatmap showing average mood by time-of-day and day-of-week",
+      "cellA11y": "score {{score}}",
+      "noDataA11y": "no data",
+      "slotShort": {
+        "morning": "Morn",
+        "afternoon": "Aftn",
+        "night": "Eve",
+        "pre_sleep": "Night"
+      },
+      "legend": {
+        "low": "Low",
+        "mixed": "Mixed",
+        "good": "Good",
+        "great": "Great",
+        "noData": "No data"
+      }
+    },
+    "habitCorrelations": {
+      "lockedTitle": "Habit × Mood Correlations",
+      "lockedSubtitle": "See which habits most influence your mood scores. Pro feature.",
+      "lockedA11y": "Upgrade to Pro to unlock Habit Correlations",
+      "needsMoreTitle": "Not enough data yet",
+      "needsMoreSubtitle": "Log habits for at least 5 days to see correlations.",
+      "rowA11y": "{{habit}}: {{label}}",
+      "strength": {
+        "strongPositive": "Strong positive",
+        "strongNegative": "Strong negative",
+        "moderatePositive": "Moderate positive",
+        "moderateNegative": "Moderate negative",
+        "weakPositive": "Weak positive",
+        "weakNegative": "Weak negative",
+        "none": "No clear link"
+      }
+    },
+    "aiReport": {
+      "title": "Personalised insights",
+      "subtitle": "Weekly and monthly AI mood analysis",
+      "a11y": "View AI Report — get personalised mood insights"
+    },
+    "yearInMood": {
+      "title": "{{year}} in Mood",
+      "subtitle": "Your yearly mood story with AI narrative",
+      "a11y": "View your Year in Mood annual report"
+    },
+    "proBadge": "Pro",
+    "empty": {
+      "title": "No moods logged yet",
+      "subtitle": "Start checking in to see your patterns here"
+    }
+  },
+  "history": {
+    "header": {
+      "badge": "Mood Calendar",
+      "monthYear": "{{month}} {{year}}",
+      "prevMonthA11y": "Previous month",
+      "nextMonthA11y": "Next month"
+    },
+    "actions": {
+      "event": "Event",
+      "eventA11y": "Log a life event",
+      "export": "Export",
+      "exportA11y": "Export mood history as CSV",
+      "exportLockedA11y": "Upgrade to Pro to export mood history"
+    },
+    "exportTitle": "Kibun Mood Export",
+    "calendar": {
+      "today": "today",
+      "tapToLog": "tap to log mood",
+      "noEntries": "no entries",
+      "cellA11y": "{{month}} {{day}}"
+    },
+    "snapshot": {
+      "badge": "Monthly Snapshot",
+      "emptyTitle": "No moods yet for {{month}}",
+      "emptySubtitle": "Tap a day above to log how you're feeling.",
+      "moodsLogged": "moods logged",
+      "activeDays": "active days",
+      "topMood": "top: {{mood}}"
+    }
+  },
+  "register": {
+    "hero": {
+      "registerTitle": "Create your account",
+      "loginTitle": "Welcome back!",
+      "registerSubtitle": "Link your data to an account so you never lose it",
+      "loginSubtitle": "Sign in to pick up where you left off",
+      "fromOnboardingNote": "You can skip onboarding now. Completing those questions later helps us personalize insights."
+    },
+    "social": {
+      "apple": "Continue with Apple",
+      "google": "Continue with Google"
+    },
+    "divider": "or",
+    "form": {
+      "emailLabel": "Email",
+      "emailA11y": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordA11y": "Password",
+      "passwordPlaceholderRegister": "Min. 8 characters",
+      "passwordPlaceholderLogin": "Your password",
+      "submitRegister": "Create account",
+      "submitLogin": "Sign in",
+      "forgot": "Forgot password?",
+      "forgotA11y": "Forgot password",
+      "legalIntro": "By creating an account you agree to our ",
+      "legalAnd": " and ",
+      "legalSuffix": ".",
+      "termsOfUse": "Terms of Use",
+      "privacyPolicy": "Privacy Policy"
+    },
+    "toggle": {
+      "haveAccount": "Already have an account? ",
+      "noAccount": "Don't have an account? ",
+      "linkLogin": "Sign in",
+      "linkRegister": "Create one"
+    },
+    "skip": "Skip for now",
+    "skipA11yHint": "Continue without creating an account",
+    "errors": {
+      "configMissing": "Configuration error: Supabase is not set for this build.",
+      "differentPassword": "Please choose a different password and try again.",
+      "alreadyRegistered": "An account with this email already exists. Try signing in instead.",
+      "incorrectCredentials": "Incorrect email or password.",
+      "confirmFirst": "Please check your inbox and confirm your email first.",
+      "signupDisabled": "Account creation is temporarily unavailable. Please try again later.",
+      "tooManyRequests": "Too many attempts. Please wait a moment and try again.",
+      "networkError": "Connection error. Please check your internet and try again.",
+      "passwordTooShort": "Password must be at least 8 characters.",
+      "invalidEmail": "Please enter a valid email address.",
+      "enterEmailFirst": "Please enter your email address above first.",
+      "oauthUnavailable": "{{provider}} sign in unavailable",
+      "oauthFailedGoogle": "Google sign in failed. Please try again.",
+      "oauthFailedApple": "Apple sign in failed. Please try again.",
+      "signInIncomplete": "Sign in could not be completed. Please try again."
+    },
+    "info": {
+      "accountCreated": "Account created. Please confirm your email, then sign in.",
+      "confirmBeforeSignIn": "Please check your inbox and confirm your email before signing in.",
+      "confirmFirstThenSignIn": "Please confirm your email first, then sign in.",
+      "resetEmailSent": "Password reset email sent. Check your inbox."
+    }
+  },
+  "account": {
+    "title": "Account",
+    "anonymous": {
+      "title": "Not signed in",
+      "subtitle": "Your mood data is stored on this device only. Create an account to keep it safe across devices.",
+      "createAccount": "Create account"
+    },
+    "connected": "Connected account",
+    "sections": {
+      "subscription": "SUBSCRIPTION",
+      "security": "SECURITY",
+      "privacy": "PRIVACY",
+      "danger": "DANGER ZONE"
+    },
+    "subscription": {
+      "statusLabel": "Status",
+      "manage": "Manage subscription",
+      "manageA11y": "Manage subscription",
+      "badge": {
+        "trial": "Free trial",
+        "active": "Active",
+        "expired": "Expired",
+        "none": "No plan"
+      }
+    },
+    "security": {
+      "change": "Change password",
+      "set": "Set a password",
+      "setHint": "Add a password as a backup to Google or Apple sign-in.",
+      "changeA11y": "Change password",
+      "setA11y": "Set a password"
+    },
+    "signOut": {
+      "label": "Sign out",
+      "loading": "Signing out...",
+      "hint": "Signing out will end your session. Your mood data will remain on this device."
+    },
+    "export": {
+      "label": "Export my data",
+      "loading": "Preparing export...",
+      "hint": "Download a JSON copy of your moods, journals, habits, and profile.",
+      "a11y": "Export my data",
+      "savedTitle": "Export saved",
+      "savedFallback": "Sharing is not available on this device. File: {{uri}}",
+      "dialogTitle": "Export Kibun data",
+      "failedTitle": "Export failed",
+      "failedBody": "Could not export your data. Please try again."
+    },
+    "deleteData": {
+      "title": "Delete My Data",
+      "loading": "Deleting data...",
+      "subtitle": "Removes mood history and profile, keeps account",
+      "a11y": "Delete my data",
+      "confirmTitle": "Delete My Data",
+      "confirmBody": "This will permanently delete all your mood entries, AI reports, and profile information. Your account will remain active. This cannot be undone.",
+      "confirmAction": "Delete Data",
+      "errorTitle": "Error",
+      "errorBody": "Failed to delete data. Please try again."
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "loading": "Deleting...",
+      "subtitle": "Permanently removes account and all data",
+      "a11y": "Delete account",
+      "confirmTitle": "Delete Account",
+      "confirmBody": "This will permanently delete your account and all your mood data. This action cannot be undone.",
+      "confirmAction": "Delete",
+      "errorTitle": "Error",
+      "errorBody": "Failed to delete account. Please try again."
+    },
+    "common": {
+      "cancel": "Cancel"
+    }
+  },
+  "changePassword": {
+    "titleChange": "Change password",
+    "titleSet": "Set a password",
+    "ineligible": "Password sign-in needs an email address on file for this account. Please contact support if you need help.",
+    "goBack": "Go back",
+    "setSubtitle": "Add a password so you can sign in with your email as a backup to Google or Apple sign-in.",
+    "fields": {
+      "currentLabel": "Current password",
+      "currentA11y": "Current password",
+      "currentPlaceholder": "Enter current password",
+      "newLabel": "New password",
+      "newA11y": "New password",
+      "newPlaceholder": "Min. 8 characters",
+      "confirmLabel": "Confirm new password",
+      "confirmA11y": "Confirm new password",
+      "confirmPlaceholder": "Re-enter new password"
+    },
+    "submitChange": "Update password",
+    "submitSet": "Set password",
+    "forgot": "Forgot current password?",
+    "forgotA11y": "Forgot current password",
+    "errors": {
+      "incorrectCurrent": "Incorrect current password.",
+      "mustDiffer": "New password must differ from current.",
+      "tooShort": "Password must be at least 8 characters.",
+      "tooManyRequests": "Too many attempts. Please wait a moment and try again.",
+      "networkError": "Connection error. Please check your internet and try again.",
+      "enterCurrent": "Please enter your current password.",
+      "fillBoth": "Please fill in both password fields.",
+      "noMatch": "Passwords do not match."
+    },
+    "info": {
+      "passwordSet": "Password set. You can now sign in with {{email}} and this password.",
+      "updated": "Password updated.",
+      "resetEmailSent": "Password reset email sent. Check your inbox."
+    }
+  },
+  "checkIn": {
+    "title": "How are you feeling?",
+    "subtitlePick": "Pick the mood that matches this moment.",
+    "subtitleBackdate": "Logging for {{date}}",
+    "groupHeading": "{{group}} moods",
+    "customSection": "Your moods",
+    "manage": "Manage",
+    "create": "+ Create",
+    "createFirst": "Create a custom mood",
+    "a11yCancel": "Cancel",
+    "a11yManageCustom": "Manage custom moods",
+    "a11yCreateFirst": "Create your first custom mood"
+  },
+  "moodConfirm": {
+    "vibeToday": "Your vibe today",
+    "loggingFor": "Logging for {{date}}",
+    "moodSubLabel": "This feeling matters. Let us log it.",
+    "noteLabel": "Add a note",
+    "notePlaceholder": "How are you feeling? (optional)",
+    "noteA11y": "Mood note",
+    "closeA11y": "Close without saving",
+    "sentiment": {
+      "positive": "Sounds positive",
+      "neutral": "Sounds neutral",
+      "negative": "Sounds difficult"
+    },
+    "alignmentHintGreen": "Note sounds difficult — that's okay to feel.",
+    "alignmentHintNegative": "Note sounds hopeful — that's worth noticing.",
+    "energy": {
+      "title": "Energy & Focus",
+      "subtitle": "Optional — helps reveal deeper patterns",
+      "energy": "Energy",
+      "focus": "Focus",
+      "level": "{{label}} level {{n}}",
+      "clear": "Clear {{label}}"
+    },
+    "energyTeaser": "Track energy & focus levels",
+    "energyTeaserA11y": "Track energy and focus levels — Pro feature",
+    "exercises": {
+      "green": {
+        "title": "Ride the wave! 🌟",
+        "subtitle": "Capture this good energy while it lasts."
+      },
+      "neutral": {
+        "title": "A gentle nudge 🍃",
+        "subtitle": "Small shifts can change your whole day."
+      },
+      "red-orange": {
+        "title": "Need a moment? 💛",
+        "subtitle": "Try a quick exercise to help reset."
+      },
+      "blue": {
+        "title": "You are not alone 💙",
+        "subtitle": "Sometimes sitting with feelings is enough."
+      },
+      "options": {
+        "gratitude": "Gratitude",
+        "joy_capture": "Joy Capture",
+        "savoring": "Savoring",
+        "energy_boost": "Energy Boost",
+        "curiosity": "Curiosity Spark",
+        "mindful_pause": "Mindful Pause",
+        "box_breathing": "Box Breathing",
+        "grounding": "Five Senses",
+        "body_scan": "Body Scan",
+        "self_compassion": "Self Compassion",
+        "comfort_list": "Comfort List"
+      },
+      "requiresPro": "{{label}} — requires Pro",
+      "unlockPro": "Unlock with Pro",
+      "unlockProA11y": "Unlock exercises with Pro"
+    },
+    "save": "Save",
+    "changeMood": "Change mood",
+    "proBadge": "Pro"
+  },
+  "journalReflect": {
+    "promptLabel": "Reflect",
+    "placeholder": "Write freely — this is just for you.",
+    "a11y": "Journal response",
+    "save": "Save reflection",
+    "skip": "Skip for now"
+  },
+  "exercise": {
+    "closeA11y": "Close",
+    "step": "Step {{n}} of {{total}}",
+    "next": "Next",
+    "continue": "Continue",
+    "finish": "Finish",
+    "done": "Done",
+    "boxBreathing": {
+      "phases": {
+        "inhale": "Inhale",
+        "hold": "Hold",
+        "exhale": "Exhale"
+      },
+      "description": "Follow the circle. Breathe in rhythm — {{count}} cycles.",
+      "cycle": "Cycle {{n}} / {{total}}",
+      "doneTitle": "Well done!",
+      "doneSubtitle": "You completed {{count}} cycles of box breathing."
+    },
+    "grounding": {
+      "description": "Use your senses to gently bring yourself back to the present moment.",
+      "steps": [
+        "Name 5 things you can see right now.",
+        "Name 4 things you can physically touch.",
+        "Name 3 things you can hear.",
+        "Name 2 things you can smell.",
+        "Name 1 thing you can taste."
+      ]
+    },
+    "gratitude": {
+      "description": "List three things you are grateful for right now.",
+      "prompts": [
+        "Something that made you smile today.",
+        "A person who brings you comfort.",
+        "Something in your body that is working well."
+      ],
+      "itemA11y": "Gratitude item {{n}}"
+    },
+    "joyCapture": {
+      "description": "Capture what is making you happy. Writing it down makes it stick.",
+      "prompts": [
+        "What made you smile or laugh today?",
+        "What are you most excited about right now?",
+        "Who brought you joy recently?"
+      ],
+      "itemA11y": "Joy item {{n}}"
+    },
+    "savoring": {
+      "description": "Savoring helps you hold onto positive emotions by slowing down and noticing them.",
+      "steps": [
+        "Close your eyes. Replay a happy moment from today in full detail.",
+        "Notice how your body feels right now — warmth, lightness, ease.",
+        "Smile gently. Let the feeling linger a little longer."
+      ]
+    },
+    "energyBoost": {
+      "description": "Quick physical resets to shake off the fog and reclaim your energy.",
+      "steps": [
+        "Stand up and stretch your arms above your head for 10 seconds.",
+        "Take 5 deep breaths — in through your nose, out through your mouth.",
+        "Shake out your hands and roll your shoulders back.",
+        "Splash cold water on your face or hold an ice cube."
+      ]
+    },
+    "curiosity": {
+      "description": "Curiosity pulls you out of autopilot. Answer these to re-engage with the world.",
+      "prompts": [
+        "What is one thing you would like to learn more about today?",
+        "What is something around you that you have never really looked at closely?",
+        "If you could ask anyone one question right now, what would it be?"
+      ],
+      "itemA11y": "Curiosity item {{n}}"
+    },
+    "mindfulPause": {
+      "description": "A quick reset to bring you back to the present moment.",
+      "steps": [
+        "Pause whatever you are doing. Sit still for a moment.",
+        "Notice three sounds around you without judging them.",
+        "Feel the weight of your body on the chair or floor.",
+        "Take one slow, deep breath and let it out gently."
+      ]
+    },
+    "bodyScan": {
+      "description": "Slowly scan your body from head to toe. Release tension wherever you find it.",
+      "steps": [
+        "Close your eyes. Start at the top of your head. Notice any tension.",
+        "Move your attention to your face and jaw. Let them soften.",
+        "Drop your shoulders. Let your arms feel heavy.",
+        "Notice your chest and belly. Let your breathing slow naturally.",
+        "Scan down to your legs and feet. Feel them grounded on the floor."
+      ]
+    },
+    "selfCompassion": {
+      "description": "Kristin Neff's self-compassion practice — be your own best friend for a moment.",
+      "steps": [
+        "Place a hand on your chest. Acknowledge: \"This is a hard moment.\"",
+        "Remind yourself: \"Struggle is part of being human. I am not alone in this.\"",
+        "Say to yourself: \"May I be kind to myself right now.\"",
+        "Take a slow breath and let yourself feel whatever comes up."
+      ]
+    },
+    "comfortList": {
+      "description": "Build a comfort toolkit. Knowing what helps makes hard moments easier to navigate.",
+      "prompts": [
+        "A place where you feel safe.",
+        "A song, show, or book that comforts you.",
+        "Something small you can do for yourself today."
+      ],
+      "itemA11y": "Comfort item {{n}}"
+    }
+  },
+  "settings": {
+    "hero": {
+      "title": "Settings",
+      "subtitle": "Tune reminders and your daily flow"
+    },
+    "sections": {
+      "account": "ACCOUNT",
+      "reminderTimes": "REMINDER TIMES",
+      "customTimes": "CUSTOM TIMES",
+      "streakReminder": "STREAK REMINDER",
+      "smartTiming": "SMART TIMING",
+      "language": "LANGUAGE",
+      "about": "ABOUT"
+    },
+    "account": {
+      "label": "Account",
+      "notSignedIn": "Not signed in",
+      "manage": "Manage account and subscription",
+      "a11y": "Manage account"
+    },
+    "permissionBanner": {
+      "text": "Notifications are disabled. Enable them in Settings to receive reminders.",
+      "link": "Open Settings",
+      "a11yHint": "Opens device settings to enable notifications"
+    },
+    "slots": {
+      "morning": { "label": "Morning", "hint": "Around 9 am" },
+      "afternoon": { "label": "Afternoon", "hint": "Around 2 pm" },
+      "evening": { "label": "Evening", "hint": "Around 7 pm" },
+      "preSleep": { "label": "Pre-sleep", "hint": "Around 10 pm" }
+    },
+    "reminders": {
+      "rowA11y": "{{label}} reminder at {{hint}}"
+    },
+    "customTimes": {
+      "setTo": "Set to {{time}}",
+      "placeholder": "HH:MM",
+      "inputA11y": "Custom time for {{label}} reminder",
+      "inputA11yHint": "Enter 24-hour time in HH:MM format",
+      "empty": "Enable reminder slots above to set custom times."
+    },
+    "streak": {
+      "label": "Evening nudge",
+      "hint": "Reminds you at 8 pm if you haven't logged today",
+      "a11y": "Evening streak reminder at 8 pm"
+    },
+    "smartTiming": {
+      "label": "Adaptive reminders",
+      "hint": "Shifts reminder times to when you usually check in",
+      "a11y": "Enable adaptive reminder timing",
+      "overridden": "Custom time overrides smart timing ({{time}} computed)",
+      "smartTime": "Smart time: {{time}}",
+      "active": "Active",
+      "needsMore": "Log more check-ins to activate smart timing.",
+      "lockedHint": "Learns when you actually check in and adjusts reminder times. Pro feature.",
+      "proBadge": "Pro",
+      "lockedA11y": "Upgrade to Pro to unlock Smart Timing"
+    },
+    "language": {
+      "label": "App language",
+      "hint": "Changes apply immediately",
+      "options": {
+        "system": "System default",
+        "en": "English",
+        "es": "Español"
+      },
+      "optionA11y": "Set language to {{label}}"
+    },
+    "about": {
+      "version": "Version",
+      "restore": "Restore purchases",
+      "restoreA11y": "Restore purchases",
+      "restored": "Subscription restored.",
+      "restoreNone": "No previous purchases found.",
+      "manageSubscription": "Manage subscription",
+      "manageSubscriptionA11y": "Manage subscription",
+      "rate": "Rate kibun ⭐",
+      "rateA11y": "Rate kibun",
+      "feedback": "Send feedback",
+      "feedbackA11y": "Send feedback",
+      "terms": "Terms of Use",
+      "termsA11y": "Terms of Use",
+      "privacy": "Privacy Policy",
+      "privacyA11y": "Privacy Policy"
+    }
+  },
+  "paywall": {
+    "hero": {
+      "title": "kibun Premium",
+      "subtitle": "Your feelings deserve the full picture.\nLet's make sense of them together 💕"
+    },
+    "tier": {
+      "free": { "badge": "FREE", "label": "Always included" },
+      "pro": { "badge": "PREMIUM", "label": "Unlock with trial" }
+    },
+    "features": {
+      "free": [
+        "Daily mood logging",
+        "Custom reminder times",
+        "Full mood history & calendar"
+      ],
+      "pro": [
+        "Daily AI wellness insight, just for you",
+        "Weekly & monthly AI mood reports",
+        "Annual mood report & year in review",
+        "Pattern insights & resilience score",
+        "Habit tracking (sleep, exercise & more)",
+        "Life events & mood correlation",
+        "Custom moods with personalised colours"
+      ]
+    },
+    "price": {
+      "both": "{{monthly}} / month or {{yearly}} / year",
+      "monthlyOnly": "{{monthly}} / month",
+      "yearlyOnly": "{{yearly}} / year",
+      "fallbackMonthly": "$5.99",
+      "fallbackYearly": "$34.99",
+      "trial": "Includes 7-day free trial · Cancel anytime"
+    },
+    "cta": {
+      "subscribe": "Subscribe — 7 days free 🌸",
+      "subscribeA11yHint": "Starts your subscription with a 7-day free trial. Cancel anytime in account settings.",
+      "skip": "Maybe later",
+      "skipA11yHint": "Skip subscription and continue with limited features"
+    },
+    "disclosure": "Payment is charged to your account at confirmation of purchase. Your subscription automatically renews unless cancelled at least 24 hours before the current period ends. Manage or cancel anytime in your account settings.",
+    "restore": {
+      "label": "Restore purchases",
+      "loading": "Restoring…",
+      "a11y": "Restore previous purchases"
+    },
+    "legal": {
+      "terms": "Terms of Use",
+      "termsA11y": "Terms of Use",
+      "privacy": "Privacy Policy",
+      "privacyA11y": "Privacy Policy"
+    },
+    "errors": {
+      "notConfigured": "Premium isn't configured. Please try again later.",
+      "loadFailed": "Paywall failed to load. Please try again.",
+      "noEntitlement": "Purchase completed but entitlement not found. Please contact support.",
+      "nativeMissing": "Premium UI is unavailable in this build. Please update the app and try again.",
+      "billingUnavailable": "In-app purchases are not available on this device. Make sure you are signed into Google Play.",
+      "generic": "Something went wrong. Please try again.",
+      "noPriorPurchases": "No previous purchases found for this account."
+    }
+  },
+  "event": {
+    "category": {
+      "work": "Work",
+      "social": "Social",
+      "health": "Health",
+      "travel": "Travel",
+      "relationship": "Relationship",
+      "personal": "Personal"
+    }
+  },
+  "sentiment": {
+    "positive": "Positive",
+    "neutral": "Neutral",
+    "negative": "Difficult"
+  },
+  "dayDetail": {
+    "deleteEntryTitle": "Delete entry",
+    "deleteEntryMessage": "Are you sure you want to delete this \"{{moodLabel}}\" entry? This cannot be undone.",
+    "deleteAction": "Delete",
+    "lifeEvents": "Life Events",
+    "deleteEventTitle": "Delete event",
+    "deleteEventMessage": "Delete \"{{title}}\"?",
+    "deleteEventA11y": "Delete event",
+    "empty": "No moods logged on this day",
+    "entryA11y": "{{mood}} at {{time}}{{note}}. Tap to {{action}}.",
+    "expand": "expand",
+    "collapse": "collapse",
+    "slot": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "night": "Evening",
+      "pre_sleep": "Night"
+    },
+    "note": "Note",
+    "noNote": "No note added",
+    "sentimentLabel": "Sentiment",
+    "sentiment": {
+      "positive": "Positive",
+      "neutral": "Neutral",
+      "negative": "Difficult"
+    },
+    "journalPrompt": "Journal prompt",
+    "yourReflection": "Your reflection",
+    "energyFocus": "Energy & Focus",
+    "energyValue": "Energy {{value}}/5",
+    "focusValue": "Focus {{value}}/5",
+    "deleteEntryA11y": "Delete this entry",
+    "deleteEntryAction": "Delete entry",
+    "logAnother": "Log another mood",
+    "logAnotherA11y": "Log another mood for this day"
+  },
+  "logEvent": {
+    "closeA11y": "Close",
+    "heroTitle": "Log a Life Event",
+    "heroSubtitle": "Tag moments that shape your mood patterns",
+    "whatHappened": "What happened?",
+    "titlePlaceholder": "e.g. Big presentation, First date, Doctor visit",
+    "titleA11y": "Event title",
+    "category": "Category",
+    "notes": "Notes (optional)",
+    "notesPlaceholder": "Any extra context...",
+    "notesA11y": "Event notes",
+    "save": "Save event",
+    "cancel": "Cancel"
+  },
+  "aiReport": {
+    "premiumTitle": "Premium feature",
+    "premiumSubtitle": "Get personalised weekly and monthly mood insights powered by AI",
+    "startTrial": "Start free trial",
+    "title": "AI Report",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "reportTypeA11y": "{{label}} report",
+    "generating": "Analysing your mood patterns...",
+    "loadErrorTitle": "Could not load report",
+    "loadErrorSubtitle": "Check your connection and try again",
+    "tryAgain": "Try again",
+    "notEnoughData": "Not enough data yet",
+    "noEntriesSubtitle": "Log your mood for a few days and then come back to generate your report.",
+    "subscriptionErrorTitle": "Subscription not verified",
+    "subscriptionErrorSubtitle": "Your subscription could not be confirmed on the server. Try closing and reopening the app. If the problem persists, restore your purchase.",
+    "noReportYet": "No {{period}} report yet",
+    "noReportSubtitle": "Generate your first {{period}} mood analysis",
+    "generateMyReport": "Generate my report",
+    "periodA11y": "Report period: {{period}}",
+    "moodSummary": "Mood summary",
+    "checkInsA11y": "{{count}} check-ins",
+    "checkIns": "check-ins",
+    "perDayA11y": "{{value}} per day average",
+    "perDayAvg": "per day avg",
+    "moodTimesA11y": "{{moodId}}, {{count}} times",
+    "generated": "Generated {{date}}",
+    "generateNewReport": "Generate new report",
+    "patterns": "Patterns we noticed",
+    "tone": {
+      "positive": "Mostly bright",
+      "neutral": "Steady",
+      "mixed": "Mixed",
+      "tough": "A tougher stretch"
+    }
+  },
+  "annualReport": {
+    "heroTitle": "{{year}} in Mood",
+    "notEnoughData": "Not enough data yet",
+    "emptySubtitle": "Keep checking in — your {{year}} story will appear here.",
+    "badge": "Year in Review",
+    "heroSubtitle": "{{total}} moments of self-awareness",
+    "statCheckIns": "Check-ins",
+    "streakDays": "{{days}}d",
+    "statBestStreak": "Best streak",
+    "statMoodsUsed": "Moods used",
+    "statBestMonth": "Best month",
+    "topMoods": "Top moods",
+    "timesCount": "{{count}}×",
+    "monthHighlights": "Month highlights",
+    "bestMonthHint": "Best month",
+    "toughestMonthHint": "Toughest month",
+    "yourStory": "Your story",
+    "writingStory": "Writing your year in words...",
+    "unlockStoryHint": "Log at least 10 check-ins this year to unlock your AI story.",
+    "upgradeA11y": "Upgrade to Pro to unlock your Year in Words AI narrative",
+    "upgradeTitle": "Your year in words",
+    "upgradeSubtitle": "Unlock a personalised AI narrative of your {{year}}. Pro feature.",
+    "pro": "Pro",
+    "storyError": "Could not generate your story. Try again later."
+  },
+  "customMoods": {
+    "deleteTitle": "Delete mood",
+    "deleteMessage": "Remove \"{{name}}\" from your custom moods?",
+    "deleteAction": "Delete",
+    "heroTitle": "Custom Moods",
+    "heroSubtitle": "Create up to {{max}} moods that feel uniquely yours",
+    "yourMoods": "Your custom moods",
+    "deleteA11y": "Delete {{name}}",
+    "createA11y": "Create a new custom mood",
+    "createMood": "Create mood ({{count}}/{{max}})",
+    "limitReached": "You've reached the limit of {{max}} custom moods.",
+    "newMood": "New mood",
+    "nameLabel": "Name (max 12 chars)",
+    "namePlaceholder": "e.g. Nostalgic",
+    "nameA11y": "Mood name",
+    "colour": "Colour",
+    "moodType": "Mood type",
+    "preview": "Preview:",
+    "saveA11y": "Save custom mood",
+    "saveMood": "Save mood",
+    "group": {
+      "green": {
+        "label": "Positive",
+        "hint": "Uplifting, good energy"
+      },
+      "neutral": {
+        "label": "Neutral",
+        "hint": "Mixed or calm feelings"
+      },
+      "blue": {
+        "label": "Reflective",
+        "hint": "Introspective, quiet"
+      },
+      "red-orange": {
+        "label": "Difficult",
+        "hint": "Challenging emotions"
+      }
+    }
+  },
+  "manageHabits": {
+    "deleteTitle": "Delete habit",
+    "deleteMessage": "Remove \"{{name}}\" and all its logs?",
+    "deleteAction": "Delete",
+    "heroTitle": "My Habits",
+    "heroSubtitle": "Track daily behaviours alongside your mood",
+    "yourHabits": "Your habits",
+    "scaleType": "1-5 scale",
+    "booleanType": "Yes / No",
+    "deleteA11y": "Delete {{name}}",
+    "quickAdd": "Quick add",
+    "alreadyAddedA11y": "{{name}} already added",
+    "addA11y": "Add {{name}}",
+    "customHabit": "Custom habit",
+    "addCustomA11y": "Add a custom habit",
+    "addCustom": "Add custom habit",
+    "iconA11y": "Habit emoji icon",
+    "namePlaceholder": "Habit name",
+    "nameA11y": "Habit name",
+    "addHabitA11y": "Add habit",
+    "add": "Add",
+    "preset": {
+      "sleepQuality": "Sleep quality",
+      "exercise": "Exercise",
+      "meditated": "Meditated",
+      "socialised": "Socialised",
+      "alcohol": "Alcohol"
+    }
+  },
+  "components": {
+    "backButton": {
+      "defaultLabel": "Home",
+      "a11y": "Go to {{label}}"
+    },
+    "onboardingProgress": {
+      "a11y": "Step {{current}} of {{total}}"
+    },
+    "wisdomScreen": {
+      "mascotA11y": "Mascot {{mascot}}"
+    },
+    "reviewPrompt": {
+      "dismissA11y": "Dismiss",
+      "title": "How's kibun going?",
+      "subtitle": "Your honest answer helps us make it better.",
+      "ctaHappy": "Loving it 💖",
+      "ctaHappyA11y": "Loving it",
+      "ctaUnhappy": "Not really",
+      "ctaUnhappyA11y": "Not really",
+      "ctaLater": "Maybe later",
+      "ctaLaterA11y": "Maybe later"
+    }
+  }
+}

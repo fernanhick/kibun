@@ -1,0 +1,14 @@
+{
+  "report": {
+    "ready": {
+      "title": "Your mood report is ready",
+      "body": "Your {{type}} mood analysis is waiting for you"
+    }
+  },
+  "streak": {
+    "nudge": {
+      "title": "Keep your streak going",
+      "body": "A quick check-in keeps your streak alive."
+    }
+  }
+}

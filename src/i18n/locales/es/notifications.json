@@ -1,0 +1,14 @@
+{
+  "report": {
+    "ready": {
+      "title": "Tu reporte emocional está listo",
+      "body": "Tu análisis emocional {{type}} te está esperando"
+    }
+  },
+  "streak": {
+    "nudge": {
+      "title": "Mantén tu racha",
+      "body": "Un check-in rápido mantiene tu racha viva."
+    }
+  }
+}

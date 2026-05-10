@@ -1,52 +1,41 @@
 import { useEffect, useMemo, useState } from 'react';
 import { View, Text, Pressable, Alert, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Card, MoodBubble, BackButton } from '@components/index';
 import { useMoodEntryStore, useLifeEventsStore } from '@store/index';
+import { getMoodLabel } from '@lib/moodLabels';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
+import { formatDate, formatTime as formatTimeFn } from '@i18n/dateFormat';
 import { colors, spacing, typography, radius } from '@constants/theme';
 import type { MoodSlot, SentimentLabel, LifeEventCategory } from '@models/index';
 
-const SLOT_LABELS: Record<MoodSlot, string> = {
-  morning: 'Morning',
-  afternoon: 'Afternoon',
-  night: 'Evening',
-  pre_sleep: 'Night',
+const EVENT_CATEGORY_CONFIG: Record<LifeEventCategory, { emoji: string; color: string }> = {
+  work:         { emoji: '💼', color: '#5C7CFA' },
+  social:       { emoji: '👥', color: '#F06595' },
+  health:       { emoji: '🏥', color: '#51CF66' },
+  travel:       { emoji: '✈️', color: '#339AF0' },
+  relationship: { emoji: '❤️', color: '#FF6B6B' },
+  personal:     { emoji: '🌟', color: '#CC5DE8' },
 };
 
-const EVENT_CATEGORY_CONFIG: Record<LifeEventCategory, { emoji: string; label: string; color: string }> = {
-  work:         { emoji: '💼', label: 'Work',         color: '#5C7CFA' },
-  social:       { emoji: '👥', label: 'Social',       color: '#F06595' },
-  health:       { emoji: '🏥', label: 'Health',       color: '#51CF66' },
-  travel:       { emoji: '✈️', label: 'Travel',       color: '#339AF0' },
-  relationship: { emoji: '❤️', label: 'Relationship', color: '#FF6B6B' },
-  personal:     { emoji: '🌟', label: 'Personal',     color: '#CC5DE8' },
+const SENTIMENT_EMOJI: Record<SentimentLabel, string> = {
+  positive: '😊',
+  neutral:  '😐',
+  negative: '😔',
 };
 
-const SENTIMENT_DISPLAY: Record<SentimentLabel, { emoji: string; label: string }> = {
-  positive: { emoji: '😊', label: 'Positive' },
-  neutral:  { emoji: '😐', label: 'Neutral' },
-  negative: { emoji: '😔', label: 'Difficult' },
+const SLOT_KEYS: Record<MoodSlot, 'morning' | 'afternoon' | 'night' | 'pre_sleep'> = {
+  morning: 'morning',
+  afternoon: 'afternoon',
+  night: 'night',
+  pre_sleep: 'pre_sleep',
 };
-
-function formatDateHeading(dateStr: string): string {
-  const date = new Date(dateStr + 'T12:00:00');
-  return date.toLocaleDateString(undefined, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
-
-function formatTime(isoString: string): string {
-  const date = new Date(isoString);
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
 
 export default function DayDetailScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{ date: string }>();
   const dateParam = params.date;
   const isValidDate = !!dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam);
@@ -85,12 +74,12 @@ export default function DayDetailScreen() {
 
   const handleDelete = (entryId: string, moodLabel: string) => {
     Alert.alert(
-      'Delete entry',
-      `Are you sure you want to delete this "${moodLabel}" entry? This cannot be undone.`,
+      t('dayDetail.deleteEntryTitle'),
+      t('dayDetail.deleteEntryMessage', { moodLabel }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common:actions.cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('dayDetail.deleteAction'),
           style: 'destructive',
           onPress: () => {
             deleteEntry(entryId);
@@ -112,26 +101,27 @@ export default function DayDetailScreen() {
 
       {dayEvents.length > 0 && (
         <View style={styles.eventsSection}>
-          <Text style={styles.eventsSectionLabel}>Life Events</Text>
+          <Text style={styles.eventsSectionLabel}>{t('dayDetail.lifeEvents')}</Text>
           {dayEvents.map((event) => {
             const cfg = EVENT_CATEGORY_CONFIG[event.category as LifeEventCategory];
+            const categoryLabel = t(`event.category.${event.category}`);
             return (
               <View key={event.id} style={[styles.eventCard, { borderLeftColor: cfg.color }]}>
                 <View style={styles.eventRow}>
                   <Text style={styles.eventEmoji}>{cfg.emoji}</Text>
                   <View style={styles.eventInfo}>
                     <Text style={styles.eventTitle}>{event.title}</Text>
-                    <Text style={styles.eventCategory}>{cfg.label}</Text>
+                    <Text style={styles.eventCategory}>{categoryLabel}</Text>
                   </View>
                   <Pressable
                     onPress={() => {
-                      Alert.alert('Delete event', `Delete "${event.title}"?`, [
-                        { text: 'Cancel', style: 'cancel' },
-                        { text: 'Delete', style: 'destructive', onPress: () => deleteEvent(event.id) },
+                      Alert.alert(t('dayDetail.deleteEventTitle'), t('dayDetail.deleteEventMessage', { title: event.title }), [
+                        { text: t('common:actions.cancel'), style: 'cancel' },
+                        { text: t('dayDetail.deleteAction'), style: 'destructive', onPress: () => deleteEvent(event.id) },
                       ]);
                     }}
                     hitSlop={8}
-                    accessibilityLabel="Delete event"
+                    accessibilityLabel={t('dayDetail.deleteEventA11y')}
                   >
                     <Ionicons name="trash-outline" size={16} color={colors.textDisabled} />
                   </Pressable>
@@ -144,21 +134,27 @@ export default function DayDetailScreen() {
       )}
 
       {entries.length === 0 ? (
-        <Text style={styles.emptyText}>No moods logged on this day</Text>
+        <Text style={styles.emptyText}>{t('dayDetail.empty')}</Text>
       ) : (
         <View style={styles.entriesList}>
           {entries.map((entry) => {
             const entryMood = MOOD_MAP[entry.moodId as MoodId];
+            const moodLabel = getMoodLabel(entry.moodId as MoodId, t);
             const isExpanded = expandedId === entry.id;
-            const sentiment = entry.sentimentLabel
-              ? SENTIMENT_DISPLAY[entry.sentimentLabel]
+            const sentimentLabel = entry.sentimentLabel
+              ? t(`dayDetail.sentiment.${entry.sentimentLabel}`)
               : null;
 
             return (
               <Pressable
                 key={entry.id}
                 onPress={() => setExpandedId(isExpanded ? null : entry.id)}
-                accessibilityLabel={`${entryMood?.label ?? entry.moodId} at ${formatTime(entry.loggedAt)}${entry.note ? `, ${entry.note}` : ''}. Tap to ${isExpanded ? 'collapse' : 'expand'}.`}
+                accessibilityLabel={t('dayDetail.entryA11y', {
+                  mood: moodLabel,
+                  time: formatTimeFn(entry.loggedAt),
+                  note: entry.note ? `, ${entry.note}` : '',
+                  action: isExpanded ? t('dayDetail.collapse') : t('dayDetail.expand'),
+                })}
                 accessibilityRole="button"
               >
                 <Card style={isExpanded ? styles.cardExpanded : undefined}>
@@ -170,12 +166,12 @@ export default function DayDetailScreen() {
                       <View style={styles.moodChip}>
                         <Ionicons name="sparkles" size={12} color={colors.primaryDark} />
                         <Text style={styles.moodLabel}>
-                          {entryMood?.label ?? entry.moodId}
+                          {moodLabel}
                         </Text>
                       </View>
                       <View style={styles.timeRow}>
                         <Text style={styles.timeLabel}>
-                          {formatTime(entry.loggedAt)}
+                          {formatTimeFn(entry.loggedAt)}
                         </Text>
                         <Ionicons
                           name={isExpanded ? 'chevron-up' : 'chevron-down'}
@@ -187,60 +183,60 @@ export default function DayDetailScreen() {
                   </View>
 
                   <Text style={styles.slotLabel}>
-                    {SLOT_LABELS[entry.slot]}
+                    {t(`dayDetail.slot.${SLOT_KEYS[entry.slot]}`)}
                   </Text>
 
                   {isExpanded && (
                     <View style={styles.expandedSection}>
                       {entry.note ? (
                         <View style={styles.detailBlock}>
-                          <Text style={styles.detailLabel}>Note</Text>
+                          <Text style={styles.detailLabel}>{t('dayDetail.note')}</Text>
                           <Text style={styles.detailText}>{entry.note}</Text>
                         </View>
                       ) : (
                         <View style={styles.detailBlock}>
-                          <Text style={styles.detailTextMuted}>No note added</Text>
+                          <Text style={styles.detailTextMuted}>{t('dayDetail.noNote')}</Text>
                         </View>
                       )}
 
-                      {sentiment && (
+                      {sentimentLabel && entry.sentimentLabel && (
                         <View style={styles.detailBlock}>
-                          <Text style={styles.detailLabel}>Sentiment</Text>
+                          <Text style={styles.detailLabel}>{t('dayDetail.sentimentLabel')}</Text>
                           <View style={styles.sentimentRow}>
-                            <Text style={styles.sentimentEmoji}>{sentiment.emoji}</Text>
-                            <Text style={styles.detailText}>{sentiment.label}</Text>
+                            <Text style={styles.sentimentEmoji}>{SENTIMENT_EMOJI[entry.sentimentLabel]}</Text>
+                            <Text style={styles.detailText}>{sentimentLabel}</Text>
                           </View>
                         </View>
                       )}
 
                       {entry.journalPrompt && (
                         <View style={styles.detailBlock}>
-                          <Text style={styles.detailLabel}>Journal prompt</Text>
+                          <Text style={styles.detailLabel}>{t('dayDetail.journalPrompt')}</Text>
                           <Text style={styles.detailTextItalic}>{entry.journalPrompt}</Text>
                         </View>
                       )}
 
                       {entry.journalResponse && (
                         <View style={styles.detailBlock}>
-                          <Text style={styles.detailLabel}>Your reflection</Text>
+                          <Text style={styles.detailLabel}>{t('dayDetail.yourReflection')}</Text>
                           <Text style={styles.detailText}>{entry.journalResponse}</Text>
                         </View>
                       )}
 
                       {(entry.energyLevel != null || entry.focusLevel != null) && (
                         <View style={styles.detailBlock}>
-                          <Text style={styles.detailLabel}>Energy & Focus</Text>
+                          <Text style={styles.detailLabel}>{t('dayDetail.energyFocus')}</Text>
                           <View style={styles.efRow}>
                             {entry.energyLevel != null && (
                               <View style={styles.efChip}>
                                 <Text style={styles.efChipEmoji}>⚡</Text>
-                                <Text style={styles.efChipText}>Energy {entry.energyLevel}/5</Text>
+                                <Text style={styles.efChipText}>{t('dayDetail.energyValue', { value: entry.energyLevel })}</Text>
                               </View>
                             )}
                             {entry.focusLevel != null && (
                               <View style={styles.efChip}>
                                 <Text style={styles.efChipEmoji}>🎯</Text>
-                                <Text style={styles.efChipText}>Focus {entry.focusLevel}/5</Text>
+                                <Text style={styles.efChipText}>{t('dayDetail.focusValue', { value: entry.focusLevel })}</Text>
                               </View>
                             )}
                           </View>
@@ -248,13 +244,13 @@ export default function DayDetailScreen() {
                       )}
 
                       <Pressable
-                        onPress={() => handleDelete(entry.id, entryMood?.label ?? entry.moodId)}
+                        onPress={() => handleDelete(entry.id, moodLabel)}
                         style={styles.deleteButton}
-                        accessibilityLabel="Delete this entry"
+                        accessibilityLabel={t('dayDetail.deleteEntryA11y')}
                         accessibilityRole="button"
                       >
                         <Ionicons name="trash-outline" size={16} color={colors.error} />
-                        <Text style={styles.deleteText}>Delete entry</Text>
+                        <Text style={styles.deleteText}>{t('dayDetail.deleteEntryAction')}</Text>
                       </Pressable>
                     </View>
                   )}
@@ -266,15 +262,23 @@ export default function DayDetailScreen() {
             onPress={() => router.push(`/check-in?date=${dateParam}` as Href)}
             style={styles.logAnotherBtn}
             accessibilityRole="button"
-            accessibilityLabel="Log another mood for this day"
+            accessibilityLabel={t('dayDetail.logAnotherA11y')}
           >
             <Ionicons name="add-circle-outline" size={18} color={colors.primaryDark} />
-            <Text style={styles.logAnotherText}>Log another mood</Text>
+            <Text style={styles.logAnotherText}>{t('dayDetail.logAnother')}</Text>
           </Pressable>
         </View>
       )}
     </Screen>
   );
+}
+
+function formatDateHeading(isoDate: string): string {
+  return formatDate(new Date(`${isoDate}T12:00:00`), {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 const styles = StyleSheet.create({

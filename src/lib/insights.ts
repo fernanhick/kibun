@@ -1,5 +1,7 @@
 import { MoodEntry } from '@models/index';
 import { MOOD_MAP, type MoodGroup } from '@constants/moods';
+import { getMoodLabel } from '@lib/moodLabels';
+import { formatDate } from '@i18n/dateFormat';
 
 // Numeric mood scoring for trend calculations.
 // Higher = more positive. Used by getDailyMoodScores and Plan 07-02 pattern detection.
@@ -72,7 +74,7 @@ export function getMoodFrequency(entries: MoodEntry[]): MoodFrequencyItem[] {
     const mood = MOOD_MAP[moodId as keyof typeof MOOD_MAP];
     return {
       moodId,
-      label: mood?.label ?? moodId,
+      label: getMoodLabel(moodId),
       color: mood?.bubbleColor ?? '#BDBDBD',
       count,
     };
@@ -88,11 +90,11 @@ export interface DailyMoodScore {
   label: string;
 }
 
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
 function formatLabel(date: string): string {
-  const [, month, day] = date.split('-');
-  return `${MONTH_NAMES[parseInt(month, 10) - 1]} ${parseInt(day, 10)}`;
+  const [year, month, day] = date.split('-');
+  // Use a noon timestamp to avoid timezone-edge dates landing on the wrong day.
+  const d = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10), 12);
+  return formatDate(d, { month: 'short', day: 'numeric' });
 }
 
 /**

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Linking, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import Purchases from 'react-native-purchases';
 import type { PurchasesPackage } from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
@@ -17,45 +19,38 @@ import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
 import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '@constants/legal';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
-const FREE_FEATURES = [
-  { emoji: '📓', text: 'Daily mood logging' },
-  { emoji: '🔔', text: 'Custom reminder times' },
-  { emoji: '📅', text: 'Full mood history & calendar' },
-];
+const FREE_FEATURE_EMOJIS = ['📓', '🔔', '📅'];
+const PRO_FEATURE_EMOJIS = ['✨', '📊', '🎉', '🔮', '🌱', '📝', '🎨'];
 
-const PRO_FEATURES = [
-  { emoji: '✨', text: 'Daily AI wellness insight, just for you' },
-  { emoji: '📊', text: 'Weekly & monthly AI mood reports' },
-  { emoji: '🎉', text: 'Annual mood report & year in review' },
-  { emoji: '🔮', text: 'Pattern insights & resilience score' },
-  { emoji: '🌱', text: 'Habit tracking (sleep, exercise & more)' },
-  { emoji: '📝', text: 'Life events & mood correlation' },
-  { emoji: '🎨', text: 'Custom moods with personalised colours' },
-];
-
-// Fallback strings used only if RevenueCat offerings are unavailable on first
-// render (network failure, sandbox not configured). The localized strings from
-// PurchasesPackage.product.priceString are preferred everywhere they're available.
-const FALLBACK_PRICE_LINE = '$5.99 / month or $34.99 / year';
-
-function formatPriceLine(monthly?: PurchasesPackage, yearly?: PurchasesPackage): string {
+function formatPriceLine(
+  t: TFunction<'screens'>,
+  monthly?: PurchasesPackage,
+  yearly?: PurchasesPackage
+): string {
   const m = monthly?.product.priceString;
   const y = yearly?.product.priceString;
-  if (m && y) return `${m} / month or ${y} / year`;
-  if (m) return `${m} / month`;
-  if (y) return `${y} / year`;
-  return FALLBACK_PRICE_LINE;
+  if (m && y) return t('paywall.price.both', { monthly: m, yearly: y });
+  if (m) return t('paywall.price.monthlyOnly', { monthly: m });
+  if (y) return t('paywall.price.yearlyOnly', { yearly: y });
+  return t('paywall.price.both', {
+    monthly: t('paywall.price.fallbackMonthly'),
+    yearly: t('paywall.price.fallbackYearly'),
+  });
 }
 
 export default function PaywallScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const { setPaywallSeen } = useOnboardingGateStore();
   const session = useSessionStore((s) => s.session);
   const { setSubscriptionStatus } = useSessionStore();
   const [purchasing, setPurchasing] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
-  const [priceLine, setPriceLine] = useState<string>(FALLBACK_PRICE_LINE);
+  const [priceLine, setPriceLine] = useState<string>(() => formatPriceLine(t));
+
+  const freeFeatures = t('paywall.features.free', { returnObjects: true }) as string[];
+  const proFeatures = t('paywall.features.pro', { returnObjects: true }) as string[];
 
   useEffect(() => {
     let cancelled = false;
@@ -66,7 +61,7 @@ export default function PaywallScreen() {
         if (!current) return;
         const monthly = current.monthly ?? current.availablePackages.find((p) => p.packageType === 'MONTHLY');
         const yearly = current.annual ?? current.availablePackages.find((p) => p.packageType === 'ANNUAL');
-        setPriceLine(formatPriceLine(monthly ?? undefined, yearly ?? undefined));
+        setPriceLine(formatPriceLine(t, monthly ?? undefined, yearly ?? undefined));
       })
       .catch((err) => {
         if (__DEV__) console.warn('[kibun:rc] getOfferings failed:', err);
@@ -74,7 +69,7 @@ export default function PaywallScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   const handlePurchase = async () => {
     if (purchasing) return;
@@ -110,26 +105,26 @@ export default function PaywallScreen() {
         router.replace(session?.authStatus === 'registered' ? '/(tabs)' : '/register');
       } else {
         if (paywallResult === PAYWALL_RESULT.NOT_PRESENTED) {
-          setPurchaseError('RevenueCat paywall is not configured. Set a current offering in the dashboard.');
+          setPurchaseError(t('paywall.errors.notConfigured'));
         } else if (paywallResult === PAYWALL_RESULT.ERROR) {
-          setPurchaseError('Paywall failed to load. Please try again.');
+          setPurchaseError(t('paywall.errors.loadFailed'));
         } else {
-          setPurchaseError('Purchase completed but entitlement not found. Please contact support.');
+          setPurchaseError(t('paywall.errors.noEntitlement'));
         }
         setPurchasing(false);
       }
     } catch (error: unknown) {
       const rcError = error as { code?: string; message?: string };
       if (rcError?.message?.includes('Native module not found')) {
-        setPurchaseError('RevenueCat paywall UI is unavailable in this build. Rebuild the dev client and try again.');
+        setPurchaseError(t('paywall.errors.nativeMissing'));
         setPurchasing(false);
         return;
       }
 
       if (rcError?.message?.toLowerCase().includes('billing')) {
-        setPurchaseError('In-app purchases are not available on this device. Make sure you are signed into Google Play.');
+        setPurchaseError(t('paywall.errors.billingUnavailable'));
       } else {
-        setPurchaseError('Something went wrong. Please try again.');
+        setPurchaseError(t('paywall.errors.generic'));
       }
       if (__DEV__) {
         console.warn('[kibun:rc] Purchase failed:', error);
@@ -152,7 +147,7 @@ export default function PaywallScreen() {
         setPaywallSeen();
         router.replace(session?.authStatus === 'registered' ? '/(tabs)' : '/register');
       } else {
-        setPurchaseError('No previous purchases found for this account.');
+        setPurchaseError(t('paywall.errors.noPriorPurchases'));
       }
     } finally {
       setRestoring(false);
@@ -176,10 +171,8 @@ export default function PaywallScreen() {
         style={styles.heroCard}
       >
         <Text style={styles.heroEmoji}>🌸</Text>
-        <Text style={styles.title}>kibun Premium</Text>
-        <Text style={styles.subtitle}>
-          Your feelings deserve the full picture.{'\n'}Let's make sense of them together 💕
-        </Text>
+        <Text style={styles.title}>{t('paywall.hero.title')}</Text>
+        <Text style={styles.subtitle}>{t('paywall.hero.subtitle')}</Text>
       </LinearGradient>
 
       {/* ── Feature comparison ───────────────────────────────────────── */}
@@ -187,15 +180,15 @@ export default function PaywallScreen() {
         {/* Free tier */}
         <View style={styles.tierHeader}>
           <View style={styles.tierBadgeFree}>
-            <Text style={styles.tierBadgeText}>FREE</Text>
+            <Text style={styles.tierBadgeText}>{t('paywall.tier.free.badge')}</Text>
           </View>
-          <Text style={styles.tierLabel}>Always included</Text>
+          <Text style={styles.tierLabel}>{t('paywall.tier.free.label')}</Text>
         </View>
         <View style={[styles.featureList, styles.featureListSpaced]}>
-          {FREE_FEATURES.map((f) => (
-            <View key={f.text} style={styles.featureRowFree}>
-              <Text style={styles.featureEmoji}>{f.emoji}</Text>
-              <Text style={styles.featureText}>{f.text}</Text>
+          {freeFeatures.map((text, idx) => (
+            <View key={idx} style={styles.featureRowFree}>
+              <Text style={styles.featureEmoji}>{FREE_FEATURE_EMOJIS[idx]}</Text>
+              <Text style={styles.featureText}>{text}</Text>
             </View>
           ))}
         </View>
@@ -211,15 +204,15 @@ export default function PaywallScreen() {
             end={{ x: 1, y: 0 }}
             style={styles.tierBadgePro}
           >
-            <Text style={styles.tierBadgeText}>PREMIUM</Text>
+            <Text style={styles.tierBadgeText}>{t('paywall.tier.pro.badge')}</Text>
           </LinearGradient>
-          <Text style={styles.tierLabel}>Unlock with trial</Text>
+          <Text style={styles.tierLabel}>{t('paywall.tier.pro.label')}</Text>
         </View>
         <View style={styles.featureList}>
-          {PRO_FEATURES.map((f) => (
-            <View key={f.text} style={styles.featureRowPro}>
-              <Text style={styles.featureEmoji}>{f.emoji}</Text>
-              <Text style={styles.featureText}>{f.text}</Text>
+          {proFeatures.map((text, idx) => (
+            <View key={idx} style={styles.featureRowPro}>
+              <Text style={styles.featureEmoji}>{PRO_FEATURE_EMOJIS[idx]}</Text>
+              <Text style={styles.featureText}>{text}</Text>
             </View>
           ))}
         </View>
@@ -234,67 +227,62 @@ export default function PaywallScreen() {
           style={styles.trialBox}
         >
           <Text style={styles.priceMain}>{priceLine}</Text>
-          <Text style={styles.priceSub}>Includes 7-day free trial · Cancel anytime</Text>
+          <Text style={styles.priceSub}>{t('paywall.price.trial')}</Text>
         </LinearGradient>
 
         <Button
-          label="Subscribe — 7 days free 🌸"
+          label={t('paywall.cta.subscribe')}
           onPress={handlePurchase}
           variant="sunrise"
           loading={purchasing}
           fullWidth
-          accessibilityHint="Starts your subscription with a 7-day free trial. Cancel anytime in account settings."
+          accessibilityHint={t('paywall.cta.subscribeA11yHint')}
         />
         {purchaseError && (
           <Text style={styles.errorText}>{purchaseError}</Text>
         )}
 
-        <Text style={styles.disclosure}>
-          Payment is charged to your account at confirmation of purchase. Your
-          subscription automatically renews unless cancelled at least 24 hours
-          before the current period ends. Manage or cancel anytime in your
-          account settings.
-        </Text>
+        <Text style={styles.disclosure}>{t('paywall.disclosure')}</Text>
 
         <View style={styles.legalRow}>
           <Pressable
             onPress={handleRestore}
             accessibilityRole="button"
-            accessibilityLabel="Restore previous purchases"
+            accessibilityLabel={t('paywall.restore.a11y')}
             disabled={restoring || purchasing}
             hitSlop={8}
           >
             <Text style={styles.legalLink}>
-              {restoring ? 'Restoring…' : 'Restore purchases'}
+              {restoring ? t('paywall.restore.loading') : t('paywall.restore.label')}
             </Text>
           </Pressable>
           <Text style={styles.legalSep}>·</Text>
           <Pressable
             onPress={() => Linking.openURL(TERMS_OF_USE_URL)}
             accessibilityRole="link"
-            accessibilityLabel="Terms of Use"
+            accessibilityLabel={t('paywall.legal.termsA11y')}
             hitSlop={8}
           >
-            <Text style={styles.legalLink}>Terms of Use</Text>
+            <Text style={styles.legalLink}>{t('paywall.legal.terms')}</Text>
           </Pressable>
           <Text style={styles.legalSep}>·</Text>
           <Pressable
             onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
             accessibilityRole="link"
-            accessibilityLabel="Privacy Policy"
+            accessibilityLabel={t('paywall.legal.privacyA11y')}
             hitSlop={8}
           >
-            <Text style={styles.legalLink}>Privacy Policy</Text>
+            <Text style={styles.legalLink}>{t('paywall.legal.privacy')}</Text>
           </Pressable>
         </View>
 
         <View style={styles.skipRow}>
           <Button
-            label="Maybe later"
+            label={t('paywall.cta.skip')}
             onPress={handleSkip}
             variant="ghost"
             fullWidth
-            accessibilityHint="Skip subscription and continue with limited features"
+            accessibilityHint={t('paywall.cta.skipA11yHint')}
           />
         </View>
       </View>

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet, type LayoutChangeEvent } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Card } from '@components/index';
@@ -16,10 +17,12 @@ import { MOOD_MAP } from '@constants/moods';
 import type { MoodSlot, Habit, HabitLog, MoodEntry } from '@models/index';
 
 type Period = 7 | 30;
+type StrengthKey = 'strongPositive' | 'strongNegative' | 'moderatePositive' | 'moderateNegative' | 'weakPositive' | 'weakNegative' | 'none';
 
 export default function InsightsScreen() {
   const [period, setPeriod] = useState<Period>(7);
   const router = useRouter();
+  const { t } = useTranslation('screens');
   // Charts must size against the actual rendered column (Screen clamps to a
   // tablet-friendly max-width), not the full window. Measured via onLayout
   // on each chart container; default keeps charts non-zero on first paint.
@@ -167,16 +170,14 @@ export default function InsightsScreen() {
         >
           <SparkleOverlay />
           <Text style={styles.screenTitle} accessibilityRole="header">
-            Insights
+            {t('insights.hero.title')}
           </Text>
-          <Text style={styles.heroSubtitle}>Track your mood patterns over time</Text>
+          <Text style={styles.heroSubtitle}>{t('insights.hero.subtitle')}</Text>
           <PeriodToggle period={period} onSelect={setPeriod} />
         </LinearGradient>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>No moods logged yet</Text>
-          <Text style={styles.emptySubtitle}>
-            Start checking in to see your patterns here
-          </Text>
+          <Text style={styles.emptyTitle}>{t('insights.empty.title')}</Text>
+          <Text style={styles.emptySubtitle}>{t('insights.empty.subtitle')}</Text>
         </View>
       </Screen>
     );
@@ -193,12 +194,12 @@ export default function InsightsScreen() {
         <SparkleOverlay count={20} />
         <View style={styles.badgeRow}>
           <Ionicons name="sparkles" size={12} color={colors.textInverse} />
-          <Text style={styles.badgeText}>Mood Story</Text>
+          <Text style={styles.badgeText}>{t('insights.hero.badge')}</Text>
         </View>
         <Text style={styles.screenTitle} accessibilityRole="header">
-          Insights
+          {t('insights.hero.title')}
         </Text>
-        <Text style={styles.heroSubtitle}>Track your mood patterns over time</Text>
+        <Text style={styles.heroSubtitle}>{t('insights.hero.subtitle')}</Text>
         <PeriodToggle period={period} onSelect={setPeriod} />
       </LinearGradient>
 
@@ -206,20 +207,20 @@ export default function InsightsScreen() {
         <Card style={styles.statCard}>
           <Text
             style={styles.statValue}
-            accessibilityLabel={`${streak} day streak`}
+            accessibilityLabel={t('insights.stats.streakA11y', { count: streak })}
           >
             {streak}
           </Text>
-          <Text style={styles.statLabel}>day streak</Text>
+          <Text style={styles.statLabel}>{t('insights.stats.streak')}</Text>
         </Card>
         <Card style={styles.statCard}>
           <Text
             style={styles.statValue}
-            accessibilityLabel={`${totalEntries} check-ins`}
+            accessibilityLabel={t('insights.stats.checkInsA11y', { count: totalEntries })}
           >
             {totalEntries}
           </Text>
-          <Text style={styles.statLabel}>check-ins</Text>
+          <Text style={styles.statLabel}>{t('insights.stats.checkIns')}</Text>
         </Card>
       </View>
 
@@ -230,12 +231,12 @@ export default function InsightsScreen() {
             frequency.length > 0 ? (
               <View>
                 <Text style={styles.sectionHeader} accessibilityRole="header">
-                  Top moods
+                  {t('insights.sections.topMoods')}
                 </Text>
                 <View
                   style={styles.chartContainer}
                   onLayout={handleBarLayout}
-                  accessibilityLabel={`Mood frequency chart showing top ${Math.min(frequency.length, 6)} moods`}
+                  accessibilityLabel={t('insights.charts.barA11y', { count: Math.min(frequency.length, 6) })}
                 >
                   <BarChart
                     data={barData}
@@ -262,12 +263,12 @@ export default function InsightsScreen() {
             trendPointCount > 1 ? (
               <View>
                 <Text style={styles.sectionHeader} accessibilityRole="header">
-                  Mood trend
+                  {t('insights.sections.trend')}
                 </Text>
                 <View
                   style={styles.chartContainer}
                   onLayout={handleTrendLayout}
-                  accessibilityLabel={`Mood trend line chart over ${period} days`}
+                  accessibilityLabel={t('insights.charts.trendA11y', { count: period })}
                 >
                   <LineChart
                     data={lineData}
@@ -305,7 +306,7 @@ export default function InsightsScreen() {
       {patterns.length > 0 && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            Patterns
+            {t('insights.sections.patterns')}
           </Text>
           {patterns.map((p) => (
             <View key={p.id} accessibilityLabel={p.text}>
@@ -321,9 +322,9 @@ export default function InsightsScreen() {
       {filtered.length > 0 && filtered.length < 7 && patterns.length === 0 && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            Patterns
+            {t('insights.sections.patterns')}
           </Text>
-          <Text style={styles.patternHint}>Log more check-ins to see patterns</Text>
+          <Text style={styles.patternHint}>{t('insights.patternsHint')}</Text>
         </View>
       )}
 
@@ -331,7 +332,7 @@ export default function InsightsScreen() {
       {filtered.length > 0 && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            Resilience
+            {t('insights.sections.resilience')}
           </Text>
           {isPro ? (
             <ResilienceCard current={resilienceCurrent} prior={resiliencePrior} />
@@ -339,18 +340,16 @@ export default function InsightsScreen() {
             <Pressable
               onPress={() => router.push('/paywall')}
               accessibilityRole="button"
-              accessibilityLabel="Upgrade to Pro to unlock Emotional Resilience Score"
+              accessibilityLabel={t('insights.resilienceCard.lockedA11y')}
             >
               <Card style={styles.proLockCard}>
                 <Text style={styles.proLockIcon}>💪</Text>
                 <View style={styles.proLockInfo}>
-                  <Text style={styles.proLockTitle}>Emotional Resilience Score</Text>
-                  <Text style={styles.proLockSubtitle}>
-                    See how quickly you bounce back from difficult moods. Pro feature.
-                  </Text>
+                  <Text style={styles.proLockTitle}>{t('insights.resilienceCard.lockedTitle')}</Text>
+                  <Text style={styles.proLockSubtitle}>{t('insights.resilienceCard.lockedSubtitle')}</Text>
                 </View>
                 <View style={styles.proLockBadge}>
-                  <Text style={styles.proLockBadgeText}>Pro</Text>
+                  <Text style={styles.proLockBadgeText}>{t('insights.proBadge')}</Text>
                 </View>
               </Card>
             </Pressable>
@@ -362,7 +361,7 @@ export default function InsightsScreen() {
       {filtered.length > 0 && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            Correlations
+            {t('insights.sections.correlations')}
           </Text>
           {isPro ? (
             <CorrelationHeatmap matrix={correlationMatrix} />
@@ -370,18 +369,16 @@ export default function InsightsScreen() {
             <Pressable
               onPress={() => router.push('/paywall')}
               accessibilityRole="button"
-              accessibilityLabel="Upgrade to Pro to unlock Correlation Insights"
+              accessibilityLabel={t('insights.correlationsCard.lockedA11y')}
             >
               <Card style={styles.proLockCard}>
                 <Text style={styles.proLockIcon}>🔍</Text>
                 <View style={styles.proLockInfo}>
-                  <Text style={styles.proLockTitle}>Correlation Insights</Text>
-                  <Text style={styles.proLockSubtitle}>
-                    See which times and days you feel best. Pro feature.
-                  </Text>
+                  <Text style={styles.proLockTitle}>{t('insights.correlationsCard.lockedTitle')}</Text>
+                  <Text style={styles.proLockSubtitle}>{t('insights.correlationsCard.lockedSubtitle')}</Text>
                 </View>
                 <View style={styles.proLockBadge}>
-                  <Text style={styles.proLockBadgeText}>Pro</Text>
+                  <Text style={styles.proLockBadgeText}>{t('insights.proBadge')}</Text>
                 </View>
               </Card>
             </Pressable>
@@ -393,7 +390,7 @@ export default function InsightsScreen() {
       {habits.length > 0 && filtered.length > 0 && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            Habits &amp; Mood
+            {t('insights.sections.habitsAndMood')}
           </Text>
           {isPro ? (
             habitCorrelations.length > 0 ? (
@@ -402,10 +399,8 @@ export default function InsightsScreen() {
               <Card style={styles.proLockCard}>
                 <Text style={styles.proLockIcon}>📊</Text>
                 <View style={styles.proLockInfo}>
-                  <Text style={styles.proLockTitle}>Not enough data yet</Text>
-                  <Text style={styles.proLockSubtitle}>
-                    Log habits for at least 5 days to see correlations.
-                  </Text>
+                  <Text style={styles.proLockTitle}>{t('insights.habitCorrelations.needsMoreTitle')}</Text>
+                  <Text style={styles.proLockSubtitle}>{t('insights.habitCorrelations.needsMoreSubtitle')}</Text>
                 </View>
               </Card>
             )
@@ -413,18 +408,16 @@ export default function InsightsScreen() {
             <Pressable
               onPress={() => router.push('/paywall')}
               accessibilityRole="button"
-              accessibilityLabel="Upgrade to Pro to unlock Habit Correlations"
+              accessibilityLabel={t('insights.habitCorrelations.lockedA11y')}
             >
               <Card style={styles.proLockCard}>
                 <Text style={styles.proLockIcon}>📊</Text>
                 <View style={styles.proLockInfo}>
-                  <Text style={styles.proLockTitle}>Habit × Mood Correlations</Text>
-                  <Text style={styles.proLockSubtitle}>
-                    See which habits most influence your mood scores. Pro feature.
-                  </Text>
+                  <Text style={styles.proLockTitle}>{t('insights.habitCorrelations.lockedTitle')}</Text>
+                  <Text style={styles.proLockSubtitle}>{t('insights.habitCorrelations.lockedSubtitle')}</Text>
                 </View>
                 <View style={styles.proLockBadge}>
-                  <Text style={styles.proLockBadgeText}>Pro</Text>
+                  <Text style={styles.proLockBadgeText}>{t('insights.proBadge')}</Text>
                 </View>
               </Card>
             </Pressable>
@@ -435,18 +428,18 @@ export default function InsightsScreen() {
       {filtered.length > 0 && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            AI Report
+            {t('insights.sections.aiReport')}
           </Text>
           <Pressable
             onPress={() => router.push('/ai-report')}
             accessibilityRole="button"
-            accessibilityLabel="View AI Report — get personalised mood insights"
+            accessibilityLabel={t('insights.aiReport.a11y')}
           >
             <Card style={styles.aiReportCard}>
               <Text style={styles.aiReportIcon}>{'\u2728'}</Text>
               <View style={styles.aiReportInfo}>
-                <Text style={styles.aiReportTitle}>Personalised insights</Text>
-                <Text style={styles.aiReportSubtitle}>Weekly and monthly AI mood analysis</Text>
+                <Text style={styles.aiReportTitle}>{t('insights.aiReport.title')}</Text>
+                <Text style={styles.aiReportSubtitle}>{t('insights.aiReport.subtitle')}</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
             </Card>
@@ -457,22 +450,20 @@ export default function InsightsScreen() {
       {entries.length > 0 && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            Year in Mood
+            {t('insights.sections.yearInMood')}
           </Text>
           <Pressable
             onPress={() => router.push('/annual-report')}
             accessibilityRole="button"
-            accessibilityLabel="View your Year in Mood annual report"
+            accessibilityLabel={t('insights.yearInMood.a11y')}
           >
             <Card style={styles.aiReportCard}>
               <Text style={styles.aiReportIcon}>🗓️</Text>
               <View style={styles.aiReportInfo}>
                 <Text style={styles.aiReportTitle}>
-                  {new Date().getFullYear()} in Mood
+                  {t('insights.yearInMood.title', { year: new Date().getFullYear() })}
                 </Text>
-                <Text style={styles.aiReportSubtitle}>
-                  Your yearly mood story with AI narrative
-                </Text>
+                <Text style={styles.aiReportSubtitle}>{t('insights.yearInMood.subtitle')}</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
             </Card>
@@ -488,16 +479,16 @@ export default function InsightsScreen() {
 interface HabitCorrelation {
   habit: Habit;
   correlation: number;  // -1 to 1 (scale) or mean-diff normalized (boolean)
-  label: string;
+  strength: StrengthKey;
 }
 
-function strengthLabel(r: number): string {
+function strengthKey(r: number): StrengthKey {
   const abs = Math.abs(r);
-  const dir = r >= 0 ? 'positive' : 'negative';
-  if (abs >= 0.5) return `Strong ${dir}`;
-  if (abs >= 0.3) return `Moderate ${dir}`;
-  if (abs >= 0.1) return `Weak ${dir}`;
-  return 'No clear link';
+  const positive = r >= 0;
+  if (abs >= 0.5) return positive ? 'strongPositive' : 'strongNegative';
+  if (abs >= 0.3) return positive ? 'moderatePositive' : 'moderateNegative';
+  if (abs >= 0.1) return positive ? 'weakPositive' : 'weakNegative';
+  return 'none';
 }
 
 function pearsonCorrelation(xs: number[], ys: number[]): number {
@@ -555,7 +546,7 @@ function computeHabitCorrelations(
       r = (avgDone - avgSkip) / 3;
     }
 
-    result.push({ habit, correlation: r, label: strengthLabel(r) });
+    result.push({ habit, correlation: r, strength: strengthKey(r) });
   }
 
   return result.sort((a, b) => Math.abs(b.correlation) - Math.abs(a.correlation));
@@ -570,16 +561,18 @@ function correlationColor(r: number): string {
 }
 
 function HabitCorrelationList({ correlations }: { correlations: HabitCorrelation[] }) {
+  const { t } = useTranslation('screens');
   return (
     <View style={corrStyles.container}>
-      {correlations.map(({ habit, correlation, label }) => {
+      {correlations.map(({ habit, correlation, strength }) => {
         const barWidth = Math.abs(correlation) * 100;
         const color = correlationColor(correlation);
+        const label = t(`insights.habitCorrelations.strength.${strength}`);
         return (
           <View
             key={habit.id}
             style={corrStyles.row}
-            accessibilityLabel={`${habit.name}: ${label}`}
+            accessibilityLabel={t('insights.habitCorrelations.rowA11y', { habit: habit.name, label })}
           >
             <Text style={corrStyles.icon}>{habit.icon}</Text>
             <View style={corrStyles.info}>
@@ -649,15 +642,8 @@ const corrStyles = StyleSheet.create({
 // ─── Correlation Heatmap ──────────────────────────────────────────────────────
 
 const DOW_ORDER = [1, 2, 3, 4, 5, 6, 0]; // Mon...Sun
-const DOW_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 const SLOT_ORDER: MoodSlot[] = ['morning', 'afternoon', 'night', 'pre_sleep'];
-const SLOT_SHORT: Record<MoodSlot, string> = {
-  morning: 'Morn',
-  afternoon: 'Aftn',
-  night: 'Eve',
-  pre_sleep: 'Night',
-};
 
 function scoreToColor(score: number | null): string {
   if (score === null) return '#F0F0F0';
@@ -672,15 +658,26 @@ function CorrelationHeatmap({
 }: {
   matrix: Record<string, Record<number, number[]>>;
 }) {
+  const { t } = useTranslation();
+  const weekdayInitials = t('dates:weekdayInitial', { returnObjects: true }) as string[];
+  // dates.weekdayInitial is Sunday-first; reorder to Mon..Sun to match DOW_ORDER.
+  const dowLabels = DOW_ORDER.map((dow) => weekdayInitials[dow]);
+  const legendItems: { color: string; key: 'low' | 'mixed' | 'good' | 'great' | 'noData' }[] = [
+    { color: '#EF5350', key: 'low' },
+    { color: '#FFD54F', key: 'mixed' },
+    { color: '#80DEEA', key: 'good' },
+    { color: '#66BB6A', key: 'great' },
+    { color: '#F0F0F0', key: 'noData' },
+  ];
   return (
     <View
       style={heatmapStyles.container}
-      accessibilityLabel="Correlation heatmap showing average mood by time-of-day and day-of-week"
+      accessibilityLabel={t('screens:insights.correlationsCard.heatmapA11y')}
     >
       {/* Column headers */}
       <View style={heatmapStyles.row}>
         <View style={heatmapStyles.rowLabel} />
-        {DOW_LABELS.map((label, i) => (
+        {dowLabels.map((label, i) => (
           <View key={i} style={heatmapStyles.cell}>
             <Text style={heatmapStyles.colLabel}>{label}</Text>
           </View>
@@ -690,7 +687,9 @@ function CorrelationHeatmap({
       {SLOT_ORDER.map((slot) => (
         <View key={slot} style={heatmapStyles.row}>
           <View style={heatmapStyles.rowLabel}>
-            <Text style={heatmapStyles.rowLabelText}>{SLOT_SHORT[slot]}</Text>
+            <Text style={heatmapStyles.rowLabelText}>
+              {t(`screens:insights.correlationsCard.slotShort.${slot}`)}
+            </Text>
           </View>
           {DOW_ORDER.map((dow, i) => {
             const scores = matrix[slot]?.[dow];
@@ -701,7 +700,9 @@ function CorrelationHeatmap({
               <View key={i} style={heatmapStyles.cell}>
                 <View
                   style={[heatmapStyles.dot, { backgroundColor: scoreToColor(avg) }]}
-                  accessibilityLabel={avg !== null ? `score ${avg.toFixed(1)}` : 'no data'}
+                  accessibilityLabel={avg !== null
+                    ? t('screens:insights.correlationsCard.cellA11y', { score: avg.toFixed(1) })
+                    : t('screens:insights.correlationsCard.noDataA11y')}
                 />
               </View>
             );
@@ -710,16 +711,12 @@ function CorrelationHeatmap({
       ))}
       {/* Legend */}
       <View style={heatmapStyles.legend}>
-        {[
-          { color: '#EF5350', label: 'Low' },
-          { color: '#FFD54F', label: 'Mixed' },
-          { color: '#80DEEA', label: 'Good' },
-          { color: '#66BB6A', label: 'Great' },
-          { color: '#F0F0F0', label: 'No data' },
-        ].map(({ color, label }) => (
-          <View key={label} style={heatmapStyles.legendItem}>
+        {legendItems.map(({ color, key }) => (
+          <View key={key} style={heatmapStyles.legendItem}>
             <View style={[heatmapStyles.legendDot, { backgroundColor: color }]} />
-            <Text style={heatmapStyles.legendLabel}>{label}</Text>
+            <Text style={heatmapStyles.legendLabel}>
+              {t(`screens:insights.correlationsCard.legend.${key}`)}
+            </Text>
           </View>
         ))}
       </View>
@@ -801,11 +798,12 @@ function ResilienceCard({
   current: ResilienceResult | null;
   prior: ResilienceResult | null;
 }) {
+  const { t } = useTranslation('screens');
   if (!current) {
     return (
       <Card style={resilienceStyles.container}>
         <Text style={resilienceStyles.emptyText}>
-          Log more moods — including some difficult ones — to see your resilience score.
+          {t('insights.resilienceCard.empty')}
         </Text>
       </Card>
     );
@@ -817,15 +815,15 @@ function ResilienceCard({
 
   const avgHoursDisplay =
     current.avgHours < 1
-      ? `${Math.round(current.avgHours * 60)}m avg recovery`
+      ? t('insights.resilienceCard.recoveryMinutes', { n: Math.round(current.avgHours * 60) })
       : current.avgHours < 24
-      ? `${Math.round(current.avgHours)}h avg recovery`
-      : `${(current.avgHours / 24).toFixed(1)}d avg recovery`;
+      ? t('insights.resilienceCard.recoveryHours', { n: Math.round(current.avgHours) })
+      : t('insights.resilienceCard.recoveryDays', { n: (current.avgHours / 24).toFixed(1) });
 
   return (
     <Card
       style={resilienceStyles.container}
-      accessibilityLabel={`Emotional resilience score: ${current.score} out of 100`}
+      accessibilityLabel={t('insights.resilienceCard.scoreA11y', { score: current.score })}
     >
       <View style={resilienceStyles.scoreRow}>
         <View>
@@ -838,12 +836,12 @@ function ResilienceCard({
               <Text style={[resilienceStyles.trendArrow, { color: trendColor }]}>{trendArrow}</Text>
             )}
           </View>
-          <Text style={resilienceStyles.scoreLabel}>Emotional Resilience</Text>
+          <Text style={resilienceStyles.scoreLabel}>{t('insights.resilienceCard.title')}</Text>
         </View>
         <Text style={resilienceStyles.icon}>💪</Text>
       </View>
       <Text style={resilienceStyles.detail}>
-        {avgHoursDisplay} · based on {current.recoveries} {current.recoveries === 1 ? 'recovery' : 'recoveries'}
+        {avgHoursDisplay} · {t('insights.resilienceCard.basedOn', { count: current.recoveries })}
       </Text>
       <View style={resilienceStyles.barTrack}>
         <View style={[resilienceStyles.barFill, { width: `${current.score}%` as any, backgroundColor: scoreToResilienceColor(current.score) }]} />
@@ -921,6 +919,7 @@ function PeriodToggle({
   period: Period;
   onSelect: (p: Period) => void;
 }) {
+  const { t } = useTranslation('screens');
   return (
     <View style={styles.toggleRow}>
       {([7, 30] as Period[]).map((p) => {
@@ -932,10 +931,10 @@ function PeriodToggle({
             style={[styles.togglePill, selected ? styles.toggleSelected : styles.toggleUnselected]}
             accessibilityRole="button"
             accessibilityState={{ selected }}
-            accessibilityLabel={`Show last ${p} days`}
+            accessibilityLabel={t('insights.period.a11y', { n: p })}
           >
             <Text style={[styles.toggleText, selected ? styles.toggleTextSelected : styles.toggleTextUnselected]}>
-              {p}d
+              {t('insights.period.label', { n: p })}
             </Text>
           </Pressable>
         );

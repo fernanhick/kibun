@@ -1,6 +1,9 @@
 import { MoodEntry, MoodSlot } from '@models/index';
 import { MOOD_MAP, type MoodGroup } from '@constants/moods';
 import { GROUP_SCORES } from '@lib/insights';
+import { getMoodLabel } from '@lib/moodLabels';
+import i18n from '@i18n/index';
+import { getWeekdayLabels } from '@i18n/dateFormat';
 
 export interface PatternFlag {
   id: string;
@@ -9,22 +12,12 @@ export interface PatternFlag {
   type: 'day-of-week' | 'time-of-day' | 'trend';
 }
 
-const SLOT_LABELS: Record<MoodSlot, string> = {
-  morning: 'the morning',
-  afternoon: 'the afternoon',
-  night: 'the evening',
-  pre_sleep: 'before sleep',
+const SLOT_KEYS: Record<MoodSlot, string> = {
+  morning: 'morning',
+  afternoon: 'afternoon',
+  night: 'night',
+  pre_sleep: 'pre_sleep',
 };
-
-const DAY_LABELS = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-] as const;
 
 export function detectDayOfWeekPatterns(entries: MoodEntry[]): PatternFlag[] {
   const total = entries.length;
@@ -61,11 +54,15 @@ export function detectDayOfWeekPatterns(entries: MoodEntry[]): PatternFlag[] {
       const dayFreq = countOnDay / totalOnDay;
       const ratio = dayFreq / overallFreq;
       if (ratio >= 1.5) {
+        const weekdays = getWeekdayLabels('long');
         candidates.push({
           flag: {
             id: `dow-${moodId}-${day}`,
             icon: '\u{1F4C5}',
-            text: `You often feel ${mood.label} on ${DAY_LABELS[day]}s`,
+            text: i18n.t('screens:insights.patterns.dayOfWeek', {
+              mood: getMoodLabel(moodId),
+              day: weekdays[day],
+            }),
             type: 'day-of-week',
           },
           ratio,
@@ -115,7 +112,10 @@ export function detectTimeOfDayPatterns(entries: MoodEntry[]): PatternFlag[] {
           flag: {
             id: `tod-${moodId}-${slot}`,
             icon: '\u{1F550}',
-            text: `You tend to feel ${mood.label} in ${SLOT_LABELS[slot as MoodSlot]}`,
+            text: i18n.t('screens:insights.patterns.timeOfDay', {
+              mood: getMoodLabel(moodId),
+              slot: i18n.t(`dates:slot.${SLOT_KEYS[slot as MoodSlot]}`),
+            }),
             type: 'time-of-day',
           },
           ratio,
@@ -155,7 +155,7 @@ export function detectTrendPattern(entries: MoodEntry[]): PatternFlag | null {
     return {
       id: 'trend',
       icon: '\u{1F4C8}',
-      text: 'Your mood has been improving lately \u{1F331}',
+      text: i18n.t('screens:insights.patterns.trendUp'),
       type: 'trend',
     };
   }
@@ -164,7 +164,7 @@ export function detectTrendPattern(entries: MoodEntry[]): PatternFlag | null {
     return {
       id: 'trend',
       icon: '\u{1F4C9}',
-      text: 'Your mood has been dipping recently',
+      text: i18n.t('screens:insights.patterns.trendDown'),
       type: 'trend',
     };
   }

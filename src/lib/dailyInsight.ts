@@ -1,5 +1,6 @@
 import { supabase } from '@lib/supabase';
 import type { OnboardingProfile } from '@models/index';
+import i18n from '@i18n/index';
 
 export async function fetchDailyInsight(params: {
   profile?: Partial<OnboardingProfile>;
@@ -7,7 +8,7 @@ export async function fetchDailyInsight(params: {
   if (!supabase) return null;
 
   const { data, error } = await supabase.functions.invoke('generate-daily-insight', {
-    body: { profile: params.profile },
+    body: { profile: params.profile, language: i18n.language },
   });
 
   if (error) {

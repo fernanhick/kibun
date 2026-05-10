@@ -19,8 +19,10 @@ import { initPurchases, refreshSubscriptionStatus } from '@lib/revenuecat';
 import { configureNotificationHandler, scheduleSlotNotifications } from '@lib/notifications';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
+import { useUiPrefsStore } from '@store/uiPrefsStore';
 import { registerPushToken } from '@lib/pushTokens';
-import { prewarmSentimentModel } from '@lib/sentiment';
+import { prewarmSentimentModel, setSentimentLanguage } from '@lib/sentiment';
+import i18n, { getDeviceLanguage } from '@i18n/index';
 import { getIsTabletDevice } from '@lib/deviceClass';
 import { applyOrientationPolicy } from '@lib/orientation';
 import { initAnalytics, identifyAnalyticsUser } from '@lib/analytics';
@@ -52,6 +54,25 @@ prewarmSentimentModel();
 
 // Initialize Vexo product analytics. No-ops in __DEV__ or without a key.
 initAnalytics();
+
+// Apply persisted language override once uiPrefsStore hydrates. Until then,
+// i18n stays on the device-detected locale set at module init.
+function applyLanguagePref() {
+  const pref = useUiPrefsStore.getState().language;
+  const target = pref === 'system' ? getDeviceLanguage() : pref;
+  if (i18n.language !== target) {
+    i18n.changeLanguage(target);
+  }
+  setSentimentLanguage(target);
+  prewarmSentimentModel();
+}
+if (useUiPrefsStore.persist.hasHydrated()) {
+  applyLanguagePref();
+} else {
+  useUiPrefsStore.persist.onFinishHydration(applyLanguagePref);
+}
+// Re-sync on every preference change (e.g. user picks a language in Settings).
+useUiPrefsStore.subscribe(applyLanguagePref);
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 // Catches unhandled render errors in the navigation tree.
@@ -88,10 +109,10 @@ class ErrorBoundary extends React.Component<
     if (this.state.hasError) {
       return (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorTitle}>Something went wrong</Text>
+          <Text style={styles.errorTitle}>{i18n.t('screens:appErrors.title')}</Text>
           <Text style={styles.errorMessage}>{this.state.errorMessage}</Text>
           <TouchableOpacity style={styles.restartButton} onPress={this.handleRestart}>
-            <Text style={styles.restartText}>Restart app</Text>
+            <Text style={styles.restartText}>{i18n.t('screens:appErrors.restart')}</Text>
           </TouchableOpacity>
         </View>
       );

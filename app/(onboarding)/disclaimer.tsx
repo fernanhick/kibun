@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '@components/Screen';
 import { Button } from '@components/Button';
@@ -11,6 +12,7 @@ import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
 export default function DisclaimerScreen() {
   const router = useRouter();
+  const { t } = useTranslation('onboarding');
   const [acknowledged, setAcknowledged] = useState(false);
 
   const handleContinue = () => {
@@ -28,37 +30,31 @@ export default function DisclaimerScreen() {
         <OnboardingProgress current={1} total={14} tone="dark" style={styles.progress} />
         <Shiba variant="neutral" size={180} style={styles.shiba} />
 
-        <Text style={styles.title}>Before We Begin… 🌸</Text>
-        <Text style={styles.subtitle}>
-          Just a few things to know about Kibun
-        </Text>
+        <Text style={styles.title}>{t('disclaimer.title')}</Text>
+        <Text style={styles.subtitle}>{t('disclaimer.subtitle')}</Text>
 
         <Card style={styles.card}>
           <View style={styles.cardHeader}>
             <View style={styles.iconBubble}>
               <Ionicons name="heart-circle" size={28} color={colors.primary} />
             </View>
-            <Text style={styles.cardTitle}>Kibun is a Wellness Tool</Text>
+            <Text style={styles.cardTitle}>{t('disclaimer.cardTitle')}</Text>
           </View>
 
-          <Text style={styles.bodyText}>
-            Kibun is here to help you with self-reflection and mood tracking — think of it as a cozy journal companion! 📝
-          </Text>
+          <Text style={styles.bodyText}>{t('disclaimer.body')}</Text>
 
-          <Text style={styles.sectionTitle}>What Kibun Is NOT:</Text>
-          <BulletPoint emoji="🏥" text="A medical device or app" />
-          <BulletPoint emoji="🩺" text="Medical advice or diagnosis" />
-          <BulletPoint emoji="💊" text="A treatment for any condition" />
-          <BulletPoint emoji="👩‍⚕️" text="A substitute for professional mental health care" />
-          <BulletPoint emoji="🚨" text="An emergency service" />
+          <Text style={styles.sectionTitle}>{t('disclaimer.notSection')}</Text>
+          <BulletPoint emoji="🏥" text={t('disclaimer.bullets.medicalDevice')} />
+          <BulletPoint emoji="🩺" text={t('disclaimer.bullets.medicalAdvice')} />
+          <BulletPoint emoji="💊" text={t('disclaimer.bullets.treatment')} />
+          <BulletPoint emoji="👩‍⚕️" text={t('disclaimer.bullets.professionalCare')} />
+          <BulletPoint emoji="🚨" text={t('disclaimer.bullets.emergency')} />
 
           <View style={styles.crisisBox}>
             <Ionicons name="call" size={20} color={colors.primary} />
             <View style={styles.crisisContent}>
-              <Text style={styles.crisisTitle}>If You're in Crisis</Text>
-              <Text style={styles.crisisText}>
-                Please contact local emergency services or a licensed professional immediately. You matter. 💙
-              </Text>
+              <Text style={styles.crisisTitle}>{t('disclaimer.crisisTitle')}</Text>
+              <Text style={styles.crisisText}>{t('disclaimer.crisisBody')}</Text>
             </View>
           </View>
         </Card>
@@ -78,13 +74,13 @@ export default function DisclaimerScreen() {
             style={styles.checkboxLabel}
             onPress={() => setAcknowledged(!acknowledged)}
           >
-            I understand Kibun is for wellness only ✨
+            {t('disclaimer.checkbox')}
           </Text>
         </View>
 
         <View style={styles.button}>
           <Button
-            label="Let's Go! 🎉"
+            label={t('disclaimer.cta')}
             onPress={handleContinue}
             variant="sunrise"
             disabled={!acknowledged}
@@ -93,11 +89,9 @@ export default function DisclaimerScreen() {
         </View>
 
         <Pressable onPress={handleExistingAccount} accessibilityRole="button" style={styles.loginLinkWrap}>
-          <Text style={styles.loginLink}>Already have an account? Sign in and skip onboarding</Text>
+          <Text style={styles.loginLink}>{t('disclaimer.loginLink')}</Text>
         </Pressable>
-        <Text style={styles.personalizationNote}>
-          Heads up: these onboarding answers improve personalized insights later.
-        </Text>
+        <Text style={styles.personalizationNote}>{t('disclaimer.personalizationNote')}</Text>
       </View>
     </Screen>
   );

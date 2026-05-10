@@ -6,6 +6,33 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+type AppLanguage = "en" | "es";
+
+function toSupportedLanguage(value: unknown): AppLanguage {
+  if (typeof value !== "string") return "en";
+  const normalized = value.toLowerCase();
+  if (normalized.startsWith("es")) return "es";
+  return "en";
+}
+
+function reportTypeLabel(reportType: "weekly" | "monthly", language: AppLanguage): string {
+  if (language === "es") return reportType === "weekly" ? "semanal" : "mensual";
+  return reportType;
+}
+
+function getPushCopy(language: AppLanguage, reportType: "weekly" | "monthly") {
+  if (language === "es") {
+    return {
+      title: "Tu reporte de kibun esta listo",
+      body: `Tu analisis emocional ${reportTypeLabel(reportType, language)} te esta esperando`,
+    };
+  }
+  return {
+    title: "Your kibun report is ready",
+    body: `Your ${reportType} mood analysis is waiting for you`,
+  };
+}
+
 Deno.serve(async (req: Request) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -57,6 +84,7 @@ Deno.serve(async (req: Request) => {
     // --- Parse request body ---
     const body = await req.json();
     const { report_type, profile } = body;
+    const language = toSupportedLanguage(body?.language);
 
     if (!report_type || !["weekly", "monthly"].includes(report_type)) {
       return new Response(
@@ -65,8 +93,10 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    const reportType = report_type as "weekly" | "monthly";
+
     // --- Duplicate report prevention ---
-    const periodDays = report_type === "weekly" ? 7 : 30;
+    const periodDays = reportType === "weekly" ? 7 : 30;
     const periodCutoff = new Date();
     periodCutoff.setDate(periodCutoff.getDate() - periodDays);
 
@@ -74,7 +104,7 @@ Deno.serve(async (req: Request) => {
       .from("ai_reports")
       .select("*")
       .eq("user_id", userId)
-      .eq("report_type", report_type)
+      .eq("report_type", reportType)
       .gte("created_at", periodCutoff.toISOString())
       .order("created_at", { ascending: false })
       .limit(1)
@@ -142,28 +172,42 @@ Deno.serve(async (req: Request) => {
     const periodEnd = entries[entries.length - 1].logged_at.split("T")[0];
     const userName = profile?.name || "this user";
 
-    const systemMessage =
-      "You are a warm, insightful mood analyst for the kibun app. " +
-      "Generate a personalized mood report as a JSON object that the client " +
-      "will render into rich UI sections. Be supportive, specific, and actionable. " +
-      "Use the user's name when natural. Keep prose concise — the whole report " +
-      "should read in under 60 seconds.\n\n" +
-      "Return JSON with exactly these fields:\n" +
-      '- "headline": string. A short, warm one-line title (max ~70 chars), e.g. "A gentle, mostly-calm week".\n' +
-      '- "summary": string. 2-4 sentences of plain prose summarising the period. No markdown.\n' +
-      '- "patterns": array of 2-4 strings. Each string is a single observation about timing, mood mix, or trend. No markdown, no leading bullet characters.\n' +
-      '- "highlight": object or null. When notable, { "label": short phrase, "detail": one sentence of context }. Use null when nothing stands out.\n' +
-      '- "nudge": object. { "title": short imperative phrase, "body": 1-2 sentences with one gentle, actionable suggestion }.\n' +
-      '- "tone": one of "positive" | "neutral" | "mixed" | "tough". Best characterisation of the period overall.\n' +
-      "Output JSON only — do not wrap in markdown fences.";
+    const systemMessage = language === "es"
+      ? "Eres un analista emocional calido y perspicaz para la app kibun. " +
+        "Genera un reporte emocional personalizado como objeto JSON para que el cliente lo renderice en secciones ricas de UI. " +
+        "Se empatico, especifico y accionable. Usa el nombre de la persona cuando sea natural. " +
+        "Manten el texto conciso: todo el reporte debe leerse en menos de 60 segundos.\n\n" +
+        "Devuelve JSON con exactamente estos campos:\n" +
+        '- "headline": string. Titulo breve y calido (max ~70 caracteres), por ejemplo "Una semana tranquila y con buen ritmo".\n' +
+        '- "summary": string. 2-4 frases en prosa sobre el periodo. Sin markdown.\n' +
+        '- "patterns": array de 2-4 strings. Cada string es una observacion sobre horarios, mezcla de animo o tendencia. Sin markdown ni guiones.\n' +
+        '- "highlight": object o null. Si hay algo notable: { "label": frase corta, "detail": una frase de contexto }. Usa null cuando no destaque nada.\n' +
+        '- "nudge": object. { "title": frase corta en imperativo, "body": 1-2 frases con una sugerencia suave y accionable }.\n' +
+        '- "tone": uno de "positive" | "neutral" | "mixed" | "tough". Mejor caracterizacion general del periodo.\n' +
+        "Devuelve solo JSON, sin bloques markdown."
+      : "You are a warm, insightful mood analyst for the kibun app. " +
+        "Generate a personalized mood report as a JSON object that the client " +
+        "will render into rich UI sections. Be supportive, specific, and actionable. " +
+        "Use the user's name when natural. Keep prose concise - the whole report " +
+        "should read in under 60 seconds.\n\n" +
+        "Return JSON with exactly these fields:\n" +
+        '- "headline": string. A short, warm one-line title (max ~70 chars), e.g. "A gentle, mostly-calm week".\n' +
+        '- "summary": string. 2-4 sentences of plain prose summarising the period. No markdown.\n' +
+        '- "patterns": array of 2-4 strings. Each string is a single observation about timing, mood mix, or trend. No markdown, no leading bullet characters.\n' +
+        '- "highlight": object or null. When notable, { "label": short phrase, "detail": one sentence of context }. Use null when nothing stands out.\n' +
+        '- "nudge": object. { "title": short imperative phrase, "body": 1-2 sentences with one gentle, actionable suggestion }.\n' +
+        '- "tone": one of "positive" | "neutral" | "mixed" | "tough". Best characterisation of the period overall.\n' +
+        "Output JSON only - do not wrap in markdown fences.";
 
     const userMessage = [
-      `Report type: ${report_type}`,
+      language === "es" ? `Tipo de reporte: ${reportTypeLabel(reportType, language)}` : `Report type: ${reportType}`,
       `Period: ${periodStart} to ${periodEnd}`,
       `\nMood check-ins (${entries.length} entries):`,
       moodLines.join("\n"),
       profileContext ? `\nUser profile:\n${profileContext}` : "",
-      `\nGenerate a ${report_type} mood report for ${userName} as the JSON object described.`,
+      language === "es"
+        ? `\nGenera un reporte emocional ${reportTypeLabel(reportType, language)} para ${userName} con el formato JSON indicado.`
+        : `\nGenerate a ${reportType} mood report for ${userName} as the JSON object described.`,
     ].join("\n");
 
     // --- Call OpenAI API ---
@@ -260,7 +304,7 @@ Deno.serve(async (req: Request) => {
       .from("ai_reports")
       .insert({
         user_id: userId,
-        report_type,
+        report_type: reportType,
         period_start: periodStart,
         period_end: periodEnd,
         content: reportContent,
@@ -283,6 +327,7 @@ Deno.serve(async (req: Request) => {
     const pushToken = user.user_metadata?.expo_push_token as string | undefined;
     if (pushToken && typeof pushToken === "string" && pushToken.startsWith("ExponentPushToken")) {
       try {
+        const pushCopy = getPushCopy(language, reportType);
         const pushResponse = await fetch("https://exp.host/--/api/v2/push/send", {
           method: "POST",
           headers: {
@@ -292,9 +337,9 @@ Deno.serve(async (req: Request) => {
           },
           body: JSON.stringify({
             to: pushToken,
-            title: "Your kibun report is ready",
-            body: `Your ${report_type} mood analysis is waiting for you`,
-            data: { type: "ai_report", report_type },
+            title: pushCopy.title,
+            body: pushCopy.body,
+            data: { type: "ai_report", report_type: reportType },
           }),
         });
         if (!pushResponse.ok) {

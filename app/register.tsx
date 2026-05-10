@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { Linking as RNLinking } from 'react-native';
@@ -15,52 +17,52 @@ import { colors, typography, spacing, radius } from '@constants/theme';
 // Required by expo-web-browser to complete any pending auth sessions on mount.
 WebBrowser.maybeCompleteAuthSession();
 
-function friendlyAuthError(message: string, mode: 'register' | 'login'): string {
-  const m = message.toLowerCase();
+function friendlyAuthError(message: string, mode: 'register' | 'login', t: TFunction<'screens'>): string {
   if (/same.*previous|password.*reuse/i.test(message)) {
-    return 'Please choose a different password and try again.';
+    return t('register.errors.differentPassword');
   }
   if (/user.*already.*registered|already.*registered|email.*already.*use/i.test(message)) {
     return mode === 'register'
-      ? 'An account with this email already exists. Try signing in instead.'
-      : 'Incorrect email or password.';
+      ? t('register.errors.alreadyRegistered')
+      : t('register.errors.incorrectCredentials');
   }
   if (/invalid.*login.*credentials|invalid.*email.*password|invalid.*credentials/i.test(message)) {
-    return 'Incorrect email or password.';
+    return t('register.errors.incorrectCredentials');
   }
   if (/email.*not.*confirmed|email.*confirm|confirm.*email/i.test(message)) {
-    return 'Please check your inbox and confirm your email first.';
+    return t('register.errors.confirmFirst');
   }
   if (/signup.*disabled/i.test(message)) {
-    return 'Account creation is temporarily unavailable. Please try again later.';
+    return t('register.errors.signupDisabled');
   }
   if (/too many requests|rate.*limit/i.test(message)) {
-    return 'Too many attempts. Please wait a moment and try again.';
+    return t('register.errors.tooManyRequests');
   }
   if (/network.*failed|fetch.*failed|failed to fetch/i.test(message)) {
-    return 'Connection error. Please check your internet and try again.';
+    return t('register.errors.networkError');
   }
   if (/password.*length|should be at least|at least.*character/i.test(message)) {
-    return 'Password must be at least 8 characters.';
+    return t('register.errors.passwordTooShort');
   }
   if (/invalid.*email|email.*invalid/i.test(message)) {
-    return 'Please enter a valid email address.';
+    return t('register.errors.invalidEmail');
   }
   return message;
 }
 
-function validateInputs(email: string, password: string, mode: 'register' | 'login'): string | null {
+function validateInputs(email: string, password: string, mode: 'register' | 'login', t: TFunction<'screens'>): string | null {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-    return 'Please enter a valid email address.';
+    return t('register.errors.invalidEmail');
   }
   if (mode === 'register' && password.trim().length < 8) {
-    return 'Password must be at least 8 characters.';
+    return t('register.errors.passwordTooShort');
   }
   return null;
 }
 
 export default function RegistrationScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{ mode?: string | string[]; source?: string | string[] }>();
   const modeParam = Array.isArray(params.mode) ? params.mode[0] : params.mode;
   const sourceParam = Array.isArray(params.source) ? params.source[0] : params.source;
@@ -88,12 +90,12 @@ export default function RegistrationScreen() {
   // Email/password: register (updateUser to upgrade anonymous) or login (signInWithPassword).
   const handleEmail = async () => {
     if (!supabase) {
-      setError('Configuration error: Supabase is not set for this build.');
+      setError(t('register.errors.configMissing'));
       return;
     }
     if (!email.trim() || !password.trim() || submitting) return;
 
-    const validationError = validateInputs(email, password, mode);
+    const validationError = validateInputs(email, password, mode, t);
     if (validationError) {
       setError(validationError);
       return;
@@ -126,21 +128,21 @@ export default function RegistrationScreen() {
             });
             if (signInError) {
               if (/email.*confirm|confirm.*email/i.test(signInError.message)) {
-                setInfoMessage('Account created. Please confirm your email, then sign in.');
+                setInfoMessage(t('register.info.accountCreated'));
               } else {
-                setError(friendlyAuthError(signInError.message, 'register'));
+                setError(friendlyAuthError(signInError.message, 'register', t));
               }
               setSubmitting(false);
               return;
             }
             // Sign-in succeeded — fall through to post-session check below
           } else if (/user.*already.*registered|already.*registered|email.*already.*use/i.test(authError.message)) {
-            setError('An account with this email already exists. Try signing in instead.');
+            setError(t('register.errors.alreadyRegistered'));
             setMode('login');
             setSubmitting(false);
             return;
           } else {
-            setError(friendlyAuthError(authError.message, 'register'));
+            setError(friendlyAuthError(authError.message, 'register', t));
             setSubmitting(false);
             return;
           }
@@ -155,9 +157,9 @@ export default function RegistrationScreen() {
             });
             if (signInError) {
               if (/email.*confirm|confirm.*email/i.test(signInError.message)) {
-                setInfoMessage('Account created. Please confirm your email, then sign in.');
+                setInfoMessage(t('register.info.accountCreated'));
               } else {
-                setError(friendlyAuthError(signInError.message, 'register'));
+                setError(friendlyAuthError(signInError.message, 'register', t));
               }
               setSubmitting(false);
               return;
@@ -172,10 +174,10 @@ export default function RegistrationScreen() {
 
         if (signUpError) {
           if (/user.*already.*registered|already.*registered|email.*already.*use/i.test(signUpError.message)) {
-            setError('An account with this email already exists. Try signing in instead.');
+            setError(t('register.errors.alreadyRegistered'));
             setMode('login');
           } else {
-            setError(friendlyAuthError(signUpError.message, 'register'));
+            setError(friendlyAuthError(signUpError.message, 'register', t));
           }
           setSubmitting(false);
           return;
@@ -183,7 +185,7 @@ export default function RegistrationScreen() {
 
         // If email confirmation is required, Supabase returns session=null.
         if (!signUpData.session) {
-          setInfoMessage('Account created. Please confirm your email, then sign in.');
+          setInfoMessage(t('register.info.accountCreated'));
           setSubmitting(false);
           return;
         }
@@ -195,9 +197,9 @@ export default function RegistrationScreen() {
       });
       if (authError) {
         if (/email.*confirm|confirm.*email/i.test(authError.message)) {
-          setInfoMessage('Please check your inbox and confirm your email before signing in.');
+          setInfoMessage(t('register.info.confirmBeforeSignIn'));
         } else {
-          setError(friendlyAuthError(authError.message, 'login'));
+          setError(friendlyAuthError(authError.message, 'login', t));
         }
         setSubmitting(false);
         return;
@@ -207,7 +209,7 @@ export default function RegistrationScreen() {
     const { data: postSession } = await supabase.auth.getSession();
     if (!postSession.session || postSession.session.user.is_anonymous) {
       // If email confirmation is still pending, the session will remain anonymous/null.
-      setInfoMessage('Please confirm your email first, then sign in.');
+      setInfoMessage(t('register.info.confirmFirstThenSignIn'));
       setSubmitting(false);
       return;
     }
@@ -220,16 +222,16 @@ export default function RegistrationScreen() {
     if (!supabase) return;
     const cleanEmail = email.trim();
     if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      setError('Please enter your email address above first.');
+      setError(t('register.errors.enterEmailFirst'));
       return;
     }
     setError(null);
     setInfoMessage(null);
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(cleanEmail);
     if (resetError) {
-      setError(friendlyAuthError(resetError.message, 'login'));
+      setError(friendlyAuthError(resetError.message, 'login', t));
     } else {
-      setInfoMessage('Password reset email sent. Check your inbox.');
+      setInfoMessage(t('register.info.resetEmailSent'));
     }
   };
 
@@ -238,7 +240,7 @@ export default function RegistrationScreen() {
   // Does NOT use linkIdentity (unreliable with PKCE + skipBrowserRedirect on mobile).
   const handleOAuth = async (provider: 'google' | 'apple') => {
     if (!supabase) {
-      setError('Configuration error: Supabase is not set for this build.');
+      setError(t('register.errors.configMissing'));
       return;
     }
     setError(null);
@@ -256,7 +258,7 @@ export default function RegistrationScreen() {
     });
 
     if (authError || !data?.url) {
-      setError(authError?.message ?? `${provider} sign in unavailable`);
+      setError(authError?.message ?? t('register.errors.oauthUnavailable', { provider: provider === 'google' ? 'Google' : 'Apple' }));
       return;
     }
 
@@ -312,10 +314,10 @@ export default function RegistrationScreen() {
       }
 
       if (__DEV__) console.warn('[kibun:oauth] No tokens in redirect URL:', url);
-      setError('Sign in could not be completed. Please try again.');
+      setError(t('register.errors.signInIncomplete'));
     } catch (e) {
       if (__DEV__) console.error('[kibun:oauth] exception:', e);
-      setError(`${provider === 'google' ? 'Google' : 'Apple'} sign in failed. Please try again.`);
+      setError(provider === 'google' ? t('register.errors.oauthFailedGoogle') : t('register.errors.oauthFailedApple'));
     }
   };
 
@@ -332,17 +334,13 @@ export default function RegistrationScreen() {
         style={styles.heroCard}
       >
         <Text style={styles.title}>
-          {mode === 'register' ? 'Create your account' : 'Welcome back!'}
+          {mode === 'register' ? t('register.hero.registerTitle') : t('register.hero.loginTitle')}
         </Text>
         <Text style={styles.subtitle}>
-          {mode === 'register'
-            ? 'Link your data to an account so you never lose it'
-            : 'Sign in to pick up where you left off'}
+          {mode === 'register' ? t('register.hero.registerSubtitle') : t('register.hero.loginSubtitle')}
         </Text>
         {fromOnboarding && (
-          <Text style={styles.infoNote}>
-            You can skip onboarding now. Completing those questions later helps us personalize insights.
-          </Text>
+          <Text style={styles.infoNote}>{t('register.hero.fromOnboardingNote')}</Text>
         )}
       </LinearGradient>
 
@@ -353,32 +351,32 @@ export default function RegistrationScreen() {
             style={({ pressed }) => [styles.appleButton, pressed && styles.pressed]}
             onPress={() => handleOAuth('apple')}
             accessibilityRole="button"
-            accessibilityLabel="Continue with Apple"
+            accessibilityLabel={t('register.social.apple')}
           >
-            <Text style={styles.appleButtonText}>Continue with Apple</Text>
+            <Text style={styles.appleButtonText}>{t('register.social.apple')}</Text>
           </Pressable>
 
           <Pressable
             style={({ pressed }) => [styles.googleButton, pressed && styles.pressed]}
             onPress={() => handleOAuth('google')}
             accessibilityRole="button"
-            accessibilityLabel="Continue with Google"
+            accessibilityLabel={t('register.social.google')}
           >
-            <Text style={styles.googleButtonText}>Continue with Google</Text>
+            <Text style={styles.googleButtonText}>{t('register.social.google')}</Text>
           </Pressable>
         </View>
 
         {/* Divider */}
         <View style={styles.divider} accessibilityRole="none">
           <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>or</Text>
+          <Text style={styles.dividerText}>{t('register.divider')}</Text>
           <View style={styles.dividerLine} />
         </View>
 
         {/* Email / password form */}
         <View style={styles.form}>
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Email</Text>
+            <Text style={styles.fieldLabel}>{t('register.form.emailLabel')}</Text>
             <TextInput
               style={styles.input}
               value={email}
@@ -386,30 +384,30 @@ export default function RegistrationScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
-              accessibilityLabel="Email address"
-              placeholder="you@example.com"
+              accessibilityLabel={t('register.form.emailA11y')}
+              placeholder={t('register.form.emailPlaceholder')}
               placeholderTextColor={colors.textDisabled}
               maxLength={254}
             />
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Password</Text>
+            <Text style={styles.fieldLabel}>{t('register.form.passwordLabel')}</Text>
             <TextInput
               style={styles.input}
               value={password}
               onChangeText={(text) => { setPassword(text); setError(null); setInfoMessage(null); }}
               secureTextEntry={true}
               autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
-              accessibilityLabel="Password"
-              placeholder={mode === 'register' ? 'Min. 8 characters' : 'Your password'}
+              accessibilityLabel={t('register.form.passwordA11y')}
+              placeholder={mode === 'register' ? t('register.form.passwordPlaceholderRegister') : t('register.form.passwordPlaceholderLogin')}
               placeholderTextColor={colors.textDisabled}
               maxLength={128}
             />
           </View>
 
           <Button
-            label={mode === 'register' ? 'Create account' : 'Sign in'}
+            label={mode === 'register' ? t('register.form.submitRegister') : t('register.form.submitLogin')}
             onPress={handleEmail}
             variant="sunrise"
             disabled={!email.trim() || !password.trim()}
@@ -422,31 +420,31 @@ export default function RegistrationScreen() {
               onPress={handleForgotPassword}
               style={styles.forgotRow}
               accessibilityRole="button"
-              accessibilityLabel="Forgot password"
+              accessibilityLabel={t('register.form.forgotA11y')}
             >
-              <Text style={styles.forgotText}>Forgot password?</Text>
+              <Text style={styles.forgotText}>{t('register.form.forgot')}</Text>
             </Pressable>
           )}
 
           {mode === 'register' && (
             <Text style={styles.legalText}>
-              By creating an account you agree to our{' '}
+              {t('register.form.legalIntro')}
               <Text
                 style={styles.legalLink}
                 onPress={() => RNLinking.openURL(TERMS_OF_USE_URL)}
                 accessibilityRole="link"
               >
-                Terms of Use
-              </Text>{' '}
-              and{' '}
+                {t('register.form.termsOfUse')}
+              </Text>
+              {t('register.form.legalAnd')}
               <Text
                 style={styles.legalLink}
                 onPress={() => RNLinking.openURL(PRIVACY_POLICY_URL)}
                 accessibilityRole="link"
               >
-                Privacy Policy
+                {t('register.form.privacyPolicy')}
               </Text>
-              .
+              {t('register.form.legalSuffix')}
             </Text>
           )}
         </View>
@@ -457,12 +455,10 @@ export default function RegistrationScreen() {
           style={styles.toggleRow}
         >
           <Text style={styles.toggleText}>
-            {mode === 'register'
-              ? 'Already have an account? '
-              : "Don't have an account? "}
+            {mode === 'register' ? t('register.toggle.haveAccount') : t('register.toggle.noAccount')}
           </Text>
           <Text style={styles.toggleLink}>
-            {mode === 'register' ? 'Sign in' : 'Create one'}
+            {mode === 'register' ? t('register.toggle.linkLogin') : t('register.toggle.linkRegister')}
           </Text>
         </Pressable>
       </View>
@@ -484,11 +480,11 @@ export default function RegistrationScreen() {
       {/* Skip */}
       <View style={styles.skipRow}>
         <Button
-          label="Skip for now"
+          label={t('register.skip')}
           onPress={handleSkip}
           variant="ghost"
           fullWidth
-          accessibilityHint="Continue without creating an account"
+          accessibilityHint={t('register.skipA11yHint')}
         />
       </View>
     </Screen>

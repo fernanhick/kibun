@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, BackButton } from '@components/index';
@@ -18,15 +19,16 @@ const COLOR_PALETTE = [
   '#66BB6A', '#FFCA28', '#FFA726', '#EF5350',
 ];
 
-const GROUP_OPTIONS: { value: MoodGroup; label: string; hint: string }[] = [
-  { value: 'green',     label: 'Positive',   hint: 'Uplifting, good energy' },
-  { value: 'neutral',   label: 'Neutral',     hint: 'Mixed or calm feelings' },
-  { value: 'blue',      label: 'Reflective',  hint: 'Introspective, quiet' },
-  { value: 'red-orange',label: 'Difficult',   hint: 'Challenging emotions' },
+const GROUP_OPTIONS: { value: MoodGroup }[] = [
+  { value: 'green' },
+  { value: 'neutral' },
+  { value: 'blue' },
+  { value: 'red-orange' },
 ];
 
 export default function CustomMoodsScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const moods = useCustomMoodsStore((s) => s.moods);
   const addMood = useCustomMoodsStore((s) => s.addMood);
   const deleteMood = useCustomMoodsStore((s) => s.deleteMood);
@@ -51,9 +53,9 @@ export default function CustomMoodsScreen() {
   };
 
   const handleDelete = (id: string, name: string) => {
-    Alert.alert('Delete mood', `Remove "${name}" from your custom moods?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => deleteMood(id) },
+    Alert.alert(t('customMoods.deleteTitle'), t('customMoods.deleteMessage', { name }), [
+      { text: t('common:actions.cancel'), style: 'cancel' },
+      { text: t('customMoods.deleteAction'), style: 'destructive', onPress: () => deleteMood(id) },
     ]);
   };
 
@@ -69,28 +71,28 @@ export default function CustomMoodsScreen() {
         <View style={styles.heroHeader}>
           <BackButton variant="onHero" />
         </View>
-        <Text style={styles.heroTitle}>Custom Moods</Text>
+        <Text style={styles.heroTitle}>{t('customMoods.heroTitle')}</Text>
         <Text style={styles.heroSubtitle}>
-          Create up to {MAX_MOODS} moods that feel uniquely yours
+          {t('customMoods.heroSubtitle', { max: MAX_MOODS })}
         </Text>
       </LinearGradient>
 
       <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
         {moods.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Your custom moods</Text>
+            <Text style={styles.sectionLabel}>{t('customMoods.yourMoods')}</Text>
             {moods.map((m) => (
               <View key={m.id} style={styles.moodRow}>
                 <View style={[styles.moodDot, { backgroundColor: m.color }]} />
                 <Text style={styles.moodLabel}>{m.label}</Text>
                 <Text style={styles.moodGroup}>
-                  {GROUP_OPTIONS.find((g) => g.value === m.group)?.label ?? m.group}
+                  {t(`customMoods.group.${m.group}.label`)}
                 </Text>
                 <Pressable
                   onPress={() => handleDelete(m.id, m.label)}
                   hitSlop={12}
                   accessibilityRole="button"
-                  accessibilityLabel={`Delete ${m.label}`}
+                  accessibilityLabel={t('customMoods.deleteA11y', { name: m.label })}
                 >
                   <Ionicons name="trash-outline" size={18} color={colors.textSecondary} />
                 </Pressable>
@@ -104,11 +106,11 @@ export default function CustomMoodsScreen() {
             style={styles.addButton}
             onPress={() => setShowForm(true)}
             accessibilityRole="button"
-            accessibilityLabel="Create a new custom mood"
+            accessibilityLabel={t('customMoods.createA11y')}
           >
             <Ionicons name="add-circle-outline" size={18} color={colors.primary} />
             <Text style={styles.addButtonText}>
-              Create mood ({moods.length}/{MAX_MOODS})
+              {t('customMoods.createMood', { count: moods.length, max: MAX_MOODS })}
             </Text>
           </Pressable>
         )}
@@ -117,28 +119,28 @@ export default function CustomMoodsScreen() {
           <View style={styles.limitRow}>
             <Ionicons name="information-circle-outline" size={16} color={colors.textSecondary} />
             <Text style={styles.limitText}>
-              You've reached the limit of {MAX_MOODS} custom moods.
+              {t('customMoods.limitReached', { max: MAX_MOODS })}
             </Text>
           </View>
         )}
 
         {showForm && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>New mood</Text>
+            <Text style={styles.sectionLabel}>{t('customMoods.newMood')}</Text>
 
             <View style={styles.formBlock}>
-              <Text style={styles.fieldLabel}>Name (max 12 chars)</Text>
+              <Text style={styles.fieldLabel}>{t('customMoods.nameLabel')}</Text>
               <TextInput
                 style={styles.nameInput}
                 value={label}
                 onChangeText={setLabel}
-                placeholder="e.g. Nostalgic"
+                placeholder={t('customMoods.namePlaceholder')}
                 placeholderTextColor={colors.textDisabled}
                 maxLength={12}
-                accessibilityLabel="Mood name"
+                accessibilityLabel={t('customMoods.nameA11y')}
               />
 
-              <Text style={styles.fieldLabel}>Colour</Text>
+              <Text style={styles.fieldLabel}>{t('customMoods.colour')}</Text>
               <View style={styles.colorGrid}>
                 {COLOR_PALETTE.map((c) => (
                   <Pressable
@@ -160,7 +162,7 @@ export default function CustomMoodsScreen() {
                 ))}
               </View>
 
-              <Text style={styles.fieldLabel}>Mood type</Text>
+              <Text style={styles.fieldLabel}>{t('customMoods.moodType')}</Text>
               {GROUP_OPTIONS.map((g) => (
                 <Pressable
                   key={g.value}
@@ -174,9 +176,9 @@ export default function CustomMoodsScreen() {
                 >
                   <View style={styles.groupTextBlock}>
                     <Text style={[styles.groupLabel, selectedGroup === g.value && styles.groupLabelSelected]}>
-                      {g.label}
+                      {t(`customMoods.group.${g.value}.label`)}
                     </Text>
-                    <Text style={styles.groupHint}>{g.hint}</Text>
+                    <Text style={styles.groupHint}>{t(`customMoods.group.${g.value}.hint`)}</Text>
                   </View>
                   {selectedGroup === g.value && (
                     <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
@@ -187,7 +189,7 @@ export default function CustomMoodsScreen() {
               {/* Preview */}
               {label.trim().length >= 2 && (
                 <View style={styles.previewRow}>
-                  <Text style={styles.previewLabel}>Preview:</Text>
+                  <Text style={styles.previewLabel}>{t('customMoods.preview')}</Text>
                   <View style={[styles.previewBubble, { backgroundColor: selectedColor }]}>
                     <Text style={styles.previewBubbleText}>{label.trim().slice(0, 12)}</Text>
                   </View>
@@ -200,16 +202,16 @@ export default function CustomMoodsScreen() {
                   onPress={() => { setShowForm(false); setLabel(''); }}
                   accessibilityRole="button"
                 >
-                  <Text style={styles.cancelText}>Cancel</Text>
+                  <Text style={styles.cancelText}>{t('common:actions.cancel')}</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.saveBtn, label.trim().length < 2 && styles.saveBtnDisabled]}
                   onPress={handleAdd}
                   disabled={label.trim().length < 2}
                   accessibilityRole="button"
-                  accessibilityLabel="Save custom mood"
+                  accessibilityLabel={t('customMoods.saveA11y')}
                 >
-                  <Text style={styles.saveBtnText}>Save mood</Text>
+                  <Text style={styles.saveBtnText}>{t('customMoods.saveMood')}</Text>
                 </Pressable>
               </View>
             </View>

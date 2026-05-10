@@ -1,0 +1,177 @@
+{
+  "a11y": {
+    "goBack": "Volver",
+    "reminderHint": "Recordatorio {{label}}, {{hint}}"
+  },
+  "disclaimer": {
+    "title": "Antes de empezar… 🌸",
+    "subtitle": "Algunas cosas que debes saber sobre Kibun",
+    "cardTitle": "Kibun es una herramienta de bienestar",
+    "body": "Kibun está aquí para ayudarte con la autorreflexión y el seguimiento del ánimo — piénsalo como un diario acogedor que te acompaña. 📝",
+    "notSection": "Lo que Kibun NO es:",
+    "bullets": {
+      "medicalDevice": "Un dispositivo o app médica",
+      "medicalAdvice": "Asesoría o diagnóstico médico",
+      "treatment": "Un tratamiento para ninguna condición",
+      "professionalCare": "Un sustituto del cuidado profesional de la salud mental",
+      "emergency": "Un servicio de emergencia"
+    },
+    "crisisTitle": "Si estás en crisis",
+    "crisisBody": "Por favor, contacta a los servicios de emergencia locales o a un profesional con licencia de inmediato. Importas. 💙",
+    "checkbox": "Entiendo que Kibun es solo para bienestar ✨",
+    "cta": "¡Vamos! 🎉",
+    "loginLink": "¿Ya tienes una cuenta? Inicia sesión y omite la introducción",
+    "personalizationNote": "Aviso: estas respuestas mejoran las sugerencias personalizadas más adelante."
+  },
+  "firstMood": {
+    "headline": "¿Cómo te sientes?",
+    "subline": "Elige el ánimo que más se acerque a este momento.",
+    "cta": "Vamos"
+  },
+  "wisdomAwareness": {
+    "headline": "Nombrar lo que sientes es el primer paso.",
+    "body": "Simplemente nombrar una emoción puede suavizarla. El acto de notarla es ya una forma de cuidado."
+  },
+  "wisdomMindBody": {
+    "headline": "El cuerpo lleva la cuenta.",
+    "body": "El sueño, el movimiento y la respiración moldean tu ánimo tanto como cualquier pensamiento. Cuidar de uno es cuidar del otro."
+  },
+  "wisdomSmallShifts": {
+    "headline": "Los grandes cambios rara vez ocurren de golpe.",
+    "body": "Pequeños momentos de atención — incluso diez segundos al día — se acumulan en cambios reales con el tiempo. Por eso estamos aquí."
+  },
+  "profilePersonal": {
+    "title": "Cuéntanos sobre ti",
+    "subtitle": "Esto ayuda a Kibun a personalizar tus reflexiones.",
+    "fieldName": "Nombre",
+    "namePlaceholder": "p. ej. Alex",
+    "ageRange": "Rango de edad",
+    "gender": "Género (opcional)",
+    "age": {
+      "under-18": "Menor de 18",
+      "18-24": "18–24",
+      "25-34": "25–34",
+      "35-44": "35–44",
+      "45-54": "45–54",
+      "55-64": "55–64",
+      "65+": "65+"
+    },
+    "genderOpt": {
+      "man": "Hombre",
+      "woman": "Mujer",
+      "non-binary": "No binario",
+      "prefer-not-to-say": "Prefiero no decirlo"
+    }
+  },
+  "profileWork": {
+    "title": "¿Cómo es tu trabajo?",
+    "subtitle": "Tu estilo de trabajo puede moldear tus patrones de ánimo.",
+    "employment": "Situación laboral",
+    "workSetting": "Modalidad de trabajo",
+    "workHours": "Horas por semana (opcional)",
+    "employmentOpt": {
+      "employed": "Empleado",
+      "self-employed": "Trabajador independiente",
+      "student": "Estudiante",
+      "not-working": "Sin trabajo",
+      "retired": "Jubilado"
+    },
+    "settingOpt": {
+      "office": "Oficina",
+      "remote": "Remoto",
+      "hybrid": "Híbrido"
+    },
+    "hoursOpt": {
+      "under-20": "<20h",
+      "20-35": "20–35h",
+      "35-45": "35–45h",
+      "over-45": "45h+"
+    }
+  },
+  "profilePhysical": {
+    "title": "Tu rutina física",
+    "subtitle": "El sueño y el movimiento influyen mucho en cómo te sientes.",
+    "sleep": "Sueño por noche (promedio)",
+    "exercise": "Frecuencia de ejercicio",
+    "sleepOpt": {
+      "under-5": "<5h",
+      "5-6": "5–6h",
+      "6-7": "6–7h",
+      "7-8": "7–8h",
+      "8-9": "8–9h",
+      "over-9": "9h+"
+    },
+    "exerciseOpt": {
+      "never": "Nunca",
+      "1-2-week": "1–2 veces/semana",
+      "3-4-week": "3–4 veces/semana",
+      "daily": "A diario"
+    }
+  },
+  "profileSocial": {
+    "title": "Tu vida social",
+    "subtitle": "La conexión social moldea cómo nos sentimos día a día.",
+    "frequency": "¿Con qué frecuencia socializas?",
+    "frequencyOpt": {
+      "rarely": "Rara vez",
+      "few-times-week": "Algunas veces por semana",
+      "most-days": "La mayoría de los días",
+      "daily": "A diario"
+    }
+  },
+  "profileMental": {
+    "title": "Tu nivel de estrés base",
+    "subtitle": "El nivel base de cada persona es distinto. No hay respuesta incorrecta.",
+    "stress": "Tu nivel de estrés habitual",
+    "stressOpt": {
+      "very-low": "Muy bajo",
+      "low": "Bajo",
+      "moderate": "Moderado",
+      "high": "Alto",
+      "very-high": "Muy alto"
+    }
+  },
+  "profileCoping": {
+    "title": "Cuando las cosas pesan",
+    "subtitle": "¿Qué suele ayudarte a sobrellevarlo? Elige todo lo que aplique.",
+    "groupLabel": "Tus formas de afrontarlo",
+    "a11yLabel": "Estrategias de afrontamiento",
+    "options": {
+      "talk": "Hablar con alguien de confianza",
+      "move": "Mover el cuerpo",
+      "music": "Escuchar música",
+      "journal": "Escribir o llevar un diario",
+      "breathe": "Respirar despacio",
+      "nature": "Tiempo en la naturaleza",
+      "rest": "Descansar o dormir",
+      "hobby": "Un hobby o distracción"
+    }
+  },
+  "profileGoals": {
+    "title": "¿Qué esperas lograr?",
+    "subtitle": "Elige todo lo que te resuene.",
+    "groupLabel": "Tus objetivos",
+    "a11yLabel": "Objetivos",
+    "options": {
+      "understand-emotions": "Entender mis emociones",
+      "reduce-stress": "Reducir el estrés",
+      "improve-sleep": "Mejorar el sueño",
+      "track-energy": "Seguir mi energía",
+      "self-awareness": "Cultivar la autoconciencia",
+      "mood-patterns": "Notar patrones de ánimo"
+    }
+  },
+  "notificationPermission": {
+    "title": "Mantén el ritmo",
+    "subtitle": "Kibun funciona mejor con check-ins diarios. Elige tus horarios de recordatorio.",
+    "groupLabel": "Horarios de recordatorio",
+    "ctaEnable": "Activar recordatorios",
+    "ctaSkip": "Quizá más tarde",
+    "slotOpt": {
+      "morning": { "label": "Mañana", "hint": "alrededor de las 9am" },
+      "afternoon": { "label": "Tarde", "hint": "alrededor de las 2pm" },
+      "evening": { "label": "Noche", "hint": "alrededor de las 7pm" },
+      "pre-sleep": { "label": "Antes de dormir", "hint": "alrededor de las 10pm" }
+    }
+  }
+}

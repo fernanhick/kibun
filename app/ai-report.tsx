@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import Markdown from 'react-native-markdown-display';
 import { Screen, Card, Button, BackButton } from '@components/index';
@@ -15,6 +16,7 @@ type ScreenState = 'loading' | 'no-report' | 'generating' | 'has-report' | 'erro
 
 export default function AIReportScreen() {
   const router = useRouter();
+  const { t } = useTranslation('screens');
   const session = useSessionStore((s) => s.session);
   const profile = useOnboardingStore((s) => s.profile);
 
@@ -78,12 +80,12 @@ export default function AIReportScreen() {
             color={colors.textSecondary}
             accessibilityElementsHidden
           />
-          <Text style={styles.lockedTitle}>Premium feature</Text>
+          <Text style={styles.lockedTitle}>{t('aiReport.premiumTitle')}</Text>
           <Text style={styles.lockedSubtitle}>
-            Get personalised weekly and monthly mood insights powered by AI
+            {t('aiReport.premiumSubtitle')}
           </Text>
           <Button
-            label="Start free trial"
+            label={t('aiReport.startTrial')}
             onPress={() => router.push('/paywall')}
           />
         </View>
@@ -113,11 +115,12 @@ export default function AIReportScreen() {
 // ── Sub-components ───────────────────────────────────────────────────────────
 
 function ScreenHeader() {
+  const { t } = useTranslation('screens');
   return (
     <View style={styles.header}>
       <BackButton />
       <Text style={styles.headerTitle} accessibilityRole="header">
-        AI Report
+        {t('aiReport.title')}
       </Text>
     </View>
   );
@@ -130,21 +133,23 @@ function ReportTypeToggle({
   selected: ReportType;
   onSelect: (t: ReportType) => void;
 }) {
+  const { t: i18nT } = useTranslation('screens');
   return (
     <View style={styles.toggleRow}>
-      {(['weekly', 'monthly'] as ReportType[]).map((t) => {
-        const isSelected = selected === t;
+      {(['weekly', 'monthly'] as ReportType[]).map((period) => {
+        const isSelected = selected === period;
+        const label = period === 'weekly' ? i18nT('aiReport.weekly') : i18nT('aiReport.monthly');
         return (
           <Pressable
-            key={t}
-            onPress={() => onSelect(t)}
+            key={period}
+            onPress={() => onSelect(period)}
             style={[styles.togglePill, isSelected ? styles.toggleSelected : styles.toggleUnselected]}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
-            accessibilityLabel={`${t === 'weekly' ? 'Weekly' : 'Monthly'} report`}
+            accessibilityLabel={i18nT('aiReport.reportTypeA11y', { label })}
           >
             <Text style={[styles.toggleText, isSelected ? styles.toggleTextSelected : styles.toggleTextUnselected]}>
-              {t === 'weekly' ? 'Weekly' : 'Monthly'}
+              {label}
             </Text>
           </Pressable>
         );
@@ -166,6 +171,9 @@ function ReportBody({
   onGenerate: () => void;
   onRetry: () => void;
 }) {
+  const { t } = useTranslation(['screens', 'moods']);
+  const periodName = reportType === 'weekly' ? t('aiReport.weekly') : t('aiReport.monthly');
+
   if (state === 'loading') {
     return (
       <View style={styles.centeredState}>
@@ -181,7 +189,7 @@ function ReportBody({
         <View accessibilityLiveRegion="polite">
           <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.generatingText}>
-            Analysing your mood patterns...
+            {t('aiReport.generating')}
           </Text>
         </View>
       </View>
@@ -191,9 +199,9 @@ function ReportBody({
   if (state === 'error') {
     return (
       <View style={styles.centeredState}>
-        <Text style={styles.errorTitle}>Could not load report</Text>
-        <Text style={styles.errorSubtitle}>Check your connection and try again</Text>
-        <Button label="Try again" onPress={onRetry} />
+        <Text style={styles.errorTitle}>{t('aiReport.loadErrorTitle')}</Text>
+        <Text style={styles.errorSubtitle}>{t('aiReport.loadErrorSubtitle')}</Text>
+        <Button label={t('aiReport.tryAgain')} onPress={onRetry} />
       </View>
     );
   }
@@ -202,9 +210,9 @@ function ReportBody({
     return (
       <View style={styles.centeredState}>
         <Text style={styles.emptyIcon} accessibilityElementsHidden>{'📅'}</Text>
-        <Text style={styles.emptyTitle}>Not enough data yet</Text>
+        <Text style={styles.emptyTitle}>{t('aiReport.notEnoughData')}</Text>
         <Text style={styles.emptySubtitle}>
-          Log your mood for a few days and then come back to generate your report.
+          {t('aiReport.noEntriesSubtitle')}
         </Text>
       </View>
     );
@@ -213,11 +221,11 @@ function ReportBody({
   if (state === 'subscription-error') {
     return (
       <View style={styles.centeredState}>
-        <Text style={styles.errorTitle}>Subscription not verified</Text>
+        <Text style={styles.errorTitle}>{t('aiReport.subscriptionErrorTitle')}</Text>
         <Text style={styles.errorSubtitle}>
-          Your subscription could not be confirmed on the server. Try closing and reopening the app. If the problem persists, restore your purchase.
+          {t('aiReport.subscriptionErrorSubtitle')}
         </Text>
-        <Button label="Try again" onPress={onRetry} />
+        <Button label={t('aiReport.tryAgain')} onPress={onRetry} />
       </View>
     );
   }
@@ -228,11 +236,11 @@ function ReportBody({
         <Text style={styles.emptyIcon} accessibilityElementsHidden>
           {'\u2728'}
         </Text>
-        <Text style={styles.emptyTitle}>No {reportType} report yet</Text>
+        <Text style={styles.emptyTitle}>{t('aiReport.noReportYet', { period: periodName })}</Text>
         <Text style={styles.emptySubtitle}>
-          Generate your first {reportType} mood analysis
+          {t('aiReport.noReportSubtitle', { period: periodName })}
         </Text>
-        <Button label="Generate my report" onPress={onGenerate} />
+        <Button label={t('aiReport.generateMyReport')} onPress={onGenerate} />
       </View>
     );
   }
@@ -248,7 +256,7 @@ function ReportBody({
     <View style={styles.reportContainer}>
       <Text
         style={styles.periodLabel}
-        accessibilityLabel={`Report period: ${periodLabel}`}
+        accessibilityLabel={t('aiReport.periodA11y', { period: periodLabel })}
       >
         {periodLabel}
       </Text>
@@ -258,48 +266,51 @@ function ReportBody({
       {summary && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            Mood summary
+            {t('aiReport.moodSummary')}
           </Text>
           <View style={styles.statsRow}>
             <Card style={styles.statCard}>
               <Text
                 style={styles.statValue}
-                accessibilityLabel={`${summary.totalEntries} check-ins`}
+                accessibilityLabel={t('aiReport.checkInsA11y', { count: summary.totalEntries })}
               >
                 {summary.totalEntries}
               </Text>
-              <Text style={styles.statLabel}>check-ins</Text>
+              <Text style={styles.statLabel}>{t('aiReport.checkIns')}</Text>
             </Card>
             <Card style={styles.statCard}>
               <Text
                 style={styles.statValue}
-                accessibilityLabel={`${summary.avgEntriesPerDay} per day average`}
+                accessibilityLabel={t('aiReport.perDayA11y', { value: summary.avgEntriesPerDay })}
               >
                 {summary.avgEntriesPerDay}
               </Text>
-              <Text style={styles.statLabel}>per day avg</Text>
+              <Text style={styles.statLabel}>{t('aiReport.perDayAvg')}</Text>
             </Card>
           </View>
 
           {summary.topMoods.length > 0 && (
             <View style={styles.topMoodsRow}>
-              {summary.topMoods.map(({ moodId, count }) => (
-                <View
-                  key={moodId}
-                  style={styles.moodChip}
-                  accessibilityLabel={`${moodId}, ${count} times`}
-                >
-                  <Text style={styles.moodChipText}>{moodId}</Text>
-                </View>
-              ))}
+              {summary.topMoods.map(({ moodId, count }) => {
+                const moodLabel = t(`moods:${moodId}.label`, { defaultValue: moodId });
+                return (
+                  <View
+                    key={moodId}
+                    style={styles.moodChip}
+                    accessibilityLabel={t('aiReport.moodTimesA11y', { moodId: moodLabel, count })}
+                  >
+                    <Text style={styles.moodChipText}>{moodLabel}</Text>
+                  </View>
+                );
+              })}
             </View>
           )}
         </View>
       )}
 
-      <Text style={styles.generatedLabel}>Generated {generatedLabel}</Text>
+      <Text style={styles.generatedLabel}>{t('aiReport.generated', { date: generatedLabel })}</Text>
 
-      <Button label="Generate new report" onPress={onGenerate} />
+      <Button label={t('aiReport.generateNewReport')} onPress={onGenerate} />
     </View>
   );
 }
@@ -321,6 +332,7 @@ function ReportContent({ report }: { report: AIReport }) {
 }
 
 function StructuredReport({ data }: { data: AIReportStructured }) {
+  const { t } = useTranslation('screens');
   return (
     <View style={styles.structuredContainer}>
       {data.headline ? (
@@ -338,7 +350,7 @@ function StructuredReport({ data }: { data: AIReportStructured }) {
       {data.patterns.length > 0 && (
         <View style={styles.patternsSection}>
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            Patterns we noticed
+            {t('aiReport.patterns')}
           </Text>
           <Card style={styles.patternsCard} padding="md">
             {data.patterns.map((p, i) => (
@@ -386,19 +398,20 @@ function MarkdownReport({ content }: { content: string }) {
 }
 
 function ToneChip({ tone }: { tone: AIReportTone }) {
+  const { t } = useTranslation('screens');
   const meta = TONE_META[tone];
   return (
     <View style={[styles.toneChip, { backgroundColor: meta.bg, borderColor: meta.border }]}>
-      <Text style={[styles.toneChipText, { color: meta.text }]}>{meta.label}</Text>
+      <Text style={[styles.toneChipText, { color: meta.text }]}>{t(meta.labelKey)}</Text>
     </View>
   );
 }
 
-const TONE_META: Record<AIReportTone, { label: string; bg: string; border: string; text: string }> = {
-  positive: { label: 'Mostly bright', bg: '#F1FFF2', border: '#A5D6A7', text: '#2E7D32' },
-  neutral:  { label: 'Steady',        bg: colors.primaryLight, border: colors.chipBorder, text: colors.primaryDark },
-  mixed:    { label: 'Mixed',         bg: colors.accentLight, border: colors.accentBorder, text: '#8A5A00' },
-  tough:    { label: 'A tougher stretch', bg: colors.pinkLight, border: colors.pinkBorder, text: '#9D2E5C' },
+const TONE_META: Record<AIReportTone, { labelKey: string; bg: string; border: string; text: string }> = {
+  positive: { labelKey: 'aiReport.tone.positive', bg: '#F1FFF2', border: '#A5D6A7', text: '#2E7D32' },
+  neutral:  { labelKey: 'aiReport.tone.neutral', bg: colors.primaryLight, border: colors.chipBorder, text: colors.primaryDark },
+  mixed:    { labelKey: 'aiReport.tone.mixed', bg: colors.accentLight, border: colors.accentBorder, text: '#8A5A00' },
+  tough:    { labelKey: 'aiReport.tone.tough', bg: colors.pinkLight, border: colors.pinkBorder, text: '#9D2E5C' },
 };
 
 function looksLikeMarkdown(s: string): boolean {

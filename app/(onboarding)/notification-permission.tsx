@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import * as Crypto from 'expo-crypto';
 import * as Notifications from 'expo-notifications';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,18 +18,7 @@ import { saveProfileToSupabase } from '@lib/profileSync';
 import { NotificationSlot } from '@models/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
-interface SlotOption {
-  label: string;
-  hint: string;
-  value: string;
-}
-
-const SLOT_OPTIONS: SlotOption[] = [
-  { label: 'Morning', hint: 'around 9am', value: 'morning' },
-  { label: 'Afternoon', hint: 'around 2pm', value: 'afternoon' },
-  { label: 'Evening', hint: 'around 7pm', value: 'evening' },
-  { label: 'Pre-sleep', hint: 'around 10pm', value: 'pre-sleep' },
-];
+const SLOT_VALUES = ['morning', 'afternoon', 'evening', 'pre-sleep'] as const;
 
 function toggleSlot(prev: string[], value: string): string[] {
   return prev.includes(value)
@@ -37,12 +27,19 @@ function toggleSlot(prev: string[], value: string): string[] {
 }
 
 export default function NotificationPermissionScreen() {
+  const { t } = useTranslation(['onboarding']);
   const { setComplete } = useOnboardingGateStore();
   const firstMoodId = useOnboardingStore((s) => s.firstMoodId);
   const resetOnboarding = useOnboardingStore((s) => s.resetProfile);
   const [selectedSlots, setSelectedSlots] = useState<string[]>(['morning', 'evening']);
   const [requesting, setRequesting] = useState(false);
   const router = useRouter();
+
+  const slotOptions = SLOT_VALUES.map((value) => ({
+    value,
+    label: t(`onboarding:notificationPermission.slotOpt.${value}.label`),
+    hint: t(`onboarding:notificationPermission.slotOpt.${value}.hint`),
+  }));
 
   const maybeLogFirstMood = () => {
     if (!firstMoodId) return;
@@ -114,22 +111,20 @@ export default function NotificationPermissionScreen() {
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('onboarding:a11y.goBack')}
           hitSlop={12}
           style={styles.backButton}
         >
           <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
         </Pressable>
-        <Text style={styles.title}>Stay on track</Text>
-        <Text style={styles.subtitle}>
-          Kibun works best with daily check-ins. Pick your reminder times.
-        </Text>
+        <Text style={styles.title}>{t('onboarding:notificationPermission.title')}</Text>
+        <Text style={styles.subtitle}>{t('onboarding:notificationPermission.subtitle')}</Text>
       </LinearGradient>
 
       <View style={styles.sectionCard}>
-        <Text style={styles.groupLabel}>Reminder times</Text>
+        <Text style={styles.groupLabel}>{t('onboarding:notificationPermission.groupLabel')}</Text>
         <View style={styles.chipsRow}>
-          {SLOT_OPTIONS.map((option) => {
+          {slotOptions.map((option) => {
             const isSelected = selectedSlots.includes(option.value);
             return (
               <Pressable
@@ -139,7 +134,7 @@ export default function NotificationPermissionScreen() {
                 style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: isSelected }}
-                accessibilityLabel={`${option.label} reminder, ${option.hint}`}
+                accessibilityLabel={t('onboarding:a11y.reminderHint', { label: option.label, hint: option.hint })}
               >
                 <Text style={[styles.chipLabel, isSelected ? styles.chipLabelSelected : styles.chipLabelUnselected]}>
                   {option.label}
@@ -154,7 +149,7 @@ export default function NotificationPermissionScreen() {
       </View>
 
       <Button
-        label="Enable reminders"
+        label={t('onboarding:notificationPermission.ctaEnable')}
         onPress={handleEnable}
         variant="sunrise"
         loading={requesting}
@@ -162,7 +157,7 @@ export default function NotificationPermissionScreen() {
       />
       <View style={styles.skipButton}>
         <Button
-          label="Maybe later"
+          label={t('onboarding:notificationPermission.ctaSkip')}
           onPress={handleSkip}
           variant="ghost"
           fullWidth

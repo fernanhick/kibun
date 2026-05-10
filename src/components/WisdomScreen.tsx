@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Animated, Easing, View, Text, Pressable, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from './Screen';
@@ -23,6 +24,7 @@ const MASCOT_SIZE = 160;
 
 export function WisdomScreen({ step, total, mascot, headline, body, onContinue }: Props) {
   const router = useRouter();
+  const { t } = useTranslation(['common', 'onboarding', 'screens']);
   const floatAnim = useRef(new Animated.Value(0)).current;
 
   // Same gentle bob as Shiba's `floating` prop — keeps the visual rhythm consistent.
@@ -59,7 +61,7 @@ export function WisdomScreen({ step, total, mascot, headline, body, onContinue }
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('onboarding:a11y.goBack')}
           hitSlop={12}
           style={styles.backButton}
         >
@@ -72,7 +74,7 @@ export function WisdomScreen({ step, total, mascot, headline, body, onContinue }
               height: MASCOT_SIZE,
               transform: [{ translateY: floatAnim }],
             }}
-            accessibilityLabel={`Mascot ${mascot}`}
+            accessibilityLabel={t('components.wisdomScreen.mascotA11y', { mascot })}
             accessibilityRole="image"
           >
             <Image
@@ -87,7 +89,7 @@ export function WisdomScreen({ step, total, mascot, headline, body, onContinue }
         <Text style={styles.body}>{body}</Text>
       </LinearGradient>
 
-      <Button label="Continue" onPress={onContinue} variant="sunrise" fullWidth />
+      <Button label={t('common:actions.continue')} onPress={onContinue} variant="sunrise" fullWidth />
     </Screen>
   );
 }

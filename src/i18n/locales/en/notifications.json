@@ -1,8 +1,8 @@
 {
   "report": {
     "ready": {
-      "title": "Your mood report is ready",
-      "body": "Your {{type}} mood analysis is waiting for you"
+      "title": "Your mood summary is ready",
+      "body": "Your {{type}} mood summary is waiting for you"
     }
   },
   "streak": {

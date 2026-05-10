@@ -21,7 +21,7 @@
     "checkbox": "Entiendo que Kibun es solo para bienestar ✨",
     "cta": "¡Vamos! 🎉",
     "loginLink": "¿Ya tienes una cuenta? Inicia sesión y omite la introducción",
-    "personalizationNote": "Aviso: estas respuestas mejoran las sugerencias personalizadas más adelante."
+    "personalizationNote": "Aviso: estas respuestas mejoran tus resúmenes más adelante."
   },
   "firstMood": {
     "headline": "¿Cómo te sientes?",
@@ -42,7 +42,7 @@
   },
   "profilePersonal": {
     "title": "Cuéntanos sobre ti",
-    "subtitle": "Esto ayuda a Kibun a personalizar tus reflexiones.",
+    "subtitle": "Esto ayuda a Kibun a adaptar tus resúmenes.",
     "fieldName": "Nombre",
     "namePlaceholder": "p. ej. Alex",
     "ageRange": "Rango de edad",
@@ -153,7 +153,7 @@
     "groupLabel": "Tus objetivos",
     "a11yLabel": "Objetivos",
     "options": {
-      "understand-emotions": "Entender mis emociones",
+      "understand-emotions": "Entender mis patrones de ánimo",
       "reduce-stress": "Reducir el estrés",
       "improve-sleep": "Mejorar el sueño",
       "track-energy": "Seguir mi energía",

@@ -37,7 +37,7 @@ export const MOODS: MoodDefinition[] = [
   { id: 'confused',  label: 'Confused',  group: 'neutral',   bubbleColor: '#FFD54F', textColor: TEXT, tintColor: '#FFFDE7' },
   // ─── Red / Orange (negative energy) ──────────────────────────────────────
   { id: 'sad',        label: 'Sad',        group: 'red-orange', bubbleColor: '#F48FB1', textColor: TEXT, tintColor: '#FCE4EC' },
-  { id: 'anxious',    label: 'Anxious',    group: 'red-orange', bubbleColor: '#FFAB40', textColor: TEXT, tintColor: '#FFF3E0' },
+  { id: 'anxious',    label: 'Worried',    group: 'red-orange', bubbleColor: '#FFAB40', textColor: TEXT, tintColor: '#FFF3E0' },
   { id: 'frustrated', label: 'Frustrated', group: 'red-orange', bubbleColor: '#FF8A65', textColor: TEXT, tintColor: '#FBE9E7' },
   { id: 'angry',      label: 'Angry',      group: 'red-orange', bubbleColor: '#EF5350', textColor: TEXT, tintColor: '#FFEBEE' },
   // ─── Blue (introspective) ─────────────────────────────────────────────────

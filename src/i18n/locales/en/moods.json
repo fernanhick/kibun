@@ -8,7 +8,7 @@
   "bored":      { "label": "Bored",      "response": "Boredom is creativity waiting for a spark." },
   "confused":   { "label": "Confused",   "response": "Uncertainty means you're thinking — that's a good sign." },
   "sad":        { "label": "Sad",        "response": "It's okay to feel this way. You're not alone." },
-  "anxious":    { "label": "Anxious",    "response": "Take a breath. You're here, and that's enough." },
+  "anxious":    { "label": "Worried",    "response": "Take a breath. You're here, and that's enough." },
   "frustrated": { "label": "Frustrated", "response": "Friction means you care. That matters." },
   "angry":      { "label": "Angry",      "response": "Strong feelings deserve space. Let's track them." },
   "melancholy": { "label": "Melancholy", "response": "A quiet ache — sometimes hard to name, always valid." },

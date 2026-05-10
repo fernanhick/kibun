@@ -131,10 +131,10 @@
       "topMoods": "Ánimos más frecuentes",
       "trend": "Tendencia de ánimo",
       "patterns": "Patrones",
-      "resilience": "Resiliencia",
+      "resilience": "Recuperación",
       "correlations": "Correlaciones",
       "habitsAndMood": "Hábitos y ánimo",
-      "aiReport": "Informe de IA",
+      "aiReport": "Resumen",
       "yearInMood": "Año en ánimos"
     },
     "charts": {
@@ -143,11 +143,11 @@
     },
     "patternsHint": "Registra más check-ins para ver patrones",
     "resilienceCard": {
-      "title": "Resiliencia emocional",
-      "scoreA11y": "Puntuación de resiliencia emocional: {{score}} de 100",
-      "lockedTitle": "Puntuación de resiliencia emocional",
+      "title": "Puntuación de recuperación",
+      "scoreA11y": "Puntuación de recuperación: {{score}} de 100",
+      "lockedTitle": "Puntuación de recuperación",
       "lockedSubtitle": "Mira con qué rapidez te recuperas de los ánimos difíciles. Función Pro.",
-      "lockedA11y": "Mejora a Pro para desbloquear la puntuación de resiliencia emocional",
+      "lockedA11y": "Mejora a Pro para desbloquear la puntuación de recuperación",
       "empty": "Registra más ánimos —incluso algunos difíciles— para ver tu puntuación de resiliencia.",
       "recoveryMinutes": "{{n}} min de recuperación media",
       "recoveryHours": "{{n}} h de recuperación media",
@@ -194,13 +194,13 @@
       }
     },
     "aiReport": {
-      "title": "Análisis personalizado",
-      "subtitle": "Análisis semanal y mensual con IA",
-      "a11y": "Ver el informe de IA — recibe análisis de ánimo personalizado"
+      "title": "Resumen semanal y mensual",
+      "subtitle": "Revisa tu historial reciente de ánimo",
+      "a11y": "Ver resumen de tu historial de ánimo"
     },
     "yearInMood": {
       "title": "Tu {{year}} en ánimos",
-      "subtitle": "Tu historia anual con narrativa de IA",
+      "subtitle": "Tu resumen anual de ánimo",
       "a11y": "Ver tu informe anual de ánimos"
     },
     "proBadge": "Pro",
@@ -356,7 +356,7 @@
       "subtitle": "Elimina el historial de ánimos y el perfil, conserva la cuenta",
       "a11y": "Eliminar mis datos",
       "confirmTitle": "Eliminar mis datos",
-      "confirmBody": "Esto eliminará permanentemente todos tus registros de ánimo, informes de IA y datos del perfil. Tu cuenta seguirá activa. Esta acción no se puede deshacer.",
+      "confirmBody": "Esto eliminará permanentemente todos tus registros de ánimo, resúmenes y datos del perfil. Tu cuenta seguirá activa. Esta acción no se puede deshacer.",
       "confirmAction": "Eliminar datos",
       "errorTitle": "Error",
       "errorBody": "No se pudieron eliminar los datos. Inténtalo de nuevo."
@@ -695,7 +695,7 @@
   "paywall": {
     "hero": {
       "title": "kibun Premium",
-      "subtitle": "Tus emociones merecen la imagen completa.\nVamos a darle sentido juntas 💕"
+      "subtitle": "Tu historial de ánimo merece la imagen completa.\nRevísalo de forma simple 💕"
     },
     "tier": {
       "free": { "badge": "GRATIS", "label": "Siempre incluido" },
@@ -708,10 +708,10 @@
         "Historial completo de ánimo y calendario"
       ],
       "pro": [
-        "Insight de bienestar diario con IA, solo para ti",
-        "Reportes de ánimo semanales y mensuales con IA",
+        "Resumen diario de bienestar",
+        "Resúmenes semanales y mensuales de ánimo",
         "Reporte anual y resumen del año",
-        "Insights de patrones y puntuación de resiliencia",
+        "Tendencias de ánimo y puntuación de recuperación",
         "Seguimiento de hábitos (sueño, ejercicio y más)",
         "Eventos vitales y correlación con tu ánimo",
         "Ánimos personalizados con tus colores"
@@ -788,7 +788,7 @@
     },
     "note": "Nota",
     "noNote": "Sin nota",
-    "sentimentLabel": "Sentimiento",
+    "sentimentLabel": "Tono de la nota",
     "sentiment": {
       "positive": "Positivo",
       "neutral": "Neutral",
@@ -820,13 +820,13 @@
   },
   "aiReport": {
     "premiumTitle": "Función Premium",
-    "premiumSubtitle": "Obtén análisis semanales y mensuales personalizados con IA",
+    "premiumSubtitle": "Obtén resúmenes semanales y mensuales de tu ánimo",
     "startTrial": "Iniciar prueba gratis",
-    "title": "Informe de IA",
+    "title": "Resumen",
     "weekly": "Semanal",
     "monthly": "Mensual",
     "reportTypeA11y": "Informe {{label}}",
-    "generating": "Analizando tus patrones de ánimo...",
+    "generating": "Preparando tu resumen...",
     "loadErrorTitle": "No se pudo cargar el informe",
     "loadErrorSubtitle": "Revisa tu conexión e inténtalo de nuevo",
     "tryAgain": "Intentar de nuevo",
@@ -835,8 +835,8 @@
     "subscriptionErrorTitle": "Suscripción no verificada",
     "subscriptionErrorSubtitle": "No se pudo confirmar tu suscripción en el servidor. Cierra y abre la app de nuevo. Si persiste, restaura tu compra.",
     "noReportYet": "Aún no hay informe {{period}}",
-    "noReportSubtitle": "Genera tu primer análisis de ánimo {{period}}",
-    "generateMyReport": "Generar mi informe",
+    "noReportSubtitle": "Genera tu primer resumen {{period}}",
+    "generateMyReport": "Generar resumen",
     "periodA11y": "Período del informe: {{period}}",
     "moodSummary": "Resumen de ánimo",
     "checkInsA11y": "{{count}} registros",
@@ -845,8 +845,8 @@
     "perDayAvg": "promedio diario",
     "moodTimesA11y": "{{moodId}}, {{count}} veces",
     "generated": "Generado {{date}}",
-    "generateNewReport": "Generar nuevo informe",
-    "patterns": "Patrones que notamos",
+    "generateNewReport": "Generar nuevo resumen",
+    "patterns": "Aspectos destacados",
     "tone": {
       "positive": "Mayormente positivo",
       "neutral": "Estable",

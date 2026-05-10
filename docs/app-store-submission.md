@@ -75,47 +75,47 @@ mental,health,wellness,selfcare,emotions,stress,mindfulness,journaling,gratitude
 ### 2.4 Promotional Text  *(170 char max · editable anytime without resubmitting · NOT indexed for search — use for time-sensitive marketing)*
 
 ```
-Meet Kibun - your gentle mood tracker with a Shiba Inu guide. Log how you feel, see your patterns, and unlock AI-powered insights. Try Pro free for 7 days.
+Meet Kibun - your private mood tracker with a Shiba Inu guide. Track moods, review history, and try Pro free for 7 days.
 ```
 **Length: 158 / 170**
 
 ### 2.5 Description  *(4,000 char max · first ~3 lines render above the "more" fold — put the hook there)*
 
 ```
-Kibun (Japanese for "mood") is exactly what this app helps you understand.
+Kibun (Japanese for "mood") helps you track daily moods with quick check-ins.
 
-Log how you feel in seconds, up to four times a day. No paragraphs, no judgement - just a tap, a color, and an optional note. Over time, Kibun learns your emotional rhythms and surfaces the patterns you would never spot alone.
+Log how you feel in seconds, up to four times a day. No paragraphs, no judgement - just a tap, a color, and an optional note. Review mood history and trends over time.
 
-A gentle, kawaii Shiba Inu mascot guides every check-in and reacts to how you feel, so opening the app feels warm instead of cold.
+A gentle, kawaii Shiba Inu mascot adds personality to every check-in and changes expressions during the experience, so opening the app feels warm instead of cold.
 
 --- WHY PEOPLE LOVE KIBUN ---
 
 - 14 color-coded mood bubbles make logging effortless
 - Four daily slots (morning / afternoon / evening / pre-sleep) - toggle any off
-- Calendar view paints your month in the colors of your feelings
-- Streaks, charts, and pattern cards that actually say something useful
+- Calendar view paints your month in the colors of your entries
+- Streaks, charts, and simple summary cards that are easy to read
 - Works fully offline - your data stays on your device unless you sign in
-- On-device sentiment AI reads your notes privately, with zero data leaving your phone
+- Private on-device processing keeps your notes on your phone
 
 --- WHAT IS INCLUDED FREE ---
 
 - Unlimited mood check-ins - forever
 - 7-day history, streak counter, top-moods chart
 - Notification reminders (customizable slots)
-- Private on-device sentiment analysis
+- Private on-device processing
 - Optional anonymous mode (no account needed)
 
 --- KIBUN PRO ---
 
 Start with a 7-day free trial. Then $5.99/month or $34.99/year.
 
-- AI Weekly & Monthly Reports - a personalised narrative of your emotional month, written for you alone
-- AI Journaling Prompts - a custom reflection question after every check-in, built from your recent moods
-- Correlation Insights - see how sleep, work, and social life move your mood
+- Weekly & monthly summaries - a recap of your recent entries
+- Optional journaling prompts - a simple reflection question after every check-in
+- Trend comparisons - see how sleep, work, and social life line up with mood history
 - Custom Notification Times - exact reminder times per slot, not defaults
 - Full Calendar History - unlimited past entries, no 7-day limit
-- Export & Share - CSV export and beautiful shareable mood summary cards
-- Breathing & Calming Exercises - box breathing, gentle sensory pauses, and gratitude prompts whenever you want a quick reset
+- Export & Share - CSV export and shareable mood summary cards
+- Mindfulness activities - box breathing, gentle sensory pauses, and gratitude prompts whenever you want a quick reset
 - Achievements & Streak Freeze - badges, monthly recaps, and one freeze per month to protect your streak
 
 --- PRIVACY FIRST ---
@@ -123,13 +123,13 @@ Start with a 7-day free trial. Then $5.99/month or $34.99/year.
 Kibun is built around the idea that your feelings are private.
 - Use the app fully anonymously - nothing ever leaves your phone
 - If you create an account, your data syncs to your private, encrypted space
-- On-device sentiment model - your notes are analyzed locally, never uploaded
-- Only Pro AI reports send mood data (never raw notes) to a secure AI endpoint for summarization
+- Notes are processed locally, never uploaded
+- Only Pro summaries send aggregated mood data to a secure endpoint for summarization
 - We never sell, share, or advertise with your data
 
 --- BUILT FOR A DAILY HABIT ---
 
-Kibun is not a journaling marathon. It is a 10-second check-in you will actually keep doing - and insights that compound the longer you use it. Whether you want to build self-awareness, notice your emotional rhythms, improve sleep habits, or just check in with yourself, Kibun meets you where you are.
+Kibun is not a journaling marathon. It is a 10-second check-in you will actually keep doing - and summaries that are easy to review the longer you use it. Whether you want to build a simple habit, keep a log, or just check in with yourself, Kibun meets you where you are.
 
 Questions? support@kibun.app
 Privacy Policy: https://fernanhick.github.io/kibun/privacy-policy.html
@@ -144,7 +144,7 @@ Subscriptions auto-renew unless cancelled at least 24 hours before the end of th
 ```
 Welcome to Kibun 1.0 - we are thrilled to meet you.
 
-This is our first public release. Everything inside has been handcrafted: 14 color-coded moods, a Shiba Inu mascot who actually reacts to how you feel, on-device sentiment AI that keeps your notes private, and Pro AI reports that read like they were written for you alone.
+This is our first public release. Everything inside has been handcrafted: 14 color-coded moods, a Shiba Inu mascot with playful expressions, private on-device processing that keeps your notes private, and Pro summaries that help you review recent entries.
 
 We are listening. Ideas, feedback, bug reports - send them to support@kibun.app.
 
@@ -188,7 +188,7 @@ The app currently links to GitHub Pages (`https://fernanhick.github.io/kibun/...
 
 **Localized display names for both products:**
 - **Display Name:** `Kibun Pro`
-- **Description:** `AI insights, journaling prompts, unlimited history, custom reminders, exports, exercises, and achievements. Cancel anytime.`
+- **Description:** `Weekly summaries, journaling prompts, unlimited history, custom reminders, exports, exercises, and achievements. Cancel anytime.`
 
 ---
 
@@ -288,7 +288,7 @@ DEMO ACCOUNT (Pro entitlement enabled via RevenueCat sandbox)
 Email:    {{ review-test@kibun.app }}
 Password: {{ strong password }}
 
-This account has been pre-seeded with ~3 weeks of mood entries so you can immediately see the Insights tab, AI reports, and Pro-gated features without waiting.
+This account has been pre-seeded with ~3 weeks of mood entries so you can immediately see the Insights tab, summaries, and Pro-gated features without waiting.
 
 ============================================================
 ANONYMOUS MODE
@@ -301,19 +301,19 @@ HOW TO TEST THE SUBSCRIPTION (Guideline 3.1.2)
 1. Complete onboarding through the paywall screen.
 2. Tap "Start 7-day free trial" — this launches StoreKit in sandbox mode.
 3. Use any Apple sandbox tester account for purchase confirmation.
-4. After confirmation, all Pro features unlock immediately (AI reports, journaling prompts, custom notification times, exports, breathing exercises, achievements).
+4. After confirmation, all Pro features unlock immediately (summaries, journaling prompts, custom notification times, exports, mindfulness activities, achievements).
 5. Restore Purchases is available on the Account screen.
 
 Monthly product:  kibun.pro.monthly  ($5.99, 7-day free trial)
 Yearly product:   kibun.pro.yearly   ($34.99, 7-day free trial)
 
 ============================================================
-HOW TO TEST AI FEATURES
+HOW TO TEST PRO FEATURES
 ============================================================
-• AI Journal Prompts: log any mood from the Home screen. After confirmation, a Pro-only "Reflect" step appears with an AI-generated prompt. Tap to open the journal screen.
-• AI Weekly/Monthly Report: open the Insights tab and tap "Generate AI Report" at the bottom. The report is produced via a Supabase Edge Function calling GPT-4o-mini; it returns in ~10 seconds and sends a local push notification on completion.
+• Journaling prompts: log any mood from the Home screen. After confirmation, a Pro-only "Reflect" step appears with a journaling prompt. Tap to open the journal screen.
+• Weekly/monthly summary: open the Insights tab and tap "Generate Summary" at the bottom. The summary is produced via a Supabase Edge Function and returns in ~10 seconds; a local push notification is sent on completion.
 
-Only aggregated mood metadata (mood labels + counts + user-profile context) is sent to the AI endpoint. Raw notes are NOT sent — all note-level sentiment is processed on-device via an ONNX model bundled with the app.
+Only aggregated mood metadata (mood labels + counts + user-profile context) is sent to the summary endpoint. Raw notes are NOT sent — all note-level processing is done on-device via an ONNX model bundled with the app.
 
 ============================================================
 DATA DELETION (Guideline 5.1.1(v))
@@ -388,11 +388,11 @@ Caption text overlay on each screenshot — the App Store cuts off text below th
 
 | # | Screen from app | Headline (top of image) | Subtext (smaller) |
 |---|---|---|---|
-| 1 | Home tab with Shiba mascot + "Log mood" CTA | **Your feelings, tracked in 10 seconds.** | A gentle daily habit with a Shiba guide |
+| 1 | Home tab with Shiba mascot + "Log mood" CTA | **Log your mood in 10 seconds.** | A simple daily habit with a Shiba guide |
 | 2 | Mood check-in bubble grid | **14 moods. One tap. Zero friction.** | Color-coded, kawaii, yours to log |
-| 3 | History calendar colored by mood | **Watch your month paint itself.** | Every day a color. Every pattern revealed. |
-| 4 | Insights tab with trend chart + pattern cards | **See the patterns you would never spot.** | Day-of-week, time-of-day, trends, more |
-| 5 | AI Report narrative screen | **AI that reads your rhythms.** *(Pro)* | A personal weekly story, written for you |
+| 3 | History calendar colored by mood | **Watch your month fill in over time.** | Every day adds to your history. |
+| 4 | Insights tab with trend chart + pattern cards | **See mood history and trends.** | Day-of-week, time-of-day, simple comparisons |
+| 5 | Summary screen | **Weekly & monthly summaries.** *(Pro)* | A simple recap of your recent entries |
 | 6 | Paywall / feature comparison | **7 days of Pro — free.** | Then $5.99/mo or $34.99/yr · cancel anytime |
 
 ### 8.3 App Preview Video (Optional — But Boosts Conversion ~25%)
@@ -427,16 +427,17 @@ Apple rejected build 1.0 (13) under **Guideline 1.1 — Safety / Objectionable C
 
 **Fix applied (this revision):**
 - Keywords: dropped `anxiety`, `depression`, `therapy`. Added `selfcare`, `emotions`, `journaling`. Kept `stress` — usually accepted as an emotional state, not a clinical diagnosis.
-- Description §2.5 closing paragraph: removed `anxiety`. Reframed around "emotional rhythms" and "self-awareness."
+- Description §2.5 closing paragraph: removed `anxiety`. Reframed around mood history and simple summaries.
 - Description §2.5 hero paragraph: replaced `clinical` with `cold` — same contrast, no flagged keyword.
 - Description §2.5 Pro bullet: rewrote as "Breathing & Calming Exercises - box breathing, gentle sensory pauses, and gratitude prompts whenever you want a quick reset." Removed `Grounding`, `5-4-3-2-1`, `triggered`.
-- Promo, subtitle, name, screenshot captions, IAP description, what's new: audited and untouched — already clean.
+- Promo, screenshot captions, IAP description, and in-app labels were further softened to summary/history wording to avoid AI-therapy framing.
 
-**In-app follow-up (ships in next build, not required for resubmission):**
+**In-app follow-up (completed for next build):**
 - `src/i18n/locales/en/screens.json` (`exercise.grounding.description`) — visible copy "The 5-4-3-2-1 grounding technique brings you back to the present moment" softened to "Use your senses to gently bring yourself back to the present moment." (rendered in `app/exercise.tsx` via i18n).
 - `src/i18n/locales/en/screens.json` (`moodConfirm.exercises.options.grounding`) — Pro CTA label shown as `Five Senses` (route type remains `grounding` for internal routing).
 - `app/exercise.tsx` title derives from `screens:moodConfirm.exercises.options.${type}`, so the exercise screen title also shows `Five Senses` for `type: 'grounding'`.
 - `src/i18n/locales/en/onboarding.json` (`wisdomAwareness.body`) — body softened to "Simply naming an emotion can soften how it feels. The act of noticing is its own kind of care." — removed pseudo-clinical framing.
+- EN/ES terminology sweep completed in locale files: `AI Report/Informe de IA` presentation strings shifted to `Summary/Resumen`, resilience copy shifted to recovery wording, notification text shifted to summary wording, and mood label `Anxious/Ansioso` shifted to `Worried/Preocupado` for user-facing copy.
 
 The reviewer testing the Pro entitlement on the demo account would have seen `Grounding` as a button on mood-confirm and as a screen title — the in-app footprint compounded the metadata signal. These fixes ship in the next binary; the metadata-only resubmission of build 13 is sufficient to clear the rejection.
 
@@ -476,7 +477,7 @@ The most common rejections for apps in this category — address each **before**
 APP NAME       : Kibun: Mood Tracker & Journal
 SUBTITLE       : Track feelings. Find patterns.
 KEYWORDS       : mental,health,wellness,selfcare,emotions,stress,mindfulness,journaling,gratitude,habits,calm,zen
-PROMO TEXT     : Meet Kibun - your gentle mood tracker with a Shiba Inu guide. Log how you feel, see your patterns, and unlock AI-powered insights. Try Pro free for 7 days.
+PROMO TEXT     : Meet Kibun - your private mood tracker with a Shiba Inu guide. Track moods, review history, and try Pro free for 7 days.
 PRIMARY CAT    : Health & Fitness
 SECONDARY CAT  : Lifestyle
 AGE RATING     : 4+

@@ -131,10 +131,10 @@
       "topMoods": "Top moods",
       "trend": "Mood trend",
       "patterns": "Patterns",
-      "resilience": "Resilience",
+      "resilience": "Recovery",
       "correlations": "Correlations",
       "habitsAndMood": "Habits & Mood",
-      "aiReport": "AI Report",
+      "aiReport": "Summary",
       "yearInMood": "Year in Mood"
     },
     "charts": {
@@ -143,11 +143,11 @@
     },
     "patternsHint": "Log more check-ins to see patterns",
     "resilienceCard": {
-      "title": "Emotional Resilience",
-      "scoreA11y": "Emotional resilience score: {{score}} out of 100",
-      "lockedTitle": "Emotional Resilience Score",
+      "title": "Recovery Score",
+      "scoreA11y": "Recovery score: {{score}} out of 100",
+      "lockedTitle": "Recovery Score",
       "lockedSubtitle": "See how quickly you bounce back from difficult moods. Pro feature.",
-      "lockedA11y": "Upgrade to Pro to unlock Emotional Resilience Score",
+      "lockedA11y": "Upgrade to Pro to unlock Recovery Score",
       "empty": "Log more moods — including some difficult ones — to see your resilience score.",
       "recoveryMinutes": "{{n}}m avg recovery",
       "recoveryHours": "{{n}}h avg recovery",
@@ -156,9 +156,9 @@
       "basedOn_other": "based on {{count}} recoveries"
     },
     "correlationsCard": {
-      "lockedTitle": "Correlation Insights",
+      "lockedTitle": "Correlations",
       "lockedSubtitle": "See which times and days you feel best. Pro feature.",
-      "lockedA11y": "Upgrade to Pro to unlock Correlation Insights",
+      "lockedA11y": "Upgrade to Pro to unlock Correlations",
       "heatmapA11y": "Correlation heatmap showing average mood by time-of-day and day-of-week",
       "cellA11y": "score {{score}}",
       "noDataA11y": "no data",
@@ -194,13 +194,13 @@
       }
     },
     "aiReport": {
-      "title": "Personalised insights",
-      "subtitle": "Weekly and monthly AI mood analysis",
-      "a11y": "View AI Report — get personalised mood insights"
+      "title": "Weekly & monthly summary",
+      "subtitle": "Review your recent mood history",
+      "a11y": "View summary of your mood history"
     },
     "yearInMood": {
       "title": "{{year}} in Mood",
-      "subtitle": "Your yearly mood story with AI narrative",
+      "subtitle": "Your yearly mood recap",
       "a11y": "View your Year in Mood annual report"
     },
     "proBadge": "Pro",
@@ -356,7 +356,7 @@
       "subtitle": "Removes mood history and profile, keeps account",
       "a11y": "Delete my data",
       "confirmTitle": "Delete My Data",
-      "confirmBody": "This will permanently delete all your mood entries, AI reports, and profile information. Your account will remain active. This cannot be undone.",
+      "confirmBody": "This will permanently delete all your mood entries, summaries, and profile information. Your account will remain active. This cannot be undone.",
       "confirmAction": "Delete Data",
       "errorTitle": "Error",
       "errorBody": "Failed to delete data. Please try again."
@@ -708,13 +708,13 @@
         "Full mood history & calendar"
       ],
       "pro": [
-        "Daily AI wellness insight, just for you",
-        "Weekly & monthly AI mood reports",
+        "Daily wellness summary",
+        "Weekly & monthly mood summaries",
         "Annual mood report & year in review",
-        "Pattern insights & resilience score",
+        "Mood trends & recovery score",
         "Habit tracking (sleep, exercise & more)",
         "Life events & mood correlation",
-        "Custom moods with personalised colours"
+        "Custom moods with personalized colors"
       ]
     },
     "price": {
@@ -788,7 +788,7 @@
     },
     "note": "Note",
     "noNote": "No note added",
-    "sentimentLabel": "Sentiment",
+    "sentimentLabel": "Note tone",
     "sentiment": {
       "positive": "Positive",
       "neutral": "Neutral",
@@ -820,13 +820,13 @@
   },
   "aiReport": {
     "premiumTitle": "Premium feature",
-    "premiumSubtitle": "Get personalised weekly and monthly mood insights powered by AI",
+    "premiumSubtitle": "Get weekly and monthly mood summaries",
     "startTrial": "Start free trial",
-    "title": "AI Report",
+    "title": "Summary",
     "weekly": "Weekly",
     "monthly": "Monthly",
     "reportTypeA11y": "{{label}} report",
-    "generating": "Analysing your mood patterns...",
+    "generating": "Preparing your summary...",
     "loadErrorTitle": "Could not load report",
     "loadErrorSubtitle": "Check your connection and try again",
     "tryAgain": "Try again",
@@ -835,8 +835,8 @@
     "subscriptionErrorTitle": "Subscription not verified",
     "subscriptionErrorSubtitle": "Your subscription could not be confirmed on the server. Try closing and reopening the app. If the problem persists, restore your purchase.",
     "noReportYet": "No {{period}} report yet",
-    "noReportSubtitle": "Generate your first {{period}} mood analysis",
-    "generateMyReport": "Generate my report",
+    "noReportSubtitle": "Generate your first {{period}} summary",
+    "generateMyReport": "Generate summary",
     "periodA11y": "Report period: {{period}}",
     "moodSummary": "Mood summary",
     "checkInsA11y": "{{count}} check-ins",
@@ -845,8 +845,8 @@
     "perDayAvg": "per day avg",
     "moodTimesA11y": "{{moodId}}, {{count}} times",
     "generated": "Generated {{date}}",
-    "generateNewReport": "Generate new report",
-    "patterns": "Patterns we noticed",
+    "generateNewReport": "Generate new summary",
+    "patterns": "Highlights",
     "tone": {
       "positive": "Mostly bright",
       "neutral": "Steady",

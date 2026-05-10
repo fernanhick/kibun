@@ -8,7 +8,7 @@
   "bored":      { "label": "Aburrido",     "response": "El aburrimiento es creatividad esperando una chispa." },
   "confused":   { "label": "Confundido",   "response": "La incertidumbre significa que estás pensando — eso es buena señal." },
   "sad":        { "label": "Triste",       "response": "Está bien sentirte así. No estás solo." },
-  "anxious":    { "label": "Ansioso",      "response": "Respira. Estás aquí, y eso es suficiente." },
+  "anxious":    { "label": "Preocupado",   "response": "Respira. Estás aquí, y eso es suficiente." },
   "frustrated": { "label": "Frustrado",    "response": "La fricción significa que te importa. Eso vale." },
   "angry":      { "label": "Enojado",      "response": "Las emociones fuertes merecen espacio. Vamos a registrarlas." },
   "melancholy": { "label": "Melancólico",  "response": "Un dolor silencioso — a veces difícil de nombrar, siempre válido." },

@@ -20,10 +20,10 @@ export default function FirstMoodScreen() {
   const router = useRouter();
   const setFirstMoodId = useOnboardingStore((s) => s.setFirstMoodId);
 
-  const handleContinue = () => {
-    if (!selectedMood) return;
-    setFirstMoodId(selectedMood.id);
-    router.push({ pathname: '/(onboarding)/mood-response/[moodId]', params: { moodId: selectedMood.id } });
+  const handleMoodSelect = (mood: MoodDefinition) => {
+    setSelectedMood(mood);
+    setFirstMoodId(mood.id);
+    router.push({ pathname: '/(onboarding)/mood-response/[moodId]', params: { moodId: mood.id } });
   };
 
   return (
@@ -46,7 +46,7 @@ export default function FirstMoodScreen() {
           <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
         </Pressable>
         <View style={styles.shibaContainer}>
-          <Shiba variant="neutral" size={180} loop autoPlay />
+          <Shiba variant="neutral" size={160} loop autoPlay />
         </View>
         <Text style={styles.headline}>{t('firstMood.headline')}</Text>
         <Text style={styles.subline}>{t('firstMood.subline')}</Text>
@@ -60,20 +60,10 @@ export default function FirstMoodScreen() {
               mood={mood}
               size="md"
               selected={selectedMood?.id === mood.id}
-              onPress={setSelectedMood}
+              onPress={handleMoodSelect}
             />
           ))}
         </View>
-      </View>
-
-      <View style={styles.ctaContainer}>
-        <Button
-          label={t('firstMood.cta')}
-          onPress={handleContinue}
-          variant="sunrise"
-          disabled={selectedMood === null}
-          fullWidth
-        />
       </View>
     </Screen>
   );
@@ -91,7 +81,7 @@ const styles = StyleSheet.create({
   heroCard: {
     borderRadius: 28,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
+    paddingVertical: spacing.sm,
     marginTop: spacing.md,
     marginBottom: spacing.lg,
   },
@@ -100,7 +90,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   headline: {
-    fontSize: typography.sizes.xxl,
+    fontSize: typography.sizes.xl,
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
     textAlign: 'center',
@@ -124,9 +114,5 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-evenly',
     gap: spacing.sm,
-  },
-  ctaContainer: {
-    marginTop: spacing.md,
-    marginHorizontal: spacing.md,
   },
 });

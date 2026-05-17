@@ -103,6 +103,25 @@
         { "emoji": "🪷", "title": "A fresh page",        "body": "Each day is a new chapter. Take a moment to check in with yourself.", "affirmation": "Your feelings are valid — whatever they are. ✨" },
         { "emoji": "✨", "title": "Hi there",            "body": "How's your inner world today? A quick log helps you spot patterns over time.", "affirmation": "You're worth paying attention to. 💛" }
       ]
+    },
+    "insightCards": {
+      "positiveCorrelation": {
+        "title": "{{habit}} seems to lift your mood",
+        "body": "On days you log {{habit}}, your mood scores {{strength}} higher on average. Worth protecting.",
+        "emoji": "🌱"
+      },
+      "lowMoodNudge": {
+        "personalisedTitle": "A gentle nudge: {{habit}}",
+        "personalisedBody": "On heavier days, {{habit}} has been one of your reliable lifts. Even a tiny check counts.",
+        "genericTitle": "A small anchor for today",
+        "genericBody": "Today feels a bit heavy. One small habit, however imperfect, is enough.",
+        "emoji": "🤍"
+      },
+      "strength": {
+        "weak": "slightly",
+        "moderate": "moderately",
+        "strong": "noticeably"
+      }
     }
   },
   "insights": {
@@ -183,6 +202,8 @@
       "needsMoreTitle": "Not enough data yet",
       "needsMoreSubtitle": "Log habits for at least 5 days to see correlations.",
       "rowA11y": "{{habit}}: {{label}}",
+      "seeAllPro": "See every habit-mood signal with Pro",
+      "seeAllProA11y": "Upgrade to Pro to see all habit-mood correlations",
       "strength": {
         "strongPositive": "Strong positive",
         "strongNegative": "Strong negative",

@@ -11,13 +11,13 @@ import { useMoodEntryStore, useSessionStore } from '@store/index';
 import { useHabitsStore } from '@store/habitsStore';
 import { filterEntriesByDays, getMoodFrequency, getDailyMoodScores, GROUP_SCORES } from '@lib/insights';
 import { detectPatterns, calculateResilienceScore, type ResilienceResult } from '@lib/patterns';
+import { computeHabitCorrelations, correlationColor, type HabitCorrelation } from '@lib/correlations';
 import { BarChart, LineChart } from 'react-native-gifted-charts';
 import { colors, typography, spacing, radius } from '@constants/theme';
 import { MOOD_MAP } from '@constants/moods';
-import type { MoodSlot, Habit, HabitLog, MoodEntry } from '@models/index';
+import type { MoodSlot } from '@models/index';
 
 type Period = 7 | 30;
-type StrengthKey = 'strongPositive' | 'strongNegative' | 'moderatePositive' | 'moderateNegative' | 'weakPositive' | 'weakNegative' | 'none';
 
 export default function InsightsScreen() {
   const [period, setPeriod] = useState<Period>(7);
@@ -386,42 +386,71 @@ export default function InsightsScreen() {
         </View>
       )}
 
-      {/* Habits × Mood — Pro feature */}
+      {/* Habits × Mood — top 2 positive free, full list Pro */}
       {habits.length > 0 && filtered.length > 0 && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
             {t('insights.sections.habitsAndMood')}
           </Text>
-          {isPro ? (
-            habitCorrelations.length > 0 ? (
-              <HabitCorrelationList correlations={habitCorrelations} />
-            ) : (
-              <Card style={styles.proLockCard}>
-                <Text style={styles.proLockIcon}>📊</Text>
-                <View style={styles.proLockInfo}>
-                  <Text style={styles.proLockTitle}>{t('insights.habitCorrelations.needsMoreTitle')}</Text>
-                  <Text style={styles.proLockSubtitle}>{t('insights.habitCorrelations.needsMoreSubtitle')}</Text>
-                </View>
-              </Card>
-            )
-          ) : (
-            <Pressable
-              onPress={() => router.push('/paywall')}
-              accessibilityRole="button"
-              accessibilityLabel={t('insights.habitCorrelations.lockedA11y')}
-            >
-              <Card style={styles.proLockCard}>
-                <Text style={styles.proLockIcon}>📊</Text>
-                <View style={styles.proLockInfo}>
-                  <Text style={styles.proLockTitle}>{t('insights.habitCorrelations.lockedTitle')}</Text>
-                  <Text style={styles.proLockSubtitle}>{t('insights.habitCorrelations.lockedSubtitle')}</Text>
-                </View>
-                <View style={styles.proLockBadge}>
-                  <Text style={styles.proLockBadgeText}>{t('insights.proBadge')}</Text>
-                </View>
-              </Card>
-            </Pressable>
-          )}
+          {(() => {
+            if (habitCorrelations.length === 0) {
+              // No signal yet — same prompt for free and Pro: log more data.
+              if (isPro) {
+                return (
+                  <Card style={styles.proLockCard}>
+                    <Text style={styles.proLockIcon}>📊</Text>
+                    <View style={styles.proLockInfo}>
+                      <Text style={styles.proLockTitle}>{t('insights.habitCorrelations.needsMoreTitle')}</Text>
+                      <Text style={styles.proLockSubtitle}>{t('insights.habitCorrelations.needsMoreSubtitle')}</Text>
+                    </View>
+                  </Card>
+                );
+              }
+              return (
+                <Pressable
+                  onPress={() => router.push('/paywall')}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('insights.habitCorrelations.lockedA11y')}
+                >
+                  <Card style={styles.proLockCard}>
+                    <Text style={styles.proLockIcon}>📊</Text>
+                    <View style={styles.proLockInfo}>
+                      <Text style={styles.proLockTitle}>{t('insights.habitCorrelations.needsMoreTitle')}</Text>
+                      <Text style={styles.proLockSubtitle}>{t('insights.habitCorrelations.needsMoreSubtitle')}</Text>
+                    </View>
+                  </Card>
+                </Pressable>
+              );
+            }
+            if (isPro) {
+              return <HabitCorrelationList correlations={habitCorrelations} />;
+            }
+            // Free: top 2 positive correlations + upsell row for full list.
+            const topPositives = habitCorrelations
+              .filter((c) => c.correlation > 0)
+              .slice(0, 2);
+            return (
+              <View>
+                {topPositives.length > 0 && <HabitCorrelationList correlations={topPositives} />}
+                <Pressable
+                  onPress={() => router.push('/paywall')}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('insights.habitCorrelations.seeAllProA11y')}
+                >
+                  <Card style={styles.proLockCard}>
+                    <Text style={styles.proLockIcon}>📊</Text>
+                    <View style={styles.proLockInfo}>
+                      <Text style={styles.proLockTitle}>{t('insights.habitCorrelations.seeAllPro')}</Text>
+                      <Text style={styles.proLockSubtitle}>{t('insights.habitCorrelations.lockedSubtitle')}</Text>
+                    </View>
+                    <View style={styles.proLockBadge}>
+                      <Text style={styles.proLockBadgeText}>{t('insights.proBadge')}</Text>
+                    </View>
+                  </Card>
+                </Pressable>
+              </View>
+            );
+          })()}
         </View>
       )}
 
@@ -475,90 +504,9 @@ export default function InsightsScreen() {
 }
 
 // ─── Habit Correlation ───────────────────────────────────────────────────────
-
-interface HabitCorrelation {
-  habit: Habit;
-  correlation: number;  // -1 to 1 (scale) or mean-diff normalized (boolean)
-  strength: StrengthKey;
-}
-
-function strengthKey(r: number): StrengthKey {
-  const abs = Math.abs(r);
-  const positive = r >= 0;
-  if (abs >= 0.5) return positive ? 'strongPositive' : 'strongNegative';
-  if (abs >= 0.3) return positive ? 'moderatePositive' : 'moderateNegative';
-  if (abs >= 0.1) return positive ? 'weakPositive' : 'weakNegative';
-  return 'none';
-}
-
-function pearsonCorrelation(xs: number[], ys: number[]): number {
-  const n = xs.length;
-  if (n < 2) return 0;
-  const meanX = xs.reduce((a, b) => a + b, 0) / n;
-  const meanY = ys.reduce((a, b) => a + b, 0) / n;
-  let num = 0, sdX = 0, sdY = 0;
-  for (let i = 0; i < n; i++) {
-    num += (xs[i] - meanX) * (ys[i] - meanY);
-    sdX += (xs[i] - meanX) ** 2;
-    sdY += (ys[i] - meanY) ** 2;
-  }
-  const denom = Math.sqrt(sdX * sdY);
-  return denom === 0 ? 0 : num / denom;
-}
-
-function computeHabitCorrelations(
-  habits: Habit[],
-  logs: HabitLog[],
-  entries: MoodEntry[],
-): HabitCorrelation[] {
-  // Build daily average mood score map
-  const dailyMood: Record<string, number[]> = {};
-  for (const e of entries) {
-    const date = e.loggedAt.split('T')[0];
-    const mood = MOOD_MAP[e.moodId as keyof typeof MOOD_MAP];
-    const score = mood ? GROUP_SCORES[mood.group] : 3;
-    if (!dailyMood[date]) dailyMood[date] = [];
-    dailyMood[date].push(score);
-  }
-  const dailyAvg: Record<string, number> = {};
-  for (const [date, scores] of Object.entries(dailyMood)) {
-    dailyAvg[date] = scores.reduce((a, b) => a + b, 0) / scores.length;
-  }
-
-  const result: HabitCorrelation[] = [];
-
-  for (const habit of habits) {
-    const hLogs = logs.filter((l) => l.habitId === habit.id && dailyAvg[l.logDate] !== undefined);
-    if (hLogs.length < 5) continue;
-
-    let r: number;
-    if (habit.trackingType === 'scale') {
-      r = pearsonCorrelation(hLogs.map((l) => l.value), hLogs.map((l) => dailyAvg[l.logDate]));
-    } else {
-      // boolean: normalise mean-diff to -1..1 range (scale 0–4)
-      const doneMean = hLogs.filter((l) => l.value === 1).map((l) => dailyAvg[l.logDate]);
-      const skipMean = hLogs.filter((l) => l.value === 0).map((l) => dailyAvg[l.logDate]);
-      if (doneMean.length < 3) continue;
-      const avgDone = doneMean.reduce((a, b) => a + b, 0) / doneMean.length;
-      const avgSkip = skipMean.length > 0
-        ? skipMean.reduce((a, b) => a + b, 0) / skipMean.length
-        : Object.values(dailyAvg).reduce((a, b) => a + b, 0) / Object.values(dailyAvg).length;
-      r = (avgDone - avgSkip) / 3;
-    }
-
-    result.push({ habit, correlation: r, strength: strengthKey(r) });
-  }
-
-  return result.sort((a, b) => Math.abs(b.correlation) - Math.abs(a.correlation));
-}
-
-function correlationColor(r: number): string {
-  const abs = Math.abs(r);
-  if (abs >= 0.5) return r >= 0 ? '#66BB6A' : '#EF5350';
-  if (abs >= 0.3) return r >= 0 ? '#AED581' : '#FF8A65';
-  if (abs >= 0.1) return r >= 0 ? '#80DEEA' : '#FFD54F';
-  return '#BDBDBD';
-}
+// Math + types extracted to `src/lib/correlations.ts` so the Home tab insight
+// generators can reuse the same logic. This file keeps only the presentational
+// list component.
 
 function HabitCorrelationList({ correlations }: { correlations: HabitCorrelation[] }) {
   const { t } = useTranslation('screens');

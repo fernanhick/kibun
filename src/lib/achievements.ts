@@ -1,4 +1,5 @@
 import type { MoodEntry, AchievementId, AchievementDefinition } from '@models/index';
+import { MOODS } from '@constants/moods';
 
 // ─── Achievement Definitions ──────────────────────────────────────────────────
 
@@ -18,7 +19,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
   {
     id: 'mood_explorer',
     label: 'Mood Explorer',
-    description: 'Logged all 14 moods at least once.',
+    description: 'Logged every available mood at least once.',
     emoji: '🌈',
   },
   {
@@ -99,7 +100,7 @@ export function checkAchievements(
   const conditions: { id: AchievementId; met: boolean }[] = [
     { id: 'first_week',    met: streak >= 7 },
     { id: 'month_warrior', met: streak >= 30 },
-    { id: 'mood_explorer', met: uniqueMoods >= 14 },
+    { id: 'mood_explorer', met: uniqueMoods >= MOODS.length },
     { id: 'reflector',     met: journalCount >= 10 },
     { id: 'early_bird',    met: morningCount >= 7 },
     { id: 'night_owl',     met: preSleepCount >= 7 },

@@ -27,6 +27,45 @@ const FONT_SIZES = {
   xl: typography.sizes.lg,
 } as const;
 
+const PAW_IMAGE = require('../../assets/paw.png');
+const MOOD_IMAGES: Partial<Record<string, ReturnType<typeof require>>> = {
+  angry: require('../../assets/emotions/angry.png'),
+  bored: require('../../assets/emotions/bored.png'),
+  bright: require('../../assets/emotions/bright.png'),
+  calm: require('../../assets/emotions/calm.png'),
+  cheeky: require('../../assets/emotions/cheeky.png'),
+  confused: require('../../assets/emotions/confused.png'),
+  excited: require('../../assets/emotions/excited.png'),
+  frustrated: require('../../assets/emotions/frustrated.png'),
+  grateful: require('../../assets/emotions/grateful.png'),
+  happy: require('../../assets/emotions/happy.png'),
+  lonely: require('../../assets/emotions/lonely.png'),
+  loved: require('../../assets/emotions/loved.png'),
+  melancholy: require('../../assets/emotions/melancholy.png'),
+  sad: require('../../assets/emotions/sad.png'),
+  scared: require('../../assets/emotions/scared.png'),
+  surprised: require('../../assets/emotions/surprised.png'),
+  tired: require('../../assets/emotions/tired.png'),
+  worried: require('../../assets/emotions/worried.png'),
+};
+
+const normalizeMoodImageKey = (value: string) =>
+  value.trim().toLowerCase().replace(/\s+/g, '_');
+
+const getMoodImage = (mood: MoodDefinition) => {
+  const idKey = normalizeMoodImageKey(mood.id);
+  const labelKey = normalizeMoodImageKey(mood.label);
+
+  const resolvedKeys = [idKey, labelKey];
+
+  for (const key of resolvedKeys) {
+    const source = MOOD_IMAGES[key];
+    if (source) return source;
+  }
+
+  return PAW_IMAGE;
+};
+
 export function MoodBubble({
   mood,
   size = 'md',
@@ -103,7 +142,7 @@ export function MoodBubble({
           <Rect width="100%" height="100%" fill={`url(#rg-${mood.id})`} />
         </Svg>
         <Image
-          source={require('../../assets/paw.png')}
+          source={getMoodImage(mood)}
           style={{ width: imageSize, height: imageSize }}
           resizeMode="contain"
         />

@@ -1,6 +1,7 @@
 export { BackButton } from './BackButton';
 export { Button } from './Button';
 export { Card } from './Card';
+export { InsightCard } from './InsightCard';
 export { KawaiiTabBar } from './KawaiiTabBar';
 export { MoodBubble } from './MoodBubble';
 export { OptionPicker } from './OptionPicker';

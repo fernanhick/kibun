@@ -103,6 +103,25 @@
         { "emoji": "🪷", "title": "Una página nueva",     "body": "Cada día es un capítulo nuevo. Tómate un momento para chequear contigo mismo.", "affirmation": "Tus sentimientos son válidos — sean los que sean. ✨" },
         { "emoji": "✨", "title": "Hola",                 "body": "¿Cómo está tu mundo interior hoy? Un registro rápido te ayuda a notar patrones con el tiempo.", "affirmation": "Vale la pena prestarte atención. 💛" }
       ]
+    },
+    "insightCards": {
+      "positiveCorrelation": {
+        "title": "{{habit}} parece elevar tu ánimo",
+        "body": "Los días que registras {{habit}}, tu ánimo promedio sube {{strength}}. Vale la pena cuidarlo.",
+        "emoji": "🌱"
+      },
+      "lowMoodNudge": {
+        "personalisedTitle": "Un empujoncito: {{habit}}",
+        "personalisedBody": "En los días más pesados, {{habit}} ha sido uno de tus apoyos confiables. Aunque sea pequeño, cuenta.",
+        "genericTitle": "Un pequeño ancla para hoy",
+        "genericBody": "Hoy se siente un poco pesado. Un pequeño hábito, aunque sea imperfecto, es suficiente.",
+        "emoji": "🤍"
+      },
+      "strength": {
+        "weak": "un poco",
+        "moderate": "moderadamente",
+        "strong": "notablemente"
+      }
     }
   },
   "insights": {
@@ -183,6 +202,8 @@
       "needsMoreTitle": "Aún no hay suficientes datos",
       "needsMoreSubtitle": "Registra hábitos durante al menos 5 días para ver correlaciones.",
       "rowA11y": "{{habit}}: {{label}}",
+      "seeAllPro": "Descubre todas las señales hábito-ánimo con Pro",
+      "seeAllProA11y": "Mejora a Pro para ver todas las correlaciones hábito-ánimo",
       "strength": {
         "strongPositive": "Fuerte positiva",
         "strongNegative": "Fuerte negativa",

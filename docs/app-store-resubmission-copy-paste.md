@@ -31,7 +31,7 @@ Log how you feel in seconds, up to four times a day, then revisit your mood hist
 
 --- WHY PEOPLE USE KIBUN ---
 
-- 14 color-coded mood bubbles make logging fast and intuitive
+- 18 color-coded mood bubbles make logging fast and intuitive
 - Four daily slots for morning, afternoon, evening, and pre-sleep check-ins
 - Calendar history shows your month at a glance
 - Streaks, charts, and summary cards make progress easy to see

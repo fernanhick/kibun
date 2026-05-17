@@ -311,7 +311,7 @@ const NEGATIVE_GROUPS = new Set(['red-orange', 'blue']);
  * Used by MoodConfirmScreen to surface a gentle contradiction prompt.
  *
  * Returns 'neutral' if either side is ambiguous:
- *   - Mood group is 'neutral' (meh/tired/bored/confused â€” no strong expectation)
+ *   - Mood group is 'neutral' (tired/bored/confused - no strong expectation)
  *   - Sentiment score < 0.6 (model not confident)
  *   - Sentiment label is 'neutral'
  */

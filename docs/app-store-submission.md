@@ -52,7 +52,7 @@ Kibun: Mood Tracker & Journal
 ### 2.2 Subtitle  *(30 char max · second strongest signal)*
 
 ```
-Track feelings. Find patterns.
+Track moods. Find what shifts.
 ```
 **Length: 30 / 30**
 
@@ -101,6 +101,7 @@ A gentle, kawaii Shiba Inu mascot adds personality to every check-in and changes
 
 - Unlimited mood check-ins - forever
 - 7-day history, streak counter, top-moods chart
+- Habit-mood correlation cards - spot which daily habits seem to lift your mood
 - Notification reminders (customizable slots)
 - Private on-device processing
 - Optional anonymous mode (no account needed)
@@ -475,7 +476,7 @@ The most common rejections for apps in this category — address each **before**
 
 ```
 APP NAME       : Kibun: Mood Tracker & Journal
-SUBTITLE       : Track feelings. Find patterns.
+SUBTITLE       : Track moods. Find what shifts.
 KEYWORDS       : mental,health,wellness,selfcare,emotions,stress,mindfulness,journaling,gratitude,habits,calm,zen
 PROMO TEXT     : Meet Kibun - your private mood tracker with a Shiba Inu guide. Track moods, review history, and try Pro free for 7 days.
 PRIMARY CAT    : Health & Fitness

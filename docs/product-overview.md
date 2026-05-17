@@ -217,7 +217,7 @@ These are the user-facing claims, all backed by code. Use these on the privacy p
 | Field | Value |
 |---|---|
 | App name | Kibun: Mood Tracker & Journal |
-| Subtitle | Track feelings. Find patterns. |
+| Subtitle | Track moods. Find what shifts. |
 | iOS bundle ID | `com.kibun.app` |
 | Android package | `com.kibun.app` |
 | iOS App Store ID | `6761697507` |

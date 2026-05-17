@@ -10,12 +10,16 @@ import { useUiPrefsStore } from '@store/uiPrefsStore';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { useHabitsStore } from '@store/habitsStore';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
-import { Button, Card, MoodBubble, Screen } from '@components/index';
+import { Button, Card, InsightCard, MoodBubble, Screen } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { colors, spacing, typography, radius } from '@constants/theme';
 import { ACHIEVEMENT_DEFINITIONS } from '@lib/achievements';
 import { fetchDailyInsight } from '@lib/dailyInsight';
+import {
+  generateLowMoodNudgeInsight,
+  generatePositiveCorrelationInsight,
+} from '@lib/correlationInsights';
 import { computeAdaptiveTimes } from '@lib/notifications';
 import { getMoodLabel } from '@lib/moodLabels';
 import { formatTime as formatLocaleTime } from '@i18n/dateFormat';
@@ -192,6 +196,24 @@ export default function HomeScreen() {
     () => allHabitLogs.filter((l) => l.logDate === today),
     [allHabitLogs, today],
   );
+  const habitsProgress = useMemo(() => {
+    const booleanHabits = habits.filter((h) => h.trackingType === 'boolean');
+    const doneCount = booleanHabits.filter((h) =>
+      todayHabitLogs.some((l) => l.habitId === h.id && l.value === 1),
+    ).length;
+    return { done: doneCount, total: booleanHabits.length };
+  }, [habits, todayHabitLogs]);
+
+  // On-device, free-for-all correlation insight cards. Recomputed when habits,
+  // logs, or entries change; pure functions return null when conditions don't hold.
+  const positiveCorrelationCard = useMemo(
+    () => generatePositiveCorrelationInsight(habits, allHabitLogs, entries, t),
+    [habits, allHabitLogs, entries, t],
+  );
+  const lowMoodNudgeCard = useMemo(
+    () => generateLowMoodNudgeInsight(habits, allHabitLogs, entries, today, t),
+    [habits, allHabitLogs, entries, today, t],
+  );
 
   return (
     <View style={styles.container}>
@@ -252,21 +274,29 @@ export default function HomeScreen() {
           </View>
         </LinearGradient>
 
+        <HabitsSection
+          habits={habits}
+          todayLogs={todayHabitLogs}
+          today={today}
+          progress={habitsProgress}
+          onLog={logHabit}
+          onClear={clearHabitLog}
+          onManage={() => router.push('/manage-habits' as Href)}
+        />
+
+        {(lowMoodNudgeCard || positiveCorrelationCard) && (
+          <View style={styles.insightCardsWrapper}>
+            {lowMoodNudgeCard && <InsightCard card={lowMoodNudgeCard} />}
+            {positiveCorrelationCard && <InsightCard card={positiveCorrelationCard} />}
+          </View>
+        )}
+
         {isPro && !isAnonymous && (insightLoading || insightContent?.date === today) && (
           <DailyInsightCard
             content={insightContent?.date === today ? insightContent.content : null}
             isLoading={insightLoading}
           />
         )}
-
-        <HabitsSection
-          habits={habits}
-          todayLogs={todayHabitLogs}
-          today={today}
-          onLog={logHabit}
-          onClear={clearHabitLog}
-          onManage={() => router.push('/manage-habits' as Href)}
-        />
 
         {unlockedDefs.length > 0 && (
           <View style={styles.achievementsSection}>
@@ -445,12 +475,13 @@ interface HabitsSectionProps {
   habits: Habit[];
   todayLogs: HabitLog[];
   today: string;
+  progress: { done: number; total: number };
   onLog: (habitId: string, logDate: string, value: number) => void;
   onClear: (habitId: string, logDate: string) => void;
   onManage: () => void;
 }
 
-function HabitsSection({ habits, todayLogs, today, onLog, onClear, onManage }: HabitsSectionProps) {
+function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onManage }: HabitsSectionProps) {
   const { t } = useTranslation('screens');
   if (habits.length === 0) {
     return (
@@ -469,8 +500,17 @@ function HabitsSection({ habits, todayLogs, today, onLog, onClear, onManage }: H
   return (
     <View style={habitStyles.wrapper}>
       <View style={habitStyles.headerRow}>
-        <View style={styles.sectionHeaderChip}>
-          <Text style={styles.sectionHeader}>{t('home.habitsHeader')}</Text>
+        <View style={habitStyles.headerLeft}>
+          <View style={styles.sectionHeaderChip}>
+            <Text style={styles.sectionHeader}>{t('home.habitsHeader')}</Text>
+          </View>
+          {progress.total > 0 && (
+            <View style={habitStyles.progressChip}>
+              <Text style={habitStyles.progressChipText}>
+                {progress.done}/{progress.total}
+              </Text>
+            </View>
+          )}
         </View>
         <Pressable onPress={onManage} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('home.habitsManageA11y')}>
           <Text style={habitStyles.manageLink}>{t('home.habitsManage')}</Text>
@@ -532,6 +572,24 @@ const habitStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  progressChip: {
+    backgroundColor: '#F1FFF2',
+    borderWidth: 1,
+    borderColor: '#A5D6A7',
+    borderRadius: 999,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+  },
+  progressChipText: {
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.ui,
+    color: '#388E3C',
   },
   manageLink: {
     fontSize: typography.sizes.sm,
@@ -749,6 +807,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.xl,
     gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  insightCardsWrapper: {
+    paddingHorizontal: spacing.md,
     marginTop: spacing.md,
   },
   achievementsSection: {

@@ -1,11 +1,10 @@
 // ─── Mood Type Definitions ────────────────────────────────────────────────────
-// 14-mood V1 set defined in PLANNING.md. Do not add or remove IDs here —
-// mood IDs are a shared contract used by sessionStore, Supabase schema, and AI reports.
+// Mood IDs are used across storage, reports, and UI rendering.
 
 export type MoodId =
-  | 'happy' | 'excited' | 'grateful' | 'calm'
-  | 'meh' | 'tired' | 'bored' | 'confused'
-  | 'sad' | 'anxious' | 'frustrated' | 'angry'
+  | 'happy' | 'excited' | 'grateful' | 'calm' | 'bright' | 'cheeky' | 'loved' | 'surprised'
+  | 'tired' | 'bored' | 'confused'
+  | 'sad' | 'worried' | 'frustrated' | 'angry' | 'scared'
   | 'melancholy' | 'lonely';
 
 export type MoodGroup = 'green' | 'neutral' | 'red-orange' | 'blue';
@@ -29,15 +28,19 @@ export const MOODS: MoodDefinition[] = [
   { id: 'happy',     label: 'Happy',     group: 'green',     bubbleColor: '#66BB6A', textColor: TEXT, tintColor: '#E8F5E9' },
   { id: 'excited',   label: 'Excited',   group: 'green',     bubbleColor: '#C6E82B', textColor: TEXT, tintColor: '#F9FBE7' },
   { id: 'grateful',  label: 'Grateful',  group: 'green',     bubbleColor: '#81C784', textColor: TEXT, tintColor: '#E8F5E9' },
+  { id: 'bright',    label: 'Bright',    group: 'green',     bubbleColor: '#A5D6A7', textColor: TEXT, tintColor: '#E8F5E9' },
+  { id: 'cheeky',    label: 'Cheeky',    group: 'green',     bubbleColor: '#AED581', textColor: TEXT, tintColor: '#F1F8E9' },
+  { id: 'loved',     label: 'Loved',     group: 'green',     bubbleColor: '#9CCC65', textColor: TEXT, tintColor: '#F1F8E9' },
+  { id: 'surprised', label: 'Surprised', group: 'green',     bubbleColor: '#DCE775', textColor: TEXT, tintColor: '#F9FBE7' },
   { id: 'calm',      label: 'Calm',      group: 'green',     bubbleColor: '#80DEEA', textColor: TEXT, tintColor: '#E0F7FA' },
   // ─── Neutral (mixed) ─────────────────────────────────────────────────────
-  { id: 'meh',       label: 'Meh',       group: 'neutral',   bubbleColor: '#BDBDBD', textColor: TEXT, tintColor: '#FAFAFA' },
   { id: 'tired',     label: 'Tired',     group: 'neutral',   bubbleColor: '#BCAAA4', textColor: TEXT, tintColor: '#EFEBE9' },
   { id: 'bored',     label: 'Bored',     group: 'neutral',   bubbleColor: '#B0BEC5', textColor: TEXT, tintColor: '#ECEFF1' },
   { id: 'confused',  label: 'Confused',  group: 'neutral',   bubbleColor: '#FFD54F', textColor: TEXT, tintColor: '#FFFDE7' },
   // ─── Red / Orange (negative energy) ──────────────────────────────────────
   { id: 'sad',        label: 'Sad',        group: 'red-orange', bubbleColor: '#F48FB1', textColor: TEXT, tintColor: '#FCE4EC' },
-  { id: 'anxious',    label: 'Worried',    group: 'red-orange', bubbleColor: '#FFAB40', textColor: TEXT, tintColor: '#FFF3E0' },
+  { id: 'worried',    label: 'Worried',    group: 'red-orange', bubbleColor: '#FFB74D', textColor: TEXT, tintColor: '#FFF3E0' },
+  { id: 'scared',     label: 'Scared',     group: 'red-orange', bubbleColor: '#FFCC80', textColor: TEXT, tintColor: '#FFF8E1' },
   { id: 'frustrated', label: 'Frustrated', group: 'red-orange', bubbleColor: '#FF8A65', textColor: TEXT, tintColor: '#FBE9E7' },
   { id: 'angry',      label: 'Angry',      group: 'red-orange', bubbleColor: '#EF5350', textColor: TEXT, tintColor: '#FFEBEE' },
   // ─── Blue (introspective) ─────────────────────────────────────────────────

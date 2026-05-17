@@ -164,16 +164,16 @@ export default function ManageHabitsScreen() {
                 />
               </View>
               <View style={styles.typeRow}>
-                {(['boolean', 'scale'] as HabitTrackingType[]).map((t) => (
+                {(['boolean', 'scale'] as HabitTrackingType[]).map((type) => (
                   <Pressable
-                    key={t}
-                    onPress={() => setCustomType(t)}
-                    style={[styles.typePill, customType === t && styles.typePillSelected]}
+                    key={type}
+                    onPress={() => setCustomType(type)}
+                    style={[styles.typePill, customType === type && styles.typePillSelected]}
                     accessibilityRole="button"
-                    accessibilityState={{ selected: customType === t }}
+                    accessibilityState={{ selected: customType === type }}
                   >
-                    <Text style={[styles.typeText, customType === t && styles.typeTextSelected]}>
-                      {t === 'boolean' ? t('manageHabits.booleanType') : t('manageHabits.scaleType')}
+                    <Text style={[styles.typeText, customType === type && styles.typeTextSelected]}>
+                      {type === 'boolean' ? t('manageHabits.booleanType') : t('manageHabits.scaleType')}
                     </Text>
                   </Pressable>
                 ))}

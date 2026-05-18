@@ -156,6 +156,8 @@ async function resolveSubscriptionStatus(
   // Set EXPO_PUBLIC_FORCE_PRO_USER_ID only in screenshot builds; remove before release.
   const forceProUserId = process.env.EXPO_PUBLIC_FORCE_PRO_USER_ID;
   if (userId && forceProUserId && userId === forceProUserId) {
+    // Sync to DB so edge functions (which gate on profiles.subscription_status) also see 'active'.
+    syncSubscriptionStatusToSupabase(userId, 'active');
     return 'active';
   }
 

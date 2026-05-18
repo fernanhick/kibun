@@ -52,27 +52,31 @@ mappings.push({
   filter: (f) => f === 'playstore-icon.png',
 });
 
-console.log('🎨 Setting up platform-specific icons...\n');
-
-mappings.forEach(({ src, dest, filter }) => {
-  const srcPath = join(projectRoot, src);
-  const destPath = join(projectRoot, dest);
+const run = async () => {
+  console.log('🎨 Setting up platform-specific icons...\n');
 
   try {
-    mkdirSync(destPath, { recursive: true });
+    mappings.forEach(({ src, dest, filter }) => {
+      const srcPath = join(projectRoot, src);
+      const destPath = join(projectRoot, dest);
 
-    const files = readdirSync(srcPath).filter(filter);
+      mkdirSync(destPath, { recursive: true });
 
-    files.forEach((file) => {
-      const srcFile = join(srcPath, file);
-      const destFile = join(destPath, file);
-      copyFileSync(srcFile, destFile);
-      console.log(`✓ Copied: ${file} → ${dest}`);
+      const files = readdirSync(srcPath).filter(filter);
+
+      files.forEach((file) => {
+        const srcFile = join(srcPath, file);
+        const destFile = join(destPath, file);
+        copyFileSync(srcFile, destFile);
+        console.log(`✓ Copied: ${file} → ${dest}`);
+      });
     });
+
+    console.log('\n✅ Icons setup complete!');
   } catch (error) {
-    console.error(`✗ Error processing ${src}:`, error.message);
+    console.error('✗ Icon setup failed:', error.message);
     process.exit(1);
   }
-});
+};
 
-console.log('\n✅ Icons setup complete!');
+run();

@@ -20,9 +20,9 @@ export default ({ config }: ConfigContext) => ({
   // Orientation unlocked here; phones are locked to portrait at runtime via
   // @lib/orientation:applyOrientationPolicy so tablets can rotate freely.
   orientation: 'default',
-  // Main icon used for splash screen and fallback. Platform-specific icons are
-  // configured in ios/android sections and copied to native directories.
-  icon: './assets/icon.png',
+  // Main icon used for fallback contexts. Platform-specific icons are configured
+  // in ios/android sections and copied to native directories.
+  icon: './assets/icons/apple-devices/AppIcon.appiconset/icon-ios-1024x1024.png',
   userInterfaceStyle: 'automatic',
   splash: {
     backgroundColor: '#4A86FF',
@@ -42,10 +42,9 @@ export default ({ config }: ConfigContext) => ({
     },
   },
   android: {
-    // Use the highest density icon (xxxhdpi) as fallback
+    // Use curated platform-specific Android icon set.
     icon: './assets/icons/android/mipmap-xxxhdpi/ic_launcher.png',
-    // Adaptive icon for Android 8.0+. The XML files define how foreground and
-    // background layers are combined. Icons are in mipmap-anydpi-v26/*.xml
+    // Adaptive icon for Android 8.0+.
     adaptiveIcon: {
       foregroundImage: './assets/icons/android/mipmap-xxxhdpi/ic_launcher_foreground.png',
       backgroundColor: '#4A86FF',
@@ -90,7 +89,7 @@ export default ({ config }: ConfigContext) => ({
       'expo-splash-screen',
       {
         backgroundColor: '#4A86FF',
-        image: './assets/icon.png',
+        image: './assets/icons/apple-devices/AppIcon.appiconset/icon-ios-1024x1024.png',
         imageWidth: 400,
       },
     ],

@@ -31,7 +31,6 @@ const FONT_SIZES = {
   xl: typography.sizes.lg,
 } as const;
 
-const PAW_IMAGE = require('../../assets/paw.png');
 const MOOD_IMAGES: Partial<Record<string, ReturnType<typeof require>>> = {
   angry: require('../../assets/emotions/angry.png'),
   bored: require('../../assets/emotions/bored.png'),
@@ -85,7 +84,7 @@ const getMoodImage = (mood: MoodDefinition) => {
     if (source) return source;
   }
 
-  return PAW_IMAGE;
+  return null;
 };
 
 const getMoodGradientColor = (mood: MoodDefinition) => {
@@ -202,11 +201,13 @@ export function MoodBubble({
             <Rect width="100%" height="100%" fill={`url(#rg-${mood.id})`} />
           </Svg>
         )}
-        <Image
-          source={getMoodImage(mood)}
-          style={{ width: imageSize, height: imageSize }}
-          resizeMode="contain"
-        />
+        {getMoodImage(mood) && (
+          <Image
+            source={getMoodImage(mood)!}
+            style={{ width: imageSize, height: imageSize }}
+            resizeMode="contain"
+          />
+        )}
         {showLabel && (
           <Text
             style={[styles.label, fontSizeStyle, { color: mood.textColor }]}

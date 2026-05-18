@@ -32,7 +32,15 @@ Deno.serve(async (req: Request) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const openaiApiKey = Deno.env.get("OPENAI_API_KEY")!;
+    const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
+
+    if (!openaiApiKey) {
+      console.error("[generate-annual-report] OPENAI_API_KEY secret is not set");
+      return new Response(
+        JSON.stringify({ error: "ai_unavailable" }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
@@ -144,7 +152,11 @@ Deno.serve(async (req: Request) => {
     });
 
     if (!openaiResponse.ok) {
-      throw new Error(`OpenAI error: ${openaiResponse.status}`);
+      console.error(`[generate-annual-report] OpenAI API error: ${openaiResponse.status}`);
+      return new Response(
+        JSON.stringify({ error: "ai_unavailable" }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
     const openaiData = await openaiResponse.json();

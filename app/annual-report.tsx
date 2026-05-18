@@ -116,6 +116,12 @@ export default function AnnualReportScreen() {
       } catch (e) {
         if (__DEV__) {
           console.error('[kibun:annual-report] generate-annual-report failed:', e);
+          try {
+            const body = await (e as { context?: Response }).context?.json?.();
+            console.error('[kibun:annual-report] edge function error body:', body);
+          } catch {
+            // response body not decodable
+          }
         }
         setError(t('annualReport.storyError'));
       } finally {

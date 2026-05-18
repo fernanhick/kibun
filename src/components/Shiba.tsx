@@ -40,11 +40,6 @@ export function Shiba({
   const floatAnim = useRef(new Animated.Value(0)).current;
   const isTabRoute = segments[0] === '(tabs)';
 
-  // Keep only the tab-bar mascot as the primary animation on tab screens.
-  if (hideOnTabRoutes && isTabRoute) {
-    return null;
-  }
-
   useEffect(() => {
     if (!floating) return;
     const loopAnim = Animated.loop(
@@ -76,6 +71,11 @@ export function Shiba({
 
   const mascotVariant = VARIANT_TO_MASCOT[variant];
   const source = getMascotSource(mascotVariant);
+
+  // Keep only the tab-bar mascot as the primary animation on tab screens.
+  if (hideOnTabRoutes && isTabRoute) {
+    return null;
+  }
 
   return (
     <Animated.View

@@ -212,6 +212,12 @@ export default function HistoryScreen() {
 
   const handleDayPress = (day: number) => {
     const dateStr = `${yearMonth}-${String(day).padStart(2, '0')}`;
+    // Strict YYYY-MM-DD validation
+    const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+    if (!isValidDate) {
+      if (__DEV__) console.warn('Invalid date string for calendar press:', dateStr);
+      return;
+    }
     if (daysWithMoods[dateStr]) {
       router.push(`/day-detail?date=${dateStr}` as Href);
     } else {

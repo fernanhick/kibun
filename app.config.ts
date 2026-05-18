@@ -20,6 +20,8 @@ export default ({ config }: ConfigContext) => ({
   // Orientation unlocked here; phones are locked to portrait at runtime via
   // @lib/orientation:applyOrientationPolicy so tablets can rotate freely.
   orientation: 'default',
+  // Main icon used for splash screen and fallback. Platform-specific icons are
+  // configured in ios/android sections and copied to native directories.
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
   splash: {
@@ -31,15 +33,21 @@ export default ({ config }: ConfigContext) => ({
     supportsTablet: true,
     bundleIdentifier: 'com.kibun.app',
     buildNumber: '1',
-    icon: './assets/icon.png',
+    // Use the high-quality 1024x1024 icon; platform-specific sizes are in
+    // assets/icons/apple-devices/AppIcon.appiconset and are applied during the
+    // EAS/Xcode build process.
+    icon: './assets/icons/apple-devices/AppIcon.appiconset/icon-ios-1024x1024.png',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
   },
   android: {
-    icon: './assets/icon.png',
+    // Use the highest density icon (xxxhdpi) as fallback
+    icon: './assets/icons/android/mipmap-xxxhdpi/ic_launcher.png',
+    // Adaptive icon for Android 8.0+. The XML files define how foreground and
+    // background layers are combined. Icons are in mipmap-anydpi-v26/*.xml
     adaptiveIcon: {
-      foregroundImage: './assets/adaptive-icon.png',
+      foregroundImage: './assets/icons/android/mipmap-xxxhdpi/ic_launcher_foreground.png',
       backgroundColor: '#4A86FF',
     },
     package: 'com.kibun.app',

@@ -4,6 +4,7 @@ import { useRouter, useLocalSearchParams, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Crypto from 'expo-crypto';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { MoodBubble } from '@components/MoodBubble';
@@ -26,7 +27,12 @@ function formatBackdate(d: string) {
   return formatDate(date, { month: 'long', day: 'numeric' });
 }
 
-// Sentiment chip styling — labels resolved via i18n at render time.
+// Sentiment chip styling — use PNGs if present, fallback to emoji.
+const SENTIMENT_IMAGES: Partial<Record<SentimentLabel, any>> = {
+  positive: require('../assets/emotions/happy.png'),
+  neutral: require('../assets/emotions/calm.png'),
+  negative: require('../assets/emotions/sad.png'),
+};
 const SENTIMENT_STYLE: Record<SentimentLabel, { emoji: string; color: string }> = {
   positive: { emoji: '😊', color: colors.success },
   neutral:  { emoji: '😐', color: colors.textSecondary },
@@ -46,14 +52,27 @@ function getMoodAwareSentimentLabel(
 }
 
 // ─── Mood-specific exercise suggestions (Pro feature) ─────────────────────────
-// Visual styling per mood group. title/subtitle and option labels resolved via
-// i18n in-component; option types stay as ids for routing.
+// Visual styling per mood group. Uses PNGs for chips if available, else emoji fallback.
 interface MoodExerciseStyle {
   borderColor: string;
   chipBg: string;
   chipBorder: string;
   optionTypes: { type: string; emoji: string }[];
 }
+
+const EXERCISE_CHIP_IMAGES: Record<string, any> = {
+  gratitude: require('../assets/badges/exercise chips/gratitude.png'),
+  joy_capture: require('../assets/badges/exercise chips/joy-capture.png'),
+  savoring: require('../assets/badges/exercise chips/savoring.png'),
+  energy_boost: require('../assets/badges/exercise chips/energy-boost.png'),
+  curiosity: require('../assets/badges/exercise chips/curiosity.png'),
+  mindful_pause: require('../assets/badges/exercise chips/mindful-pause.png'),
+  box_breathing: require('../assets/badges/exercise chips/box-breathing.png'),
+  body_scan: require('../assets/badges/exercise chips/body-scan.png'),
+  self_compassion: require('../assets/badges/exercise chips/self-compassion.png'),
+  comfort_list: require('../assets/badges/exercise chips/comfort-list.png'),
+  grounding: require('../assets/badges/exercise chips/box-breathing.png'),
+};
 
 const MOOD_EXERCISE_STYLE: Record<MoodGroup, MoodExerciseStyle> = {
   green: {
@@ -257,10 +276,15 @@ export default function MoodConfirmScreen() {
         {sentiment && (() => {
           const sentimentKey = moodAwareSentimentLabel ?? 'neutral';
           const sStyle = SENTIMENT_STYLE[sentimentKey];
+          const imgSrc = SENTIMENT_IMAGES[sentimentKey];
           return (
             <View style={styles.sentimentRow}>
               <View style={[styles.sentimentChip, { borderColor: sStyle.color }]}>
-                <Text style={styles.sentimentEmoji}>{sStyle.emoji}</Text>
+                {imgSrc ? (
+                  <Image source={imgSrc} style={{ width: 24, height: 24, marginRight: 4 }} accessibilityIgnoresInvertColors />
+                ) : (
+                  <Text style={styles.sentimentEmoji}>{sStyle.emoji}</Text>
+                )}
                 <Text style={[styles.sentimentLabel, { color: sStyle.color }]}>
                   {t(`moodConfirm.sentiment.${sentimentKey}`)}
                 </Text>
@@ -332,6 +356,7 @@ export default function MoodConfirmScreen() {
               <View style={[styles.exerciseRow, !isPro && { opacity: 0.5 }]}>
                 {style.optionTypes.map((opt) => {
                   const optLabel = t(`moodConfirm.exercises.options.${opt.type}`);
+                  const imgSrc = EXERCISE_CHIP_IMAGES[opt.type];
                   return (
                     <TouchableOpacity
                       key={opt.type}
@@ -345,7 +370,11 @@ export default function MoodConfirmScreen() {
                       }}
                       accessibilityLabel={isPro ? optLabel : t('moodConfirm.exercises.requiresPro', { label: optLabel })}
                     >
-                      <Text style={styles.exerciseEmoji}>{opt.emoji}</Text>
+                      {imgSrc ? (
+                        <Image source={imgSrc} style={{ width: 28, height: 28, marginRight: 4 }} accessibilityIgnoresInvertColors />
+                      ) : (
+                        <Text style={styles.exerciseEmoji}>{opt.emoji}</Text>
+                      )}
                       <Text style={styles.exerciseChipLabel}>{optLabel}</Text>
                     </TouchableOpacity>
                   );

@@ -83,6 +83,25 @@ function getStreak(entries: MoodEntry[]): number {
 /**
  * Returns newly unlocked achievement IDs (those not already present in unlockedIds).
  */
+// Insight card illustration mapping (new custom PNGs)
+export const INSIGHT_CARD_IMAGES: Record<string, any> = {
+  // Existing keys kept for backward compatibility.
+  sunrise: require('../../assets/badges/insight cards/welcome-back.png'),
+  rainbow: require('../../assets/badges/insight cards/keep-it-going.png'),
+  heart: require('../../assets/badges/insight cards/you-matter.png'),
+  star: require('../../assets/badges/insight cards/you-showed-up.png'),
+  cloud: require('../../assets/badges/insight cards/a-fresh-page.png'),
+  sparkles: require('../../assets/badges/insight cards/glad-you-are-here.png'),
+  // Native card-slug keys from the latest asset pack.
+  'a-fresh-page': require('../../assets/badges/insight cards/a-fresh-page.png'),
+  'glad-you-are-here': require('../../assets/badges/insight cards/glad-you-are-here.png'),
+  'keep-it-going': require('../../assets/badges/insight cards/keep-it-going.png'),
+  'one-breadth': require('../../assets/badges/insight cards/one-breadth.png'),
+  'we-are-here-with-you': require('../../assets/badges/insight cards/we-are-here-with-you.png'),
+  'welcome-back': require('../../assets/badges/insight cards/welcome-back.png'),
+  'you-matter': require('../../assets/badges/insight cards/you-matter.png'),
+  'you-showed-up': require('../../assets/badges/insight cards/you-showed-up.png'),
+};
 export function checkAchievements(
   entries: MoodEntry[],
   unlockedIds: string[]

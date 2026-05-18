@@ -17,10 +17,15 @@ import { colors, spacing, typography, radius, shadows } from '@constants/theme';
 import { ACHIEVEMENT_DEFINITIONS } from '@lib/achievements';
 import { fetchDailyInsight } from '@lib/dailyInsight';
 
-// Achievement image assets
+// Achievement image assets (new custom PNGs)
 const ACHIEVEMENT_IMAGES: Record<string, number> = {
-  first_week: require('../../assets/emojis/7-day-streak.png'),
-  month_warrior: require('../../assets/emojis/month-warrior.png'),
+  first_week: require('../../assets/badges/achievement badges/7-day-streak.png'),
+  month_warrior: require('../../assets/badges/achievement badges/month-warrior.png'),
+  mood_explorer: require('../../assets/badges/achievement badges/mood-explorer.png'),
+  reflector: require('../../assets/badges/achievement badges/reflector.png'),
+  early_bird: require('../../assets/badges/achievement badges/early-bird.png'),
+  night_owl: require('../../assets/badges/achievement badges/night-owl.png'),
+  consistent: require('../../assets/badges/achievement badges/consistent.png'),
 };
 import {
   generateLowMoodNudgeInsight,

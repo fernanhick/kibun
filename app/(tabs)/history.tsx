@@ -7,7 +7,7 @@ import { Screen, Shiba } from '@components/index';
 import { useMoodEntryStore, useSessionStore, useLifeEventsStore } from '@store/index';
 import { useResponsive } from '@hooks/useResponsive';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
-import { colors, spacing, typography, radius } from '@constants/theme';
+import { colors, spacing, typography, radius, shadows } from '@constants/theme';
 import { getMonthNames, getWeekdayLabels } from '@i18n/dateFormat';
 import { getMoodLabel, getMoodGroupLabel } from '@lib/moodLabels';
 
@@ -590,6 +590,7 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.semibold,
   },
   headerCard: {
+    ...shadows.md,
     marginTop: spacing.md,
     borderRadius: 22,
     paddingTop: spacing.sm,
@@ -643,6 +644,7 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.medium,
   },
   calendarPanel: {
+    ...shadows.sm,
     marginTop: spacing.md,
     borderRadius: 18,
     paddingHorizontal: spacing.sm,
@@ -703,6 +705,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   snapshotCard: {
+    ...shadows.md,
     marginTop: spacing.md,
     borderRadius: 22,
     paddingHorizontal: spacing.md,

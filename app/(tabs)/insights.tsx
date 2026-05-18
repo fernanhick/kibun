@@ -13,7 +13,7 @@ import { filterEntriesByDays, getMoodFrequency, getDailyMoodScores, GROUP_SCORES
 import { detectPatterns, calculateResilienceScore, type ResilienceResult } from '@lib/patterns';
 import { computeHabitCorrelations, correlationColor, type HabitCorrelation } from '@lib/correlations';
 import { BarChart, LineChart } from 'react-native-gifted-charts';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 import { MOOD_MAP } from '@constants/moods';
 import type { MoodSlot } from '@models/index';
 
@@ -541,6 +541,7 @@ function HabitCorrelationList({ correlations }: { correlations: HabitCorrelation
 
 const corrStyles = StyleSheet.create({
   container: {
+    ...shadows.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderWidth: 1.2,
     borderColor: '#DCE9FF',
@@ -674,6 +675,7 @@ function CorrelationHeatmap({
 
 const heatmapStyles = StyleSheet.create({
   container: {
+    ...shadows.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderRadius: 22,
     borderWidth: 1.2,
@@ -893,6 +895,7 @@ function PeriodToggle({
 
 const styles = StyleSheet.create({
   heroCard: {
+    ...shadows.md,
     borderRadius: 28,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',

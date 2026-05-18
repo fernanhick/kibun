@@ -1,0 +1,41 @@
+# KIBUN APP — CUSTOM EMOJI/ICON REPLACEMENT LIST
+# Style: kawaii, soft, pastel, friendly — Shiba Inu app aesthetic
+# Format: emoji | name | context | render size | asset size
+
+## ACHIEVEMENT BADGES (home screen carousel)
+🗓️ | calendar | First Week — 7-day streak badge | 22px | 64x64px
+🏆 | trophy | Month Warrior — 30-day streak badge | 22px | 64x64px
+🌈 | rainbow | Mood Explorer — logged all moods badge | 22px | 64x64px
+📔 | notebook | Reflector — 10 journal entries badge | 22px | 64x64px
+🌅 | sunrise | Early Bird — 7 morning check-ins badge | 22px | 64x64px
+🦉 | owl | Night Owl — 7 pre-sleep check-ins badge | 22px | 64x64px
+⚡ | lightning | Consistent — 30 total entries badge | 22px | 64x64px
+
+## MINDFULNESS & EXERCISE CHIPS (mood-confirm screen + exercise screen)
+🙏 | gratitude hands | Gratitude exercise | 16px chip / 48px header | 80x80px
+✨ | sparkles | Joy Capture exercise | 16px chip / 48px header | 80x80px
+🌸 | cherry blossom | Savoring exercise | 16px chip / 48px header | 80x80px
+⚡ | lightning | Energy Boost exercise | 16px chip / 48px header | 80x80px
+🔍 | magnifier | Curiosity exercise | 16px chip / 48px header | 80x80px
+🧘 | meditating figure | Mindful Pause exercise | 16px chip / 48px header | 80x80px
+🫁 | lungs | Box Breathing exercise | 16px chip / 48px header | 80x80px
+🌱 | seedling | Grounding exercise | 16px chip / 48px header | 80x80px
+🫀 | heart | Body Scan exercise | 16px chip / 48px header | 80x80px
+💜 | purple heart | Self Compassion exercise | 16px chip / 48px header | 80x80px
+🧸 | teddy bear | Comfort List exercise | 16px chip / 48px header | 80x80px
+
+## SENTIMENT INDICATORS (note input chip after typing)
+😊 | happy face | Positive note tone | 16px | 48x48px
+😐 | neutral face | Neutral note tone | 16px | 48x48px
+😔 | sad face | Negative note tone | 16px | 48x48px
+
+## INSIGHT CARD ILLUSTRATIONS (home screen hero insight widget)
+🌞 | sun with face | "Welcome back" — positive streak | 30-38px | 96x96px
+🌻 | sunflower | "Glad you're here" — positive streak | 30-38px | 96x96px
+🌈 | rainbow | "Keep it going" — positive mood | 30-38px | 96x96px
+🌷 | tulip | "We're here with you" — heavy days | 30-38px | 96x96px
+🍃 | leaves | "One breath at a time" — hard days | 30-38px | 96x96px
+☁️ | cloud | "You showed up" — hard days | 30-38px | 96x96px
+🌸 | blossom | "You matter" — empty state | 30-38px | 96x96px
+🪷 | lotus | "A fresh page" — empty state | 30-38px | 96x96px
+✨ | sparkles | "Hi there" — empty state | 30-38px | 96x96px

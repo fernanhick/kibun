@@ -1,6 +1,6 @@
 import { View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors } from '@constants/theme';
+import { colors, spacing, radius } from '@constants/theme';
 
 interface Props {
   current: number;
@@ -41,12 +41,12 @@ export function OnboardingProgress({ current, total, tone = 'light', style }: Pr
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    gap: 3,
+    gap: spacing.xs,
     alignItems: 'center',
   },
   dot: {
-    width: 5,
-    height: 5,
-    borderRadius: 999,
+    width: spacing.xs,
+    height: spacing.xs,
+    borderRadius: radius.full,
   },
 });

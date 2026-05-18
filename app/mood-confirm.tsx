@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { MoodBubble } from '@components/MoodBubble';
-import { Shiba, ShibaVariant } from '@components/Shiba';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { MoodGroup } from '@constants/moods';
 import { colors, typography, spacing, radius } from '@constants/theme';
@@ -15,6 +14,7 @@ import { useMoodEntryStore, useSessionStore, useCustomMoodsStore } from '@store/
 import { getCheckInSlot } from '@lib/checkInSlot';
 import { analyseSentiment, getMoodSentimentAlignment } from '@lib/sentiment';
 import { getMoodDef } from '@lib/moodUtils';
+import { safeParseDateString, safeParseIsoDate } from '@lib/safeDate';
 import { supabase } from '@lib/supabase';
 import i18n from '@i18n/index';
 import { formatDate } from '@i18n/dateFormat';
@@ -22,19 +22,9 @@ import type { SentimentResult } from '@lib/sentiment';
 import type { SentimentLabel } from '@models/index';
 
 function formatBackdate(d: string) {
-  const [y, m, day] = d.split('-');
-  return formatDate(
-    new Date(parseInt(y), parseInt(m) - 1, parseInt(day), 12),
-    { month: 'long', day: 'numeric' },
-  );
+  const date = safeParseDateString(d);
+  return formatDate(date, { month: 'long', day: 'numeric' });
 }
-
-const SHIBA_MAP: Record<MoodGroup, ShibaVariant> = {
-  green: 'happy',
-  neutral: 'neutral',
-  'red-orange': 'sad',
-  blue: 'sad',
-};
 
 // Sentiment chip styling — labels resolved via i18n at render time.
 const SENTIMENT_STYLE: Record<SentimentLabel, { emoji: string; color: string }> = {
@@ -136,8 +126,6 @@ export default function MoodConfirmScreen() {
 
   if (!mood) return null;
 
-  const shibaVariant = SHIBA_MAP[mood.group];
-
   // Run ONNX sentiment inference 600 ms after the user stops typing.
   // Clears the chip immediately when the note is deleted.
   const handleNoteChange = (text: string) => {
@@ -173,7 +161,9 @@ export default function MoodConfirmScreen() {
     setSubmitting(true);
 
     const entryId = Crypto.randomUUID();
-    const entryDate = params.date ? new Date(`${params.date}T12:00:00`) : new Date();
+    const entryDate = params.date 
+      ? safeParseDateString(params.date) 
+      : new Date();
     const entry = {
       id: entryId,
       moodId: mood.id,
@@ -241,24 +231,12 @@ export default function MoodConfirmScreen() {
             <Ionicons name="close" size={22} color={colors.textInverse} />
           </Pressable>
         </View>
-        <View style={styles.heroBadge}>
-          <Ionicons name="sparkles" size={12} color={colors.textInverse} />
-          <Text style={styles.heroBadgeText}>
-            {params.date
-              ? t('moodConfirm.loggingFor', { date: formatBackdate(params.date) })
-              : t('moodConfirm.vibeToday')}
-          </Text>
-        </View>
         <View style={styles.moodDisplay}>
-          <MoodBubble mood={mood} size="lg" />
+          <MoodBubble mood={mood} size="xl" showLabel={false} showGradient={false} />
           <View style={styles.titleColumn}>
             <Text style={styles.moodLabel}>{mood.label}</Text>
             <Text style={styles.moodSubLabel}>{t('moodConfirm.moodSubLabel')}</Text>
           </View>
-        </View>
-
-        <View style={styles.shibaContainer}>
-          <Shiba variant={shibaVariant} size={130} />
         </View>
       </LinearGradient>
 
@@ -494,23 +472,40 @@ const dotStyles = StyleSheet.create({
   dotEmpty: {},
 });
 
+const cardShadow = {
+  shadowColor: '#000000',
+  shadowOpacity: 0.4,
+  shadowRadius: 1,
+  shadowOffset: { width: 0, height: 1 },
+  elevation: 6,
+};
+
+const heroShadow = {
+  shadowColor: '#000000',
+  shadowOpacity: 0.46,
+  shadowRadius: 1,
+  shadowOffset: { width: 0, height: 1 },
+  elevation: 7,
+};
+
 const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
-    gap: spacing.lg,
+    gap: spacing.md,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   heroCard: {
+    ...heroShadow,
     borderRadius: 28,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
-    gap: spacing.xs,
+    gap: 4,
   },
   heroBadge: {
     flexDirection: 'row',
@@ -536,6 +531,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: spacing.sm,
+    marginTop: spacing.xs,
   },
   titleColumn: {
     flex: 1,
@@ -556,12 +552,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   noteSection: {
-    gap: spacing.xs,
+    ...cardShadow,
+    gap: spacing.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderRadius: 22,
     padding: spacing.md,
-    borderWidth: 1.2,
-    borderColor: colors.pinkBorder,
+    borderWidth: 1.5,
+    borderColor: '#BFCDE2',
   },
   noteLabel: {
     fontSize: typography.sizes.sm,
@@ -582,15 +579,16 @@ const styles = StyleSheet.create({
     minHeight: 100,
   },
   actions: {
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   exerciseCard: {
+    ...cardShadow,
     backgroundColor: colors.surface,
     borderRadius: 20,
-    borderWidth: 1.2,
+    borderWidth: 1.5,
     padding: spacing.md,
     gap: spacing.sm,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   exerciseTitleRow: {
     flexDirection: 'row',
@@ -687,12 +685,13 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   efCard: {
+    ...cardShadow,
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderRadius: 22,
     padding: spacing.md,
-    borderWidth: 1.2,
-    borderColor: colors.pinkBorder,
-    gap: spacing.sm,
+    borderWidth: 1.5,
+    borderColor: '#BFCDE2',
+    gap: spacing.md,
   },
   efTitle: {
     fontSize: typography.sizes.sm,
@@ -717,6 +716,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: spacing.md,
     paddingVertical: 7,
+    marginTop: spacing.xs,
   },
   efTeaserText: {
     fontSize: typography.sizes.sm,

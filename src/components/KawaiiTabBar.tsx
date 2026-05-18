@@ -6,7 +6,7 @@ import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { colors, typography } from '@constants/theme';
+import { colors, typography, spacing } from '@constants/theme';
 import {
   KAWAII_TAB_BAR_HEIGHT,
   KAWAII_TAB_SAFE_BOTTOM_ANDROID,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: spacing.sm,
   },
   tabSide: {
     flex: 1,
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   tabButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 2,
+    gap: spacing.xs,
   },
   iconWrap: {
     alignItems: 'center',

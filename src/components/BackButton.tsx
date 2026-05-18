@@ -9,7 +9,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, radius } from '@constants/theme';
+import { colors, typography, radius, spacing } from '@constants/theme';
 
 type BackButtonVariant = 'light' | 'onHero';
 
@@ -73,10 +73,10 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
-    paddingVertical: 6,
-    paddingLeft: 6,
-    paddingRight: 12,
+    gap: spacing.xs,
+    paddingVertical: spacing.xs,
+    paddingLeft: spacing.xs,
+    paddingRight: spacing.sm,
     borderRadius: radius.full,
     borderWidth: 1,
     alignSelf: 'flex-start',

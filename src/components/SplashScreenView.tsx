@@ -13,7 +13,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { getMascotSource } from '@constants/mascotAnimations';
-import { typography } from '@constants/theme';
+import { typography, spacing } from '@constants/theme';
 
 interface SplashScreenViewProps {
   onFinish: () => void;
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   mascotWrapper: {
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   mascot: {
     width: 280,
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.display,
     fontFamily: typography.fonts.display,
     color: '#FFFFFF',
-    marginTop: 12,
+    marginTop: spacing[3],
     textShadowColor: 'rgba(255, 255, 255, 0.5)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 12,
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xl,
     fontFamily: typography.fonts.body,
     color: 'rgba(255, 255, 255, 0.7)',
-    marginTop: 6,
+    marginTop: spacing.xs,
     letterSpacing: 4,
   },
 });

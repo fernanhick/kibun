@@ -301,6 +301,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
   },
   heroCard: {
+    ...shadows.md,
     borderRadius: 28,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.xl,
@@ -405,6 +406,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   trialBox: {
+    ...shadows.md,
     borderRadius: 22,
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.md,

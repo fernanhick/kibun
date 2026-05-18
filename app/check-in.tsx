@@ -5,38 +5,23 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@components/index';
 import { MoodBubble } from '@components/MoodBubble';
-import { MOODS, MoodDefinition, MoodGroup } from '@constants/moods';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { MOODS, MoodDefinition } from '@constants/moods';
+import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 import { useSessionStore } from '@store/sessionStore';
 import { useCustomMoodsStore } from '@store/customMoodsStore';
 import { getMoodDef } from '@lib/moodUtils';
-import { getMoodGroupLabel } from '@lib/moodLabels';
+import { safeParseDateString } from '@lib/safeDate';
 import { formatDate } from '@i18n/dateFormat';
 
-const GROUP_ORDER: MoodGroup[] = ['green', 'neutral', 'red-orange', 'blue'];
-
-function groupMoods(): { group: MoodGroup; label: string; moods: MoodDefinition[] }[] {
-  return GROUP_ORDER.map((group) => ({
-    group,
-    label: getMoodGroupLabel(group),
-    moods: MOODS.filter((m) => m.group === group),
-  }));
-}
-
 function formatBackdate(d: string) {
-  const [y, m, day] = d.split('-');
-  // Noon timestamp avoids timezone-edge dates landing on the wrong day.
-  return formatDate(
-    new Date(parseInt(y), parseInt(m) - 1, parseInt(day), 12),
-    { month: 'long', day: 'numeric' },
-  );
+  const date = safeParseDateString(d);
+  return formatDate(date, { month: 'long', day: 'numeric' });
 }
 
 export default function MoodSelectionScreen() {
   const router = useRouter();
   const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{ date?: string }>();
-  const groups = groupMoods();
   const session = useSessionStore((s) => s.session);
   const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
   const customMoods = useCustomMoodsStore((s) => s.moods);
@@ -77,23 +62,18 @@ export default function MoodSelectionScreen() {
         </Text>
       </LinearGradient>
 
-      {groups.map(({ group, label, moods }) => (
-        <View key={group} style={styles.groupSection}>
-          <Text style={styles.groupLabel} accessibilityRole="header">
-            {t('checkIn.groupHeading', { group: label })}
-          </Text>
-          <View style={styles.bubbleRow}>
-            {moods.map((mood) => (
-              <MoodBubble
-                key={mood.id}
-                mood={mood}
-                size="md"
-                onPress={handleSelect}
-              />
-            ))}
-          </View>
+      <View style={styles.groupSection}>
+        <View style={styles.bubbleRow}>
+          {MOODS.map((mood) => (
+            <MoodBubble
+              key={mood.id}
+              mood={mood}
+              size="mdCompact"
+              onPress={handleSelect}
+            />
+          ))}
         </View>
-      ))}
+      </View>
 
       {/* Custom moods — Pro only */}
       {isPro && (
@@ -132,7 +112,7 @@ export default function MoodSelectionScreen() {
                   <MoodBubble
                     key={cm.id}
                     mood={def}
-                    size="md"
+                    size="mdCompact"
                     onPress={() => handleSelectCustom(cm.id)}
                   />
                 );
@@ -152,18 +132,19 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   heroCard: {
+    ...shadows.md,
     borderRadius: 24,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.md,
-    gap: spacing.xs,
-    marginBottom: spacing.sm,
+    gap: spacing.sm,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: spacing.sm,
   },
   title: {
     fontSize: typography.sizes.xxl,
@@ -175,6 +156,7 @@ const styles = StyleSheet.create({
     color: colors.sparkle,
   },
   groupSection: {
+    ...shadows.sm,
     gap: spacing.xs,
     backgroundColor: 'rgba(255,255,255,0.95)',
     borderRadius: 16,
@@ -193,12 +175,16 @@ const styles = StyleSheet.create({
   bubbleRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
     gap: 0,
+    rowGap: 0,
   },
   customGroupHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: spacing.sm,
   },
   manageLink: {
     fontSize: typography.sizes.sm,
@@ -209,7 +195,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    paddingVertical: 9,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderRadius: radius.full,
     borderWidth: 1.5,

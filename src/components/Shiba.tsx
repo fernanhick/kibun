@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, StyleProp, ViewStyle } from 'react-native';
+import { useSegments } from 'expo-router';
 import { Image } from 'expo-image';
 import { getMascotSource } from '@constants/mascotAnimations';
 import type { MascotVariant } from '@constants/mascotAnimations';
@@ -20,6 +21,7 @@ interface ShibaProps {
   loop?: boolean;
   autoPlay?: boolean;
   floating?: boolean;
+  hideOnTabRoutes?: boolean;
   onFinish?: () => void;
   style?: StyleProp<ViewStyle>;
 }
@@ -30,10 +32,18 @@ export function Shiba({
   loop = true,
   autoPlay = true,
   floating = false,
+  hideOnTabRoutes = true,
   onFinish,
   style,
 }: ShibaProps) {
+  const segments = useSegments();
   const floatAnim = useRef(new Animated.Value(0)).current;
+  const isTabRoute = segments[0] === '(tabs)';
+
+  // Keep only the tab-bar mascot as the primary animation on tab screens.
+  if (hideOnTabRoutes && isTabRoute) {
+    return null;
+  }
 
   useEffect(() => {
     if (!floating) return;

@@ -21,7 +21,7 @@ import {
   MANAGE_SUBSCRIPTION_URL_IOS,
   MANAGE_SUBSCRIPTION_URL_ANDROID,
 } from '@constants/legal';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
 const SLOT_KEYS: { slot: NotificationSlot; i18nKey: 'morning' | 'afternoon' | 'evening' | 'preSleep' }[] = [
   { slot: 'morning', i18nKey: 'morning' },
@@ -485,6 +485,7 @@ const styles = StyleSheet.create({
     color: colors.textInverse,
   },
   heroCard: {
+    ...shadows.md,
     borderRadius: 26,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
@@ -532,6 +533,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   section: {
+    ...shadows.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderRadius: radius.lg,
     borderWidth: 1.2,

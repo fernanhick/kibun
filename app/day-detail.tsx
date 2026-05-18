@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Screen, Card, MoodBubble, BackButton } from '@components/index';
 import { useMoodEntryStore, useLifeEventsStore } from '@store/index';
 import { getMoodLabel } from '@lib/moodLabels';
+import { safeParseDateString } from '@lib/safeDate';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { formatDate, formatTime as formatTimeFn } from '@i18n/dateFormat';
 import { colors, spacing, typography, radius } from '@constants/theme';
@@ -274,7 +275,8 @@ export default function DayDetailScreen() {
 }
 
 function formatDateHeading(isoDate: string): string {
-  return formatDate(new Date(`${isoDate}T12:00:00`), {
+  const date = safeParseDateString(isoDate);
+  return formatDate(date, {
     weekday: 'long',
     month: 'long',
     day: 'numeric',

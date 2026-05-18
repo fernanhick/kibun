@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -13,9 +13,15 @@ import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { Button, Card, InsightCard, MoodBubble, Screen } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
-import { colors, spacing, typography, radius } from '@constants/theme';
+import { colors, spacing, typography, radius, shadows } from '@constants/theme';
 import { ACHIEVEMENT_DEFINITIONS } from '@lib/achievements';
 import { fetchDailyInsight } from '@lib/dailyInsight';
+
+// Achievement image assets
+const ACHIEVEMENT_IMAGES: Record<string, number> = {
+  first_week: require('../../assets/emojis/7-day-streak.png'),
+  month_warrior: require('../../assets/emojis/month-warrior.png'),
+};
 import {
   generateLowMoodNudgeInsight,
   generatePositiveCorrelationInsight,
@@ -309,8 +315,12 @@ export default function HomeScreen() {
               contentContainerStyle={styles.achievementsRow}
             >
               {unlockedDefs.map((def) => (
-                <View key={def.id} style={styles.achievementBadge} accessibilityLabel={t('home.achievementA11y', { label: def.label, description: def.description })}>
-                  <Text style={styles.achievementEmoji}>{def.emoji}</Text>
+                <View key={def.id} style={styles.achievementWrapper} accessibilityLabel={t('home.achievementA11y', { label: def.label, description: def.description })}>
+                  {ACHIEVEMENT_IMAGES[def.id] ? (
+                    <Image source={ACHIEVEMENT_IMAGES[def.id]} style={styles.achievementFloatingImage} />
+                  ) : (
+                    <Text style={styles.achievementFloatingEmoji}>{def.emoji}</Text>
+                  )}
                   <Text style={styles.achievementLabel}>{def.label}</Text>
                 </View>
               ))}
@@ -443,7 +453,7 @@ export default function HomeScreen() {
                   <View style={styles.entryCard}>
                     <View style={styles.entryRow}>
                       {entryMood && (
-                        <MoodBubble mood={entryMood} size="sm" />
+                        <MoodBubble mood={entryMood} size="sm" showLabel={false} />
                       )}
                       <Text style={styles.entryMoodLabel}>
                         {moodLabel}
@@ -616,6 +626,7 @@ const habitStyles = StyleSheet.create({
     fontFamily: typography.fonts.ui,
   },
   habitRow: {
+    ...shadows.sm,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
@@ -697,6 +708,7 @@ function DailyInsightCard({ content, isLoading }: { content: string | null; isLo
 
 const insightStyles = StyleSheet.create({
   wrapper: {
+    ...shadows.sm,
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
     backgroundColor: colors.pinkLight,
@@ -764,6 +776,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   heroCard: {
+    ...shadows.md,
     borderRadius: 28,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.32)',
@@ -820,21 +833,21 @@ const styles = StyleSheet.create({
   },
   achievementsRow: {
     gap: spacing.sm,
-    paddingRight: spacing.md,
-  },
-  achievementBadge: {
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: colors.surface,
-    borderWidth: 1.2,
-    borderColor: '#DCE9FF',
-    borderRadius: 16,
-    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
-    minWidth: 72,
+    paddingVertical: 6,
   },
-  achievementEmoji: {
-    fontSize: 22,
+  achievementWrapper: {
+    alignItems: 'center',
+    gap: 6,
+  },
+  achievementFloatingEmoji: {
+    fontSize: 44,
+    textAlign: 'center',
+  },
+  achievementFloatingImage: {
+    width: 72,
+    height: 72,
+    resizeMode: 'contain',
   },
   achievementLabel: {
     fontSize: typography.sizes.xs,
@@ -857,6 +870,7 @@ const styles = StyleSheet.create({
     color: '#B07000',
   },
   emptyState: {
+    ...shadows.sm,
     backgroundColor: '#FFF6EC',
     borderRadius: 20,
     borderWidth: 1,
@@ -890,6 +904,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   emptyTipRow: {
+    ...shadows.sm,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
@@ -932,6 +947,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   entryCard: {
+    ...shadows.sm,
     borderWidth: 1,
     borderColor: '#EFEAFF',
     borderRadius: 14,

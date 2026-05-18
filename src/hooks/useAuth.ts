@@ -5,6 +5,7 @@ import { useSessionStore, useMoodEntryStore } from '@store/index';
 import { useAchievementsStore } from '@store/achievementsStore';
 import { refreshSubscriptionStatus, loginPurchases, logoutPurchases } from '@lib/revenuecat';
 import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
+import { safeParseIsoDate } from '@lib/safeDate';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
@@ -40,17 +41,21 @@ async function syncMoodEntriesForUser(userId: string): Promise<void> {
 
   // Replace local entries (which may belong to a previous user) with remote data
   useMoodEntryStore.getState().clearEntries();
-  useMoodEntryStore.getState().mergeRemoteEntries((data ?? []).map((row) => ({
-    id: row.id,
-    moodId: row.mood,
-    note: row.note,
-    slot: row.check_in_slot,
-    loggedAt: row.logged_at,
-    sentimentLabel: row.sentiment_label ?? undefined,
-    sentimentScore: row.sentiment_score ?? undefined,
-    journalPrompt: row.journal_prompt ?? undefined,
-    journalResponse: row.journal_response ?? undefined,
-  })));
+  useMoodEntryStore.getState().mergeRemoteEntries((data ?? []).map((row) => {
+    // Validate and sanitize loggedAt timestamp
+    const loggedAt = safeParseIsoDate(row.logged_at).toISOString();
+    return {
+      id: row.id,
+      moodId: row.mood,
+      note: row.note,
+      slot: row.check_in_slot,
+      loggedAt,
+      sentimentLabel: row.sentiment_label ?? undefined,
+      sentimentScore: row.sentiment_score ?? undefined,
+      journalPrompt: row.journal_prompt ?? undefined,
+      journalResponse: row.journal_response ?? undefined,
+    };
+  }));
 }
 
 /**

@@ -72,6 +72,13 @@ export function Screen({
     KAWAII_TAB_BAR_HEIGHT * tabScale + KAWAII_TAB_CURVE_DEPTH + KAWAII_TAB_MASCOT_OVERLAP * tabScale;
   const tabBottomInset = isTabRoute ? tabVisualObstruction + tabSafeBottom : 0;
   const flattenedContentStyle = StyleSheet.flatten(contentContainerStyle);
+  const {
+    paddingBottom: _contentPaddingBottom,
+    paddingHorizontal: _contentPaddingHorizontal,
+    paddingLeft: _contentPaddingLeft,
+    paddingRight: _contentPaddingRight,
+    ...innerContentStyle
+  } = flattenedContentStyle ?? {};
   const requestedPaddingBottom = flattenedContentStyle?.paddingBottom;
   const minPaddingBottom = styles.scrollContent.paddingBottom + tabBottomInset;
   const resolvedPaddingBottom =
@@ -165,12 +172,11 @@ export function Screen({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             styles.scrollContent,
-            contentContainerStyle,
             { paddingBottom: resolvedPaddingBottom, paddingHorizontal: 0 },
           ]}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={innerWrapperStyle}>{children}</View>
+          <View style={[innerWrapperStyle, innerContentStyle]}>{children}</View>
         </ScrollView>
       ) : (
         <View

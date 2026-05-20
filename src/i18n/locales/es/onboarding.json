@@ -173,5 +173,15 @@
       "evening": { "label": "Noche", "hint": "alrededor de las 7pm" },
       "pre-sleep": { "label": "Antes de dormir", "hint": "alrededor de las 10pm" }
     }
+  },
+  "analyzing": {
+    "title": "Personalizando tu Kibun",
+    "subtitle": "Ajustando la app a lo que nos contaste.",
+    "steps": {
+      "profile": "Leyendo tu perfil",
+      "reminders": "Alineando tus recordatorios",
+      "insights": "Preparando tus descubrimientos",
+      "plan": "Diseñando tu plan diario"
+    }
   }
 }

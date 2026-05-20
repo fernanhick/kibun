@@ -83,7 +83,7 @@ export default function NotificationPermissionScreen() {
     } catch {
       // Permission API failure — proceed to main app regardless
     }
-    router.replace('/(tabs)');
+    router.replace('/(onboarding)/analyzing');
   };
 
   const handleSkip = () => {
@@ -96,7 +96,7 @@ export default function NotificationPermissionScreen() {
 
     setComplete();
     resetOnboarding();
-    router.replace('/(tabs)');
+    router.replace('/(onboarding)/analyzing');
   };
 
   return (

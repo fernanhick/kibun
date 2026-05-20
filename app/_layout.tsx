@@ -12,6 +12,7 @@ import * as Notifications from 'expo-notifications';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
+import { ThemeProvider } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
 import { PersistentMascotOverlay } from '@components/PersistentMascotOverlay';
@@ -281,7 +282,8 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.appShell}>
       <SafeAreaProvider>
         <ErrorBoundary>
-          <View style={styles.appShell}>
+          <ThemeProvider>
+            <View style={styles.appShell}>
             <Stack initialRouteName="(tabs)">
               <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -303,6 +305,7 @@ export default function RootLayout() {
             <PersistentMascotOverlay />
             <ReviewPromptModal />
           </View>
+          </ThemeProvider>
         </ErrorBoundary>
       </SafeAreaProvider>
     </GestureHandlerRootView>

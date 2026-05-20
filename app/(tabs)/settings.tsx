@@ -11,7 +11,7 @@ import { SpringPressable } from '@components/SpringPressable';
 import { useScreenScroll } from '@hooks/useScreenScroll';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
-import { useUiPrefsStore, type LanguagePref } from '@store/uiPrefsStore';
+import { useUiPrefsStore, type LanguagePref, type ThemePref } from '@store/uiPrefsStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
 import { restorePurchases } from '@lib/revenuecat';
 import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
@@ -33,6 +33,7 @@ const SLOT_KEYS: { slot: NotificationSlot; i18nKey: 'morning' | 'afternoon' | 'e
 ];
 
 const LANGUAGE_OPTIONS: LanguagePref[] = ['system', 'en', 'es'];
+const THEME_OPTIONS: ThemePref[] = ['system', 'light', 'dark'];
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -46,6 +47,8 @@ export default function SettingsScreen() {
 
   const language = useUiPrefsStore((s) => s.language);
   const setLanguage = useUiPrefsStore((s) => s.setLanguage);
+  const themePreference = useUiPrefsStore((s) => s.themePreference);
+  const setThemePreference = useUiPrefsStore((s) => s.setThemePreference);
 
   const slotRows = SLOT_KEYS.map(({ slot, i18nKey }) => ({
     slot,
@@ -370,6 +373,38 @@ export default function SettingsScreen() {
           </View>
         </SpringPressable>
       )}
+
+      {/* ── Appearance picker ────────────────────────────────────────── */}
+      <Text style={styles.sectionHeader} accessibilityRole="header">
+        {t('settings.sections.appearance')}
+      </Text>
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <View style={styles.rowText}>
+            <Text style={styles.rowLabel}>{t('settings.appearance.label')}</Text>
+            <Text style={styles.rowHint}>{t('settings.appearance.hint')}</Text>
+          </View>
+        </View>
+        {THEME_OPTIONS.map((option) => {
+          const isSelected = themePreference === option;
+          const optionLabel = t(`settings.appearance.options.${option}`);
+          return (
+            <SpringPressable
+              key={option}
+              style={styles.row}
+              onPress={() => setThemePreference(option)}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: isSelected }}
+              accessibilityLabel={t('settings.appearance.optionA11y', { label: optionLabel })}
+            >
+              <Text style={styles.rowLabel}>{optionLabel}</Text>
+              {isSelected && (
+                <Ionicons name="checkmark" size={20} color={colors.accent} />
+              )}
+            </SpringPressable>
+          );
+        })}
+      </View>
 
       {/* ── Language picker ──────────────────────────────────────────── */}
       <Text style={styles.sectionHeader} accessibilityRole="header">

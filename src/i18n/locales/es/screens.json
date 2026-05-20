@@ -638,6 +638,7 @@
       "customTimes": "HORAS PERSONALIZADAS",
       "streakReminder": "AVISO DE RACHA",
       "smartTiming": "HORARIO INTELIGENTE",
+      "appearance": "APARIENCIA",
       "language": "IDIOMA",
       "about": "ACERCA DE"
     },
@@ -684,6 +685,16 @@
       "lockedHint": "Aprende cuándo te registras y ajusta los recordatorios. Función Pro.",
       "proBadge": "Pro",
       "lockedA11y": "Mejora a Pro para desbloquear el horario inteligente"
+    },
+    "appearance": {
+      "label": "Tema",
+      "hint": "Sigue al dispositivo cuando está en modo sistema",
+      "options": {
+        "system": "Predeterminado del sistema",
+        "light": "Claro",
+        "dark": "Oscuro"
+      },
+      "optionA11y": "Cambiar tema a {{label}}"
     },
     "language": {
       "label": "Idioma de la app",

@@ -638,6 +638,7 @@
       "customTimes": "CUSTOM TIMES",
       "streakReminder": "STREAK REMINDER",
       "smartTiming": "SMART TIMING",
+      "appearance": "APPEARANCE",
       "language": "LANGUAGE",
       "about": "ABOUT"
     },
@@ -684,6 +685,16 @@
       "lockedHint": "Learns when you actually check in and adjusts reminder times. Pro feature.",
       "proBadge": "Pro",
       "lockedA11y": "Upgrade to Pro to unlock Smart Timing"
+    },
+    "appearance": {
+      "label": "Theme",
+      "hint": "Follows your device when set to system",
+      "options": {
+        "system": "System default",
+        "light": "Light",
+        "dark": "Dark"
+      },
+      "optionA11y": "Set theme to {{label}}"
     },
     "language": {
       "label": "App language",

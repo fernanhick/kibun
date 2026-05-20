@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
+import { BlurView } from 'expo-blur';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { colors, typography, spacing } from '@constants/theme';
 import {
@@ -16,6 +17,7 @@ import {
 import { SCREEN_MAX_WIDTH } from '@constants/breakpoints';
 import { getMascotSource } from '@constants/mascotAnimations';
 import { useResponsive } from '@hooks/useResponsive';
+import { useReducedMotion } from '@hooks/useReducedMotion';
 import { useMoodEntryStore } from '@store/index';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -68,16 +70,17 @@ function TabIcon({
   metrics: TabMetrics;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
+  const reducedMotion = useReducedMotion();
   const icons = TAB_ICONS[routeName];
 
   useEffect(() => {
-    if (focused) {
+    if (focused && !reducedMotion) {
       Animated.sequence([
         Animated.spring(scale, { toValue: 1.25, useNativeDriver: true, speed: 70, bounciness: 16 }),
         Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 45, bounciness: 10 }),
       ]).start();
     }
-  }, [focused, scale]);
+  }, [focused, scale, reducedMotion]);
 
   if (!icons) return null;
 
@@ -103,7 +106,11 @@ function TabIcon({
           color={focused ? '#fff' : '#fff'}
         />
       </Animated.View>
-      <Text style={[styles.tabLabel, { fontSize: metrics.labelFont }, focused && { color: icons.accent }]}>
+      <Text
+        style={[styles.tabLabel, { fontSize: metrics.labelFont }, focused && { color: icons.accent }]}
+        maxFontSizeMultiplier={1.2}
+        numberOfLines={1}
+      >
         {label}
       </Text>
     </Pressable>
@@ -172,9 +179,29 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
   // On wide screens (tablets, landscape) clamp the tab row so icons stay
   // thumb-reachable and the mascot/notch geometry remains valid. Below the
   // clamp width this is a no-op.
+  //
+  // The Liquid Glass shelf sits behind the tabs and extends through the safe
+  // area to the screen edge. Rounded top corners + frosted blur + tonal
+  // overlay. On iOS BlurView renders true native blur; on Android the strong
+  // overlay carries the look until `expo prebuild --clean` lands the native
+  // module (after which the blur ramps in for free).
+  const glassHeight = tabBarHeight + safeBottom + 8;
+  const overlayBg = Platform.OS === 'ios' ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.85)';
   return (
-    <View style={[styles.container, { paddingBottom: safeBottom }]} pointerEvents="box-none">
-      <View style={styles.tabRowClamp}>
+    <View style={styles.container} pointerEvents="box-none">
+      <View
+        pointerEvents="none"
+        style={[styles.glassShelf, { height: glassHeight }]}
+      >
+        <BlurView
+          intensity={Platform.OS === 'ios' ? 50 : 36}
+          tint="light"
+          style={StyleSheet.absoluteFill}
+        />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: overlayBg }]} />
+        <View style={styles.glassHairline} />
+      </View>
+      <View style={[styles.tabRowClamp, { paddingBottom: safeBottom }]}>
         <View style={[styles.tabRow, { height: tabBarHeight }]}>
           <View style={styles.tabSide}>
             {leftTabs.map((r, i) => renderTab(r, i))}
@@ -213,6 +240,23 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+  },
+  glassShelf: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    overflow: 'hidden',
+  },
+  glassHairline: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(15,23,42,0.06)',
   },
   tabRowClamp: {
     width: '100%',

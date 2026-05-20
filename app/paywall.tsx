@@ -316,7 +316,8 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
     textAlign: 'center',
-    letterSpacing: -0.5,
+    letterSpacing: -1,
+    lineHeight: 44,
   },
   subtitle: {
     fontSize: typography.sizes.md,
@@ -326,8 +327,6 @@ const styles = StyleSheet.create({
   },
   featureCard: {
     backgroundColor: colors.surface,
-    borderWidth: 1.5,
-    borderColor: PINK_BORDER,
     borderRadius: 24,
     padding: spacing.md,
     gap: spacing.sm,

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, Switch, Pressable, TextInput, StyleSheet, Linking, Platform } from 'react-native';
+import { View, Text, Switch, TextInput, StyleSheet, Linking, Platform } from 'react-native';
 import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Notifications from 'expo-notifications';
@@ -7,6 +7,7 @@ import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, SparkleOverlay, Shiba } from '@components/index';
+import { SpringPressable } from '@components/SpringPressable';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
 import { useUiPrefsStore, type LanguagePref } from '@store/uiPrefsStore';
@@ -168,7 +169,7 @@ export default function SettingsScreen() {
         {t('settings.sections.account')}
       </Text>
       <View style={styles.section}>
-        <Pressable
+        <SpringPressable
           style={styles.row}
           onPress={() => router.push('/account' as Href)}
           accessibilityRole="button"
@@ -181,12 +182,12 @@ export default function SettingsScreen() {
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
-        </Pressable>
+        </SpringPressable>
       </View>
 
       {/* ── Notification permission banner ──────────────────────────── */}
       {isDisabled && (
-        <Pressable
+        <SpringPressable
           style={styles.permissionBanner}
           onPress={() => Linking.openSettings()}
           accessibilityRole="button"
@@ -194,7 +195,7 @@ export default function SettingsScreen() {
         >
           <Text style={styles.bannerText}>{t('settings.permissionBanner.text')}</Text>
           <Text style={styles.bannerLink}>{t('settings.permissionBanner.link')}</Text>
-        </Pressable>
+        </SpringPressable>
       )}
 
       {/* ── Notification sections ────────────────────────────────────── */}
@@ -219,8 +220,9 @@ export default function SettingsScreen() {
                 onValueChange={() => handleSlotToggle(row.slot)}
                 disabled={isDisabled}
                 trackColor={{ false: colors.border, true: colors.accent }}
+                accessibilityRole="switch"
                 accessibilityLabel={t('settings.reminders.rowA11y', { label: row.label, hint: row.hint })}
-                accessibilityState={{ disabled: isDisabled }}
+                accessibilityState={{ checked: isOn, disabled: isDisabled }}
               />
             </View>
           );
@@ -286,8 +288,9 @@ export default function SettingsScreen() {
             onValueChange={handleStreakToggle}
             disabled={isDisabled}
             trackColor={{ false: colors.border, true: colors.accent }}
+            accessibilityRole="switch"
             accessibilityLabel={t('settings.streak.a11y')}
-            accessibilityState={{ disabled: isDisabled }}
+            accessibilityState={{ checked: streakNudgeEnabled, disabled: isDisabled }}
           />
         </View>
       </View>
@@ -312,8 +315,9 @@ export default function SettingsScreen() {
               onValueChange={(v) => { toggleAdaptive(v); reschedule(); }}
               disabled={isDisabled}
               trackColor={{ false: colors.border, true: colors.accent }}
+              accessibilityRole="switch"
               accessibilityLabel={t('settings.smartTiming.a11y')}
-              accessibilityState={{ disabled: isDisabled }}
+              accessibilityState={{ checked: adaptiveEnabled, disabled: isDisabled }}
             />
           </View>
           {adaptiveEnabled && slotRows.filter((r) => selectedSlots.includes(r.slot)).map((row) => {
@@ -347,7 +351,7 @@ export default function SettingsScreen() {
           )}
         </View>
       ) : (
-        <Pressable
+        <SpringPressable
           style={styles.section}
           onPress={() => router.push('/paywall' as any)}
           accessibilityRole="button"
@@ -362,7 +366,7 @@ export default function SettingsScreen() {
               <Text style={styles.proLockBadgeText}>{t('settings.smartTiming.proBadge')}</Text>
             </View>
           </View>
-        </Pressable>
+        </SpringPressable>
       )}
 
       {/* ── Language picker ──────────────────────────────────────────── */}
@@ -380,7 +384,7 @@ export default function SettingsScreen() {
           const isSelected = language === option;
           const optionLabel = t(`settings.language.options.${option}`);
           return (
-            <Pressable
+            <SpringPressable
               key={option}
               style={styles.row}
               onPress={() => setLanguage(option)}
@@ -392,7 +396,7 @@ export default function SettingsScreen() {
               {isSelected && (
                 <Ionicons name="checkmark" size={20} color={colors.accent} />
               )}
-            </Pressable>
+            </SpringPressable>
           );
         })}
       </View>
@@ -406,7 +410,7 @@ export default function SettingsScreen() {
           <Text style={styles.rowLabel}>{t('settings.about.version')}</Text>
           <Text style={styles.rowHint}>{appVersion}</Text>
         </View>
-        <Pressable
+        <SpringPressable
           style={styles.row}
           onPress={handleRestore}
           accessibilityRole="button"
@@ -427,8 +431,8 @@ export default function SettingsScreen() {
             size={20}
             color={colors.textSecondary}
           />
-        </Pressable>
-        <Pressable
+        </SpringPressable>
+        <SpringPressable
           style={styles.row}
           onPress={handleManageSubscription}
           accessibilityRole="link"
@@ -436,8 +440,8 @@ export default function SettingsScreen() {
         >
           <Text style={styles.rowLabel}>{t('settings.about.manageSubscription')}</Text>
           <Ionicons name="open-outline" size={20} color={colors.textSecondary} />
-        </Pressable>
-        <Pressable
+        </SpringPressable>
+        <SpringPressable
           style={styles.row}
           onPress={() => requestStoreReviewDirect('settings')}
           accessibilityRole="button"
@@ -445,8 +449,8 @@ export default function SettingsScreen() {
         >
           <Text style={styles.rowLabel}>{t('settings.about.rate')}</Text>
           <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
-        </Pressable>
-        <Pressable
+        </SpringPressable>
+        <SpringPressable
           style={styles.row}
           onPress={() => openSupportFeedback('settings')}
           accessibilityRole="button"
@@ -454,8 +458,8 @@ export default function SettingsScreen() {
         >
           <Text style={styles.rowLabel}>{t('settings.about.feedback')}</Text>
           <Ionicons name="mail-outline" size={20} color={colors.textSecondary} />
-        </Pressable>
-        <Pressable
+        </SpringPressable>
+        <SpringPressable
           style={styles.row}
           onPress={() => Linking.openURL(TERMS_OF_USE_URL)}
           accessibilityRole="link"
@@ -463,8 +467,8 @@ export default function SettingsScreen() {
         >
           <Text style={styles.rowLabel}>{t('settings.about.terms')}</Text>
           <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
-        </Pressable>
-        <Pressable
+        </SpringPressable>
+        <SpringPressable
           style={styles.row}
           onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
           accessibilityRole="link"
@@ -472,7 +476,7 @@ export default function SettingsScreen() {
         >
           <Text style={styles.rowLabel}>{t('settings.about.privacy')}</Text>
           <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
-        </Pressable>
+        </SpringPressable>
       </View>
     </Screen>
   );
@@ -483,6 +487,8 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xxl,
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
+    letterSpacing: -0.6,
+    lineHeight: 34,
   },
   heroCard: {
     ...shadows.md,
@@ -536,8 +542,6 @@ const styles = StyleSheet.create({
     ...shadows.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderRadius: radius.lg,
-    borderWidth: 1.2,
-    borderColor: '#DCE9FF',
     overflow: 'hidden',
   },
   row: {

@@ -12,6 +12,7 @@ import { useHabitsStore } from '@store/habitsStore';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { Button, Card, InsightCard, MoodBubble, Screen } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
+import { SpringPressable } from '@components/SpringPressable';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { colors, spacing, typography, radius, shadows } from '@constants/theme';
 import { ACHIEVEMENT_DEFINITIONS } from '@lib/achievements';
@@ -230,7 +231,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {showBanner && (
         <View style={[styles.anonBanner, { paddingTop: insets.top + spacing.sm }]}>
-          <Pressable
+          <SpringPressable
             style={styles.anonBannerContent}
             onPress={() => router.push('/register')}
             accessibilityRole="button"
@@ -241,7 +242,7 @@ export default function HomeScreen() {
               {t('home.anonBanner.text')}{' '}
               <Text style={styles.anonBannerLink}>{t('home.anonBanner.link')}</Text>
             </Text>
-          </Pressable>
+          </SpringPressable>
           <Pressable
             onPress={dismissBanner}
             accessibilityRole="button"
@@ -365,7 +366,7 @@ export default function HomeScreen() {
               </Text>
 
               <View style={styles.emptyTips}>
-                <Pressable
+                <SpringPressable
                   style={[
                     styles.emptyTipRow,
                     { paddingVertical: emptySizes.rowPadV, paddingHorizontal: emptySizes.rowPadH },
@@ -400,9 +401,9 @@ export default function HomeScreen() {
                     </Text>
                   </View>
                   <Ionicons name="chevron-forward" size={emptySizes.chevronSize} color={colors.textDisabled} />
-                </Pressable>
+                </SpringPressable>
 
-                <Pressable
+                <SpringPressable
                   style={[
                     styles.emptyTipRow,
                     { paddingVertical: emptySizes.rowPadV, paddingHorizontal: emptySizes.rowPadH },
@@ -437,7 +438,7 @@ export default function HomeScreen() {
                     </Text>
                   </View>
                   <Ionicons name="chevron-forward" size={emptySizes.chevronSize} color={colors.textDisabled} />
-                </Pressable>
+                </SpringPressable>
               </View>
 
               <Text style={[styles.emptyAffirmation, { fontSize: emptySizes.affirmation }]}>
@@ -449,7 +450,7 @@ export default function HomeScreen() {
               const entryMood = MOOD_MAP[entry.moodId as MoodId];
               const moodLabel = getMoodLabel(entry.moodId);
               return (
-                <Pressable
+                <SpringPressable
                   key={entry.id}
                   onPress={() => router.push(`/day-detail?date=${today}` as Href)}
                   accessibilityLabel={t('home.entryA11y', { mood: moodLabel, time: formatTime(entry.loggedAt) })}
@@ -474,7 +475,7 @@ export default function HomeScreen() {
                       </View>
                     </View>
                   </View>
-                </Pressable>
+                </SpringPressable>
               );
             })
           )}
@@ -500,7 +501,7 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
   const { t } = useTranslation('screens');
   if (habits.length === 0) {
     return (
-      <Pressable
+      <SpringPressable
         style={habitStyles.emptyRow}
         onPress={onManage}
         accessibilityRole="button"
@@ -508,7 +509,7 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
       >
         <Ionicons name="add-circle-outline" size={16} color={colors.primary} />
         <Text style={habitStyles.emptyText}>{t('home.habitsTrackDaily')}</Text>
-      </Pressable>
+      </SpringPressable>
     );
   }
 
@@ -536,7 +537,7 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
         if (h.trackingType === 'boolean') {
           const done = log?.value === 1;
           return (
-            <Pressable
+            <SpringPressable
               key={h.id}
               style={[habitStyles.habitRow, done && habitStyles.habitRowDone]}
               onPress={() => done ? onClear(h.id, today) : onLog(h.id, today, 1)}
@@ -544,12 +545,18 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
               accessibilityState={{ checked: done }}
               accessibilityLabel={done ? t('home.habitDoneA11y', { name: h.name }) : t('home.habitNotDoneA11y', { name: h.name })}
             >
-              <Text style={habitStyles.habitIcon}>{h.icon}</Text>
-              <Text style={[habitStyles.habitName, done && habitStyles.habitNameDone]}>{h.name}</Text>
+              <Text style={habitStyles.habitIcon} maxFontSizeMultiplier={1.3}>{h.icon}</Text>
+              <Text
+                style={[habitStyles.habitName, done && habitStyles.habitNameDone]}
+                maxFontSizeMultiplier={1.3}
+                numberOfLines={1}
+              >
+                {h.name}
+              </Text>
               <View style={[habitStyles.checkBox, done && habitStyles.checkBoxDone]}>
                 {done && <Ionicons name="checkmark" size={14} color={colors.textInverse} />}
               </View>
-            </Pressable>
+            </SpringPressable>
           );
         }
         // scale habit: 1–5 dots
@@ -636,14 +643,11 @@ const habitStyles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
-    borderWidth: 1.2,
-    borderColor: '#DCE9FF',
     borderRadius: radius.md,
     paddingVertical: 10,
     paddingHorizontal: spacing.md,
   },
   habitRowDone: {
-    borderColor: '#A5D6A7',
     backgroundColor: '#F1FFF2',
   },
   habitIcon: {
@@ -717,8 +721,6 @@ const insightStyles = StyleSheet.create({
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
     backgroundColor: colors.pinkLight,
-    borderWidth: 1,
-    borderColor: colors.pinkBorder,
     borderRadius: 20,
     padding: spacing.md,
     gap: spacing.xs,
@@ -799,6 +801,8 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xxl,
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
+    letterSpacing: -0.6,
+    lineHeight: 34,
   },
   greetingSub: {
     fontSize: typography.sizes.body,
@@ -878,8 +882,6 @@ const styles = StyleSheet.create({
     ...shadows.sm,
     backgroundColor: '#FFF6EC',
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#FFE4BF',
     padding: spacing.md,
     gap: spacing.sm,
   },
@@ -914,8 +916,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     backgroundColor: 'rgba(255,255,255,0.85)',
-    borderWidth: 1,
-    borderColor: '#FFE4BF',
     borderRadius: radius.md,
     paddingVertical: 12,
     paddingHorizontal: spacing.md,
@@ -953,8 +953,6 @@ const styles = StyleSheet.create({
   },
   entryCard: {
     ...shadows.sm,
-    borderWidth: 1,
-    borderColor: '#EFEAFF',
     borderRadius: 14,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: spacing.sm,

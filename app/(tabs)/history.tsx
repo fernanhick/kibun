@@ -3,7 +3,7 @@ import { View, Text, Pressable, Share, StyleSheet, type LayoutChangeEvent } from
 import { useRouter, Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen, Shiba } from '@components/index';
+import { Screen, Shiba, AnimatedNumber } from '@components/index';
 import { useMoodEntryStore, useSessionStore, useLifeEventsStore } from '@store/index';
 import { useResponsive } from '@hooks/useResponsive';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
@@ -468,12 +468,20 @@ function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
 
       <View style={styles.statsRow}>
         <View style={styles.statCell}>
-          <Text style={[styles.statValue, { fontSize: r.statValue }]}>{total}</Text>
+          <AnimatedNumber
+            value={total}
+            style={[styles.statValue, { fontSize: r.statValue }]}
+            maxFontSizeMultiplier={1.2}
+          />
           <Text style={[styles.statLabel, { fontSize: r.statLabel }]}>{t('history.snapshot.moodsLogged')}</Text>
         </View>
         <View style={[styles.statDivider, { height: r.statDividerHeight }]} />
         <View style={styles.statCell}>
-          <Text style={[styles.statValue, { fontSize: r.statValue }]}>{activeDays}</Text>
+          <AnimatedNumber
+            value={activeDays}
+            style={[styles.statValue, { fontSize: r.statValue }]}
+            maxFontSizeMultiplier={1.2}
+          />
           <Text style={[styles.statLabel, { fontSize: r.statLabel }]}>{t('history.snapshot.activeDays')}</Text>
         </View>
         {topMood && topMoodId && (
@@ -602,8 +610,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     paddingBottom: spacing.xs,
     paddingHorizontal: spacing.sm,
-    borderWidth: 1.2,
-    borderColor: '#DCE9FF',
     backgroundColor: 'rgba(255,255,255,0.95)',
   },
   headerBadge: {

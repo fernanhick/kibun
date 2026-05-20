@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Pressable,
   StyleSheet,
   Text,
   type StyleProp,
@@ -10,6 +9,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, radius, spacing } from '@constants/theme';
+import { SpringPressable } from '@components/SpringPressable';
 
 type BackButtonVariant = 'light' | 'onHero';
 
@@ -51,21 +51,21 @@ export function BackButton({
   const border = isHero ? 'rgba(255,255,255,0.4)' : colors.border;
 
   return (
-    <Pressable
+    <SpringPressable
       onPress={handlePress}
       accessibilityRole="button"
       accessibilityLabel={t('components.backButton.a11y', { label: resolvedLabel.toLowerCase() })}
-      hitSlop={8}
-      style={({ pressed }) => [
+      hitSlop={12}
+      pressedScale={0.94}
+      style={[
         styles.button,
         { backgroundColor: bg, borderColor: border },
-        pressed && { opacity: 0.7 },
         style,
       ]}
     >
       <Ionicons name="chevron-back" size={18} color={fg} />
       <Text style={[styles.label, { color: fg }]}>{resolvedLabel}</Text>
-    </Pressable>
+    </SpringPressable>
   );
 }
 

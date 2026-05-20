@@ -27,8 +27,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surfaceElevated,
     borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
     ...shadows.md,
   },
 });

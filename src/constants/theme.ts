@@ -117,10 +117,32 @@ export const radius = {
   bubble: 9999,
 } as const;
 
+// ─── Motion ───────────────────────────────────────────────────────────────────
+// Spring presets feed react-native-reanimated's `withSpring(value, preset)`.
+// Timing values are in ms — use for `withTiming` / fade durations.
+// Scale values are press-state targets for SpringPressable.
+export const motion = {
+  spring: {
+    gentle: { damping: 18, stiffness: 120 },
+    snappy: { damping: 14, stiffness: 180 },
+    bouncy: { damping: 10, stiffness: 220 },
+  },
+  timing: {
+    fast: 180,
+    medium: 280,
+    slow: 420,
+  },
+  scale: {
+    pressed: 0.96,
+    pressedSmall: 0.94,
+  },
+} as const;
+
 // ─── Shadows (cross-platform) ─────────────────────────────────────────────────
 // iOS uses shadowColor/shadowOffset/shadowOpacity/shadowRadius.
 // Android uses elevation.
-// Both sets of props are included — React Native applies each on the correct platform.
+// Tiers follow modern soft-elevation: wider radii + larger y-offsets at very
+// low opacities. Each tier roughly doubles perceived lift over the previous.
 export const shadows = {
   none: {
     shadowColor: 'transparent',
@@ -131,23 +153,23 @@ export const shadows = {
   },
   sm: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.32,
-    shadowRadius: 1,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
   },
   md: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.38,
-    shadowRadius: 1.5,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.10,
+    shadowRadius: 18,
     elevation: 6,
   },
   lg: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.44,
-    shadowRadius: 2,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.14,
+    shadowRadius: 24,
+    elevation: 9,
   },
 } as const;

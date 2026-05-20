@@ -150,6 +150,8 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xxl,
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
+    letterSpacing: -0.6,
+    lineHeight: 34,
   },
   subtitle: {
     fontSize: typography.sizes.body,
@@ -162,8 +164,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.pinkBorder,
   },
   groupLabel: {
     fontSize: typography.sizes.xs,

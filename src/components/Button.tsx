@@ -1,14 +1,13 @@
 import React from 'react';
 import {
-  Pressable,
   Text,
   ActivityIndicator,
   View,
   StyleSheet,
-  type PressableProps,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
+import { SpringPressable } from '@components/SpringPressable';
 
 interface ButtonProps {
   label: string;
@@ -55,12 +54,10 @@ export function Button({
       : ([colors.primary, colors.skyEnd] as const);
 
   return (
-    <Pressable
+    <SpringPressable
       onPress={isBlocked ? undefined : onPress}
-      style={({ pressed }) => [
-        containerStyle,
-        pressed && !isBlocked && styles.pressed,
-      ]}
+      disabled={isBlocked}
+      style={containerStyle}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityHint={accessibilityHint}
@@ -91,7 +88,7 @@ export function Button({
           </Text>
         )
       )}
-    </Pressable>
+    </SpringPressable>
   );
 }
 
@@ -171,9 +168,6 @@ const styles = StyleSheet.create({
   },
   blocked: {
     opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.85,
   },
   // ─── Labels ─────────────────────────────────────────────────────────────
   label: {

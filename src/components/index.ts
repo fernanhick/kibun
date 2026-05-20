@@ -1,3 +1,4 @@
+export { AnimatedNumber } from './AnimatedNumber';
 export { BackButton } from './BackButton';
 export { Button } from './Button';
 export { Card } from './Card';
@@ -11,6 +12,7 @@ export { OnboardingProgress } from './OnboardingProgress';
 export { WisdomScreen } from './WisdomScreen';
 export { Screen } from './Screen';
 export { Shiba } from './Shiba';
+export { SpringPressable } from './SpringPressable';
 export { TabletSplit } from './TabletSplit';
 export type { ShibaVariant } from './Shiba';
 export { SplashScreenView } from './SplashScreenView';

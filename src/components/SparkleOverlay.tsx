@@ -39,7 +39,12 @@ export function SparkleOverlay({ variant = 'hero', count }: SparkleOverlayProps)
         : styles.heroSparkle;
 
   return (
-    <View pointerEvents="none" style={styles.wrap}>
+    <View
+      pointerEvents="none"
+      style={styles.wrap}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
       {sparkles.map((s) => (
         <Text
           key={s.id}

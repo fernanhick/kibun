@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { MoodDefinition, MOOD_MAP, MOODS, MoodGroup } from '@constants/moods';
 import { typography, spacing, radius } from '@constants/theme';
+import { useReducedMotion } from '@hooks/useReducedMotion';
 
 interface MoodBubbleProps {
   mood: MoodDefinition;
@@ -133,17 +134,23 @@ export function MoodBubble({
   // Built-in moods resolve through i18n; custom moods carry user-typed labels.
   const label = mood.id in MOOD_MAP ? t(`moods:${mood.id}.label`) : mood.label;
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
+    const target = selected ? 1.12 : 1;
+    if (reducedMotion) {
+      scaleAnim.setValue(target);
+      return;
+    }
     const animation = Animated.spring(scaleAnim, {
-      toValue: selected ? 1.12 : 1,
+      toValue: target,
       useNativeDriver: true,
       tension: 300,
       friction: 10,
     });
     animation.start();
     return () => animation.stop(); // Stop on unmount or before next effect run
-  }, [selected]);
+  }, [selected, reducedMotion, scaleAnim]);
 
   const { width, imageSize } = BONE_SIZES[size];
   const fontSizeStyle = { fontSize: FONT_SIZES[size] };
@@ -162,10 +169,10 @@ export function MoodBubble({
         styles.wrapper,
         selected && {
           shadowColor: mood.bubbleColor,
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.75,
-          shadowRadius: 10,
-          elevation: 10,
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.35,
+          shadowRadius: 18,
+          elevation: 8,
         },
         { transform: [{ scale: scaleAnim }] },
       ]}

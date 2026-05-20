@@ -218,8 +218,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surfaceElevated,
     borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
     padding: spacing.md,
     marginBottom: spacing.md,
     width: '100%',

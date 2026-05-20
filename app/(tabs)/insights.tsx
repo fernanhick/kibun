@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Screen, Card } from '@components/index';
+import { Screen, Card, AnimatedNumber } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { TabletSplit } from '@components/TabletSplit';
 import { useMoodEntryStore, useSessionStore } from '@store/index';
@@ -205,21 +205,21 @@ export default function InsightsScreen() {
 
       <View style={styles.statsRow}>
         <Card style={styles.statCard}>
-          <Text
+          <AnimatedNumber
+            value={streak}
             style={styles.statValue}
             accessibilityLabel={t('insights.stats.streakA11y', { count: streak })}
-          >
-            {streak}
-          </Text>
+            maxFontSizeMultiplier={1.2}
+          />
           <Text style={styles.statLabel}>{t('insights.stats.streak')}</Text>
         </Card>
         <Card style={styles.statCard}>
-          <Text
+          <AnimatedNumber
+            value={totalEntries}
             style={styles.statValue}
             accessibilityLabel={t('insights.stats.checkInsA11y', { count: totalEntries })}
-          >
-            {totalEntries}
-          </Text>
+            maxFontSizeMultiplier={1.2}
+          />
           <Text style={styles.statLabel}>{t('insights.stats.checkIns')}</Text>
         </Card>
       </View>
@@ -543,8 +543,6 @@ const corrStyles = StyleSheet.create({
   container: {
     ...shadows.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
-    borderWidth: 1.2,
-    borderColor: '#DCE9FF',
     borderRadius: 22,
     padding: spacing.md,
     gap: spacing.md,
@@ -678,8 +676,6 @@ const heatmapStyles = StyleSheet.create({
     ...shadows.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderRadius: 22,
-    borderWidth: 1.2,
-    borderColor: '#DCE9FF',
     padding: spacing.md,
     gap: 4,
   },
@@ -928,6 +924,8 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xxl,
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
+    letterSpacing: -0.6,
+    lineHeight: 34,
   },
   heroSubtitle: {
     fontSize: typography.sizes.body,

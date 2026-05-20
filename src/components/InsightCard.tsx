@@ -1,7 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Card } from '@components/Card';
+import { SpringPressable } from '@components/SpringPressable';
 import { colors, radius, spacing, typography } from '@constants/theme';
 import type { InsightCard as InsightCardData } from '@lib/correlationInsights';
 
@@ -34,9 +35,9 @@ export function InsightCard({ card }: InsightCardProps) {
 
   if (card.habitId) {
     return (
-      <Pressable onPress={() => router.push('/manage-habits')} style={styles.pressable}>
+      <SpringPressable onPress={() => router.push('/manage-habits')} style={styles.pressable}>
         {inner}
-      </Pressable>
+      </SpringPressable>
     );
   }
   return <View style={styles.pressable}>{inner}</View>;

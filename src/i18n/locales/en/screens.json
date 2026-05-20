@@ -729,25 +729,27 @@
       "title": "kibun Premium",
       "subtitle": "Your feelings deserve the full picture.\nLet's make sense of them together 💕"
     },
-    "tier": {
-      "free": { "badge": "FREE", "label": "Always included" },
-      "pro": { "badge": "PREMIUM", "label": "Unlock with trial" }
+    "comparison": {
+      "header": {
+        "feature": "Feature",
+        "free": "Free",
+        "premium": "Premium"
+      },
+      "rows": {
+        "aiPrompts": "AI journaling prompts",
+        "customMoods": "Custom moods",
+        "breathing": "Breathing exercises",
+        "correlations": "Habit & life correlations",
+        "aiReports": "AI mood reports",
+        "customReminders": "Custom reminder times",
+        "achievements": "Achievements & streak freeze"
+      },
+      "includedA11y": "included",
+      "notIncludedA11y": "not included"
     },
-    "features": {
-      "free": [
-        "Daily mood logging",
-        "Custom reminder times",
-        "Full mood history & calendar"
-      ],
-      "pro": [
-        "Daily wellness summary",
-        "Weekly & monthly mood summaries",
-        "Annual mood report & year in review",
-        "Mood trends & recovery score",
-        "Habit tracking (sleep, exercise & more)",
-        "Life events & mood correlation",
-        "Custom moods with personalized colors"
-      ]
+    "trust": {
+      "tagline": "Cancel anytime · No commitment",
+      "starsA11y": "5 out of 5 stars"
     },
     "price": {
       "both": "{{monthly}} / month or {{yearly}} / year",

@@ -7,6 +7,7 @@ import Purchases from 'react-native-purchases';
 import type { PurchasesPackage } from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, BackButton } from '@components/index';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useSessionStore } from '@store/index';
@@ -19,8 +20,24 @@ import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
 import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '@constants/legal';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
-const FREE_FEATURE_EMOJIS = ['📓', '🔔', '📅'];
-const PRO_FEATURE_EMOJIS = ['✨', '📊', '🎉', '🔮', '🌱', '📝', '🎨'];
+type ComparisonRowKey =
+  | 'aiPrompts'
+  | 'customMoods'
+  | 'breathing'
+  | 'correlations'
+  | 'aiReports'
+  | 'customReminders'
+  | 'achievements';
+
+const COMPARISON_ROWS: ReadonlyArray<{ key: ComparisonRowKey; free: boolean }> = [
+  { key: 'aiPrompts', free: false },
+  { key: 'customMoods', free: false },
+  { key: 'breathing', free: false },
+  { key: 'correlations', free: false },
+  { key: 'aiReports', free: false },
+  { key: 'customReminders', free: true },
+  { key: 'achievements', free: false },
+];
 
 function formatPriceLine(
   t: TFunction<'screens'>,
@@ -48,9 +65,6 @@ export default function PaywallScreen() {
   const [restoring, setRestoring] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [priceLine, setPriceLine] = useState<string>(() => formatPriceLine(t));
-
-  const freeFeatures = t('paywall.features.free', { returnObjects: true }) as string[];
-  const proFeatures = t('paywall.features.pro', { returnObjects: true }) as string[];
 
   useEffect(() => {
     let cancelled = false;
@@ -175,47 +189,82 @@ export default function PaywallScreen() {
         <Text style={styles.subtitle}>{t('paywall.hero.subtitle')}</Text>
       </LinearGradient>
 
-      {/* ── Feature comparison ───────────────────────────────────────── */}
-      <View style={styles.featureCard}>
-        {/* Free tier */}
-        <View style={styles.tierHeader}>
-          <View style={styles.tierBadgeFree}>
-            <Text style={styles.tierBadgeText}>{t('paywall.tier.free.badge')}</Text>
+      {/* ── Comparison table ─────────────────────────────────────────── */}
+      <View style={styles.tableCard}>
+        <View
+          style={styles.tableHeaderRow}
+          accessibilityRole="header"
+        >
+          <Text style={[styles.tableHeaderCell, styles.featureCol]}>
+            {t('paywall.comparison.header.feature')}
+          </Text>
+          <Text style={[styles.tableHeaderCell, styles.checkCol]}>
+            {t('paywall.comparison.header.free')}
+          </Text>
+          <View style={[styles.checkCol, styles.premiumHeaderCell]}>
+            <LinearGradient
+              colors={['#FF6B9D', '#C060F0']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.premiumHeaderBadge}
+            >
+              <Text style={styles.premiumHeaderBadgeText}>
+                {t('paywall.comparison.header.premium')}
+              </Text>
+            </LinearGradient>
           </View>
-          <Text style={styles.tierLabel}>{t('paywall.tier.free.label')}</Text>
-        </View>
-        <View style={[styles.featureList, styles.featureListSpaced]}>
-          {freeFeatures.map((text, idx) => (
-            <View key={idx} style={styles.featureRowFree}>
-              <Text style={styles.featureEmoji}>{FREE_FEATURE_EMOJIS[idx]}</Text>
-              <Text style={styles.featureText}>{text}</Text>
-            </View>
-          ))}
         </View>
 
-        {/* Divider */}
-        <View style={styles.divider} />
-
-        {/* Pro tier */}
-        <View style={styles.tierHeader}>
-          <LinearGradient
-            colors={['#FF6B9D', '#C060F0']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.tierBadgePro}
-          >
-            <Text style={styles.tierBadgeText}>{t('paywall.tier.pro.badge')}</Text>
-          </LinearGradient>
-          <Text style={styles.tierLabel}>{t('paywall.tier.pro.label')}</Text>
-        </View>
-        <View style={styles.featureList}>
-          {proFeatures.map((text, idx) => (
-            <View key={idx} style={styles.featureRowPro}>
-              <Text style={styles.featureEmoji}>{PRO_FEATURE_EMOJIS[idx]}</Text>
-              <Text style={styles.featureText}>{text}</Text>
+        {COMPARISON_ROWS.map(({ key, free }, idx) => {
+          const isLast = idx === COMPARISON_ROWS.length - 1;
+          const label = t(`paywall.comparison.rows.${key}` as const);
+          const includedLabel = t('paywall.comparison.includedA11y');
+          const notIncludedLabel = t('paywall.comparison.notIncludedA11y');
+          return (
+            <View
+              key={key}
+              style={[styles.tableRow, isLast && styles.tableRowLast]}
+              accessibilityRole="text"
+              accessibilityLabel={`${label}. ${t('paywall.comparison.header.free')}: ${free ? includedLabel : notIncludedLabel}. ${t('paywall.comparison.header.premium')}: ${includedLabel}.`}
+            >
+              <Text style={[styles.tableCell, styles.featureCol, styles.featureCellText]}>
+                {label}
+              </Text>
+              <View style={[styles.checkCol, styles.checkCell]}>
+                {free ? (
+                  <Ionicons name="checkmark" size={18} color={colors.textSecondary} />
+                ) : (
+                  <Ionicons name="remove" size={18} color={colors.textDisabled} />
+                )}
+              </View>
+              <View style={[styles.checkCol, styles.checkCell]}>
+                <View style={styles.premiumCheckPill}>
+                  <Ionicons name="checkmark" size={14} color={colors.textInverse} />
+                </View>
+              </View>
             </View>
+          );
+        })}
+      </View>
+
+      {/* ── Trust signal ─────────────────────────────────────────────── */}
+      <View
+        style={styles.trustRow}
+        accessibilityRole="text"
+        accessibilityLabel={`${t('paywall.trust.starsA11y')}. ${t('paywall.trust.tagline')}`}
+      >
+        <View style={styles.starsRow}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Ionicons
+              key={i}
+              name="star"
+              size={16}
+              color="#F6B100"
+              style={i > 0 ? styles.starSpacing : undefined}
+            />
           ))}
         </View>
+        <Text style={styles.trustTagline}>{t('paywall.trust.tagline')}</Text>
       </View>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
@@ -230,14 +279,16 @@ export default function PaywallScreen() {
           <Text style={styles.priceSub}>{t('paywall.price.trial')}</Text>
         </LinearGradient>
 
-        <Button
-          label={t('paywall.cta.subscribe')}
-          onPress={handlePurchase}
-          variant="sunrise"
-          loading={purchasing}
-          fullWidth
-          accessibilityHint={t('paywall.cta.subscribeA11yHint')}
-        />
+        <View style={styles.ctaGlow}>
+          <Button
+            label={t('paywall.cta.subscribe')}
+            onPress={handlePurchase}
+            variant="sunrise"
+            loading={purchasing}
+            fullWidth
+            accessibilityHint={t('paywall.cta.subscribeA11yHint')}
+          />
+        </View>
         {purchaseError && (
           <Text style={styles.errorText}>{purchaseError}</Text>
         )}
@@ -291,7 +342,6 @@ export default function PaywallScreen() {
 }
 
 const PINK = '#FF6B9D';
-const PINK_LIGHT = 'rgba(255, 107, 157, 0.08)';
 const PINK_BORDER = 'rgba(255, 107, 157, 0.20)';
 
 const styles = StyleSheet.create({
@@ -325,81 +375,103 @@ const styles = StyleSheet.create({
     lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
     textAlign: 'center',
   },
-  featureCard: {
+  tableCard: {
     backgroundColor: colors.surface,
     borderRadius: 24,
-    padding: spacing.md,
-    gap: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    paddingTop: spacing.xs,
+    paddingBottom: spacing.xs,
     ...shadows.sm,
   },
-  tierHeader: {
+  tableHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: 2,
+    paddingVertical: spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: PINK_BORDER,
   },
-  tierBadgeFree: {
-    backgroundColor: 'rgba(0,0,0,0.07)',
+  tableHeaderCell: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.ui,
+    color: colors.textSecondary,
+    letterSpacing: 0.4,
+  },
+  premiumHeaderCell: {
+    alignItems: 'center',
+  },
+  premiumHeaderBadge: {
     borderRadius: radius.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
   },
-  tierBadgePro: {
-    borderRadius: radius.full,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-  },
-  tierBadgeText: {
+  premiumHeaderBadgeText: {
     fontSize: 10,
     fontFamily: typography.fonts.ui,
     color: colors.textInverse,
     letterSpacing: 0.8,
   },
-  tierLabel: {
-    fontSize: typography.sizes.sm,
-    fontFamily: typography.fonts.body,
-    color: colors.textSecondary,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: PINK_BORDER,
-    marginVertical: spacing.sm,
-  },
-  featureList: {
-    gap: spacing.xs + 2,
-  },
-  featureListSpaced: {
-    marginBottom: spacing.xs,
-  },
-  featureRowFree: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: 'rgba(0,0,0,0.04)',
-    borderRadius: radius.lg,
-    paddingVertical: spacing.xs + 2,
-    paddingHorizontal: spacing.sm,
-  },
-  featureRowPro: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: PINK_LIGHT,
-    borderRadius: radius.lg,
-    paddingVertical: spacing.xs + 2,
-    paddingHorizontal: spacing.sm,
-  },
-  featureEmoji: {
-    fontSize: 17,
-    width: 24,
-    textAlign: 'center',
-  },
-  featureText: {
+  featureCol: {
     flex: 1,
+    paddingLeft: spacing.xs,
+  },
+  checkCol: {
+    width: 64,
+    alignItems: 'center',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.sm + 2,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(15,23,42,0.06)',
+  },
+  tableRowLast: {
+    borderBottomWidth: 0,
+  },
+  tableCell: {
     fontSize: typography.sizes.md,
     fontFamily: typography.fonts.body,
     color: colors.text,
-    lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
+  },
+  featureCellText: {
+    lineHeight: typography.sizes.md * typography.lineHeights.normal,
+  },
+  checkCell: {
+    justifyContent: 'center',
+  },
+  premiumCheckPill: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: PINK,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  trustRow: {
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: -spacing.xs,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  starSpacing: {
+    marginLeft: 2,
+  },
+  trustTagline: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  ctaGlow: {
+    borderRadius: radius.button,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 22,
+    elevation: 8,
   },
   bottom: {
     gap: spacing.md,

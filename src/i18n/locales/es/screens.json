@@ -729,25 +729,27 @@
       "title": "kibun Premium",
       "subtitle": "Tu historial de ánimo merece la imagen completa.\nRevísalo de forma simple 💕"
     },
-    "tier": {
-      "free": { "badge": "GRATIS", "label": "Siempre incluido" },
-      "pro": { "badge": "PREMIUM", "label": "Desbloquea con prueba" }
+    "comparison": {
+      "header": {
+        "feature": "Función",
+        "free": "Gratis",
+        "premium": "Premium"
+      },
+      "rows": {
+        "aiPrompts": "Sugerencias de journaling con IA",
+        "customMoods": "Ánimos personalizados",
+        "breathing": "Ejercicios de respiración",
+        "correlations": "Correlaciones de hábitos y vida",
+        "aiReports": "Reportes de ánimo con IA",
+        "customReminders": "Recordatorios personalizados",
+        "achievements": "Logros y escudo de racha"
+      },
+      "includedA11y": "incluido",
+      "notIncludedA11y": "no incluido"
     },
-    "features": {
-      "free": [
-        "Registro diario de tu ánimo",
-        "Horarios de recordatorio personalizados",
-        "Historial completo de ánimo y calendario"
-      ],
-      "pro": [
-        "Resumen diario de bienestar",
-        "Resúmenes semanales y mensuales de ánimo",
-        "Reporte anual y resumen del año",
-        "Tendencias de ánimo y puntuación de recuperación",
-        "Seguimiento de hábitos (sueño, ejercicio y más)",
-        "Eventos vitales y correlación con tu ánimo",
-        "Ánimos personalizados con tus colores"
-      ]
+    "trust": {
+      "tagline": "Cancela cuando quieras · Sin compromiso",
+      "starsA11y": "5 de 5 estrellas"
     },
     "price": {
       "both": "{{monthly}} / mes o {{yearly}} / año",

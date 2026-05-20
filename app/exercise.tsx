@@ -14,10 +14,13 @@ import Animated, {
   withTiming,
   withSequence,
   withRepeat,
+  cancelAnimation,
   Easing,
 } from 'react-native-reanimated';
 import { Screen, Button } from '@components/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
+import { useReducedMotion } from '@hooks/useReducedMotion';
+import { haptics } from '@lib/haptics';
 
 // ─── Box Breathing ────────────────────────────────────────────────────────────
 
@@ -33,8 +36,14 @@ function BoxBreathing() {
   const [done, setDone] = useState(false);
   const TOTAL_CYCLES = 4;
   const router = useRouter();
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
+    if (reducedMotion) {
+      scale.value = 1;
+      opacity.value = 1;
+      return;
+    }
     scale.value = withRepeat(
       withSequence(
         withTiming(1,   { duration: PHASE_DURATION_MS, easing: Easing.inOut(Easing.ease) }),
@@ -55,7 +64,15 @@ function BoxBreathing() {
       TOTAL_CYCLES,
       false,
     );
-  }, []);
+    return () => {
+      cancelAnimation(scale);
+      cancelAnimation(opacity);
+    };
+  }, [reducedMotion]);
+
+  useEffect(() => {
+    if (done) haptics.success();
+  }, [done]);
 
   useEffect(() => {
     if (done) return;

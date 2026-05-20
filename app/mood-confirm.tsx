@@ -6,6 +6,14 @@ import * as Crypto from 'expo-crypto';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withSequence,
+} from 'react-native-reanimated';
+import { haptics } from '@lib/haptics';
+import { useReducedMotion } from '@hooks/useReducedMotion';
 import { Screen, Button } from '@components/index';
 import { MoodBubble } from '@components/MoodBubble';
 import { SparkleOverlay } from '@components/SparkleOverlay';
@@ -131,6 +139,12 @@ export default function MoodConfirmScreen() {
   const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
   const customMoods = useCustomMoodsStore((s) => s.moods);
 
+  const heroScale = useSharedValue(1);
+  const heroAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: heroScale.value }],
+  }));
+  const reducedMotion = useReducedMotion();
+
   // Debounce sentiment analysis: run 600 ms after user stops typing
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -178,6 +192,14 @@ export default function MoodConfirmScreen() {
   const handleSave = async () => {
     if (submitting) return;
     setSubmitting(true);
+
+    haptics.success();
+    if (!reducedMotion) {
+      heroScale.value = withSequence(
+        withSpring(1.04, { damping: 9, stiffness: 220 }),
+        withSpring(1, { damping: 14, stiffness: 180 }),
+      );
+    }
 
     const entryId = Crypto.randomUUID();
     const entryDate = params.date 
@@ -232,6 +254,7 @@ export default function MoodConfirmScreen() {
 
   return (
     <Screen scrollable={true} contentContainerStyle={styles.content}>
+      <Animated.View style={heroAnimatedStyle}>
       <LinearGradient
         colors={[colors.pink, colors.pinkEnd]}
         start={{ x: 0, y: 0 }}
@@ -258,6 +281,7 @@ export default function MoodConfirmScreen() {
           </View>
         </View>
       </LinearGradient>
+      </Animated.View>
 
       <View style={styles.noteSection}>
         <Text style={styles.noteLabel}>{t('moodConfirm.noteLabel')}</Text>

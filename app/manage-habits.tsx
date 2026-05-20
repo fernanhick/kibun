@@ -9,6 +9,7 @@ import { Screen, BackButton } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useHabitsStore } from '@store/habitsStore';
 import { colors, spacing, typography, radius } from '@constants/theme';
+import { haptics } from '@lib/haptics';
 import type { Habit, HabitTrackingType } from '@models/index';
 
 const PRESET_HABITS: { key: string; name: string; icon: string; trackingType: HabitTrackingType }[] = [
@@ -52,7 +53,14 @@ export default function ManageHabitsScreen() {
   const handleDelete = (habitId: string, name: string) => {
     Alert.alert(t('manageHabits.deleteTitle'), t('manageHabits.deleteMessage', { name }), [
       { text: t('common:actions.cancel'), style: 'cancel' },
-      { text: t('manageHabits.deleteAction'), style: 'destructive', onPress: () => deleteHabit(habitId) },
+      {
+        text: t('manageHabits.deleteAction'),
+        style: 'destructive',
+        onPress: () => {
+          haptics.heavy();
+          deleteHabit(habitId);
+        },
+      },
     ]);
   };
 

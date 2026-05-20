@@ -5,6 +5,7 @@ import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { MoodDefinition, MOOD_MAP, MOODS, MoodGroup } from '@constants/moods';
 import { typography, spacing, radius } from '@constants/theme';
 import { useReducedMotion } from '@hooks/useReducedMotion';
+import { haptics } from '@lib/haptics';
 
 interface MoodBubbleProps {
   mood: MoodDefinition;
@@ -178,7 +179,16 @@ export function MoodBubble({
       ]}
     >
       <Pressable
-        onPress={disabled ? undefined : () => onPress?.(mood)}
+        onPress={
+          disabled
+            ? undefined
+            : onPress
+              ? () => {
+                  haptics.light();
+                  onPress(mood);
+                }
+              : undefined
+        }
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         style={({ pressed }) => [
           styles.bone,

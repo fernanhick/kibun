@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Card, AnimatedNumber } from '@components/index';
+import { EmptyState } from '@components/EmptyState';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { TabletSplit } from '@components/TabletSplit';
 import { useMoodEntryStore, useSessionStore } from '@store/index';
@@ -178,8 +179,11 @@ export default function InsightsScreen() {
           <PeriodToggle period={period} onSelect={setPeriod} />
         </LinearGradient>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>{t('insights.empty.title')}</Text>
-          <Text style={styles.emptySubtitle}>{t('insights.empty.subtitle')}</Text>
+          <EmptyState
+            illustration="chart"
+            title={t('insights.empty.title')}
+            description={t('insights.empty.subtitle')}
+          />
         </View>
       </Screen>
     );
@@ -1013,17 +1017,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.2,
     borderColor: '#DCE9FF',
     borderRadius: 22,
-  },
-  emptyTitle: {
-    fontSize: typography.sizes.lg,
-    fontWeight: typography.weights.semibold,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  emptySubtitle: {
-    fontSize: typography.sizes.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
   },
   patternCard: {
     flexDirection: 'row',

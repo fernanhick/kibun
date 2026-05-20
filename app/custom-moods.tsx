@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, BackButton } from '@components/index';
+import { EmptyState } from '@components/EmptyState';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useCustomMoodsStore } from '@store/customMoodsStore';
 import { colors, spacing, typography, radius } from '@constants/theme';
@@ -101,7 +102,17 @@ export default function CustomMoodsScreen() {
           </View>
         )}
 
-        {!atLimit && !showForm && (
+        {moods.length === 0 && !showForm && (
+          <EmptyState
+            illustration="sapling"
+            title={t('customMoods.empty.title')}
+            description={t('customMoods.empty.description')}
+            ctaLabel={t('customMoods.empty.cta')}
+            onCtaPress={() => setShowForm(true)}
+          />
+        )}
+
+        {moods.length > 0 && !atLimit && !showForm && (
           <Pressable
             style={styles.addButton}
             onPress={() => setShowForm(true)}

@@ -933,6 +933,11 @@
     "preview": "Preview:",
     "saveA11y": "Save custom mood",
     "saveMood": "Save mood",
+    "empty": {
+      "title": "No custom moods yet",
+      "description": "Make moods that match how you actually feel — not just the basics.",
+      "cta": "Create your first mood"
+    },
     "group": {
       "green": {
         "label": "Positive",
@@ -973,6 +978,11 @@
     "nameA11y": "Habit name",
     "addHabitA11y": "Add habit",
     "add": "Add",
+    "empty": {
+      "title": "No habits yet",
+      "description": "Track behaviours that shape your mood — sleep, exercise, social time.",
+      "cta": "Add your first habit"
+    },
     "preset": {
       "sleepQuality": "Sleep quality",
       "exercise": "Exercise",

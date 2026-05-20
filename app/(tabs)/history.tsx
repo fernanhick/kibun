@@ -4,6 +4,7 @@ import { useRouter, Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Shiba, AnimatedNumber } from '@components/index';
+import { EmptyState } from '@components/EmptyState';
 import { useMoodEntryStore, useSessionStore, useLifeEventsStore } from '@store/index';
 import { useResponsive } from '@hooks/useResponsive';
 import { useScreenScroll } from '@hooks/useScreenScroll';
@@ -45,8 +46,6 @@ function buildResponsiveSizes(select: ResponsiveSelect) {
     btnLabel: select({ phone: typography.sizes.sm, tablet: 15, tabletLg: 16 }),
     statValue: select({ phone: typography.sizes.xl, tablet: 28, tabletLg: 32 }),
     statLabel: select({ phone: typography.sizes.xs, tablet: 13, tabletLg: 15 }),
-    emptyTitle: select({ phone: typography.sizes.md, tablet: 18, tabletLg: 20 }),
-    emptySubtitle: select({ phone: typography.sizes.sm, tablet: 15, tabletLg: 16 }),
     legendLabel: select({ phone: typography.sizes.xs, tablet: 13, tabletLg: 15 }),
     proLockBadge: select({ phone: 9, tablet: 11, tabletLg: 12 }),
     chevronIcon: select({ phone: 24, tablet: 28, tabletLg: 32 }),
@@ -55,7 +54,6 @@ function buildResponsiveSizes(select: ResponsiveSelect) {
     legendSwatch: select({ phone: 10, tablet: 12, tabletLg: 14 }),
     balanceBarHeight: select({ phone: 14, tablet: 18, tabletLg: 22 }),
     statDividerHeight: select({ phone: 28, tablet: 36, tabletLg: 40 }),
-    shibaEmpty: select({ phone: 64, tablet: 84, tabletLg: 96 }),
     shibaHeader: select({ phone: 80, tablet: 100, tabletLg: 116 }),
   };
 }
@@ -445,15 +443,12 @@ function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
         <View style={styles.snapshotBadge}>
           <Text style={[styles.snapshotBadgeText, { fontSize: r.badgeText }]}>{t('history.snapshot.badge')}</Text>
         </View>
-        <View style={styles.emptyState}>
-          <Shiba variant="neutral" size={r.shibaEmpty} />
-          <Text style={[styles.emptyTitle, { fontSize: r.emptyTitle }]}>
-            {t('history.snapshot.emptyTitle', { month: monthLabel })}
-          </Text>
-          <Text style={[styles.emptySubtitle, { fontSize: r.emptySubtitle }]}>
-            {t('history.snapshot.emptySubtitle')}
-          </Text>
-        </View>
+        <EmptyState
+          illustration="chart"
+          title={t('history.snapshot.emptyTitle', { month: monthLabel })}
+          description={t('history.snapshot.emptySubtitle')}
+          illustrationSize={120}
+        />
       </View>
     );
   }
@@ -745,21 +740,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.7,
     color: colors.pink,
     textTransform: 'uppercase',
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    gap: 6,
-  },
-  emptyTitle: {
-    fontSize: typography.sizes.md,
-    fontFamily: typography.fonts.ui,
-    color: colors.text,
-  },
-  emptySubtitle: {
-    fontSize: typography.sizes.sm,
-    color: colors.textSecondary,
-    textAlign: 'center',
   },
   statsRow: {
     flexDirection: 'row',

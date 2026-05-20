@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, BackButton } from '@components/index';
+import { EmptyState } from '@components/EmptyState';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useHabitsStore } from '@store/habitsStore';
 import { colors, spacing, typography, radius } from '@constants/theme';
@@ -98,6 +99,16 @@ export default function ManageHabitsScreen() {
               />
             ))}
           </View>
+        )}
+
+        {habits.length === 0 && !showCustomForm && (
+          <EmptyState
+            illustration="sapling"
+            title={t('manageHabits.empty.title')}
+            description={t('manageHabits.empty.description')}
+            ctaLabel={t('manageHabits.empty.cta')}
+            onCtaPress={() => setShowCustomForm(true)}
+          />
         )}
 
         <View style={styles.section}>

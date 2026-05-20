@@ -110,6 +110,11 @@ export default function InsightsScreen() {
     return count;
   }, [entries]);
 
+  const activeDays = useMemo(
+    () => new Set(filtered.map((e) => e.loggedAt.split('T')[0])).size,
+    [filtered],
+  );
+
   const barData = useMemo(
     () =>
       frequency.slice(0, 6).map((item) => ({
@@ -209,16 +214,29 @@ export default function InsightsScreen() {
         <PeriodToggle period={period} onSelect={setPeriod} />
       </LinearGradient>
 
-      <View style={styles.statsRow}>
-        <Card style={styles.statCard}>
+      <View style={styles.heroStatCard}>
+        <View style={styles.heroStatLeft}>
+          <Text style={styles.heroStatLabel} maxFontSizeMultiplier={1.3}>
+            {t('insights.stats.streakHero.label')}
+          </Text>
           <AnimatedNumber
             value={streak}
-            style={styles.statValue}
+            style={styles.heroStatValue}
             accessibilityLabel={t('insights.stats.streakA11y', { count: streak })}
-            maxFontSizeMultiplier={1.2}
+            maxFontSizeMultiplier={1.15}
           />
-          <Text style={styles.statLabel}>{t('insights.stats.streak')}</Text>
-        </Card>
+          <Text style={styles.heroStatSub} maxFontSizeMultiplier={1.3}>
+            {streak > 0
+              ? t('insights.stats.streakHero.subActive')
+              : t('insights.stats.streakHero.subZero')}
+          </Text>
+        </View>
+        <View style={styles.heroStatIconWrap}>
+          <Ionicons name="flame" size={32} color={colors.accent} />
+        </View>
+      </View>
+
+      <View style={styles.statsRow}>
         <Card style={styles.statCard}>
           <AnimatedNumber
             value={totalEntries}
@@ -227,6 +245,15 @@ export default function InsightsScreen() {
             maxFontSizeMultiplier={1.2}
           />
           <Text style={styles.statLabel}>{t('insights.stats.checkIns')}</Text>
+        </Card>
+        <Card style={styles.statCard}>
+          <AnimatedNumber
+            value={activeDays}
+            style={styles.statValue}
+            accessibilityLabel={t('insights.stats.activeDaysA11y', { count: activeDays })}
+            maxFontSizeMultiplier={1.2}
+          />
+          <Text style={styles.statLabel}>{t('insights.stats.activeDays')}</Text>
         </Card>
       </View>
 
@@ -964,6 +991,57 @@ const styles = StyleSheet.create({
   },
   toggleTextUnselected: {
     color: colors.textInverse,
+  },
+  heroStatCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.surface,
+    borderRadius: radius.card,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    marginBottom: spacing.sm,
+    borderWidth: 1.2,
+    borderColor: colors.accentBorder,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.16,
+    shadowRadius: 22,
+    elevation: 5,
+  },
+  heroStatLeft: {
+    flex: 1,
+  },
+  heroStatLabel: {
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.ui,
+    fontWeight: typography.weights.semibold,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    color: colors.textSecondary,
+    marginBottom: 6,
+  },
+  heroStatValue: {
+    fontSize: 52,
+    fontWeight: typography.weights.bold,
+    color: colors.text,
+    letterSpacing: -1.5,
+    lineHeight: 56,
+  },
+  heroStatSub: {
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.semibold,
+    color: colors.accent,
+    marginTop: 4,
+  },
+  heroStatIconWrap: {
+    width: 60,
+    height: 60,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: spacing.md,
+    backgroundColor: colors.accentLight,
   },
   statsRow: {
     flexDirection: 'row',

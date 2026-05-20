@@ -144,7 +144,14 @@
       "streak": "day streak",
       "streakA11y": "{{count}} day streak",
       "checkIns": "check-ins",
-      "checkInsA11y": "{{count}} check-ins"
+      "checkInsA11y": "{{count}} check-ins",
+      "activeDays": "active days",
+      "activeDaysA11y": "{{count}} active days",
+      "streakHero": {
+        "label": "Current streak",
+        "subActive": "Keep showing up",
+        "subZero": "Log today to start"
+      }
     },
     "sections": {
       "topMoods": "Top moods",

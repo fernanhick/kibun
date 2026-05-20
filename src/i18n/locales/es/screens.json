@@ -144,7 +144,14 @@
       "streak": "días de racha",
       "streakA11y": "Racha de {{count}} días",
       "checkIns": "registros",
-      "checkInsA11y": "{{count}} registros"
+      "checkInsA11y": "{{count}} registros",
+      "activeDays": "días activos",
+      "activeDaysA11y": "{{count}} días activos",
+      "streakHero": {
+        "label": "Racha actual",
+        "subActive": "Sigue así",
+        "subZero": "Registra hoy para empezar"
+      }
     },
     "sections": {
       "topMoods": "Ánimos más frecuentes",

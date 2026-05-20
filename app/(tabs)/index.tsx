@@ -36,6 +36,7 @@ import { computeAdaptiveTimes } from '@lib/notifications';
 import { getMoodLabel } from '@lib/moodLabels';
 import { formatTime as formatLocaleTime } from '@i18n/dateFormat';
 import { useResponsive } from '@hooks/useResponsive';
+import { useScreenScroll } from '@hooks/useScreenScroll';
 import type { Habit, HabitLog } from '@models/index';
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -78,6 +79,7 @@ export default function HomeScreen() {
   const { t } = useTranslation('screens');
   const insets = useSafeAreaInsets();
   const responsive = useResponsive();
+  const { onScroll } = useScreenScroll();
 
   const getGreeting = (): string => {
     const hour = new Date().getHours();
@@ -255,7 +257,7 @@ export default function HomeScreen() {
         </View>
       )}
 
-      <Screen scrollable={true}>
+      <Screen scrollable={true} onScroll={onScroll}>
         <LinearGradient
           colors={[colors.skyStart, colors.skyEnd]}
           start={{ x: 0, y: 0 }}

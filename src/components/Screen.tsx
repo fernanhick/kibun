@@ -6,9 +6,12 @@ import {
   ScrollView,
   View,
   StyleSheet,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import Reanimated from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSegments } from 'expo-router';
 // SafeAreaView must come from react-native-safe-area-context (NOT react-native).
@@ -43,6 +46,9 @@ interface ScreenProps {
   contentContainerStyle?: StyleProp<ViewStyle>;
   layout?: ScreenLayout;
   edgePadding?: EdgePadding;
+  // Reanimated scroll handler — pass the `onScroll` from useScreenScroll()
+  // when a tab screen should drive the hide-on-scroll tab bar.
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 }
 
 export function Screen({
@@ -52,6 +58,7 @@ export function Screen({
   contentContainerStyle,
   layout = 'centered',
   edgePadding = 'default',
+  onScroll,
 }: ScreenProps) {
   const segments = useSegments();
   const insets = useSafeAreaInsets();
@@ -168,16 +175,31 @@ export function Screen({
         </Animated.View>
       </View>
       {scrollable ? (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: resolvedPaddingBottom, paddingHorizontal: 0 },
-          ]}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={[innerWrapperStyle, innerContentStyle]}>{children}</View>
-        </ScrollView>
+        onScroll ? (
+          <Reanimated.ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingBottom: resolvedPaddingBottom, paddingHorizontal: 0 },
+            ]}
+            keyboardShouldPersistTaps="handled"
+            onScroll={onScroll}
+            scrollEventThrottle={16}
+          >
+            <View style={[innerWrapperStyle, innerContentStyle]}>{children}</View>
+          </Reanimated.ScrollView>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingBottom: resolvedPaddingBottom, paddingHorizontal: 0 },
+            ]}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={[innerWrapperStyle, innerContentStyle]}>{children}</View>
+          </ScrollView>
+        )
       ) : (
         <View
           style={[

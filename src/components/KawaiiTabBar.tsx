@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo } from 'react';
 import { View, Pressable, Text, Animated, StyleSheet, Platform } from 'react-native';
+import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, type Href } from 'expo-router';
@@ -18,6 +19,7 @@ import { SCREEN_MAX_WIDTH } from '@constants/breakpoints';
 import { getMascotSource } from '@constants/mascotAnimations';
 import { useResponsive } from '@hooks/useResponsive';
 import { useReducedMotion } from '@hooks/useReducedMotion';
+import { useTabBarVisibility } from '@hooks/useScreenScroll';
 import { useMoodEntryStore } from '@store/index';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -125,6 +127,7 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
   const router = useRouter();
   const { width } = useResponsive();
   const lastMoodId = useMoodEntryStore((s) => s.entries[0]?.moodId);
+  const visibility = useTabBarVisibility();
 
   const { tabBarHeight, mascotSize, metrics } = useMemo(() => {
     const scale = getKawaiiTabScale(width);
@@ -186,9 +189,20 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
   // overlay carries the look until `expo prebuild --clean` lands the native
   // module (after which the blur ramps in for free).
   const glassHeight = tabBarHeight + safeBottom + 8;
+  // Slide the entire shelf + mascot off-screen on scroll-down. mascotSize covers
+  // the chunk that pokes above the bar; the +16 buffer prevents the rounded
+  // corners from briefly clipping into view during the spring overshoot.
+  const hiddenOffset = glassHeight + mascotSize + 16;
+  const hideStyle = useAnimatedStyle(() => {
+    const h = visibility?.hidden.value ?? 0;
+    return {
+      transform: [{ translateY: h * hiddenOffset }],
+      opacity: 1 - h * 0.35,
+    };
+  });
   const overlayBg = Platform.OS === 'ios' ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.85)';
   return (
-    <View style={styles.container} pointerEvents="box-none">
+    <Reanimated.View style={[styles.container, hideStyle]} pointerEvents="box-none">
       <View
         pointerEvents="none"
         style={[styles.glassShelf, { height: glassHeight }]}
@@ -228,7 +242,7 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
           </View>
         </View>
       </View>
-    </View>
+    </Reanimated.View>
   );
 }
 

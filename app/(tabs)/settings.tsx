@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, SparkleOverlay, Shiba } from '@components/index';
 import { SpringPressable } from '@components/SpringPressable';
+import { useScreenScroll } from '@hooks/useScreenScroll';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
 import { useUiPrefsStore, type LanguagePref } from '@store/uiPrefsStore';
@@ -36,6 +37,7 @@ const LANGUAGE_OPTIONS: LanguagePref[] = ['system', 'en', 'es'];
 export default function SettingsScreen() {
   const router = useRouter();
   const { t } = useTranslation('screens');
+  const { onScroll } = useScreenScroll();
   const [permissionStatus, setPermissionStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -145,7 +147,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <Screen scrollable={true} layout="wide">
+    <Screen scrollable={true} layout="wide" onScroll={onScroll}>
       <LinearGradient
         colors={[colors.skyStart, colors.skyEnd]}
         start={{ x: 0, y: 0 }}

@@ -9,6 +9,7 @@ import { SparkleOverlay } from '@components/SparkleOverlay';
 import { TabletSplit } from '@components/TabletSplit';
 import { useMoodEntryStore, useSessionStore } from '@store/index';
 import { useHabitsStore } from '@store/habitsStore';
+import { useScreenScroll } from '@hooks/useScreenScroll';
 import { filterEntriesByDays, getMoodFrequency, getDailyMoodScores, GROUP_SCORES } from '@lib/insights';
 import { detectPatterns, calculateResilienceScore, type ResilienceResult } from '@lib/patterns';
 import { computeHabitCorrelations, correlationColor, type HabitCorrelation } from '@lib/correlations';
@@ -23,6 +24,7 @@ export default function InsightsScreen() {
   const [period, setPeriod] = useState<Period>(7);
   const router = useRouter();
   const { t } = useTranslation('screens');
+  const { onScroll } = useScreenScroll();
   // Charts must size against the actual rendered column (Screen clamps to a
   // tablet-friendly max-width), not the full window. Measured via onLayout
   // on each chart container; default keeps charts non-zero on first paint.
@@ -161,7 +163,7 @@ export default function InsightsScreen() {
 
   if (filtered.length === 0) {
     return (
-      <Screen scrollable={true} layout="wide">
+      <Screen scrollable={true} layout="wide" onScroll={onScroll}>
         <LinearGradient
           colors={[colors.skyStart, colors.skyEnd]}
           start={{ x: 0, y: 0 }}

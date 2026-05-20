@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Screen, Shiba, AnimatedNumber } from '@components/index';
 import { useMoodEntryStore, useSessionStore, useLifeEventsStore } from '@store/index';
 import { useResponsive } from '@hooks/useResponsive';
+import { useScreenScroll } from '@hooks/useScreenScroll';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { colors, spacing, typography, radius, shadows } from '@constants/theme';
 import { getMonthNames, getWeekdayLabels } from '@i18n/dateFormat';
@@ -86,6 +87,7 @@ export default function HistoryScreen() {
   const { t } = useTranslation('screens');
   const responsive = useResponsive();
   const r = useMemo(() => buildResponsiveSizes(responsive.select), [responsive.select]);
+  const { onScroll } = useScreenScroll();
   const { weekdays: WEEKDAYS, monthNames: MONTH_NAMES } = getDateLabels();
   // The calendar panel measures its own width via onLayout; cellSize is derived
   // from that so the grid stays correct when Screen clamps content on tablets.
@@ -257,7 +259,7 @@ export default function HistoryScreen() {
   }, [entries, exporting, t]);
 
   return (
-    <Screen scrollable={true} layout="wide" contentContainerStyle={styles.scrollPadding}>
+    <Screen scrollable={true} layout="wide" contentContainerStyle={styles.scrollPadding} onScroll={onScroll}>
       <View style={styles.headerCard}>
         <View style={styles.headerTopRow}>
           <View style={styles.headerBadge}>

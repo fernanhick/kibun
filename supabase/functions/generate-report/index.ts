@@ -6,6 +6,32 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+const GROUP_SCORES: Record<string, number> = {
+  green: 4, neutral: 3, blue: 2, "red-orange": 1,
+};
+
+const MOOD_GROUPS: Record<string, string> = {
+  happy: "green", excited: "green", grateful: "green", calm: "green",
+  meh: "neutral", tired: "neutral", bored: "neutral", confused: "neutral",
+  sad: "red-orange", anxious: "red-orange", frustrated: "red-orange", angry: "red-orange",
+  melancholy: "blue", lonely: "blue",
+};
+
+function pearsonR(xs: number[], ys: number[]): number {
+  const n = xs.length;
+  if (n < 2) return 0;
+  const meanX = xs.reduce((a, b) => a + b, 0) / n;
+  const meanY = ys.reduce((a, b) => a + b, 0) / n;
+  let num = 0, sdX = 0, sdY = 0;
+  for (let i = 0; i < n; i++) {
+    num += (xs[i] - meanX) * (ys[i] - meanY);
+    sdX += (xs[i] - meanX) ** 2;
+    sdY += (ys[i] - meanY) ** 2;
+  }
+  const denom = Math.sqrt(sdX * sdY);
+  return denom === 0 ? 0 : num / denom;
+}
+
 type AppLanguage = "en" | "es";
 
 function toSupportedLanguage(value: unknown): AppLanguage {
@@ -172,6 +198,96 @@ Deno.serve(async (req: Request) => {
     const periodEnd = entries[entries.length - 1].logged_at.split("T")[0];
     const userName = profile?.name || "this user";
 
+    // --- Habit data: completion rates + mood correlations for the period ---
+    const { data: habits } = await adminClient
+      .from("habits")
+      .select("id, name, tracking_type")
+      .eq("user_id", userId)
+      .order("display_order", { ascending: true });
+
+    const { data: habitLogs } = await adminClient
+      .from("habit_logs")
+      .select("habit_id, log_date, value")
+      .eq("user_id", userId)
+      .gte("log_date", periodStart);
+
+    const habitSummaryLines: string[] = [];
+    if (habits && habits.length > 0 && habitLogs && habitLogs.length > 0) {
+      // Build daily mood avg for correlation computation
+      const dailyMoodSum: Record<string, number> = {};
+      const dailyMoodCnt: Record<string, number> = {};
+      for (const e of entries) {
+        const date = e.logged_at.split("T")[0];
+        const score = GROUP_SCORES[MOOD_GROUPS[e.mood]] ?? 3;
+        dailyMoodSum[date] = (dailyMoodSum[date] ?? 0) + score;
+        dailyMoodCnt[date] = (dailyMoodCnt[date] ?? 0) + 1;
+      }
+      const dailyAvg: Record<string, number> = {};
+      for (const date of Object.keys(dailyMoodSum)) {
+        dailyAvg[date] = dailyMoodSum[date] / dailyMoodCnt[date];
+      }
+      const allDayAvg =
+        Object.values(dailyAvg).length > 0
+          ? Object.values(dailyAvg).reduce((a, b) => a + b, 0) /
+            Object.values(dailyAvg).length
+          : 3;
+
+      for (const habit of habits as { id: string; name: string; tracking_type: string }[]) {
+        const hLogs = (
+          habitLogs as { habit_id: string; log_date: string; value: number }[]
+        ).filter((l) => l.habit_id === habit.id);
+        if (hLogs.length === 0) continue;
+
+        // Completion stat
+        let statStr = "";
+        if (habit.tracking_type === "boolean") {
+          const doneCount = hLogs.filter((l) => l.value === 1).length;
+          const uniqueDays = new Set(hLogs.map((l) => l.log_date)).size;
+          const pct = Math.round((doneCount / Math.max(uniqueDays, 1)) * 100);
+          statStr = `${pct}% done (${doneCount}/${uniqueDays} days)`;
+        } else {
+          const avg = hLogs.reduce((s, l) => s + l.value, 0) / hLogs.length;
+          statStr = `avg ${avg.toFixed(1)}/5 over ${hLogs.length} logs`;
+        }
+
+        // Pearson correlation with daily mood score
+        const logsWithMood = hLogs.filter((l) => dailyAvg[l.log_date] !== undefined);
+        let corrStr = "";
+        if (logsWithMood.length >= 5) {
+          let r = 0;
+          if (habit.tracking_type === "scale") {
+            r = pearsonR(
+              logsWithMood.map((l) => l.value),
+              logsWithMood.map((l) => dailyAvg[l.log_date]),
+            );
+          } else {
+            const done = logsWithMood
+              .filter((l) => l.value === 1)
+              .map((l) => dailyAvg[l.log_date]);
+            const skip = logsWithMood
+              .filter((l) => l.value === 0)
+              .map((l) => dailyAvg[l.log_date]);
+            if (done.length >= 3) {
+              const avgDone = done.reduce((a, b) => a + b, 0) / done.length;
+              const avgSkip =
+                skip.length > 0
+                  ? skip.reduce((a, b) => a + b, 0) / skip.length
+                  : allDayAvg;
+              r = (avgDone - avgSkip) / 3;
+            }
+          }
+          if (Math.abs(r) >= 0.2) {
+            corrStr =
+              r > 0
+                ? `, tends to coincide with better moods (r=${r.toFixed(2)})`
+                : `, tends to coincide with lower moods (r=${r.toFixed(2)})`;
+          }
+        }
+
+        habitSummaryLines.push(`${habit.name}: ${statStr}${corrStr}`);
+      }
+    }
+
     const systemMessage = language === "es"
       ? "Eres un analista emocional calido y perspicaz para la app kibun. " +
         "Genera un reporte emocional personalizado como objeto JSON para que el cliente lo renderice en secciones ricas de UI. " +
@@ -180,7 +296,7 @@ Deno.serve(async (req: Request) => {
         "Devuelve JSON con exactamente estos campos:\n" +
         '- "headline": string. Titulo breve y calido (max ~70 caracteres), por ejemplo "Una semana tranquila y con buen ritmo".\n' +
         '- "summary": string. 2-4 frases en prosa sobre el periodo. Sin markdown.\n' +
-        '- "patterns": array de 2-4 strings. Cada string es una observacion sobre horarios, mezcla de animo o tendencia. Sin markdown ni guiones.\n' +
+        '- "patterns": array de 2-4 strings. Cada string es una observacion sobre horarios, mezcla de animo, tendencia o correlacion con habitos cuando sea relevante. Sin markdown ni guiones.\n' +
         '- "highlight": object o null. Si hay algo notable: { "label": frase corta, "detail": una frase de contexto }. Usa null cuando no destaque nada.\n' +
         '- "nudge": object. { "title": frase corta en imperativo, "body": 1-2 frases con una sugerencia suave y accionable }.\n' +
         '- "tone": uno de "positive" | "neutral" | "mixed" | "tough". Mejor caracterizacion general del periodo.\n' +
@@ -193,7 +309,7 @@ Deno.serve(async (req: Request) => {
         "Return JSON with exactly these fields:\n" +
         '- "headline": string. A short, warm one-line title (max ~70 chars), e.g. "A gentle, mostly-calm week".\n' +
         '- "summary": string. 2-4 sentences of plain prose summarising the period. No markdown.\n' +
-        '- "patterns": array of 2-4 strings. Each string is a single observation about timing, mood mix, or trend. No markdown, no leading bullet characters.\n' +
+        '- "patterns": array of 2-4 strings. Each string is a single observation about timing, mood mix, trend, or notable habit correlations when relevant. No markdown, no leading bullet characters.\n' +
         '- "highlight": object or null. When notable, { "label": short phrase, "detail": one sentence of context }. Use null when nothing stands out.\n' +
         '- "nudge": object. { "title": short imperative phrase, "body": 1-2 sentences with one gentle, actionable suggestion }.\n' +
         '- "tone": one of "positive" | "neutral" | "mixed" | "tough". Best characterisation of the period overall.\n' +
@@ -205,10 +321,15 @@ Deno.serve(async (req: Request) => {
       `\nMood check-ins (${entries.length} entries):`,
       moodLines.join("\n"),
       profileContext ? `\nUser profile:\n${profileContext}` : "",
+      habitSummaryLines.length > 0
+        ? `\nHabit tracking (${habitSummaryLines.length} habit${
+            habitSummaryLines.length > 1 ? "s" : ""
+          }):\n` + habitSummaryLines.join("\n")
+        : "",
       language === "es"
         ? `\nGenera un reporte emocional ${reportTypeLabel(reportType, language)} para ${userName} con el formato JSON indicado.`
         : `\nGenerate a ${reportType} mood report for ${userName} as the JSON object described.`,
-    ].join("\n");
+    ].filter((s) => s !== "").join("\n");
 
     // --- Call OpenAI API ---
     let reportContent: string;

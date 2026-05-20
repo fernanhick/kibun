@@ -25,6 +25,21 @@ function toSupportedLanguage(value: unknown): AppLanguage {
   return "en";
 }
 
+function pearsonR(xs: number[], ys: number[]): number {
+  const n = xs.length;
+  if (n < 2) return 0;
+  const meanX = xs.reduce((a, b) => a + b, 0) / n;
+  const meanY = ys.reduce((a, b) => a + b, 0) / n;
+  let num = 0, sdX = 0, sdY = 0;
+  for (let i = 0; i < n; i++) {
+    num += (xs[i] - meanX) * (ys[i] - meanY);
+    sdX += (xs[i] - meanX) ** 2;
+    sdY += (ys[i] - meanY) ** 2;
+  }
+  const denom = Math.sqrt(sdX * sdY);
+  return denom === 0 ? 0 : num / denom;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -138,17 +153,126 @@ Deno.serve(async (req: Request) => {
         ].filter(Boolean).join("\n")
       : "";
 
+    // --- Habit data: today's completions + mood correlations ---
+    const { data: habits } = await adminClient
+      .from("habits")
+      .select("id, name, tracking_type")
+      .eq("user_id", userId)
+      .order("display_order", { ascending: true });
+
+    const { data: habitLogs } = await adminClient
+      .from("habit_logs")
+      .select("habit_id, log_date, value")
+      .eq("user_id", userId)
+      .gte("log_date", cutoff.toISOString().split("T")[0]);
+
+    let habitContext = "";
+    if (habits && habits.length > 0 && habitLogs && habitLogs.length > 0) {
+      // Build daily mood avg for correlation computation
+      const dailyMoodSum: Record<string, number> = {};
+      const dailyMoodCnt: Record<string, number> = {};
+      for (const e of entries) {
+        const date = e.logged_at.split("T")[0];
+        const score = GROUP_SCORES[MOOD_GROUPS[e.mood]] ?? 3;
+        dailyMoodSum[date] = (dailyMoodSum[date] ?? 0) + score;
+        dailyMoodCnt[date] = (dailyMoodCnt[date] ?? 0) + 1;
+      }
+      const dailyAvg: Record<string, number> = {};
+      for (const date of Object.keys(dailyMoodSum)) {
+        dailyAvg[date] = dailyMoodSum[date] / dailyMoodCnt[date];
+      }
+      const allDayAvg =
+        Object.values(dailyAvg).length > 0
+          ? Object.values(dailyAvg).reduce((a, b) => a + b, 0) /
+            Object.values(dailyAvg).length
+          : 3;
+
+      // Today's completed habits
+      const todayDoneNames = (
+        habitLogs as { habit_id: string; log_date: string; value: number }[]
+      )
+        .filter((l) => l.log_date === today && l.value > 0)
+        .map(
+          (l) =>
+            (habits as { id: string; name: string }[]).find(
+              (h) => h.id === l.habit_id,
+            )?.name,
+        )
+        .filter(Boolean) as string[];
+
+      // Pearson correlation per habit over the 14-day window
+      type HabitCorr = { name: string; r: number };
+      const correlations: HabitCorr[] = [];
+      for (const habit of habits as {
+        id: string;
+        name: string;
+        tracking_type: string;
+      }[]) {
+        const hLogs = (
+          habitLogs as { habit_id: string; log_date: string; value: number }[]
+        ).filter(
+          (l) => l.habit_id === habit.id && dailyAvg[l.log_date] !== undefined,
+        );
+        if (hLogs.length < 5) continue;
+
+        let r = 0;
+        if (habit.tracking_type === "scale") {
+          r = pearsonR(
+            hLogs.map((l) => l.value),
+            hLogs.map((l) => dailyAvg[l.log_date]),
+          );
+        } else {
+          const done = hLogs
+            .filter((l) => l.value === 1)
+            .map((l) => dailyAvg[l.log_date]);
+          const skip = hLogs
+            .filter((l) => l.value === 0)
+            .map((l) => dailyAvg[l.log_date]);
+          if (done.length < 3) continue;
+          const avgDone = done.reduce((a, b) => a + b, 0) / done.length;
+          const avgSkip =
+            skip.length > 0
+              ? skip.reduce((a, b) => a + b, 0) / skip.length
+              : allDayAvg;
+          r = (avgDone - avgSkip) / 3;
+        }
+        if (Math.abs(r) >= 0.1) correlations.push({ name: habit.name, r });
+      }
+      correlations.sort((a, b) => b.r - a.r);
+
+      const topPositive = correlations.filter((c) => c.r >= 0.3).slice(0, 2);
+      const topNegative = correlations.filter((c) => c.r <= -0.3).slice(0, 1);
+
+      const habitParts: string[] = [];
+      if (todayDoneNames.length > 0) {
+        habitParts.push(`Habits completed today: ${todayDoneNames.join(", ")}`);
+      }
+      if (topPositive.length > 0) {
+        habitParts.push(
+          `Habits with positive mood correlation: ${topPositive.map((c) => c.name).join(", ")}`,
+        );
+      }
+      if (topNegative.length > 0) {
+        habitParts.push(
+          `Habits with negative mood correlation: ${topNegative.map((c) => c.name).join(", ")}`,
+        );
+      }
+      if (habitParts.length > 0) {
+        habitContext = "\nHabit data:\n" + habitParts.join("\n");
+      }
+    }
+
     const systemMessage = language === "es"
       ? "Eres un acompanante diario calido y perspicaz para la app de seguimiento de animo Kibun. " +
         "Genera exactamente 2 frases cortas: una observacion especifica sobre el patron emocional reciente de la persona, " +
         "y un aliento o sugerencia suave para hoy. " +
-        "Haz referencia a nombres de animo y patrones de horario cuando aporte valor. " +
+        "Haz referencia a nombres de animo, patrones de horario o habitos cuando aporte valor. " +
         "Usa un tono cercano y optimista, nunca clinico ni generico. " +
         "No comiences con 'Noto que' ni 'Parece que'. Sin listas ni encabezados."
       : "You are a warm, perceptive daily companion for the Kibun mood tracking app. " +
         "Generate exactly 2 short sentences: one specific observation about the user's recent mood pattern, " +
         "and one gentle encouragement or nudge relevant to today. " +
-        "Reference actual mood names and time patterns when relevant. " +
+        "Reference actual mood names, time-of-day patterns, or habits when there is a meaningful connection. " +
         "Be conversational and uplifting, never clinical or generic. " +
         "Do not open with 'I notice' or 'It looks like'. No bullet points or headers.";
 
@@ -158,6 +282,7 @@ Deno.serve(async (req: Request) => {
       `Most recent mood: ${latestMood}`,
       `Total check-ins: ${entries.length}`,
       profileLines ? `\nProfile:\n${profileLines}` : "",
+      habitContext,
       language === "es"
         ? "\nGenera exactamente 2 frases de insight diario personalizado."
         : "\nGenerate exactly 2 sentences of personalized daily insight.",

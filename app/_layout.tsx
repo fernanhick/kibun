@@ -10,6 +10,7 @@ import {
 } from '@expo-google-fonts/fredoka';
 import * as Notifications from 'expo-notifications';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
@@ -277,32 +278,34 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <ErrorBoundary>
-        <View style={styles.appShell}>
-          <Stack initialRouteName="(tabs)">
-            <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="paywall" options={{ headerShown: false }} />
-            <Stack.Screen name="register" options={{ headerShown: false }} />
-            <Stack.Screen name="check-in" options={{ headerShown: false, presentation: 'card' }} />
-            <Stack.Screen name="mood-confirm" options={{ headerShown: false, presentation: 'card' }} />
-            <Stack.Screen name="journal-reflect" options={{ headerShown: false, presentation: 'card' }} />
-            <Stack.Screen name="exercise" options={{ headerShown: false, presentation: 'card' }} />
-            <Stack.Screen name="day-detail" options={{ headerShown: false }} />
-            <Stack.Screen name="ai-report" options={{ headerShown: false }} />
-            <Stack.Screen name="account" options={{ headerShown: false }} />
-            <Stack.Screen name="change-password" options={{ headerShown: false, presentation: 'card' }} />
-            <Stack.Screen name="log-event" options={{ headerShown: false, presentation: 'card' }} />
-            <Stack.Screen name="manage-habits" options={{ headerShown: false, presentation: 'card' }} />
-            <Stack.Screen name="custom-moods" options={{ headerShown: false, presentation: 'card' }} />
-            <Stack.Screen name="annual-report" options={{ headerShown: false }} />
-          </Stack>
-          <PersistentMascotOverlay />
-          <ReviewPromptModal />
-        </View>
-      </ErrorBoundary>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={styles.appShell}>
+      <SafeAreaProvider>
+        <ErrorBoundary>
+          <View style={styles.appShell}>
+            <Stack initialRouteName="(tabs)">
+              <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="paywall" options={{ headerShown: false }} />
+              <Stack.Screen name="register" options={{ headerShown: false }} />
+              <Stack.Screen name="check-in" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="mood-confirm" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="journal-reflect" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="exercise" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="day-detail" options={{ headerShown: false }} />
+              <Stack.Screen name="ai-report" options={{ headerShown: false }} />
+              <Stack.Screen name="account" options={{ headerShown: false }} />
+              <Stack.Screen name="change-password" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="log-event" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="manage-habits" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="custom-moods" options={{ headerShown: false, presentation: 'card' }} />
+              <Stack.Screen name="annual-report" options={{ headerShown: false }} />
+            </Stack>
+            <PersistentMascotOverlay />
+            <ReviewPromptModal />
+          </View>
+        </ErrorBoundary>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 

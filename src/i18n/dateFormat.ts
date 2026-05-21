@@ -44,8 +44,10 @@ export function formatDate(date: Date, options: Intl.DateTimeFormatOptions): str
 
 /** Locale-aware time formatter (defaults: numeric hour + minute, 12h cycle). */
 export function formatTime(
-  date: Date,
+  date: Date | string | number,
   options: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' },
 ): string {
-  return new Intl.DateTimeFormat(currentLocale(), options).format(date);
+  const d = date instanceof Date ? date : new Date(date);
+  if (!Number.isFinite(d.getTime())) return '';
+  return new Intl.DateTimeFormat(currentLocale(), options).format(d);
 }

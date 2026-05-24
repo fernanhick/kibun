@@ -71,7 +71,7 @@ Use these TypeScript path aliases (configured in `tsconfig.json`):
 
 ## Graph Workflow Auto-Use Rule
 
-Use graph workflow automatically when the user asks for:
+Use the **graphify skill** automatically when the user asks for:
 
 - architecture mapping, dependency mapping, or module relationships
 - knowledge graph, concept graph, or cross-file connection discovery
@@ -79,14 +79,19 @@ Use graph workflow automatically when the user asks for:
 - traceability of concepts across docs, code, and assets
 - token-efficient analysis of many files through cached extraction
 
+**How to invoke graphify:**
+1. Use `read_file` to load the skill at `c:\Users\Fercho\.claude\skills\graphify\SKILL.md`.
+2. Follow the full procedure described in that file.
+3. Before any broad codebase exploration, first read `graphify-out/graph.html` in the workspace root if it exists (the pre-built graph) — this avoids re-running the full pipeline unnecessarily.
+
 Execution policy:
 
-- If the user explicitly says `/graphify`, run graph workflow immediately.
-- If the request implies graph-level analysis (even without `/graphify`), run graph workflow by default.
+- If the user explicitly says `/graphify`, invoke the graphify skill immediately.
+- If the request implies graph-level analysis (even without `/graphify`), invoke the graphify skill by default.
 - For narrow tasks (single bug fix, one function explanation, or one-file edit), do not run graph workflow.
 - Prefer token-efficient runs:
   1. Start with the smallest relevant folder.
-  2. Use update mode after the first run.
+  2. Use `--update` mode after the first run.
   3. Expand scope only if required.
 - Use this threshold for auto-trigger:
-  1. If scope is more than 15 files, or spans more than one top-level folder, use graph workflow.
+  1. If scope is more than 15 files, or spans more than one top-level folder, invoke the graphify skill.

@@ -487,6 +487,34 @@ export default function RegistrationScreen() {
           accessibilityHint={t('register.skipA11yHint')}
         />
       </View>
+
+      {/* Dev-only: quick tester login */}
+      {__DEV__ && (
+        <Pressable
+          onPress={async () => {
+            if (!supabase) return;
+            setError(null);
+            setInfoMessage(null);
+            setSubmitting(true);
+            const { error: devErr } = await supabase.auth.signInWithPassword({
+              email: 'fernanhick+kibun-review@gmail.com',
+              password: 'Kibun-Review-2026!Sakura',
+            });
+            setSubmitting(false);
+            if (devErr) {
+              setError(devErr.message);
+            } else {
+              completeOnboardingForReturningUser();
+              router.replace('/(tabs)');
+            }
+          }}
+          style={({ pressed }) => [styles.devLoginButton, pressed && styles.pressed]}
+          accessibilityRole="button"
+          accessibilityLabel="Dev: sign in as tester"
+        >
+          <Text style={styles.devLoginText}>🛠 Dev: tester login</Text>
+        </Pressable>
+      )}
     </Screen>
   );
 }
@@ -650,5 +678,19 @@ const styles = StyleSheet.create({
   },
   skipRow: {
     marginTop: spacing.sm,
+  },
+  devLoginButton: {
+    alignSelf: 'center',
+    marginTop: spacing.sm,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: radius.md,
+    backgroundColor: colors.chipSurface,
+  },
+  devLoginText: {
+    fontSize: typography.sizes.xs,
+    color: colors.textSecondary,
   },
 });

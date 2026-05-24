@@ -719,11 +719,12 @@ function DailyInsightCard({ content, isLoading }: { content: string | null; isLo
 
 const insightStyles = StyleSheet.create({
   wrapper: {
-    ...shadows.sm,
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
     backgroundColor: colors.pinkLight,
     borderRadius: 20,
+    borderWidth: 0.5,
+    borderColor: colors.pinkBorder,
     padding: spacing.md,
     gap: spacing.xs,
   },

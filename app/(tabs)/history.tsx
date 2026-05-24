@@ -1,5 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
 import { View, Text, Pressable, Share, StyleSheet, type LayoutChangeEvent } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -258,47 +259,54 @@ export default function HistoryScreen() {
 
   return (
     <Screen scrollable={true} layout="wide" contentContainerStyle={styles.scrollPadding} onScroll={onScroll}>
-      <View style={styles.headerCard}>
+      <LinearGradient
+        colors={[colors.skyStart, colors.skyEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerCard}
+      >
         <View style={styles.headerTopRow}>
           <View style={styles.headerBadge}>
             <Text style={[styles.headerBadgeText, { fontSize: r.badgeText }]}>{t('history.header.badge')}</Text>
           </View>
           <View style={styles.headerTopRight}>
-            {isPro && (
-              <Pressable
-                onPress={() => router.push('/log-event' as Href)}
-                style={styles.addEventBtn}
-                accessibilityRole="button"
-                accessibilityLabel={t('history.actions.eventA11y')}
-              >
-                <Ionicons name="add" size={r.actionIcon} color={colors.primaryDark} />
-                <Text style={[styles.exportBtnLabel, { fontSize: r.btnLabel }]}>{t('history.actions.event')}</Text>
-              </Pressable>
-            )}
-            {isPro ? (
-              <Pressable
-                onPress={handleExport}
-                disabled={exporting || entries.length === 0}
-                style={[styles.exportBtn, (exporting || entries.length === 0) && styles.exportBtnDisabled]}
-                accessibilityRole="button"
-                accessibilityLabel={t('history.actions.exportA11y')}
-              >
-                <Ionicons name="share-outline" size={r.actionIcon} color={colors.primaryDark} />
-                <Text style={[styles.exportBtnLabel, { fontSize: r.btnLabel }]}>{t('history.actions.export')}</Text>
-              </Pressable>
-            ) : (
-              <Pressable
-                onPress={() => router.push('/paywall' as Href)}
-                style={styles.exportProLock}
-                accessibilityRole="button"
-                accessibilityLabel={t('history.actions.exportLockedA11y')}
-              >
-                <Text style={[styles.exportProLockText, { fontSize: r.btnLabel }]}>{t('history.actions.export')}</Text>
-                <View style={styles.proLockBadge}>
-                  <Text style={[styles.proLockBadgeText, { fontSize: r.proLockBadge }]}>{t('insights.proBadge')}</Text>
-                </View>
-              </Pressable>
-            )}
+            <View style={styles.headerActions}>
+              {isPro && (
+                <Pressable
+                  onPress={() => router.push('/log-event' as Href)}
+                  style={styles.addEventBtn}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('history.actions.eventA11y')}
+                >
+                  <Ionicons name="add" size={r.actionIcon} color={colors.textInverse} />
+                  <Text style={[styles.exportBtnLabel, { fontSize: r.btnLabel }]}>{t('history.actions.event')}</Text>
+                </Pressable>
+              )}
+              {isPro ? (
+                <Pressable
+                  onPress={handleExport}
+                  disabled={exporting || entries.length === 0}
+                  style={[styles.exportBtn, (exporting || entries.length === 0) && styles.exportBtnDisabled]}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('history.actions.exportA11y')}
+                >
+                  <Ionicons name="share-outline" size={r.actionIcon} color={colors.textInverse} />
+                  <Text style={[styles.exportBtnLabel, { fontSize: r.btnLabel }]}>{t('history.actions.export')}</Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  onPress={() => router.push('/paywall' as Href)}
+                  style={styles.exportProLock}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('history.actions.exportLockedA11y')}
+                >
+                  <Text style={[styles.exportProLockText, { fontSize: r.btnLabel }]}>{t('history.actions.export')}</Text>
+                  <View style={styles.proLockBadge}>
+                    <Text style={[styles.proLockBadgeText, { fontSize: r.proLockBadge }]}>{t('insights.proBadge')}</Text>
+                  </View>
+                </Pressable>
+              )}
+            </View>
             <Shiba variant="neutral" size={r.shibaHeader} />
           </View>
         </View>
@@ -309,7 +317,7 @@ export default function HistoryScreen() {
             accessibilityRole="button"
             hitSlop={12}
           >
-            <Ionicons name="chevron-back" size={r.chevronIcon} color={colors.text} />
+            <Ionicons name="chevron-back" size={r.chevronIcon} color={colors.textInverse} />
           </Pressable>
 
           <Text style={[styles.monthLabel, { fontSize: r.monthLabel }]} accessibilityRole="header">
@@ -327,11 +335,11 @@ export default function HistoryScreen() {
             <Ionicons
               name="chevron-forward"
               size={r.chevronIcon}
-              color={isCurrentMonth ? colors.textDisabled : colors.text}
+              color={isCurrentMonth ? 'rgba(255,255,255,0.4)' : colors.textInverse}
             />
           </Pressable>
         </View>
-      </View>
+      </LinearGradient>
 
       <View style={styles.calendarPanel} onLayout={handleCalendarLayout}>
         <View style={styles.weekdayRow}>
@@ -554,14 +562,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+    flexShrink: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+    flexShrink: 1,
   },
   exportBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: 'rgba(255,255,255,0.2)',
     borderWidth: 1,
-    borderColor: '#C6DBFF',
+    borderColor: 'rgba(255,255,255,0.36)',
     borderRadius: 999,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
@@ -572,25 +589,25 @@ const styles = StyleSheet.create({
   exportBtnLabel: {
     fontSize: typography.sizes.sm,
     fontFamily: typography.fonts.ui,
-    color: colors.primaryDark,
+    color: colors.textInverse,
   },
   exportProLock: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#F0F4FF',
+    backgroundColor: 'rgba(255,255,255,0.15)',
     borderWidth: 1,
-    borderColor: '#C6DBFF',
+    borderColor: 'rgba(255,255,255,0.36)',
     borderRadius: 999,
     paddingHorizontal: spacing.sm,
     paddingVertical: 6,
   },
   exportProLockText: {
     fontSize: typography.sizes.sm,
-    color: colors.textSecondary,
+    color: colors.textInverse,
   },
   proLockBadge: {
-    backgroundColor: colors.primary,
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderRadius: 999,
     paddingHorizontal: 6,
     paddingVertical: 2,
@@ -607,22 +624,22 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     paddingBottom: spacing.xs,
     paddingHorizontal: spacing.sm,
-    backgroundColor: 'rgba(255,255,255,0.95)',
+    overflow: 'hidden',
   },
   headerBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.accentLight,
+    backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 999,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: colors.accentBorder,
+    borderColor: 'rgba(255,255,255,0.36)',
   },
   headerBadgeText: {
     fontSize: typography.sizes.xs,
     fontFamily: typography.fonts.ui,
     letterSpacing: 0.7,
-    color: '#B07000',
+    color: colors.textInverse,
     textTransform: 'uppercase',
   },
   header: {
@@ -635,7 +652,7 @@ const styles = StyleSheet.create({
   monthLabel: {
     fontSize: typography.sizes.lg,
     fontFamily: typography.fonts.ui,
-    color: colors.text,
+    color: colors.textInverse,
   },
   disabledArrow: {
     opacity: 0.3,
@@ -706,9 +723,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: colors.accentLight,
+    backgroundColor: 'rgba(255,255,255,0.2)',
     borderWidth: 1,
-    borderColor: colors.accentBorder,
+    borderColor: 'rgba(255,255,255,0.36)',
     borderRadius: 999,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,

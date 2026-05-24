@@ -50,6 +50,7 @@ export default ({ config }: ConfigContext) => ({
       backgroundColor: '#4A86FF',
     },
     package: 'com.kibun.app',
+    googleServicesFile: './google-services.json',
     resizeableActivity: true,
     // SYSTEM_ALERT_WINDOW leaks in from RN's debug manifest; AD_ID is auto-injected
     // by Play Services. Neither is used by Kibun — block both so Play doesn't gate

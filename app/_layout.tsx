@@ -242,11 +242,15 @@ export default function RootLayout() {
 
   // Android: hide 3-button navigation bar (sticky immersive).
   // Re-hide on app foreground since switching apps can reveal it.
+  // 'overlay-swipe' = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE: the bar only
+  // appears as a transient overlay on a deliberate edge swipe and never
+  // resizes the app layout. 'inset-swipe' (BEHAVIOR_DEFAULT) was too eager —
+  // it triggered constantly on normal taps near the bottom of the screen.
   useEffect(() => {
     if (Platform.OS !== 'android') return;
     const hideNavBar = () => {
       NavigationBar.setVisibilityAsync('hidden');
-      NavigationBar.setBehaviorAsync('inset-swipe');
+      NavigationBar.setBehaviorAsync('overlay-swipe');
     };
     hideNavBar();
     const sub = AppState.addEventListener('change', (state) => {

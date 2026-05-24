@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: spacing.md,
     borderRadius: radius.card,
-    borderWidth: 1.5,
+    borderWidth: 0.5,
   },
   emoji: {
     fontSize: 32,

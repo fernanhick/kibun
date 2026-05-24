@@ -31,23 +31,27 @@ const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
 
 // ─── Constants matching src/constants/moods.ts ────────────────────────────────
 const MOODS = {
-  // green
-  happy:     { color: '#66BB6A', group: 'green',       sentiment: 'positive', score: 0.85 },
-  excited:   { color: '#C6E82B', group: 'green',       sentiment: 'positive', score: 0.92 },
-  grateful:  { color: '#81C784', group: 'green',       sentiment: 'positive', score: 0.88 },
-  calm:      { color: '#80DEEA', group: 'green',       sentiment: 'positive', score: 0.70 },
+  // green (positive)
+  happy:      { color: '#66BB6A', group: 'green',       sentiment: 'positive', score: 0.85 },
+  excited:    { color: '#C6E82B', group: 'green',       sentiment: 'positive', score: 0.92 },
+  grateful:   { color: '#81C784', group: 'green',       sentiment: 'positive', score: 0.88 },
+  bright:     { color: '#A5D6A7', group: 'green',       sentiment: 'positive', score: 0.75 },
+  cheeky:     { color: '#AED581', group: 'green',       sentiment: 'positive', score: 0.80 },
+  loved:      { color: '#9CCC65', group: 'green',       sentiment: 'positive', score: 0.90 },
+  surprised:  { color: '#DCE775', group: 'green',       sentiment: 'positive', score: 0.75 },
+  calm:       { color: '#80DEEA', group: 'green',       sentiment: 'positive', score: 0.70 },
   // neutral
-  meh:       { color: '#BDBDBD', group: 'neutral',     sentiment: 'neutral',  score: 0.0  },
-  tired:     { color: '#BCAAA4', group: 'neutral',     sentiment: 'neutral',  score: -0.1 },
+  tired:     { color: '#BCAAA4', group: 'neutral',     sentiment: 'neutral',  score: -0.1  },
   bored:     { color: '#B0BEC5', group: 'neutral',     sentiment: 'neutral',  score: -0.15 },
-  confused:  { color: '#FFD54F', group: 'neutral',     sentiment: 'neutral',  score: 0.05 },
-  // red-orange
-  sad:        { color: '#F48FB1', group: 'red-orange', sentiment: 'negative', score: -0.7 },
-  anxious:    { color: '#FFAB40', group: 'red-orange', sentiment: 'negative', score: -0.6 },
+  confused:  { color: '#FFD54F', group: 'neutral',     sentiment: 'neutral',  score: 0.05  },
+  // red-orange (negative)
+  sad:        { color: '#F48FB1', group: 'red-orange', sentiment: 'negative', score: -0.70 },
+  worried:    { color: '#FFB74D', group: 'red-orange', sentiment: 'negative', score: -0.55 },
+  scared:     { color: '#FFCC80', group: 'red-orange', sentiment: 'negative', score: -0.65 },
   frustrated: { color: '#FF8A65', group: 'red-orange', sentiment: 'negative', score: -0.65 },
-  angry:      { color: '#EF5350', group: 'red-orange', sentiment: 'negative', score: -0.8 },
-  // blue
-  melancholy: { color: '#90CAF9', group: 'blue',       sentiment: 'negative', score: -0.5 },
+  angry:      { color: '#EF5350', group: 'red-orange', sentiment: 'negative', score: -0.80 },
+  // blue (introspective)
+  melancholy: { color: '#90CAF9', group: 'blue',       sentiment: 'negative', score: -0.50 },
   lonely:     { color: '#B39DDB', group: 'blue',       sentiment: 'negative', score: -0.55 },
 };
 
@@ -339,8 +343,13 @@ async function seedLifeEvents(userId, days) {
     { offset: 110, title: 'Got promoted!',            category: 'work',         notes: 'Surreal. Took the team out for drinks.' },
     { offset: 130, title: 'Ran the half marathon',    category: 'personal',     notes: 'Trained for months. Knees hurt for a week.' },
     { offset: 142, title: 'Anniversary dinner',       category: 'relationship', notes: 'Tried that new place downtown. Great night.' },
-    { offset: 160, title: 'Coffee with old friend',   category: 'social',       notes: 'Hadn’t seen them in 3 years.' },
+    { offset: 160, title: 'Coffee with old friend',   category: 'social',       notes: "Hadn't seen them in 3 years." },
     { offset: 175, title: 'Beach weekend',            category: 'travel',       notes: 'Slept 9 hours both nights.' },
+    // ── Upcoming events (in the future buffer) — reviewers see planned entries
+    { offset: totalDays - 30, title: 'Work trip planning',   category: 'work',         notes: null },
+    { offset: totalDays - 20, title: "Friend's wedding",     category: 'social',       notes: null },
+    { offset: totalDays - 10, title: 'Dentist appointment',  category: 'health',       notes: null },
+    { offset: totalDays - 5,  title: 'Weekend hiking trip',  category: 'travel',       notes: null },
   ];
 
   const rows = events.map((e) => {
@@ -372,8 +381,10 @@ async function seedMoodEntries(userId, days) {
     const day = days[i];
     const dow = day.dow;
 
-    // 5% of days: skip entirely (realism)
-    if (chance(0.05)) continue;
+    // Skip future days more often (60%) — only seed a few to show upcoming check-ins
+    if (day.isFuture && chance(0.60)) continue;
+    // 5% of past days: skip entirely (realism)
+    if (!day.isFuture && chance(0.05)) continue;
 
     // How many slots today?
     const r = Math.random();
@@ -453,9 +464,12 @@ async function seedMoodEntries(userId, days) {
     }
   }
 
-  // Ensure today and yesterday have at least one entry so streak is "active"
-  const todayDay = days[days.length - 1];
-  const yesterdayDay = days[days.length - 2];
+  // Ensure today and the 3 days around today have entries so the streak shows active
+  // "today" in the array is the last non-future day
+  const todayIdx = days.findIndex((d) => d.isFuture) - 1;
+  const anchorIdx = todayIdx >= 0 ? todayIdx : days.length - 1;
+  const todayDay = days[anchorIdx];
+  const yesterdayDay = days[Math.max(0, anchorIdx - 1)];
   for (const d of [yesterdayDay, todayDay]) {
     const dateStr = dateString(d.year, d.month, d.day);
     const has = entries.some((e) => e.logged_at.startsWith(dateStr));
@@ -598,20 +612,22 @@ function lastOfMonth(yyyymmdd, monthOffset) {
 }
 
 // ─── Build the day index ──────────────────────────────────────────────────────
-function buildDays(totalDays) {
-  // Use the user's "today" (2026-04-24 per project context). Let the script
-  // anchor to the host clock at runtime so it stays current.
+// pastDays: days of history going back from today
+// futureDays: additional days ahead of today (so the account stays fresh
+//             for App Store / Play reviewers who open it days/weeks later)
+function buildDays(pastDays, futureDays = 0) {
   const today = new Date();
   // Anchor to UTC midnight for stable date strings
   const anchor = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
   const days = [];
-  for (let i = totalDays - 1; i >= 0; i--) {
+  for (let i = pastDays - 1; i >= -futureDays; i--) {
     const d = addDays(anchor, -i);
     days.push({
       year: d.getUTCFullYear(),
       month: d.getUTCMonth() + 1,
       day: d.getUTCDate(),
       dow: d.getUTCDay(), // 0 = Sunday
+      isFuture: i < 0,   // flag so callers can treat future days differently
     });
   }
   return days;
@@ -619,9 +635,11 @@ function buildDays(totalDays) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 async function main() {
-  const TOTAL_DAYS = 180;
-  const days = buildDays(TOTAL_DAYS);
-  console.log(`[seed] Window: ${dateString(days[0].year, days[0].month, days[0].day)} → ${dateString(days[days.length-1].year, days[days.length-1].month, days[days.length-1].day)} (${TOTAL_DAYS} days)`);
+  const PAST_DAYS   = 180; // history window
+  const FUTURE_DAYS = 120; // forward buffer so account stays fresh for reviewers (~4 months)
+  const days = buildDays(PAST_DAYS, FUTURE_DAYS);
+  const totalDays = PAST_DAYS + FUTURE_DAYS;
+  console.log(`[seed] Window: ${dateString(days[0].year, days[0].month, days[0].day)} → ${dateString(days[days.length-1].year, days[days.length-1].month, days[days.length-1].day)} (${totalDays} days, ${PAST_DAYS} past + ${FUTURE_DAYS} future)`);
 
   const userId = await ensureUser();
 

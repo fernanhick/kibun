@@ -87,6 +87,8 @@ export function syncSubscriptionStatusToSupabase(
       )
   ).then(({ error }) => {
     if (error && __DEV__) {
+      // FK violation = stale session (user was deleted/recreated). Not actionable — skip logging.
+      if (error.message?.includes('foreign key constraint')) return;
       console.error('[kibun:profile] Failed to sync subscription_status:', error.message);
     }
   });

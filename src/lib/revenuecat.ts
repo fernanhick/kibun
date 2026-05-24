@@ -23,7 +23,8 @@ const ENTITLEMENT_IDS = [
 // entitlement ID configured in the RevenueCat dashboard.
 
 export function initPurchases(): void {
-  const apiKey = Platform.select({
+  const testKey = __DEV__ ? process.env.EXPO_PUBLIC_REVENUECAT_TEST_KEY?.trim() : undefined;
+  const apiKey = testKey ?? Platform.select({
     ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY,
     android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY,
     default: undefined,
@@ -33,7 +34,8 @@ export function initPurchases(): void {
     if (__DEV__) {
       console.warn(
         '[kibun:rc] RevenueCat API key not configured. ' +
-        'Set EXPO_PUBLIC_REVENUECAT_IOS_KEY / EXPO_PUBLIC_REVENUECAT_ANDROID_KEY in .env.'
+        'Set EXPO_PUBLIC_REVENUECAT_TEST_KEY (dev) or ' +
+        'EXPO_PUBLIC_REVENUECAT_IOS_KEY / EXPO_PUBLIC_REVENUECAT_ANDROID_KEY in .env.'
       );
     }
     return;

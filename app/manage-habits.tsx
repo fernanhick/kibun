@@ -1,6 +1,5 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, StyleSheet, Alert } from 'react-native';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -90,14 +89,16 @@ export default function ManageHabitsScreen() {
         {habits.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>{t('manageHabits.yourHabits')}</Text>
-            {habits.map((h) => (
-              <HabitSwipeRow
-                key={h.id}
-                habit={h}
-                displayName={getHabitDisplayName(h.name)}
-                onDelete={() => handleDelete(h.id, h.name)}
-              />
-            ))}
+            <View style={styles.habitGrid}>
+              {habits.map((h) => (
+                <HabitCard
+                  key={h.id}
+                  habit={h}
+                  displayName={getHabitDisplayName(h.name)}
+                  onDelete={() => handleDelete(h.id, h.name)}
+                />
+              ))}
+            </View>
           </View>
         )}
 
@@ -216,7 +217,7 @@ export default function ManageHabitsScreen() {
   );
 }
 
-function HabitSwipeRow({
+function HabitCard({
   habit,
   displayName,
   onDelete,
@@ -226,77 +227,36 @@ function HabitSwipeRow({
   onDelete: () => void;
 }) {
   const { t } = useTranslation('screens');
-  const swipeRef = useRef<Swipeable>(null);
-
-  const renderRightActions = () => (
-    <View style={styles.swipeActionsWrap}>
-      <Pressable
-        onPress={() => {
-          swipeRef.current?.close();
-          onDelete();
-        }}
-        style={styles.swipeDeleteButton}
-        accessibilityRole="button"
-        accessibilityLabel={t('manageHabits.deleteA11y', { name: displayName })}
-      >
-        <Ionicons name="trash-outline" size={20} color={colors.textInverse} />
-        <Text style={styles.swipeDeleteLabel} maxFontSizeMultiplier={1.2}>
-          {t('manageHabits.deleteAction')}
-        </Text>
-      </Pressable>
-    </View>
-  );
 
   return (
-    <Swipeable
-      ref={swipeRef}
-      renderRightActions={renderRightActions}
-      friction={2}
-      rightThreshold={40}
-      overshootRight={false}
-      containerStyle={styles.swipeContainer}
-    >
-      <View style={styles.habitRow}>
-        <Text style={styles.habitIcon}>{habit.icon}</Text>
-        <View style={styles.habitInfo}>
-          <Text style={styles.habitName}>{displayName}</Text>
-          <Text style={styles.habitType}>
-            {habit.trackingType === 'scale'
-              ? t('manageHabits.scaleType')
-              : t('manageHabits.booleanType')}
-          </Text>
-        </View>
+    <View style={styles.habitCard}>
+      <View style={styles.habitCardTop}>
+        <Text style={styles.habitCardIcon}>{habit.icon}</Text>
+        <Pressable
+          onPress={onDelete}
+          hitSlop={10}
+          style={({ pressed }) => [styles.habitCardDelete, pressed && styles.habitCardDeletePressed]}
+          accessibilityRole="button"
+          accessibilityLabel={t('manageHabits.deleteA11y', { name: displayName })}
+        >
+          <Ionicons name="trash-outline" size={16} color={colors.textSecondary} />
+        </Pressable>
       </View>
-    </Swipeable>
+      <Text style={styles.habitCardName} numberOfLines={2}>
+        {displayName}
+      </Text>
+      <Text style={styles.habitCardType}>
+        {habit.trackingType === 'scale'
+          ? t('manageHabits.scaleType')
+          : t('manageHabits.booleanType')}
+      </Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-  },
-  swipeContainer: {
-    borderRadius: radius.lg,
-    overflow: 'hidden',
-  },
-  swipeActionsWrap: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    paddingLeft: spacing.sm,
-  },
-  swipeDeleteButton: {
-    width: 84,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.error,
-    borderRadius: radius.lg,
-    gap: 4,
-  },
-  swipeDeleteLabel: {
-    fontSize: typography.sizes.xs,
-    fontFamily: typography.fonts.ui,
-    color: colors.textInverse,
-    fontWeight: typography.weights.semibold,
   },
   heroCard: {
     borderRadius: 28,
@@ -337,32 +297,45 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
-  habitRow: {
+  habitGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  habitCard: {
+    width: '48%',
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderWidth: 1.2,
     borderColor: '#DCE9FF',
     borderRadius: radius.lg,
-    paddingVertical: 12,
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    gap: 2,
   },
-  habitIcon: {
+  habitCardTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 2,
+  },
+  habitCardIcon: {
     fontSize: 22,
   },
-  habitInfo: {
-    flex: 1,
+  habitCardDelete: {
+    padding: 4,
+    borderRadius: radius.full,
   },
-  habitName: {
+  habitCardDeletePressed: {
+    backgroundColor: 'rgba(0,0,0,0.06)',
+  },
+  habitCardName: {
     fontSize: typography.sizes.body,
     fontFamily: typography.fonts.ui,
     color: colors.text,
   },
-  habitType: {
+  habitCardType: {
     fontSize: typography.sizes.xs,
     color: colors.textSecondary,
-    marginTop: 2,
   },
   presetGrid: {
     gap: spacing.sm,

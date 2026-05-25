@@ -501,6 +501,18 @@ interface HabitsSectionProps {
 
 function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onManage }: HabitsSectionProps) {
   const { t } = useTranslation('screens');
+
+  // Group by tracking type so same-height cards land on the same grid row.
+  // Booleans (single-row cards) first, then scales (taller two-row cards).
+  const orderedHabits = useMemo(
+    () =>
+      [...habits].sort((a, b) => {
+        if (a.trackingType === b.trackingType) return a.displayOrder - b.displayOrder;
+        return a.trackingType === 'boolean' ? -1 : 1;
+      }),
+    [habits],
+  );
+
   if (habits.length === 0) {
     return (
       <SpringPressable
@@ -534,54 +546,61 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
           <Text style={habitStyles.manageLink}>{t('home.habitsManage')}</Text>
         </Pressable>
       </View>
-      {habits.map((h) => {
-        const log = todayLogs.find((l) => l.habitId === h.id);
-        if (h.trackingType === 'boolean') {
-          const done = log?.value === 1;
-          return (
-            <SpringPressable
-              key={h.id}
-              style={[habitStyles.habitRow, done && habitStyles.habitRowDone]}
-              onPress={() => done ? onClear(h.id, today) : onLog(h.id, today, 1)}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: done }}
-              accessibilityLabel={done ? t('home.habitDoneA11y', { name: h.name }) : t('home.habitNotDoneA11y', { name: h.name })}
-            >
-              <Text style={habitStyles.habitIcon} maxFontSizeMultiplier={1.3}>{h.icon}</Text>
-              <Text
-                style={[habitStyles.habitName, done && habitStyles.habitNameDone]}
-                maxFontSizeMultiplier={1.3}
-                numberOfLines={1}
+      <View style={habitStyles.grid}>
+        {orderedHabits.map((h) => {
+          const log = todayLogs.find((l) => l.habitId === h.id);
+          if (h.trackingType === 'boolean') {
+            const done = log?.value === 1;
+            return (
+              <SpringPressable
+                key={h.id}
+                style={[habitStyles.card, done && habitStyles.cardDone]}
+                onPress={() => done ? onClear(h.id, today) : onLog(h.id, today, 1)}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: done }}
+                accessibilityLabel={done ? t('home.habitDoneA11y', { name: h.name }) : t('home.habitNotDoneA11y', { name: h.name })}
               >
-                {h.name}
-              </Text>
-              <View style={[habitStyles.checkBox, done && habitStyles.checkBoxDone]}>
-                {done && <Ionicons name="checkmark" size={14} color={colors.textInverse} />}
+                <View style={habitStyles.cardRow}>
+                  <Text style={habitStyles.cardIcon} maxFontSizeMultiplier={1.3}>{h.icon}</Text>
+                  <Text
+                    style={[habitStyles.cardName, done && habitStyles.cardNameDone]}
+                    maxFontSizeMultiplier={1.3}
+                    numberOfLines={1}
+                  >
+                    {h.name}
+                  </Text>
+                  <View style={[habitStyles.checkBox, done && habitStyles.checkBoxDone]}>
+                    {done && <Ionicons name="checkmark" size={14} color={colors.textInverse} />}
+                  </View>
+                </View>
+              </SpringPressable>
+            );
+          }
+          // scale habit: 1–5 dots, stacked below name for compactness
+          const currentValue = log?.value ?? 0;
+          return (
+            <View key={h.id} style={habitStyles.card}>
+              <View style={habitStyles.cardRow}>
+                <Text style={habitStyles.cardIcon}>{h.icon}</Text>
+                <Text style={habitStyles.cardName} numberOfLines={1}>{h.name}</Text>
               </View>
-            </SpringPressable>
-          );
-        }
-        // scale habit: 1–5 dots
-        const currentValue = log?.value ?? 0;
-        return (
-          <View key={h.id} style={habitStyles.habitRow}>
-            <Text style={habitStyles.habitIcon}>{h.icon}</Text>
-            <Text style={habitStyles.habitName}>{h.name}</Text>
-            <View style={habitStyles.scaleRow}>
-              {[1, 2, 3, 4, 5].map((v) => (
-                <Pressable
-                  key={v}
-                  onPress={() => currentValue === v ? onClear(h.id, today) : onLog(h.id, today, v)}
-                  style={[habitStyles.scaleDot, currentValue >= v && habitStyles.scaleDotActive]}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('home.habitLevelA11y', { name: h.name, n: v })}
-                  accessibilityState={{ selected: currentValue >= v }}
-                />
-              ))}
+              <View style={habitStyles.scaleRow}>
+                {[1, 2, 3, 4, 5].map((v) => (
+                  <Pressable
+                    key={v}
+                    onPress={() => currentValue === v ? onClear(h.id, today) : onLog(h.id, today, v)}
+                    style={[habitStyles.scaleDot, currentValue >= v && habitStyles.scaleDotActive]}
+                    hitSlop={6}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('home.habitLevelA11y', { name: h.name, n: v })}
+                    accessibilityState={{ selected: currentValue >= v }}
+                  />
+                ))}
+              </View>
             </View>
-          </View>
-        );
-      })}
+          );
+        })}
+      </View>
     </View>
   );
 }
@@ -639,34 +658,43 @@ const habitStyles = StyleSheet.create({
     color: colors.primary,
     fontFamily: typography.fonts.ui,
   },
-  habitRow: {
-    ...shadows.sm,
+  grid: {
     flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'wrap',
     gap: spacing.sm,
+  },
+  card: {
+    ...shadows.sm,
+    width: '48%',
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderRadius: radius.md,
-    paddingVertical: 10,
-    paddingHorizontal: spacing.md,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    gap: 6,
   },
-  habitRowDone: {
+  cardDone: {
     backgroundColor: '#F1FFF2',
   },
-  habitIcon: {
+  cardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  cardIcon: {
     fontSize: 18,
   },
-  habitName: {
+  cardName: {
     flex: 1,
     fontSize: typography.sizes.sm,
     fontFamily: typography.fonts.ui,
     color: colors.text,
   },
-  habitNameDone: {
+  cardNameDone: {
     color: '#388E3C',
   },
   checkBox: {
-    width: 22,
-    height: 22,
+    width: 20,
+    height: 20,
     borderRadius: 6,
     borderWidth: 2,
     borderColor: '#C8DCFF',
@@ -679,12 +707,15 @@ const habitStyles = StyleSheet.create({
   },
   scaleRow: {
     flexDirection: 'row',
-    gap: 5,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 2,
+    paddingBottom: 2,
   },
   scaleDot: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
     borderWidth: 1.5,
     borderColor: '#C8DCFF',
     backgroundColor: '#F0F5FF',

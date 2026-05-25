@@ -25,7 +25,18 @@
       "Bash(supabase functions *)",
       "Bash(npm run *)",
       "Bash(echo \"EXIT: $?\")",
-      "Bash(node scripts/verify-review-account.mjs)"
+      "Bash(node scripts/verify-review-account.mjs)",
+      "PowerShell(npm *)",
+      "PowerShell(Get-NetTCPConnection *)",
+      "PowerShell(Get-Process *)",
+      "PowerShell($adb = \"$env:ANDROID_HOME\\\\platform-tools\\\\adb.exe\"; Write-Output \"=== Devices ===\"; & $adb devices; Write-Output \"\"; Write-Output \"=== Current reverse tunnels ===\"; & $adb reverse --list)",
+      "PowerShell(Test-Path *)",
+      "PowerShell($adb = \"$env:LOCALAPPDATA\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe\"; & $adb devices)",
+      "PowerShell($adb = \"$env:LOCALAPPDATA\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe\"; & $adb reverse tcp:8081 tcp:8081; & $adb reverse --list)",
+      "PowerShell(npx expo prebuild --platform android --no-install 2>&1 | Select-Object -Last 30)",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

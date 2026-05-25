@@ -12,6 +12,8 @@ import * as Notifications from 'expo-notifications';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
+import { Asset } from 'expo-asset';
+import { MOOD_IMAGES } from '@constants/moodImages';
 import { ThemeProvider } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
@@ -53,6 +55,11 @@ configureNotificationHandler();
 // Pre-warm the on-device ONNX sentiment model so the first inference in
 // MoodConfirmScreen is fast. Silently no-ops if model asset is not yet present.
 prewarmSentimentModel();
+
+// Pre-warm emotion PNGs so the check-in grid renders 18 bubbles instantly.
+// Without this, the first open of the mood picker decodes ~4.5 MB of PNGs
+// on the JS/UI thread and visibly stalls. Fire-and-forget — failures are silent.
+Asset.loadAsync(Object.values(MOOD_IMAGES).filter(Boolean) as number[]).catch(() => {});
 
 // Initialize Vexo product analytics. No-ops in __DEV__ or without a key.
 initAnalytics();
@@ -242,15 +249,13 @@ export default function RootLayout() {
 
   // Android: hide 3-button navigation bar (sticky immersive).
   // Re-hide on app foreground since switching apps can reveal it.
-  // 'overlay-swipe' = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE: the bar only
-  // appears as a transient overlay on a deliberate edge swipe and never
-  // resizes the app layout. 'inset-swipe' (BEHAVIOR_DEFAULT) was too eager —
-  // it triggered constantly on normal taps near the bottom of the screen.
+  // expo-navigation-bar@56 applies BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+  // natively on every hide call, so the bar only reappears as a transient
+  // overlay on a deliberate edge swipe and never resizes the app layout.
   useEffect(() => {
     if (Platform.OS !== 'android') return;
     const hideNavBar = () => {
       NavigationBar.setVisibilityAsync('hidden');
-      NavigationBar.setBehaviorAsync('overlay-swipe');
     };
     hideNavBar();
     const sub = AppState.addEventListener('change', (state) => {

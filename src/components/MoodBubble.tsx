@@ -1,8 +1,10 @@
 import { useRef, useEffect } from 'react';
-import { Animated, Pressable, Text, StyleSheet, Image } from 'react-native';
+import { Animated, Pressable, Text, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { MoodDefinition, MOOD_MAP, MOODS, MoodGroup } from '@constants/moods';
+import { MOOD_IMAGES, normalizeMoodImageKey } from '@constants/moodImages';
 import { typography, spacing, radius } from '@constants/theme';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { haptics } from '@lib/haptics';
@@ -33,27 +35,6 @@ const FONT_SIZES = {
   xl: typography.sizes.lg,
 } as const;
 
-const MOOD_IMAGES: Partial<Record<string, ReturnType<typeof require>>> = {
-  angry: require('../../assets/emotions/angry.png'),
-  bored: require('../../assets/emotions/bored.png'),
-  bright: require('../../assets/emotions/bright.png'),
-  calm: require('../../assets/emotions/calm.png'),
-  cheeky: require('../../assets/emotions/cheeky.png'),
-  confused: require('../../assets/emotions/confused.png'),
-  excited: require('../../assets/emotions/excited.png'),
-  frustrated: require('../../assets/emotions/frustrated.png'),
-  grateful: require('../../assets/emotions/grateful.png'),
-  happy: require('../../assets/emotions/happy.png'),
-  lonely: require('../../assets/emotions/lonely.png'),
-  loved: require('../../assets/emotions/loved.png'),
-  melancholy: require('../../assets/emotions/melancholy.png'),
-  sad: require('../../assets/emotions/sad.png'),
-  scared: require('../../assets/emotions/scared.png'),
-  surprised: require('../../assets/emotions/surprised.png'),
-  tired: require('../../assets/emotions/tired.png'),
-  worried: require('../../assets/emotions/worried.png'),
-};
-
 const GROUP_GRADIENTS: Record<MoodGroup, string[]> = {
   // Positive: forest green -> apple green
   green: ['#063B12', '#0B5D1E', '#147A2A', '#24963A', '#39B54A', '#5ECC5C', '#8ADE6C', '#B8E943'],
@@ -71,9 +52,6 @@ const GROUP_MOOD_ORDER: Record<MoodGroup, string[]> = {
   'red-orange': MOODS.filter((m) => m.group === 'red-orange').map((m) => m.id),
   blue: MOODS.filter((m) => m.group === 'blue').map((m) => m.id),
 };
-
-const normalizeMoodImageKey = (value: string) =>
-  value.trim().toLowerCase().replace(/\s+/g, '_');
 
 const getMoodImage = (mood: MoodDefinition) => {
   const idKey = normalizeMoodImageKey(mood.id);
@@ -222,7 +200,10 @@ export function MoodBubble({
           <Image
             source={getMoodImage(mood)!}
             style={{ width: imageSize, height: imageSize }}
-            resizeMode="contain"
+            contentFit="contain"
+            cachePolicy="memory-disk"
+            recyclingKey={`mood-${mood.id}`}
+            transition={0}
           />
         )}
         {showLabel && (

@@ -1,4 +1,10 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
+import { existsSync } from 'node:fs';
+
+// google-services.json is not committed (Firebase config, fetched per-environment).
+// Only wire it into the Android config when present so prebuild/EAS don't ENOENT.
+const googleServicesFile = './google-services.json';
+const hasGoogleServices = existsSync(googleServicesFile);
 
 const linkingConfig = {
   prefixes: ['kibun://', 'https://kibun.app'],
@@ -50,7 +56,7 @@ export default ({ config }: ConfigContext) => ({
       backgroundColor: '#4A86FF',
     },
     package: 'com.kibun.app',
-    googleServicesFile: './google-services.json',
+    ...(hasGoogleServices ? { googleServicesFile } : {}),
     resizeableActivity: true,
     // SYSTEM_ALERT_WINDOW leaks in from RN's debug manifest; AD_ID is auto-injected
     // by Play Services. Neither is used by Kibun — block both so Play doesn't gate
@@ -85,7 +91,6 @@ export default ({ config }: ConfigContext) => ({
       },
     ],
     'expo-screen-orientation',
-    'expo-sharing',
     [
       'expo-splash-screen',
       {

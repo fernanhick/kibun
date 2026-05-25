@@ -36,7 +36,12 @@
       "PowerShell(npx expo prebuild --platform android --no-install 2>&1 | Select-Object -Last 30)",
       "Bash(awk '{print $5, $9}')",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(npm ls *)",
+      "Bash(npm --version)",
+      "Bash(npm view *)",
+      "Bash(npm ci *)",
+      "Bash(node *)"
     ]
   }
 }

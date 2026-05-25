@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen, Shiba, AnimatedNumber } from '@components/index';
+import { Screen, AnimatedNumber } from '@components/index';
 import { EmptyState } from '@components/EmptyState';
 import { useMoodEntryStore, useSessionStore, useLifeEventsStore } from '@store/index';
 import { useResponsive } from '@hooks/useResponsive';
@@ -55,7 +55,6 @@ function buildResponsiveSizes(select: ResponsiveSelect) {
     legendSwatch: select({ phone: 10, tablet: 12, tabletLg: 14 }),
     balanceBarHeight: select({ phone: 14, tablet: 18, tabletLg: 22 }),
     statDividerHeight: select({ phone: 28, tablet: 36, tabletLg: 40 }),
-    shibaHeader: select({ phone: 80, tablet: 100, tabletLg: 116 }),
   };
 }
 
@@ -307,7 +306,6 @@ export default function HistoryScreen() {
                 </Pressable>
               )}
             </View>
-            <Shiba variant="neutral" size={r.shibaHeader} />
           </View>
         </View>
         <View style={styles.header}>

@@ -14,9 +14,10 @@ graphify-out/
 .env.development
 .env.production
 
-## iOS / Android build artifacts
-ios/
-android/
+## iOS / Android build artifacts (anchor to repo root so we don't accidentally
+## hide things like assets/icons/android/* or assets/icons/apple-devices/ios/*)
+/ios/
+/android/
 *.ipa
 *.apk
 *.aab

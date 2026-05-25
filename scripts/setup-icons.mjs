@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { copyFileSync, mkdirSync, readdirSync } from 'fs';
-import { join } from 'path';
+import { copyFileSync, mkdirSync, readdirSync, existsSync, unlinkSync } from 'fs';
+import { join, basename, extname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -60,6 +60,13 @@ const run = async () => {
       const srcPath = join(projectRoot, src);
       const destPath = join(projectRoot, dest);
 
+      if (!existsSync(srcPath)) {
+        throw new Error(
+          `Icon source missing: ${src}. The curated Android icon set must be ` +
+          `committed to the repo (check .gitignore for over-broad android/ rules).`
+        );
+      }
+
       mkdirSync(destPath, { recursive: true });
 
       const files = readdirSync(srcPath).filter(filter);
@@ -67,6 +74,16 @@ const run = async () => {
       files.forEach((file) => {
         const srcFile = join(srcPath, file);
         const destFile = join(destPath, file);
+        // Expo prebuild emits .webp variants of the same launcher icons into
+        // mipmap-*; Android treats foo.png and foo.webp as one resource, so
+        // remove any same-basename .webp before copying the curated PNG.
+        if (extname(file) === '.png') {
+          const webpTwin = join(destPath, `${basename(file, '.png')}.webp`);
+          if (existsSync(webpTwin)) {
+            unlinkSync(webpTwin);
+            console.log(`✗ Removed conflicting: ${basename(webpTwin)} ← ${dest}`);
+          }
+        }
         copyFileSync(srcFile, destFile);
         console.log(`✓ Copied: ${file} → ${dest}`);
       });

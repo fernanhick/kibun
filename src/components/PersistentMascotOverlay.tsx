@@ -13,10 +13,11 @@ import { Image } from 'expo-image';
 import { useRouter, useSegments, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SCREEN_MAX_WIDTH } from '@constants/breakpoints';
+import { getContentScale } from '@constants/layout';
 import { getMascotSource } from '@constants/mascotAnimations';
 import { useMoodEntryStore } from '@store/index';
 
-const MASCOT_SIZE = 136;
+const BASE_MASCOT_SIZE = 136;
 const MASCOT_EDGE_GAP = 16;
 
 const HIDDEN_ROUTES = new Set(['(onboarding)', 'paywall', 'register', 'auth']);
@@ -76,12 +77,13 @@ export function PersistentMascotOverlay() {
     return null;
   }
 
+  const mascotSize = Math.round(BASE_MASCOT_SIZE * getContentScale(windowWidth));
   const bottomOffset = Math.max(insets.bottom, 16) + 16;
   // On wide screens (tablet landscape), shift the mascot just outside the
   // centered content column so it doesn't overlap content. On phones and
   // narrow tablets, the gutter is too small — clamp to the screen-edge gap.
   const columnGutter = (windowWidth - SCREEN_MAX_WIDTH.tabletLg) / 2;
-  const rightOffset = Math.max(MASCOT_EDGE_GAP, columnGutter - MASCOT_SIZE - MASCOT_EDGE_GAP);
+  const rightOffset = Math.max(MASCOT_EDGE_GAP, columnGutter - mascotSize - MASCOT_EDGE_GAP);
 
   return (
     <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
@@ -99,11 +101,15 @@ export function PersistentMascotOverlay() {
           accessibilityLabel={isCheckInFlow ? 'Mascot' : 'Open check-in'}
           accessibilityRole={isCheckInFlow ? 'image' : 'button'}
           onPress={isCheckInFlow ? undefined : () => router.push('/check-in' as Href)}
-          style={({ pressed }) => [styles.button, !isCheckInFlow && pressed && styles.buttonPressed]}
+          style={({ pressed }) => [
+            styles.button,
+            { width: mascotSize, height: mascotSize },
+            !isCheckInFlow && pressed && styles.buttonPressed,
+          ]}
         >
           <Image
             source={getMascotSource(lastMoodId)}
-            style={styles.image}
+            style={[styles.image, { width: mascotSize, height: mascotSize }]}
             contentFit="contain"
             autoplay
           />
@@ -118,8 +124,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   button: {
-    width: MASCOT_SIZE,
-    height: MASCOT_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -127,8 +131,6 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.97 }],
   },
   image: {
-    width: MASCOT_SIZE,
-    height: MASCOT_SIZE,
     backgroundColor: 'transparent',
   },
 });

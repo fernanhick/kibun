@@ -31,7 +31,7 @@ export default function ProfilePhysicalScreen() {
   const handleContinue = () => {
     if (!canContinue) return;
     updateProfile({ sleepHours, exercise });
-    router.push('/(onboarding)/wisdom-mind-body');
+    router.push('/(onboarding)/profile-life');
   };
 
   return (
@@ -43,7 +43,7 @@ export default function ProfilePhysicalScreen() {
           end={{ x: 1, y: 1 }}
           style={styles.heroCard}
         >
-          <OnboardingProgress current={7} total={14} style={styles.progress} />
+          <OnboardingProgress current={7} total={11} style={styles.progress} />
           <Pressable
             onPress={() => router.back()}
             accessibilityRole="button"

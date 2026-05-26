@@ -28,17 +28,15 @@
     "subline": "Pick the mood that feels closest right now.",
     "cta": "Let's go"
   },
-  "wisdomAwareness": {
-    "headline": "Naming what you feel is the first step.",
-    "body": "Simply naming an emotion can soften how it feels. The act of noticing is its own kind of care."
+  "yourName": {
+    "title": "What should we call you?",
+    "subtitle": "We'll use your name to keep things personal.",
+    "fieldLabel": "Your name",
+    "placeholder": "e.g. Alex"
   },
-  "wisdomMindBody": {
-    "headline": "Your body keeps the score.",
-    "body": "Sleep, movement, and breath shape your mood as much as any thought you'll ever have. Caring for one cares for the other."
-  },
-  "wisdomSmallShifts": {
-    "headline": "Big change rarely happens at once.",
-    "body": "Tiny moments of attention — even ten seconds a day — compound into real shifts over time. That's why we're here."
+  "moodResponse": {
+    "greetingNamed": "Hey {{name}} 👋",
+    "greetingAnon": "Hey there 👋"
   },
   "profilePersonal": {
     "title": "Tell us about yourself",
@@ -108,6 +106,10 @@
       "daily": "Daily"
     }
   },
+  "profileLife": {
+    "title": "How are things outside of work?",
+    "subtitle": "Two quick things — social rhythm and stress baseline."
+  },
   "profileSocial": {
     "title": "Your social life",
     "subtitle": "Social connection shapes how we feel day to day.",
@@ -130,6 +132,10 @@
       "high": "High",
       "very-high": "Very high"
     }
+  },
+  "profileHelpsAndHopes": {
+    "title": "What helps & what you're hoping for",
+    "subtitle": "First what eases tough moments, then what brings you here."
   },
   "profileCoping": {
     "title": "When things feel heavy",
@@ -161,6 +167,15 @@
       "mood-patterns": "Notice mood patterns"
     }
   },
+  "reflection": {
+    "headlineNamed": "{{name}}, here's what we noticed.",
+    "headlineAnon": "Here's what we noticed.",
+    "subtitle": "Three things to set the stage.",
+    "chipSleep": "Sleep · {{value}}",
+    "chipStress": "Stress · {{value}}",
+    "chipGoal": "Goal · {{value}}",
+    "tieLine": "That's exactly what Kibun is built for — small daily check-ins that surface your patterns."
+  },
   "notificationPermission": {
     "title": "Stay on track",
     "subtitle": "Kibun works best with daily check-ins. Pick your reminder times.",
@@ -182,6 +197,21 @@
       "reminders": "Aligning your reminders",
       "insights": "Preparing your insights",
       "plan": "Drafting your daily plan"
+    },
+    "stepsPersonal": {
+      "profile": "Read: {{sleep}} · {{exercise}}",
+      "insights": "Watching: {{goal}}",
+      "plan": "{{name}}, your first 14 days are drafted"
     }
+  },
+  "planSnapshot": {
+    "titleNamed": "{{name}}, your Kibun plan is ready",
+    "titleAnon": "Your Kibun plan is ready",
+    "subtitle": "Here's what we'll watch in your first 14 days.",
+    "rowSleep": "We'll watch · Sleep",
+    "rowStress": "We'll watch · Stress",
+    "rowGoal": "Your goal",
+    "tagline": "Unlock to start tracking your patterns.",
+    "cta": "Unlock your plan"
   }
 }

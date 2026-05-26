@@ -20,10 +20,22 @@ export const KAWAII_TAB_VISUAL_OBSTRUCTION =
 export const KAWAII_TAB_SAFE_BOTTOM_MIN = 8;
 export const KAWAII_TAB_SAFE_BOTTOM_ANDROID = 8;
 
-// Width-based scale for tab bar geometry. Tab icons and the mascot would
-// otherwise look dwarfed on tablet viewports — bump them proportionally.
-export function getKawaiiTabScale(width: number): number {
+// Canonical phone-vs-tablet scale factor for content (mood bubbles, mascots,
+// tab-bar geometry). Window-derived via useResponsive/useWindowDimensions so
+// iPad split-screen / Stage Manager fall back to phone sizes correctly.
+//   ≥1200dp (tabletXl, iPad 13" landscape, Tab Ultra landscape) → 1.6
+//   ≥ 900dp (tabletLg, iPad 13" portrait, iPad 11" landscape)   → 1.45
+//   ≥ 600dp (tablet,   iPad mini/10.9"/Pro 11" portrait)         → 1.3
+//   else                                                         → 1.0
+export function getContentScale(width: number): number {
+  if (width >= breakpoints.tabletXl) return 1.6;
   if (width >= breakpoints.tabletLg) return 1.45;
   if (width >= breakpoints.tablet) return 1.3;
   return 1;
+}
+
+// Width-based scale for tab bar geometry. Tab icons and the mascot would
+// otherwise look dwarfed on tablet viewports — bump them proportionally.
+export function getKawaiiTabScale(width: number): number {
+  return getContentScale(width);
 }

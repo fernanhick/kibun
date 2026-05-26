@@ -341,14 +341,16 @@ export default function InsightsScreen() {
           <Text style={styles.sectionHeader} accessibilityRole="header">
             {t('insights.sections.patterns')}
           </Text>
-          {patterns.map((p) => (
-            <View key={p.id} accessibilityLabel={p.text}>
-              <Card style={styles.patternCard}>
-                <Text style={styles.patternIcon}>{p.icon}</Text>
-                <Text style={styles.patternText}>{p.text}</Text>
-              </Card>
-            </View>
-          ))}
+          <View style={styles.patternList}>
+            {patterns.map((p) => (
+              <View key={p.id} accessibilityLabel={p.text}>
+                <Card style={styles.patternCard}>
+                  <Text style={styles.patternIcon}>{p.icon}</Text>
+                  <Text style={styles.patternText}>{p.text}</Text>
+                </Card>
+              </View>
+            ))}
+          </View>
         </View>
       )}
 
@@ -579,6 +581,7 @@ const corrStyles = StyleSheet.create({
     borderRadius: 22,
     padding: spacing.md,
     gap: spacing.md,
+    marginBottom: spacing.sm,
   },
   row: {
     flexDirection: 'row',
@@ -1096,11 +1099,13 @@ const styles = StyleSheet.create({
     borderColor: '#DCE9FF',
     borderRadius: 22,
   },
+  patternList: {
+    gap: spacing.sm,
+  },
   patternCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    marginBottom: spacing.sm,
     borderWidth: 1.2,
     borderColor: '#DCE9FF',
     backgroundColor: 'rgba(255,255,255,0.96)',

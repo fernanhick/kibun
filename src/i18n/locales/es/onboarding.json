@@ -28,17 +28,15 @@
     "subline": "Elige el ánimo que más se acerque a este momento.",
     "cta": "Vamos"
   },
-  "wisdomAwareness": {
-    "headline": "Nombrar lo que sientes es el primer paso.",
-    "body": "Simplemente nombrar una emoción puede suavizarla. El acto de notarla es ya una forma de cuidado."
+  "yourName": {
+    "title": "¿Cómo te llamamos?",
+    "subtitle": "Usaremos tu nombre para que todo se sienta más cercano.",
+    "fieldLabel": "Tu nombre",
+    "placeholder": "p. ej. Alex"
   },
-  "wisdomMindBody": {
-    "headline": "El cuerpo lleva la cuenta.",
-    "body": "El sueño, el movimiento y la respiración moldean tu ánimo tanto como cualquier pensamiento. Cuidar de uno es cuidar del otro."
-  },
-  "wisdomSmallShifts": {
-    "headline": "Los grandes cambios rara vez ocurren de golpe.",
-    "body": "Pequeños momentos de atención — incluso diez segundos al día — se acumulan en cambios reales con el tiempo. Por eso estamos aquí."
+  "moodResponse": {
+    "greetingNamed": "Hola {{name}} 👋",
+    "greetingAnon": "Hola 👋"
   },
   "profilePersonal": {
     "title": "Cuéntanos sobre ti",
@@ -108,6 +106,10 @@
       "daily": "A diario"
     }
   },
+  "profileLife": {
+    "title": "¿Cómo va lo demás?",
+    "subtitle": "Dos cosas rápidas — ritmo social y nivel de estrés base."
+  },
   "profileSocial": {
     "title": "Tu vida social",
     "subtitle": "La conexión social moldea cómo nos sentimos día a día.",
@@ -130,6 +132,10 @@
       "high": "Alto",
       "very-high": "Muy alto"
     }
+  },
+  "profileHelpsAndHopes": {
+    "title": "Lo que ayuda y lo que esperas",
+    "subtitle": "Primero lo que te alivia los momentos duros, luego lo que te trae aquí."
   },
   "profileCoping": {
     "title": "Cuando las cosas pesan",
@@ -161,6 +167,15 @@
       "mood-patterns": "Notar patrones de ánimo"
     }
   },
+  "reflection": {
+    "headlineNamed": "{{name}}, esto es lo que notamos.",
+    "headlineAnon": "Esto es lo que notamos.",
+    "subtitle": "Tres cosas para preparar el terreno.",
+    "chipSleep": "Sueño · {{value}}",
+    "chipStress": "Estrés · {{value}}",
+    "chipGoal": "Objetivo · {{value}}",
+    "tieLine": "Eso es justo para lo que Kibun fue hecho — pequeños check-ins diarios que revelan tus patrones."
+  },
   "notificationPermission": {
     "title": "Mantén el ritmo",
     "subtitle": "Kibun funciona mejor con check-ins diarios. Elige tus horarios de recordatorio.",
@@ -182,6 +197,21 @@
       "reminders": "Alineando tus recordatorios",
       "insights": "Preparando tus descubrimientos",
       "plan": "Diseñando tu plan diario"
+    },
+    "stepsPersonal": {
+      "profile": "Leído: {{sleep}} · {{exercise}}",
+      "insights": "Observando: {{goal}}",
+      "plan": "{{name}}, tus primeros 14 días están listos"
     }
+  },
+  "planSnapshot": {
+    "titleNamed": "{{name}}, tu plan de Kibun está listo",
+    "titleAnon": "Tu plan de Kibun está listo",
+    "subtitle": "Esto es lo que observaremos en tus primeros 14 días.",
+    "rowSleep": "Observaremos · Sueño",
+    "rowStress": "Observaremos · Estrés",
+    "rowGoal": "Tu objetivo",
+    "tagline": "Desbloquea para empezar a ver tus patrones.",
+    "cta": "Desbloquear mi plan"
   }
 }

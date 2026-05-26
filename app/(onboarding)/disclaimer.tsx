@@ -27,7 +27,7 @@ export default function DisclaimerScreen() {
   return (
     <Screen scrollable edgePadding="large">
       <View style={styles.container}>
-        <OnboardingProgress current={1} total={14} tone="dark" style={styles.progress} />
+        <OnboardingProgress current={1} total={11} tone="dark" style={styles.progress} />
         <Shiba variant="neutral" size={180} style={styles.shiba} />
 
         <Text style={styles.title}>{t('disclaimer.title')}</Text>

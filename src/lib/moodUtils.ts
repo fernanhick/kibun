@@ -28,5 +28,6 @@ export function getMoodDef(
     bubbleColor: custom.color,
     textColor: TEXT,
     tintColor: custom.color + '33',
+    imageKey: custom.imageKey,
   };
 }

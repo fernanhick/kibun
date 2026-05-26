@@ -212,13 +212,13 @@
       "seeAllPro": "Descubre todas las señales hábito-ánimo con Pro",
       "seeAllProA11y": "Mejora a Pro para ver todas las correlaciones hábito-ánimo",
       "strength": {
-        "strongPositive": "Fuerte positiva",
-        "strongNegative": "Fuerte negativa",
-        "moderatePositive": "Moderada positiva",
-        "moderateNegative": "Moderada negativa",
-        "weakPositive": "Débil positiva",
-        "weakNegative": "Débil negativa",
-        "none": "Sin relación clara"
+        "strongPositive": "Mejora el ánimo",
+        "strongNegative": "Daña el ánimo",
+        "moderatePositive": "Levanta el ánimo",
+        "moderateNegative": "Baja el ánimo",
+        "weakPositive": "Leve mejora",
+        "weakNegative": "Leve caída",
+        "none": "Sin patrón aún"
       }
     },
     "aiReport": {
@@ -734,6 +734,7 @@
   "paywall": {
     "hero": {
       "title": "kibun Premium",
+      "titleNamed": "{{name}}, tu plan de Kibun está listo",
       "subtitle": "Tu historial de ánimo merece la imagen completa.\nRevísalo de forma simple 💕"
     },
     "comparison": {
@@ -935,6 +936,7 @@
     "nameLabel": "Nombre (máx. 12 caracteres)",
     "namePlaceholder": "p. ej. Nostálgico",
     "nameA11y": "Nombre del ánimo",
+    "imageLabel": "Imagen del mascot",
     "colour": "Color",
     "moodType": "Tipo de ánimo",
     "preview": "Vista previa:",

@@ -1,11 +1,13 @@
 import { useRef, useEffect } from 'react';
-import { Animated, Pressable, Text, StyleSheet } from 'react-native';
+import { Animated, Pressable, Text, View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { MoodDefinition, MOOD_MAP, MOODS, MoodGroup } from '@constants/moods';
 import { MOOD_IMAGES, normalizeMoodImageKey } from '@constants/moodImages';
 import { typography, spacing, radius } from '@constants/theme';
+import { getContentScale } from '@constants/layout';
+import { useResponsive } from '@hooks/useResponsive';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { haptics } from '@lib/haptics';
 
@@ -54,10 +56,11 @@ const GROUP_MOOD_ORDER: Record<MoodGroup, string[]> = {
 };
 
 const getMoodImage = (mood: MoodDefinition) => {
-  const idKey = normalizeMoodImageKey(mood.id);
-  const labelKey = normalizeMoodImageKey(mood.label);
-
-  const resolvedKeys = [idKey, labelKey];
+  const resolvedKeys = [
+    mood.imageKey,
+    normalizeMoodImageKey(mood.id),
+    normalizeMoodImageKey(mood.label),
+  ].filter(Boolean) as string[];
 
   for (const key of resolvedKeys) {
     const source = MOOD_IMAGES[key];
@@ -110,6 +113,7 @@ export function MoodBubble({
   showGradient = true,
 }: MoodBubbleProps) {
   const { t } = useTranslation();
+  const { width: winWidth } = useResponsive();
   // Built-in moods resolve through i18n; custom moods carry user-typed labels.
   const label = mood.id in MOOD_MAP ? t(`moods:${mood.id}.label`) : mood.label;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -131,7 +135,10 @@ export function MoodBubble({
     return () => animation.stop(); // Stop on unmount or before next effect run
   }, [selected, reducedMotion, scaleAnim]);
 
-  const { width, imageSize } = BONE_SIZES[size];
+  const baseSizes = BONE_SIZES[size];
+  const contentScale = getContentScale(winWidth);
+  const width = Math.round(baseSizes.width * contentScale);
+  const imageSize = Math.round(baseSizes.imageSize * contentScale);
   const fontSizeStyle = { fontSize: FONT_SIZES[size] };
   const gradientColor = getMoodGradientColor(mood);
   const gradientIntensity = getMoodGradientIntensity(mood);
@@ -196,7 +203,7 @@ export function MoodBubble({
             <Rect width="100%" height="100%" fill={`url(#rg-${mood.id})`} />
           </Svg>
         )}
-        {getMoodImage(mood) && (
+        {getMoodImage(mood) ? (
           <Image
             source={getMoodImage(mood)!}
             style={{ width: imageSize, height: imageSize }}
@@ -205,6 +212,22 @@ export function MoodBubble({
             recyclingKey={`mood-${mood.id}`}
             transition={0}
           />
+        ) : (
+          <View
+            style={[
+              styles.customMoodCircle,
+              {
+                width: imageSize,
+                height: imageSize,
+                backgroundColor: mood.bubbleColor + '30',
+                borderColor: mood.bubbleColor + '60',
+              },
+            ]}
+          >
+            <Text style={[styles.customMoodInitial, { fontSize: imageSize * 0.38, color: mood.textColor }]}>
+              {mood.label.charAt(0).toUpperCase()}
+            </Text>
+          </View>
         )}
         {showLabel && (
           <Text
@@ -243,5 +266,14 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: typography.weights.semibold,
     textAlign: 'center',
+  },
+  customMoodCircle: {
+    borderRadius: 999,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  customMoodInitial: {
+    fontWeight: '700',
   },
 });

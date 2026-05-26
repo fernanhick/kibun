@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -22,10 +22,12 @@ import { SparkleOverlay } from '@components/SparkleOverlay';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { haptics } from '@lib/haptics';
+import { useOnboardingGateStore } from '@store/onboardingGateStore';
 
 const STEP_KEYS = ['profile', 'reminders', 'insights', 'plan'] as const;
 const STEP_DURATION_MS = 700;
-const POST_FINISH_HOLD_MS = 450;
+// 900ms gives the last "plan" step room to land before handoff to plan-snapshot.
+const POST_FINISH_HOLD_MS = 900;
 const TOTAL_DURATION_MS = STEP_DURATION_MS * STEP_KEYS.length + POST_FINISH_HOLD_MS;
 
 const RING_SIZE = 76;
@@ -40,6 +42,36 @@ export default function AnalyzingScreen() {
   const { t } = useTranslation('onboarding');
   const reducedMotion = useReducedMotion();
   const [activeStep, setActiveStep] = useState(0);
+  const snapshot = useOnboardingGateStore((s) => s.personalizationSnapshot);
+
+  // Templated step labels — fall back to generic strings when a field is missing
+  // (e.g. user reaches analyzing without going through notification-permission).
+  const stepLabels = useMemo(() => {
+    const profile = snapshot?.profile;
+    const name = profile?.name?.trim() || null;
+    const sleep = profile?.sleepHours
+      ? t(`profilePhysical.sleepOpt.${profile.sleepHours}`)
+      : null;
+    const exercise = profile?.exercise
+      ? t(`profilePhysical.exerciseOpt.${profile.exercise}`)
+      : null;
+    const topGoal = profile?.goals?.[0]
+      ? t(`profileGoals.options.${profile.goals[0]}`)
+      : null;
+
+    return {
+      profile: sleep && exercise
+        ? t('analyzing.stepsPersonal.profile', { sleep, exercise })
+        : t('analyzing.steps.profile'),
+      reminders: t('analyzing.steps.reminders'),
+      insights: topGoal
+        ? t('analyzing.stepsPersonal.insights', { goal: topGoal })
+        : t('analyzing.steps.insights'),
+      plan: name
+        ? t('analyzing.stepsPersonal.plan', { name })
+        : t('analyzing.steps.plan'),
+    };
+  }, [snapshot, t]);
 
   const progress = useSharedValue(0);
   const shibaScale = useSharedValue(1);
@@ -90,12 +122,13 @@ export default function AnalyzingScreen() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  // After all steps + a short hold, hand off to (tabs); the tabs layout
-  // redirects to /paywall when paywallSeen is still false.
+  // After all steps + a short hold, hand off to the personalized plan-snapshot
+  // screen, which then routes to /paywall. Direct-to-paywall (instead of via
+  // (tabs)) avoids a flicker through the tabs gate.
   useEffect(() => {
     const handoff = setTimeout(() => {
       haptics.success();
-      router.replace('/(tabs)');
+      router.replace('/(onboarding)/plan-snapshot');
     }, TOTAL_DURATION_MS);
     return () => clearTimeout(handoff);
   }, [router]);
@@ -150,7 +183,7 @@ export default function AnalyzingScreen() {
         {STEP_KEYS.map((key, i) => (
           <StepRow
             key={key}
-            label={t(`analyzing.steps.${key}`)}
+            label={stepLabels[key]}
             state={
               i < activeStep ? 'done' : i === activeStep ? 'active' : 'pending'
             }

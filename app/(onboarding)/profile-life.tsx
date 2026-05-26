@@ -10,23 +10,28 @@ import { colors, typography, spacing } from '@constants/theme';
 import { PickerOption } from '@models/index';
 
 const SOCIAL_VALUES = ['rarely', 'few-times-week', 'most-days', 'daily'] as const;
+const STRESS_VALUES = ['very-low', 'low', 'moderate', 'high', 'very-high'] as const;
 
-export default function ProfileSocialScreen() {
+export default function ProfileLifeScreen() {
   const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
   const [socialFrequency, setSocialFrequency] = useState<string | null>(profile.socialFrequency);
+  const [stressLevel, setStressLevel] = useState<string | null>(profile.stressLevel);
   const router = useRouter();
 
   const socialOptions: PickerOption[] = SOCIAL_VALUES.map((value) => ({
     value, label: t(`onboarding:profileSocial.frequencyOpt.${value}`),
   }));
+  const stressOptions: PickerOption[] = STRESS_VALUES.map((value) => ({
+    value, label: t(`onboarding:profileMental.stressOpt.${value}`),
+  }));
 
-  const canContinue = socialFrequency !== null;
+  const canContinue = socialFrequency !== null && stressLevel !== null;
 
   const handleContinue = () => {
     if (!canContinue) return;
-    updateProfile({ socialFrequency });
-    router.push('/(onboarding)/profile-mental');
+    updateProfile({ socialFrequency, stressLevel });
+    router.push('/(onboarding)/profile-helps-and-hopes');
   };
 
   return (
@@ -37,7 +42,7 @@ export default function ProfileSocialScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <OnboardingProgress current={9} total={14} style={styles.progress} />
+        <OnboardingProgress current={8} total={11} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
@@ -47,8 +52,8 @@ export default function ProfileSocialScreen() {
         >
           <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
         </Pressable>
-        <Text style={styles.title}>{t('onboarding:profileSocial.title')}</Text>
-        <Text style={styles.subtitle}>{t('onboarding:profileSocial.subtitle')}</Text>
+        <Text style={styles.title}>{t('onboarding:profileLife.title')}</Text>
+        <Text style={styles.subtitle}>{t('onboarding:profileLife.subtitle')}</Text>
       </LinearGradient>
 
       <View style={styles.sectionCard}>
@@ -58,6 +63,15 @@ export default function ProfileSocialScreen() {
             options={socialOptions}
             selected={socialFrequency}
             onSelect={setSocialFrequency}
+          />
+        </View>
+
+        <View style={styles.pickerGroupLast}>
+          <OptionPicker
+            label={t('onboarding:profileMental.stress')}
+            options={stressOptions}
+            selected={stressLevel}
+            onSelect={setStressLevel}
           />
         </View>
       </View>
@@ -110,6 +124,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   pickerGroup: {
+    marginBottom: spacing.lg,
+  },
+  pickerGroupLast: {
     marginBottom: spacing.md,
   },
 });

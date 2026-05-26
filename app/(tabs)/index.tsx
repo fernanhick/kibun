@@ -10,10 +10,12 @@ import { useUiPrefsStore } from '@store/uiPrefsStore';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { useHabitsStore } from '@store/habitsStore';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
+import { useCustomMoodsStore } from '@store/customMoodsStore';
 import { Button, Card, InsightCard, MoodBubble, Screen } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { SpringPressable } from '@components/SpringPressable';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
+import { getMoodDef } from '@lib/moodUtils';
 import { colors, spacing, typography, radius, shadows } from '@constants/theme';
 import { ACHIEVEMENT_DEFINITIONS } from '@lib/achievements';
 import { fetchDailyInsight } from '@lib/dailyInsight';
@@ -116,6 +118,7 @@ export default function HomeScreen() {
   // Select stable reference (entries array), derive outside selector to avoid
   // infinite loop: .filter() creates a new array each call, breaking useSyncExternalStore.
   const entries = useMoodEntryStore((s) => s.entries);
+  const customMoods = useCustomMoodsStore((s) => s.moods);
 
   const todayEntries = useMemo(
     () => entries.filter((e) => e.loggedAt.startsWith(today)),
@@ -449,8 +452,8 @@ export default function HomeScreen() {
             </View>
           ) : (
             todayEntries.map((entry) => {
-              const entryMood = MOOD_MAP[entry.moodId as MoodId];
-              const moodLabel = getMoodLabel(entry.moodId);
+              const entryMood = getMoodDef(entry.moodId, customMoods);
+              const moodLabel = getMoodLabel(entry.moodId, customMoods);
               return (
                 <SpringPressable
                   key={entry.id}

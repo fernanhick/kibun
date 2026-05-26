@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Card, MoodBubble, BackButton } from '@components/index';
 import { useMoodEntryStore, useLifeEventsStore } from '@store/index';
+import { useCustomMoodsStore } from '@store/customMoodsStore';
 import { getMoodLabel } from '@lib/moodLabels';
+import { getMoodDef } from '@lib/moodUtils';
 import { safeParseDateString } from '@lib/safeDate';
-import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { formatDate, formatTime as formatTimeFn } from '@i18n/dateFormat';
 import { colors, spacing, typography, radius } from '@constants/theme';
 import type { MoodSlot, SentimentLabel, LifeEventCategory } from '@models/index';
@@ -47,6 +48,7 @@ export default function DayDetailScreen() {
   const deleteEntry = useMoodEntryStore((s) => s.deleteEntry);
   const allEvents = useLifeEventsStore((s) => s.events);
   const deleteEvent = useLifeEventsStore((s) => s.deleteEvent);
+  const customMoods = useCustomMoodsStore((s) => s.moods);
 
   const entries = useMemo(
     () =>
@@ -139,8 +141,8 @@ export default function DayDetailScreen() {
       ) : (
         <View style={styles.entriesList}>
           {entries.map((entry) => {
-            const entryMood = MOOD_MAP[entry.moodId as MoodId];
-            const moodLabel = getMoodLabel(entry.moodId as MoodId, t);
+            const entryMood = getMoodDef(entry.moodId, customMoods);
+            const moodLabel = getMoodLabel(entry.moodId, customMoods);
             const isExpanded = expandedId === entry.id;
             const sentimentLabel = entry.sentimentLabel
               ? t(`dayDetail.sentiment.${entry.sentimentLabel}`)

@@ -28,7 +28,7 @@ function toggleSlot(prev: string[], value: string): string[] {
 
 export default function NotificationPermissionScreen() {
   const { t } = useTranslation(['onboarding']);
-  const { setComplete } = useOnboardingGateStore();
+  const { setComplete, setPersonalizationSnapshot } = useOnboardingGateStore();
   const firstMoodId = useOnboardingStore((s) => s.firstMoodId);
   const resetOnboarding = useOnboardingStore((s) => s.resetProfile);
   const [selectedSlots, setSelectedSlots] = useState<string[]>(['morning', 'evening']);
@@ -64,9 +64,13 @@ export default function NotificationPermissionScreen() {
 
     // Persist profile to Supabase before clearing in-memory state
     const profile = useOnboardingStore.getState().profile;
+    const persistedFirstMoodId = useOnboardingStore.getState().firstMoodId;
     const userId = useSessionStore.getState().session?.userId;
     if (userId) saveProfileToSupabase(userId, profile);
 
+    // Snapshot personalization for analyzing / plan-snapshot / paywall — survives
+    // app kills via AsyncStorage, so cold-start re-entry to /paywall stays personal.
+    setPersonalizationSnapshot({ profile, firstMoodId: persistedFirstMoodId });
     setComplete();
     resetOnboarding();
 
@@ -91,9 +95,11 @@ export default function NotificationPermissionScreen() {
 
     // Persist profile to Supabase before clearing in-memory state
     const profile = useOnboardingStore.getState().profile;
+    const persistedFirstMoodId = useOnboardingStore.getState().firstMoodId;
     const userId = useSessionStore.getState().session?.userId;
     if (userId) saveProfileToSupabase(userId, profile);
 
+    setPersonalizationSnapshot({ profile, firstMoodId: persistedFirstMoodId });
     setComplete();
     resetOnboarding();
     router.replace('/(onboarding)/analyzing');
@@ -107,7 +113,7 @@ export default function NotificationPermissionScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <OnboardingProgress current={14} total={14} style={styles.progress} />
+        <OnboardingProgress current={11} total={11} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"

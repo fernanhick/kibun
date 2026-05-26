@@ -16,6 +16,7 @@ export interface MoodDefinition {
   bubbleColor: string;  // Circle background color
   textColor: string;    // Mood label — WCAG 2.1 AA verified (≥4.5:1) against bubbleColor
   tintColor: string;    // Very light tint for calendar day cells and backgrounds
+  imageKey?: string;    // Custom moods only — key into MOOD_IMAGES e.g. 'happy'
 }
 
 // All moods use this text color. #1A1A2E on any bubble below achieves ≥4.5:1 contrast.

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, StyleSheet, Alert } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +9,9 @@ import { Screen, BackButton } from '@components/index';
 import { EmptyState } from '@components/EmptyState';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useCustomMoodsStore } from '@store/customMoodsStore';
+import { MOOD_IMAGES } from '@constants/moodImages';
 import { colors, spacing, typography, radius } from '@constants/theme';
+import { useResponsive } from '@hooks/useResponsive';
 import type { MoodGroup } from '@constants/moods';
 
 const MAX_MOODS = 5;
@@ -27,16 +30,24 @@ const GROUP_OPTIONS: { value: MoodGroup }[] = [
   { value: 'red-orange' },
 ];
 
+const IMAGE_KEYS = Object.keys(MOOD_IMAGES) as string[];
+
 export default function CustomMoodsScreen() {
   const router = useRouter();
   const { t } = useTranslation('screens');
+  const responsive = useResponsive();
   const moods = useCustomMoodsStore((s) => s.moods);
   const addMood = useCustomMoodsStore((s) => s.addMood);
   const deleteMood = useCustomMoodsStore((s) => s.deleteMood);
 
+  const swatchSize = responsive.select({ phone: 56, phoneWide: 60, tablet: 108, tabletLg: 124 });
+  const swatchImgSize = responsive.select({ phone: 44, phoneWide: 48, tablet: 88, tabletLg: 102 });
+  const swatchRadius = responsive.select({ phone: 12, tablet: 20, tabletLg: 22 });
+
   const [label, setLabel] = useState('');
   const [selectedColor, setSelectedColor] = useState(COLOR_PALETTE[0]);
   const [selectedGroup, setSelectedGroup] = useState<MoodGroup>('green');
+  const [selectedImageKey, setSelectedImageKey] = useState(IMAGE_KEYS[0]);
   const [showForm, setShowForm] = useState(false);
 
   const atLimit = moods.length >= MAX_MOODS;
@@ -44,11 +55,12 @@ export default function CustomMoodsScreen() {
   const handleAdd = () => {
     const trimmed = label.trim();
     if (trimmed.length < 2) return;
-    const ok = addMood({ label: trimmed, color: selectedColor, group: selectedGroup });
+    const ok = addMood({ label: trimmed, color: selectedColor, group: selectedGroup, imageKey: selectedImageKey });
     if (ok) {
       setLabel('');
       setSelectedColor(COLOR_PALETTE[0]);
       setSelectedGroup('green');
+      setSelectedImageKey(IMAGE_KEYS[0]);
       setShowForm(false);
     }
   };
@@ -84,7 +96,16 @@ export default function CustomMoodsScreen() {
             <Text style={styles.sectionLabel}>{t('customMoods.yourMoods')}</Text>
             {moods.map((m) => (
               <View key={m.id} style={styles.moodRow}>
-                <View style={[styles.moodDot, { backgroundColor: m.color }]} />
+                <View style={[styles.moodDot, { backgroundColor: m.color + '30', borderColor: m.color + '60' }]}>
+                  {m.imageKey && MOOD_IMAGES[m.imageKey] && (
+                    <Image
+                      source={MOOD_IMAGES[m.imageKey]}
+                      style={styles.moodDotImg}
+                      contentFit="contain"
+                      cachePolicy="memory-disk"
+                    />
+                  )}
+                </View>
                 <Text style={styles.moodLabel}>{m.label}</Text>
                 <Text style={styles.moodGroup}>
                   {t(`customMoods.group.${m.group}.label`)}
@@ -151,6 +172,31 @@ export default function CustomMoodsScreen() {
                 accessibilityLabel={t('customMoods.nameA11y')}
               />
 
+              <Text style={styles.fieldLabel}>{t('customMoods.imageLabel')}</Text>
+              <View style={styles.imageGrid}>
+                {IMAGE_KEYS.map((key) => (
+                  <Pressable
+                    key={key}
+                    onPress={() => setSelectedImageKey(key)}
+                    style={[
+                      styles.imageSwatch,
+                      { width: swatchSize, height: swatchSize, borderRadius: swatchRadius },
+                      selectedImageKey === key && { borderColor: selectedColor, borderWidth: 2.5, backgroundColor: selectedColor + '18' },
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={key}
+                    accessibilityState={{ selected: selectedImageKey === key }}
+                  >
+                    <Image
+                      source={MOOD_IMAGES[key]}
+                      style={[styles.imageSwatchImg, { width: swatchImgSize, height: swatchImgSize }]}
+                      contentFit="contain"
+                      cachePolicy="memory-disk"
+                    />
+                  </Pressable>
+                ))}
+              </View>
+
               <Text style={styles.fieldLabel}>{t('customMoods.colour')}</Text>
               <View style={styles.colorGrid}>
                 {COLOR_PALETTE.map((c) => (
@@ -201,8 +247,16 @@ export default function CustomMoodsScreen() {
               {label.trim().length >= 2 && (
                 <View style={styles.previewRow}>
                   <Text style={styles.previewLabel}>{t('customMoods.preview')}</Text>
-                  <View style={[styles.previewBubble, { backgroundColor: selectedColor }]}>
-                    <Text style={styles.previewBubbleText}>{label.trim().slice(0, 12)}</Text>
+                  <View style={styles.previewBubbleWrap}>
+                    <View style={[styles.previewBubble, { backgroundColor: selectedColor + '30', borderColor: selectedColor + '60' }]}>
+                      <Image
+                        source={MOOD_IMAGES[selectedImageKey]}
+                        style={styles.previewBubbleImg}
+                        contentFit="contain"
+                        cachePolicy="memory-disk"
+                      />
+                    </View>
+                    <Text style={styles.previewBubbleLabel}>{label.trim().slice(0, 12)}</Text>
                   </View>
                 </View>
               )}
@@ -282,11 +336,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   moodDot: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  moodDotImg: {
     width: 28,
     height: 28,
-    borderRadius: 14,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.8)',
   },
   moodLabel: {
     flex: 1,
@@ -409,21 +469,43 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontFamily: typography.fonts.ui,
   },
+  previewBubbleWrap: {
+    alignItems: 'center',
+    gap: 4,
+  },
   previewBubble: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.8)',
+    overflow: 'hidden',
   },
-  previewBubbleText: {
+  previewBubbleImg: {
+    width: 60,
+    height: 60,
+  },
+  previewBubbleLabel: {
     fontSize: typography.sizes.xs,
     fontWeight: typography.weights.semibold,
     color: '#1A1A2E',
     textAlign: 'center',
   },
+  imageGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  imageSwatch: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#D0DDFF',
+    backgroundColor: '#FFFFFF',
+    overflow: 'hidden',
+  },
+  imageSwatchImg: {},
   formActions: {
     flexDirection: 'row',
     gap: spacing.sm,

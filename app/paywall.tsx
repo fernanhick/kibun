@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, Linking, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -59,12 +59,21 @@ export default function PaywallScreen() {
   const router = useRouter();
   const { t } = useTranslation('screens');
   const { setPaywallSeen } = useOnboardingGateStore();
+  const snapshot = useOnboardingGateStore((s) => s.personalizationSnapshot);
   const session = useSessionStore((s) => s.session);
   const { setSubscriptionStatus } = useSessionStore();
   const [purchasing, setPurchasing] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [priceLine, setPriceLine] = useState<string>(() => formatPriceLine(t));
+
+  // Personalize hero with name from onboarding snapshot. The pre-paywall
+  // plan-snapshot screen already displays the user's top goal — repeating it
+  // here in a verb-phrase title composes awkwardly across locales.
+  const personalizedTitle = useMemo(() => {
+    const name = snapshot?.profile?.name?.trim();
+    return name ? t('paywall.hero.titleNamed', { name }) : null;
+  }, [snapshot, t]);
 
   useEffect(() => {
     let cancelled = false;
@@ -185,7 +194,9 @@ export default function PaywallScreen() {
         style={styles.heroCard}
       >
         <Text style={styles.heroEmoji}>🌸</Text>
-        <Text style={styles.title}>{t('paywall.hero.title')}</Text>
+        <Text style={styles.title} numberOfLines={3}>
+          {personalizedTitle ?? t('paywall.hero.title')}
+        </Text>
         <Text style={styles.subtitle}>{t('paywall.hero.subtitle')}</Text>
       </LinearGradient>
 

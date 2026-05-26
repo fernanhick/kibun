@@ -1,0 +1,31 @@
+{
+  "version": "v1-2026-05-26-initial-audit",
+  "previous": null,
+  "created_at": "2026-05-26",
+  "mode": "audit",
+  "phase1": {
+    "app_category": "subscription wellness / mood tracking",
+    "business_model": "subscription with trial (RevenueCat-managed)",
+    "target_user": "users seeking self-reflection and mood-pattern awareness, willing to capture profile data in exchange for personalized insights",
+    "win_condition": "aha moment + trial start + conversion",
+    "platforms": ["iOS", "Android"],
+    "constraints": "disclaimer screen locked (legal); all 7 profile screens locked (data feeds AI report + insights); profile data captured to Supabase post-onboarding"
+  },
+  "forks": {
+    "1_length_density": { "user": null, "claude": null, "final": null },
+    "2_aha_moment": { "user": null, "claude": null, "final": null },
+    "3_paywall_placement": { "user": null, "claude": null, "final": null },
+    "4_signup_timing": { "user": null, "claude": null, "final": null },
+    "5_personalization": { "user": null, "claude": null, "final": null },
+    "6_tone_voice": { "user": null, "claude": null, "final": null },
+    "7_visual_density": { "user": null, "claude": null, "final": null },
+    "8_trial_structure": { "user": null, "claude": null, "final": null },
+    "9_commitment_device": { "user": null, "claude": null, "final": null },
+    "10_social_proof": { "user": null, "claude": null, "final": null },
+    "11_push_priming": { "user": null, "claude": null, "final": null },
+    "12_review_timing": { "user": null, "claude": null, "final": null },
+    "13_returning_users": { "user": null, "claude": null, "final": null }
+  },
+  "win_condition_baseline": null,
+  "notes": "Audit-mode run. Fork slates intentionally null — they're populated by full Discover → Deliver loops, not audits. No analytics or screenshots were supplied; lift estimates are directional and cite strategy-library sources. Recommended next action: full skill run to produce v2 spec for the rebuild flow."
+}

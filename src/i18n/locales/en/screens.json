@@ -212,13 +212,13 @@
       "seeAllPro": "See every habit-mood signal with Pro",
       "seeAllProA11y": "Upgrade to Pro to see all habit-mood correlations",
       "strength": {
-        "strongPositive": "Strong positive",
-        "strongNegative": "Strong negative",
-        "moderatePositive": "Moderate positive",
-        "moderateNegative": "Moderate negative",
-        "weakPositive": "Weak positive",
-        "weakNegative": "Weak negative",
-        "none": "No clear link"
+        "strongPositive": "Boosts mood",
+        "strongNegative": "Hurts mood",
+        "moderatePositive": "Lifts mood",
+        "moderateNegative": "Lowers mood",
+        "weakPositive": "Slight boost",
+        "weakNegative": "Slight dip",
+        "none": "No pattern yet"
       }
     },
     "aiReport": {
@@ -734,6 +734,7 @@
   "paywall": {
     "hero": {
       "title": "kibun Premium",
+      "titleNamed": "{{name}}, your Kibun plan is ready",
       "subtitle": "Your feelings deserve the full picture.\nLet's make sense of them together 💕"
     },
     "comparison": {
@@ -935,6 +936,7 @@
     "nameLabel": "Name (max 12 chars)",
     "namePlaceholder": "e.g. Nostalgic",
     "nameA11y": "Mood name",
+    "imageLabel": "Mascot image",
     "colour": "Colour",
     "moodType": "Mood type",
     "preview": "Preview:",

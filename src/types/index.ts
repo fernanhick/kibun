@@ -128,6 +128,7 @@ export interface CustomMood {
   label: string;       // max 12 chars
   color: string;       // hex color e.g. '#FF6B9D'
   group: 'green' | 'neutral' | 'red-orange' | 'blue';  // matches MoodGroup
+  imageKey: string;    // key into MOOD_IMAGES e.g. 'happy', 'calm'
   createdAt: string;   // ISO timestamp
 }
 

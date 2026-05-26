@@ -9,6 +9,7 @@ import { OnboardingProgress } from '@components/OnboardingProgress';
 import { Ionicons } from '@expo/vector-icons';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { colors, typography, spacing } from '@constants/theme';
+import { useOnboardingStore } from '@store/onboardingStore';
 
 function shibaVariant(group: MoodGroup, id: MoodId): ShibaVariant {
   if (group === 'green') return id === 'excited' ? 'excited' : 'happy';
@@ -21,10 +22,14 @@ export default function MoodResponseScreen() {
   const router = useRouter();
   const { t } = useTranslation(['common', 'moods', 'onboarding']);
   const mood = MOOD_MAP[moodId];
+  const name = useOnboardingStore((s) => s.profile.name);
 
   if (!mood) return null;
 
   const variant = shibaVariant(mood.group, mood.id);
+  const greeting = name
+    ? t('onboarding:moodResponse.greetingNamed', { name })
+    : t('onboarding:moodResponse.greetingAnon');
 
   return (
     <Screen edgePadding="large">
@@ -38,18 +43,19 @@ export default function MoodResponseScreen() {
         >
           <Ionicons name="chevron-back" size={24} color={colors.text} />
         </Pressable>
-        <OnboardingProgress current={3} total={14} tone="dark" />
+        <OnboardingProgress current={4} total={11} tone="dark" />
       </View>
       <View style={styles.container}>
         <Shiba variant={variant} size={220} loop={false} autoPlay />
         <View style={styles.bubbleRow}>
           <MoodBubble mood={mood} size="lg" disabled />
         </View>
+        <Text style={styles.greeting}>{greeting}</Text>
         <Text style={styles.phrase}>{t(`moods:${moodId}.response`)}</Text>
         <View style={styles.ctaContainer}>
           <Button
             label={t('common:actions.continue')}
-            onPress={() => router.push('/(onboarding)/wisdom-awareness')}
+            onPress={() => router.push('/(onboarding)/profile-personal')}
             fullWidth
           />
         </View>
@@ -78,12 +84,20 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     alignItems: 'center',
   },
+  greeting: {
+    fontFamily: typography.fonts.display,
+    fontSize: typography.sizes.lg,
+    color: colors.text,
+    textAlign: 'center',
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.lg,
+  },
   phrase: {
     fontSize: typography.sizes.md,
     color: colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: spacing.lg,
-    marginTop: spacing.md,
+    marginTop: spacing.xs,
   },
   ctaContainer: {
     marginTop: spacing.xl,

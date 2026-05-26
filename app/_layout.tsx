@@ -12,8 +12,7 @@ import * as Notifications from 'expo-notifications';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
-import { Asset } from 'expo-asset';
-import { MOOD_IMAGES } from '@constants/moodImages';
+import { prewarmMoodImages } from '@constants/moodImages';
 import { ThemeProvider } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
@@ -56,10 +55,11 @@ configureNotificationHandler();
 // MoodConfirmScreen is fast. Silently no-ops if model asset is not yet present.
 prewarmSentimentModel();
 
-// Pre-warm emotion PNGs so the check-in grid renders 18 bubbles instantly.
-// Without this, the first open of the mood picker decodes ~4.5 MB of PNGs
-// on the JS/UI thread and visibly stalls. Fire-and-forget — failures are silent.
-Asset.loadAsync(Object.values(MOOD_IMAGES).filter(Boolean) as number[]).catch(() => {});
+// Pre-warm emotion PNGs into expo-image's memory cache so the check-in grid
+// renders 18 bubbles instantly. Asset.loadAsync alone only extracts files to
+// disk — the PNG decode still stalls first paint. prewarmMoodImages() runs the
+// full extract + Image.prefetch('memory-disk') pipeline. Fire-and-forget.
+prewarmMoodImages();
 
 // Initialize Vexo product analytics. No-ops in __DEV__ or without a key.
 initAnalytics();

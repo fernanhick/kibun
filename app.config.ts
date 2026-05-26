@@ -23,9 +23,10 @@ export default ({ config }: ConfigContext) => ({
   slug: 'kibun',
   version: '1.0.0',
   scheme: 'kibun',
-  // Orientation unlocked here; phones are locked to portrait at runtime via
-  // @lib/orientation:applyOrientationPolicy so tablets can rotate freely.
-  orientation: 'default',
+  // Portrait-only on all devices (phone + tablet). Native manifest enforces
+  // this; @lib/orientation:applyOrientationPolicy also locks at runtime as a
+  // belt-and-braces guard for Expo Go / hot-reload scenarios.
+  orientation: 'portrait',
   // Main icon used for fallback contexts. Platform-specific icons are configured
   // in ios/android sections and copied to native directories.
   icon: './assets/icons/apple-devices/AppIcon.appiconset/icon-ios-1024x1024.png',

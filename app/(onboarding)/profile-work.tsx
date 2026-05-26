@@ -62,7 +62,7 @@ export default function ProfileWorkScreen() {
           end={{ x: 1, y: 1 }}
           style={styles.heroCard}
         >
-          <OnboardingProgress current={6} total={14} style={styles.progress} />
+          <OnboardingProgress current={6} total={11} style={styles.progress} />
           <Pressable
             onPress={() => router.back()}
             accessibilityRole="button"

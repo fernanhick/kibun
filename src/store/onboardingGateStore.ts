@@ -2,19 +2,33 @@
 // _hasHydrated is transient (always false on launch) and excluded from persistence
 // via partialize. Without the hydration guard, the gate incorrectly redirects
 // returning users to onboarding before AsyncStorage rehydration completes.
+//
+// personalizationSnapshot persists a small subset of onboarding answers so that
+// analyzing → plan-snapshot → paywall can stay personalized even if the user
+// kills the app between notification-permission and paywall (the gate then
+// redirects them back into /paywall on relaunch).
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { OnboardingProfile } from '@models/index';
+import type { MoodId } from '@constants/moods';
+
+export interface PersonalizationSnapshot {
+  profile: OnboardingProfile;
+  firstMoodId: MoodId | null;
+}
 
 interface OnboardingGateState {
   complete: boolean;
   paywallSeen: boolean;
   _hasHydrated: boolean;
   onboardingJustCompleted: boolean;
+  personalizationSnapshot: PersonalizationSnapshot | null;
   setComplete: () => void;
   setPaywallSeen: () => void;
   setHasHydrated: (value: boolean) => void;
   clearOnboardingJustCompleted: () => void;
+  setPersonalizationSnapshot: (snapshot: PersonalizationSnapshot) => void;
 }
 
 export const useOnboardingGateStore = create<OnboardingGateState>()(
@@ -24,16 +38,23 @@ export const useOnboardingGateStore = create<OnboardingGateState>()(
       paywallSeen: false,
       _hasHydrated: false,
       onboardingJustCompleted: false,
+      personalizationSnapshot: null,
       setComplete: () => set({ complete: true, onboardingJustCompleted: true }),
       setPaywallSeen: () => set({ paywallSeen: true }),
       setHasHydrated: (value) => set({ _hasHydrated: value }),
       clearOnboardingJustCompleted: () => set({ onboardingJustCompleted: false }),
+      setPersonalizationSnapshot: (snapshot) => set({ personalizationSnapshot: snapshot }),
     }),
     {
       name: 'kibun-onboarding-gate',
       storage: createJSONStorage(() => AsyncStorage),
-      // Only persist 'complete' and 'paywallSeen' — transient flags always reset on launch
-      partialize: (state) => ({ complete: state.complete, paywallSeen: state.paywallSeen }),
+      // Only persist long-lived state. Transient flags (_hasHydrated,
+      // onboardingJustCompleted) always reset on launch.
+      partialize: (state) => ({
+        complete: state.complete,
+        paywallSeen: state.paywallSeen,
+        personalizationSnapshot: state.personalizationSnapshot,
+      }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },

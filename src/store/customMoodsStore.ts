@@ -14,7 +14,7 @@ interface CustomMoodsState {
   moods: CustomMood[];
   _hasHydrated: boolean;
   setHasHydrated: (value: boolean) => void;
-  addMood: (params: { label: string; color: string; group: MoodGroup }) => boolean;
+  addMood: (params: { label: string; color: string; group: MoodGroup; imageKey: string }) => boolean;
   deleteMood: (id: string) => void;
   mergeRemote: (remote: CustomMood[]) => void;
   clearAll: () => void;
@@ -27,13 +27,14 @@ export const useCustomMoodsStore = create<CustomMoodsState>()(
       _hasHydrated: false,
       setHasHydrated: (value) => set({ _hasHydrated: value }),
 
-      addMood: ({ label, color, group }) => {
+      addMood: ({ label, color, group, imageKey }) => {
         if (get().moods.length >= MAX_CUSTOM_MOODS) return false;
         const mood: CustomMood = {
           id: `custom_${Crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`,
           label: label.slice(0, 12),
           color,
           group,
+          imageKey,
           createdAt: new Date().toISOString(),
         };
         set((s) => ({ moods: [...s.moods, mood] }));

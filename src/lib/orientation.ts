@@ -1,14 +1,12 @@
 import * as ScreenOrientation from 'expo-screen-orientation';
 
-// Phones: lock to portrait. Tablets: unlock (user rotation allowed).
-// Called once at app startup after fonts + auth resolve.
-export async function applyOrientationPolicy(isTabletDevice: boolean): Promise<void> {
+// Portrait-only on all devices (phone + tablet). The native manifest already
+// enforces this via app.config.ts `orientation: 'portrait'`; the runtime lock
+// is a guard for Expo Go and hot-reload, where the manifest isn't authoritative.
+// The `_isTabletDevice` parameter is retained for call-site compatibility.
+export async function applyOrientationPolicy(_isTabletDevice: boolean): Promise<void> {
   try {
-    if (isTabletDevice) {
-      await ScreenOrientation.unlockAsync();
-    } else {
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-    }
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
   } catch (error) {
     if (__DEV__) {
       console.warn('[kibun:orientation] applyOrientationPolicy failed:', error);

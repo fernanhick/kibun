@@ -9,28 +9,34 @@ import { useOnboardingStore } from '@store/onboardingStore';
 import { COPING_OPTIONS } from '@constants/copingOptions';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
-function toggleCoping(prev: string[], value: string): string[] {
+const GOAL_VALUES = [
+  'understand-emotions',
+  'reduce-stress',
+  'improve-sleep',
+  'track-energy',
+  'self-awareness',
+  'mood-patterns',
+] as const;
+
+function toggleValue(prev: string[], value: string): string[] {
   return prev.includes(value)
     ? prev.filter((v) => v !== value)
     : [...prev, value];
 }
 
-export default function ProfileCopingScreen() {
+export default function ProfileHelpsAndHopesScreen() {
   const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
-  const [selected, setSelected] = useState<string[]>(profile.copingStrategies);
+  const [coping, setCoping] = useState<string[]>(profile.copingStrategies);
+  const [goals, setGoals] = useState<string[]>(profile.goals);
   const router = useRouter();
 
-  const canContinue = selected.length > 0;
-
-  const handleToggle = (value: string) => {
-    setSelected((prev) => toggleCoping(prev, value));
-  };
+  const canContinue = coping.length > 0 && goals.length > 0;
 
   const handleContinue = () => {
     if (!canContinue) return;
-    updateProfile({ copingStrategies: selected });
-    router.push('/(onboarding)/profile-goals');
+    updateProfile({ copingStrategies: coping, goals });
+    router.push('/(onboarding)/reflection');
   };
 
   return (
@@ -41,7 +47,7 @@ export default function ProfileCopingScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <OnboardingProgress current={11} total={14} style={styles.progress} />
+        <OnboardingProgress current={9} total={11} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
@@ -51,8 +57,8 @@ export default function ProfileCopingScreen() {
         >
           <Ionicons name="chevron-back" size={24} color={colors.textInverse} />
         </Pressable>
-        <Text style={styles.title}>{t('onboarding:profileCoping.title')}</Text>
-        <Text style={styles.subtitle}>{t('onboarding:profileCoping.subtitle')}</Text>
+        <Text style={styles.title}>{t('onboarding:profileHelpsAndHopes.title')}</Text>
+        <Text style={styles.subtitle}>{t('onboarding:profileHelpsAndHopes.subtitle')}</Text>
       </LinearGradient>
 
       <View style={styles.sectionCard}>
@@ -63,12 +69,41 @@ export default function ProfileCopingScreen() {
           accessibilityLabel={t('onboarding:profileCoping.a11yLabel')}
         >
           {COPING_OPTIONS.map((option) => {
-            const isSelected = selected.includes(option.value);
+            const isSelected = coping.includes(option.value);
             const label = t(`onboarding:profileCoping.options.${option.value}`);
             return (
               <Pressable
                 key={option.value}
-                onPress={() => handleToggle(option.value)}
+                onPress={() => setCoping((prev) => toggleValue(prev, option.value))}
+                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: isSelected }}
+                accessibilityLabel={label}
+              >
+                <Text style={[styles.chipText, isSelected ? styles.chipTextSelected : styles.chipTextUnselected]}>
+                  {label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <View style={styles.divider} />
+
+        <Text style={styles.groupLabel}>{t('onboarding:profileGoals.groupLabel')}</Text>
+        <View
+          style={styles.chipsRowLast}
+          accessibilityRole="none"
+          accessibilityLabel={t('onboarding:profileGoals.a11yLabel')}
+        >
+          {GOAL_VALUES.map((value) => {
+            const isSelected = goals.includes(value);
+            const label = t(`onboarding:profileGoals.options.${value}`);
+            return (
+              <Pressable
+                key={value}
+                onPress={() => setGoals((prev) => toggleValue(prev, value))}
                 hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                 style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
                 accessibilityRole="checkbox"
@@ -143,7 +178,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-    marginBottom: spacing.xl,
+    marginBottom: spacing.md,
+  },
+  chipsRowLast: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.borderLight,
+    marginVertical: spacing.md,
   },
   chip: {
     paddingVertical: spacing.sm,

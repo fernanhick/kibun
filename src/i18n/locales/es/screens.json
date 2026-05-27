@@ -734,7 +734,6 @@
   "paywall": {
     "hero": {
       "title": "kibun Premium",
-      "titleNamed": "{{name}}, tu plan de Kibun está listo",
       "subtitle": "Tu historial de ánimo merece la imagen completa.\nRevísalo de forma simple 💕"
     },
     "comparison": {

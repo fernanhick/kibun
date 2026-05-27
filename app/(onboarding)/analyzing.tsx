@@ -48,7 +48,6 @@ export default function AnalyzingScreen() {
   // (e.g. user reaches analyzing without going through notification-permission).
   const stepLabels = useMemo(() => {
     const profile = snapshot?.profile;
-    const name = profile?.name?.trim() || null;
     const sleep = profile?.sleepHours
       ? t(`profilePhysical.sleepOpt.${profile.sleepHours}`)
       : null;
@@ -67,9 +66,7 @@ export default function AnalyzingScreen() {
       insights: topGoal
         ? t('analyzing.stepsPersonal.insights', { goal: topGoal })
         : t('analyzing.steps.insights'),
-      plan: name
-        ? t('analyzing.stepsPersonal.plan', { name })
-        : t('analyzing.steps.plan'),
+      plan: t('analyzing.steps.plan'),
     };
   }, [snapshot, t]);
 

@@ -23,7 +23,7 @@ export default function FirstMoodScreen() {
   const handleMoodSelect = (mood: MoodDefinition) => {
     setSelectedMood(mood);
     setFirstMoodId(mood.id);
-    router.push('/(onboarding)/your-name');
+    router.push(`/(onboarding)/mood-response/${mood.id}`);
   };
 
   return (
@@ -35,7 +35,7 @@ export default function FirstMoodScreen() {
         style={styles.heroCard}
       >
         <SparkleOverlay count={20} />
-        <OnboardingProgress current={2} total={11} style={styles.progress} />
+        <OnboardingProgress current={2} total={8} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"

@@ -5,57 +5,28 @@ import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button, Shiba } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
-import { useOnboardingGateStore } from '@store/onboardingGateStore';
+import { useHabitsStore } from '@store/habitsStore';
+import { findPreset } from '@lib/habitPresets';
 import { colors, typography, spacing, shadows } from '@constants/theme';
 
 interface PlanRow {
   key: string;
-  emoji: string;
-  label: string;
-  value: string;
+  icon: string;
+  name: string;
 }
 
 export default function PlanSnapshotScreen() {
-  const { t } = useTranslation(['onboarding', 'common']);
+  const { t } = useTranslation(['onboarding', 'common', 'screens']);
   const router = useRouter();
-  const snapshot = useOnboardingGateStore((s) => s.personalizationSnapshot);
-  const profile = snapshot?.profile ?? null;
-
-  const name = profile?.name?.trim() || null;
-  const headline = name
-    ? t('onboarding:planSnapshot.titleNamed', { name })
-    : t('onboarding:planSnapshot.titleAnon');
+  const habits = useHabitsStore((s) => s.habits);
 
   const rows: PlanRow[] = useMemo(() => {
-    if (!profile) return [];
-    const out: PlanRow[] = [];
-    if (profile.sleepHours) {
-      out.push({
-        key: 'sleep',
-        emoji: '🌙',
-        label: t('onboarding:planSnapshot.rowSleep'),
-        value: t(`onboarding:profilePhysical.sleepOpt.${profile.sleepHours}`),
-      });
-    }
-    if (profile.stressLevel) {
-      out.push({
-        key: 'stress',
-        emoji: '🌬️',
-        label: t('onboarding:planSnapshot.rowStress'),
-        value: t(`onboarding:profileMental.stressOpt.${profile.stressLevel}`),
-      });
-    }
-    const topGoal = profile.goals?.[0];
-    if (topGoal) {
-      out.push({
-        key: 'goal',
-        emoji: '🎯',
-        label: t('onboarding:planSnapshot.rowGoal'),
-        value: t(`onboarding:profileGoals.options.${topGoal}`),
-      });
-    }
-    return out;
-  }, [profile, t]);
+    return habits.slice(0, 4).map((h) => {
+      const preset = findPreset(h.name);
+      const name = preset ? t(`screens:manageHabits.preset.${preset.key}`) : h.name;
+      return { key: h.id, icon: h.icon, name };
+    });
+  }, [habits, t]);
 
   return (
     <Screen scrollable edgePadding="large" contentContainerStyle={styles.content}>
@@ -69,24 +40,22 @@ export default function PlanSnapshotScreen() {
         <View style={styles.shibaWrap}>
           <Shiba variant="excited" size={140} loop autoPlay />
         </View>
-        <Text style={styles.title}>{headline}</Text>
+        <Text style={styles.title}>{t('onboarding:planSnapshot.title')}</Text>
         <Text style={styles.subtitle}>{t('onboarding:planSnapshot.subtitle')}</Text>
       </LinearGradient>
 
       {rows.length > 0 && (
         <View style={styles.rowsCard}>
+          <Text style={styles.rowsHeader}>{t('onboarding:planSnapshot.rowsHeader')}</Text>
           {rows.map((r, idx) => (
             <View
               key={r.key}
               style={[styles.row, idx === rows.length - 1 && styles.rowLast]}
               accessibilityRole="text"
-              accessibilityLabel={`${r.label}: ${r.value}`}
+              accessibilityLabel={r.name}
             >
-              <Text style={styles.rowEmoji}>{r.emoji}</Text>
-              <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>{r.label}</Text>
-                <Text style={styles.rowValue}>{r.value}</Text>
-              </View>
+              <Text style={styles.rowEmoji}>{r.icon}</Text>
+              <Text style={styles.rowName}>{r.name}</Text>
             </View>
           ))}
         </View>
@@ -141,7 +110,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderLight,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xs,
+  },
+  rowsHeader: {
+    fontFamily: typography.fonts.ui,
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginBottom: spacing.xs,
   },
   row: {
     flexDirection: 'row',
@@ -155,25 +133,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   rowEmoji: {
-    fontSize: 28,
-    width: 36,
+    fontSize: 26,
+    width: 32,
     textAlign: 'center',
   },
-  rowText: {
+  rowName: {
     flex: 1,
-  },
-  rowLabel: {
-    fontFamily: typography.fonts.ui,
-    fontSize: typography.sizes.sm,
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
-  rowValue: {
     fontFamily: typography.fonts.body,
     fontSize: typography.sizes.md,
     color: colors.text,
-    marginTop: 2,
   },
   tagline: {
     fontFamily: typography.fonts.body,

@@ -6,7 +6,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OnboardingProgress } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
-import { COPING_OPTIONS } from '@constants/copingOptions';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
 const GOAL_VALUES = [
@@ -27,15 +26,14 @@ function toggleValue(prev: string[], value: string): string[] {
 export default function ProfileHelpsAndHopesScreen() {
   const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
-  const [coping, setCoping] = useState<string[]>(profile.copingStrategies);
   const [goals, setGoals] = useState<string[]>(profile.goals);
   const router = useRouter();
 
-  const canContinue = coping.length > 0 && goals.length > 0;
+  const canContinue = goals.length > 0;
 
   const handleContinue = () => {
     if (!canContinue) return;
-    updateProfile({ copingStrategies: coping, goals });
+    updateProfile({ goals });
     router.push('/(onboarding)/reflection');
   };
 
@@ -47,7 +45,7 @@ export default function ProfileHelpsAndHopesScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <OnboardingProgress current={9} total={11} style={styles.progress} />
+        <OnboardingProgress current={6} total={8} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
@@ -62,35 +60,6 @@ export default function ProfileHelpsAndHopesScreen() {
       </LinearGradient>
 
       <View style={styles.sectionCard}>
-        <Text style={styles.groupLabel}>{t('onboarding:profileCoping.groupLabel')}</Text>
-        <View
-          style={styles.chipsRow}
-          accessibilityRole="none"
-          accessibilityLabel={t('onboarding:profileCoping.a11yLabel')}
-        >
-          {COPING_OPTIONS.map((option) => {
-            const isSelected = coping.includes(option.value);
-            const label = t(`onboarding:profileCoping.options.${option.value}`);
-            return (
-              <Pressable
-                key={option.value}
-                onPress={() => setCoping((prev) => toggleValue(prev, option.value))}
-                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                style={[styles.chip, isSelected ? styles.chipSelected : styles.chipUnselected]}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: isSelected }}
-                accessibilityLabel={label}
-              >
-                <Text style={[styles.chipText, isSelected ? styles.chipTextSelected : styles.chipTextUnselected]}>
-                  {label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        <View style={styles.divider} />
-
         <Text style={styles.groupLabel}>{t('onboarding:profileGoals.groupLabel')}</Text>
         <View
           style={styles.chipsRowLast}
@@ -174,22 +143,11 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     marginBottom: spacing.sm,
   },
-  chipsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
   chipsRowLast: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
     marginBottom: spacing.sm,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.borderLight,
-    marginVertical: spacing.md,
   },
   chip: {
     paddingVertical: spacing.sm,

@@ -19,21 +19,12 @@ export interface UserSession {
 // ─── Onboarding ──────────────────────────────────────────────────────────────
 
 export interface OnboardingProfile {
-  // Personal
-  name: string;
-  ageRange: string | null;
-  gender: string | null;
-  // Work
-  employment: string | null;
-  workSetting: string | null;
-  workHours: string | null;
   // Physical
   sleepHours: string | null;
   exercise: string | null;
-  // Social / Mental / Goals — filled in 02-03
+  // Social / Mental / Goals
   socialFrequency: string | null;
   stressLevel: string | null;
-  copingStrategies: string[];
   goals: string[];
 }
 

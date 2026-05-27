@@ -13,18 +13,10 @@ export function saveProfileToSupabase(
 
   const basePayload: Record<string, unknown> = {
     user_id: userId,
-    name: profile.name || null,
-    age_range: profile.ageRange,
-    gender: profile.gender,
-    employment: profile.employment,
-    work_setting: profile.workSetting,
-    work_hours: profile.workHours,
     sleep_hours: profile.sleepHours,
     exercise: profile.exercise,
     social_frequency: profile.socialFrequency,
     stress_level: profile.stressLevel,
-    coping_strategies:
-      profile.copingStrategies.length > 0 ? profile.copingStrategies : null,
     goals: profile.goals.length > 0 ? profile.goals : null,
   };
 

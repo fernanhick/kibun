@@ -9,7 +9,6 @@ import { OnboardingProgress } from '@components/OnboardingProgress';
 import { Ionicons } from '@expo/vector-icons';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
 import { colors, typography, spacing } from '@constants/theme';
-import { useOnboardingStore } from '@store/onboardingStore';
 
 function shibaVariant(group: MoodGroup, id: MoodId): ShibaVariant {
   if (group === 'green') return id === 'excited' ? 'excited' : 'happy';
@@ -22,14 +21,11 @@ export default function MoodResponseScreen() {
   const router = useRouter();
   const { t } = useTranslation(['common', 'moods', 'onboarding']);
   const mood = MOOD_MAP[moodId];
-  const name = useOnboardingStore((s) => s.profile.name);
 
   if (!mood) return null;
 
   const variant = shibaVariant(mood.group, mood.id);
-  const greeting = name
-    ? t('onboarding:moodResponse.greetingNamed', { name })
-    : t('onboarding:moodResponse.greetingAnon');
+  const greeting = t('onboarding:moodResponse.greeting');
 
   return (
     <Screen edgePadding="large">
@@ -43,7 +39,7 @@ export default function MoodResponseScreen() {
         >
           <Ionicons name="chevron-back" size={24} color={colors.text} />
         </Pressable>
-        <OnboardingProgress current={4} total={11} tone="dark" />
+        <OnboardingProgress current={3} total={8} tone="dark" />
       </View>
       <View style={styles.container}>
         <Shiba variant={variant} size={220} loop={false} autoPlay />
@@ -55,7 +51,7 @@ export default function MoodResponseScreen() {
         <View style={styles.ctaContainer}>
           <Button
             label={t('common:actions.continue')}
-            onPress={() => router.push('/(onboarding)/profile-personal')}
+            onPress={() => router.push('/(onboarding)/profile-physical')}
             fullWidth
           />
         </View>

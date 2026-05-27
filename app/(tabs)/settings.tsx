@@ -1,5 +1,15 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, Switch, TextInput, StyleSheet, Linking, Platform } from 'react-native';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import {
+  View,
+  Text,
+  Switch,
+  TextInput,
+  StyleSheet,
+  Linking,
+  Platform,
+  LayoutAnimation,
+  UIManager,
+} from 'react-native';
 import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Notifications from 'expo-notifications';
@@ -11,7 +21,7 @@ import { SpringPressable } from '@components/SpringPressable';
 import { useScreenScroll } from '@hooks/useScreenScroll';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
-import { useUiPrefsStore, type LanguagePref, type ThemePref } from '@store/uiPrefsStore';
+import { useUiPrefsStore, type LanguagePref } from '@store/uiPrefsStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
 import { restorePurchases } from '@lib/revenuecat';
 import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
@@ -25,6 +35,10 @@ import {
 } from '@constants/legal';
 import { colors, typography, spacing, radius, shadows } from '@constants/theme';
 
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
 const SLOT_KEYS: { slot: NotificationSlot; i18nKey: 'morning' | 'afternoon' | 'evening' | 'preSleep' }[] = [
   { slot: 'morning', i18nKey: 'morning' },
   { slot: 'afternoon', i18nKey: 'afternoon' },
@@ -33,7 +47,38 @@ const SLOT_KEYS: { slot: NotificationSlot; i18nKey: 'morning' | 'afternoon' | 'e
 ];
 
 const LANGUAGE_OPTIONS: LanguagePref[] = ['system', 'en', 'es'];
-const THEME_OPTIONS: ThemePref[] = ['system', 'light', 'dark'];
+
+type SectionKey = 'reminderTimes' | 'customTimes' | 'streakReminder' | 'smartTiming' | 'language' | 'about';
+
+interface AccordionSectionProps {
+  title: string;
+  sectionKey: SectionKey;
+  expanded: boolean;
+  onToggle: (key: SectionKey) => void;
+  children: React.ReactNode;
+}
+
+function AccordionSection({ title, sectionKey, expanded, onToggle, children }: AccordionSectionProps) {
+  return (
+    <View style={styles.section}>
+      <SpringPressable
+        style={[styles.accordionHeader, expanded && styles.accordionHeaderOpen]}
+        onPress={() => onToggle(sectionKey)}
+        accessibilityRole="button"
+        accessibilityState={{ expanded }}
+        accessibilityLabel={title}
+      >
+        <Text style={styles.accordionTitle}>{title}</Text>
+        <Ionicons
+          name={expanded ? 'chevron-up' : 'chevron-down'}
+          size={18}
+          color={colors.textSecondary}
+        />
+      </SpringPressable>
+      {expanded && <View>{children}</View>}
+    </View>
+  );
+}
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -42,13 +87,29 @@ export default function SettingsScreen() {
   const [permissionStatus, setPermissionStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [openSections, setOpenSections] = useState<Record<SectionKey, boolean>>({
+    reminderTimes: false,
+    customTimes: false,
+    streakReminder: false,
+    smartTiming: false,
+    language: false,
+    about: false,
+  });
+
+  const toggleSection = useCallback((key: SectionKey) => {
+    LayoutAnimation.configureNext(LayoutAnimation.create(220, 'easeInEaseOut', 'opacity'));
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  useEffect(() => () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+  }, []);
+
   const session = useSessionStore((s) => s.session);
   const isAnonymous = !session || session.authStatus === 'anonymous';
 
   const language = useUiPrefsStore((s) => s.language);
   const setLanguage = useUiPrefsStore((s) => s.setLanguage);
-  const themePreference = useUiPrefsStore((s) => s.themePreference);
-  const setThemePreference = useUiPrefsStore((s) => s.setThemePreference);
 
   const slotRows = SLOT_KEYS.map(({ slot, i18nKey }) => ({
     slot,
@@ -157,36 +218,33 @@ export default function SettingsScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <SparkleOverlay count={20} />
+        <SparkleOverlay count={16} />
         <View style={styles.heroTopRow}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.screenTitle} accessibilityRole="header">
               {t('settings.hero.title')}
             </Text>
             <Text style={styles.heroSubtitle}>{t('settings.hero.subtitle')}</Text>
           </View>
-          <Shiba variant="happy" size={140} />
+          <Shiba variant="happy" size={96} />
         </View>
       </LinearGradient>
 
-      {/* ── Account section ─────────────────────────────────────────── */}
-      <Text style={styles.sectionHeader} accessibilityRole="header">
-        {t('settings.sections.account')}
-      </Text>
+      {/* ── Account row (always visible, single nav) ─────────────────── */}
       <View style={styles.section}>
         <SpringPressable
-          style={styles.row}
+          style={styles.accordionHeader}
           onPress={() => router.push('/account' as Href)}
           accessibilityRole="button"
           accessibilityLabel={t('settings.account.a11y')}
         >
           <View style={styles.rowText}>
-            <Text style={styles.rowLabel}>{t('settings.account.label')}</Text>
+            <Text style={styles.accordionTitle}>{t('settings.account.label')}</Text>
             <Text style={styles.rowHint}>
               {isAnonymous ? t('settings.account.notSignedIn') : t('settings.account.manage')}
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+          <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
         </SpringPressable>
       </View>
 
@@ -203,11 +261,13 @@ export default function SettingsScreen() {
         </SpringPressable>
       )}
 
-      {/* ── Notification sections ────────────────────────────────────── */}
-      <Text style={styles.sectionHeader} accessibilityRole="header">
-        {t('settings.sections.reminderTimes')}
-      </Text>
-      <View style={styles.section}>
+      {/* ── Reminder Times ────────────────────────────────────────────── */}
+      <AccordionSection
+        title={t('settings.sections.reminderTimes')}
+        sectionKey="reminderTimes"
+        expanded={openSections.reminderTimes}
+        onToggle={toggleSection}
+      >
         {slotRows.map((row) => {
           const isOn = selectedSlots.includes(row.slot);
           return (
@@ -232,53 +292,57 @@ export default function SettingsScreen() {
             </View>
           );
         })}
-      </View>
+      </AccordionSection>
 
-      {/* ── Custom Reminder Times — Pro feature ──────────────────────── */}
-      <Text style={styles.sectionHeader} accessibilityRole="header">
-        {t('settings.sections.customTimes')}
-      </Text>
-      <View style={styles.section}>
-          {slotRows.filter((r) => selectedSlots.includes(r.slot)).map((row) => (
-            <View key={row.slot} style={styles.row}>
-              <View style={styles.rowText}>
-                <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
-                  {row.label}
-                </Text>
-                <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
-                  {customTimes[row.slot]
-                    ? t('settings.customTimes.setTo', { time: customTimes[row.slot] })
-                    : row.hint}
-                </Text>
-              </View>
-              <TextInput
-                style={[styles.timeInput, isDisabled && styles.textDisabled]}
-                defaultValue={customTimes[row.slot] ?? ''}
-                placeholder={t('settings.customTimes.placeholder')}
-                placeholderTextColor={colors.textDisabled}
-                keyboardType="numbers-and-punctuation"
-                maxLength={5}
-                editable={!isDisabled}
-                onEndEditing={(e) => handleCustomTimeChange(row.slot, e.nativeEvent.text)}
-                accessibilityLabel={t('settings.customTimes.inputA11y', { label: row.label })}
-                accessibilityHint={t('settings.customTimes.inputA11yHint')}
-              />
-            </View>
-          ))}
-          {selectedSlots.length === 0 && (
-            <View style={styles.row}>
-              <Text style={[styles.rowHint, { flex: 1 }]}>
-                {t('settings.customTimes.empty')}
+      {/* ── Custom Reminder Times ────────────────────────────────────── */}
+      <AccordionSection
+        title={t('settings.sections.customTimes')}
+        sectionKey="customTimes"
+        expanded={openSections.customTimes}
+        onToggle={toggleSection}
+      >
+        {slotRows.filter((r) => selectedSlots.includes(r.slot)).map((row) => (
+          <View key={row.slot} style={styles.row}>
+            <View style={styles.rowText}>
+              <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
+                {row.label}
+              </Text>
+              <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
+                {customTimes[row.slot]
+                  ? t('settings.customTimes.setTo', { time: customTimes[row.slot] })
+                  : row.hint}
               </Text>
             </View>
-          )}
-        </View>
+            <TextInput
+              style={[styles.timeInput, isDisabled && styles.textDisabled]}
+              defaultValue={customTimes[row.slot] ?? ''}
+              placeholder={t('settings.customTimes.placeholder')}
+              placeholderTextColor={colors.textDisabled}
+              keyboardType="numbers-and-punctuation"
+              maxLength={5}
+              editable={!isDisabled}
+              onEndEditing={(e) => handleCustomTimeChange(row.slot, e.nativeEvent.text)}
+              accessibilityLabel={t('settings.customTimes.inputA11y', { label: row.label })}
+              accessibilityHint={t('settings.customTimes.inputA11yHint')}
+            />
+          </View>
+        ))}
+        {selectedSlots.length === 0 && (
+          <View style={styles.row}>
+            <Text style={[styles.rowHint, { flex: 1 }]}>
+              {t('settings.customTimes.empty')}
+            </Text>
+          </View>
+        )}
+      </AccordionSection>
 
       {/* ── Streak Reminder ──────────────────────────────────────────── */}
-      <Text style={styles.sectionHeader} accessibilityRole="header">
-        {t('settings.sections.streakReminder')}
-      </Text>
-      <View style={styles.section}>
+      <AccordionSection
+        title={t('settings.sections.streakReminder')}
+        sectionKey="streakReminder"
+        expanded={openSections.streakReminder}
+        onToggle={toggleSection}
+      >
         <View style={styles.row}>
           <View style={styles.rowText}>
             <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
@@ -298,119 +362,92 @@ export default function SettingsScreen() {
             accessibilityState={{ checked: streakNudgeEnabled, disabled: isDisabled }}
           />
         </View>
-      </View>
+      </AccordionSection>
 
       {/* ── Smart Timing — Pro feature ───────────────────────────────── */}
-      <Text style={styles.sectionHeader} accessibilityRole="header">
-        {t('settings.sections.smartTiming')}
-      </Text>
-      {isPro ? (
-        <View style={styles.section}>
-          <View style={styles.row}>
-            <View style={styles.rowText}>
-              <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
-                {t('settings.smartTiming.label')}
-              </Text>
-              <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
-                {t('settings.smartTiming.hint')}
-              </Text>
-            </View>
-            <Switch
-              value={adaptiveEnabled}
-              onValueChange={(v) => { toggleAdaptive(v); reschedule(); }}
-              disabled={isDisabled}
-              trackColor={{ false: colors.border, true: colors.accent }}
-              accessibilityRole="switch"
-              accessibilityLabel={t('settings.smartTiming.a11y')}
-              accessibilityState={{ checked: adaptiveEnabled, disabled: isDisabled }}
-            />
-          </View>
-          {adaptiveEnabled && slotRows.filter((r) => selectedSlots.includes(r.slot)).map((row) => {
-            const adaptiveTime = adaptiveTimes[row.slot];
-            if (!adaptiveTime) return null;
-            const isOverridden = !!customTimes[row.slot];
-            return (
-              <View key={row.slot} style={styles.row}>
-                <View style={styles.rowText}>
-                  <Text style={styles.rowLabel}>{row.label}</Text>
-                  <Text style={styles.rowHint}>
-                    {isOverridden
-                      ? t('settings.smartTiming.overridden', { time: adaptiveTime })
-                      : t('settings.smartTiming.smartTime', { time: adaptiveTime })}
-                  </Text>
-                </View>
-                {!isOverridden && (
-                  <View style={styles.activeBadge}>
-                    <Text style={styles.activeBadgeText}>{t('settings.smartTiming.active')}</Text>
-                  </View>
-                )}
-              </View>
-            );
-          })}
-          {adaptiveEnabled && Object.keys(adaptiveTimes).length === 0 && (
+      <AccordionSection
+        title={t('settings.sections.smartTiming')}
+        sectionKey="smartTiming"
+        expanded={openSections.smartTiming}
+        onToggle={toggleSection}
+      >
+        {isPro ? (
+          <>
             <View style={styles.row}>
-              <Text style={[styles.rowHint, { flex: 1 }]}>
-                {t('settings.smartTiming.needsMore')}
-              </Text>
+              <View style={styles.rowText}>
+                <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
+                  {t('settings.smartTiming.label')}
+                </Text>
+                <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
+                  {t('settings.smartTiming.hint')}
+                </Text>
+              </View>
+              <Switch
+                value={adaptiveEnabled}
+                onValueChange={(v) => { toggleAdaptive(v); reschedule(); }}
+                disabled={isDisabled}
+                trackColor={{ false: colors.border, true: colors.accent }}
+                accessibilityRole="switch"
+                accessibilityLabel={t('settings.smartTiming.a11y')}
+                accessibilityState={{ checked: adaptiveEnabled, disabled: isDisabled }}
+              />
             </View>
-          )}
-        </View>
-      ) : (
-        <SpringPressable
-          style={styles.section}
-          onPress={() => router.push('/paywall' as any)}
-          accessibilityRole="button"
-          accessibilityLabel={t('settings.smartTiming.lockedA11y')}
-        >
-          <View style={styles.proLockRow}>
-            <View style={styles.rowText}>
-              <Text style={styles.rowLabel}>{t('settings.smartTiming.label')}</Text>
-              <Text style={styles.rowHint}>{t('settings.smartTiming.lockedHint')}</Text>
+            {adaptiveEnabled && slotRows.filter((r) => selectedSlots.includes(r.slot)).map((row) => {
+              const adaptiveTime = adaptiveTimes[row.slot];
+              if (!adaptiveTime) return null;
+              const isOverridden = !!customTimes[row.slot];
+              return (
+                <View key={row.slot} style={styles.row}>
+                  <View style={styles.rowText}>
+                    <Text style={styles.rowLabel}>{row.label}</Text>
+                    <Text style={styles.rowHint}>
+                      {isOverridden
+                        ? t('settings.smartTiming.overridden', { time: adaptiveTime })
+                        : t('settings.smartTiming.smartTime', { time: adaptiveTime })}
+                    </Text>
+                  </View>
+                  {!isOverridden && (
+                    <View style={styles.activeBadge}>
+                      <Text style={styles.activeBadgeText}>{t('settings.smartTiming.active')}</Text>
+                    </View>
+                  )}
+                </View>
+              );
+            })}
+            {adaptiveEnabled && Object.keys(adaptiveTimes).length === 0 && (
+              <View style={styles.row}>
+                <Text style={[styles.rowHint, { flex: 1 }]}>
+                  {t('settings.smartTiming.needsMore')}
+                </Text>
+              </View>
+            )}
+          </>
+        ) : (
+          <SpringPressable
+            onPress={() => router.push('/paywall' as any)}
+            accessibilityRole="button"
+            accessibilityLabel={t('settings.smartTiming.lockedA11y')}
+          >
+            <View style={styles.proLockRow}>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>{t('settings.smartTiming.label')}</Text>
+                <Text style={styles.rowHint}>{t('settings.smartTiming.lockedHint')}</Text>
+              </View>
+              <View style={styles.proLockBadge}>
+                <Text style={styles.proLockBadgeText}>{t('settings.smartTiming.proBadge')}</Text>
+              </View>
             </View>
-            <View style={styles.proLockBadge}>
-              <Text style={styles.proLockBadgeText}>{t('settings.smartTiming.proBadge')}</Text>
-            </View>
-          </View>
-        </SpringPressable>
-      )}
-
-      {/* ── Appearance picker ────────────────────────────────────────── */}
-      <Text style={styles.sectionHeader} accessibilityRole="header">
-        {t('settings.sections.appearance')}
-      </Text>
-      <View style={styles.section}>
-        <View style={styles.row}>
-          <View style={styles.rowText}>
-            <Text style={styles.rowLabel}>{t('settings.appearance.label')}</Text>
-            <Text style={styles.rowHint}>{t('settings.appearance.hint')}</Text>
-          </View>
-        </View>
-        {THEME_OPTIONS.map((option) => {
-          const isSelected = themePreference === option;
-          const optionLabel = t(`settings.appearance.options.${option}`);
-          return (
-            <SpringPressable
-              key={option}
-              style={styles.row}
-              onPress={() => setThemePreference(option)}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: isSelected }}
-              accessibilityLabel={t('settings.appearance.optionA11y', { label: optionLabel })}
-            >
-              <Text style={styles.rowLabel}>{optionLabel}</Text>
-              {isSelected && (
-                <Ionicons name="checkmark" size={20} color={colors.accent} />
-              )}
-            </SpringPressable>
-          );
-        })}
-      </View>
+          </SpringPressable>
+        )}
+      </AccordionSection>
 
       {/* ── Language picker ──────────────────────────────────────────── */}
-      <Text style={styles.sectionHeader} accessibilityRole="header">
-        {t('settings.sections.language')}
-      </Text>
-      <View style={styles.section}>
+      <AccordionSection
+        title={t('settings.sections.language')}
+        sectionKey="language"
+        expanded={openSections.language}
+        onToggle={toggleSection}
+      >
         <View style={styles.row}>
           <View style={styles.rowText}>
             <Text style={styles.rowLabel}>{t('settings.language.label')}</Text>
@@ -436,13 +473,15 @@ export default function SettingsScreen() {
             </SpringPressable>
           );
         })}
-      </View>
+      </AccordionSection>
 
       {/* ── About section ────────────────────────────────────────────── */}
-      <Text style={styles.sectionHeader} accessibilityRole="header">
-        {t('settings.sections.about')}
-      </Text>
-      <View style={styles.section}>
+      <AccordionSection
+        title={t('settings.sections.about')}
+        sectionKey="about"
+        expanded={openSections.about}
+        onToggle={toggleSection}
+      >
         <View style={styles.row}>
           <Text style={styles.rowLabel}>{t('settings.about.version')}</Text>
           <Text style={styles.rowHint}>{appVersion}</Text>
@@ -465,7 +504,7 @@ export default function SettingsScreen() {
           </View>
           <Ionicons
             name={restoreState === 'restoring' ? 'sync' : 'refresh'}
-            size={20}
+            size={18}
             color={colors.textSecondary}
           />
         </SpringPressable>
@@ -476,7 +515,7 @@ export default function SettingsScreen() {
           accessibilityLabel={t('settings.about.manageSubscriptionA11y')}
         >
           <Text style={styles.rowLabel}>{t('settings.about.manageSubscription')}</Text>
-          <Ionicons name="open-outline" size={20} color={colors.textSecondary} />
+          <Ionicons name="open-outline" size={18} color={colors.textSecondary} />
         </SpringPressable>
         <SpringPressable
           style={styles.row}
@@ -485,7 +524,7 @@ export default function SettingsScreen() {
           accessibilityLabel={t('settings.about.rateA11y')}
         >
           <Text style={styles.rowLabel}>{t('settings.about.rate')}</Text>
-          <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+          <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
         </SpringPressable>
         <SpringPressable
           style={styles.row}
@@ -494,7 +533,7 @@ export default function SettingsScreen() {
           accessibilityLabel={t('settings.about.feedbackA11y')}
         >
           <Text style={styles.rowLabel}>{t('settings.about.feedback')}</Text>
-          <Ionicons name="mail-outline" size={20} color={colors.textSecondary} />
+          <Ionicons name="mail-outline" size={18} color={colors.textSecondary} />
         </SpringPressable>
         <SpringPressable
           style={styles.row}
@@ -503,7 +542,7 @@ export default function SettingsScreen() {
           accessibilityLabel={t('settings.about.termsA11y')}
         >
           <Text style={styles.rowLabel}>{t('settings.about.terms')}</Text>
-          <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+          <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
         </SpringPressable>
         <SpringPressable
           style={styles.row}
@@ -512,9 +551,9 @@ export default function SettingsScreen() {
           accessibilityLabel={t('settings.about.privacyA11y')}
         >
           <Text style={styles.rowLabel}>{t('settings.about.privacy')}</Text>
-          <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+          <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
         </SpringPressable>
-      </View>
+      </AccordionSection>
     </Screen>
   );
 }
@@ -525,17 +564,17 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
     letterSpacing: -0.6,
-    lineHeight: 34,
+    lineHeight: 32,
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 26,
+    borderRadius: 22,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    marginTop: spacing.md,
-    marginBottom: spacing.md,
+    paddingVertical: spacing.sm,
+    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
   },
   heroTopRow: {
     flexDirection: 'row',
@@ -549,43 +588,54 @@ const styles = StyleSheet.create({
   },
   permissionBanner: {
     backgroundColor: colors.errorLight,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderRadius: radius.md,
-    marginBottom: spacing.lg,
-    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
+    marginTop: spacing.xs,
     borderWidth: 1,
     borderColor: '#FFD6D1',
   },
   bannerText: {
     fontSize: typography.sizes.sm,
     color: colors.text,
-    marginBottom: spacing.xs,
+    marginBottom: 2,
   },
   bannerLink: {
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.semibold,
     color: colors.primary,
   },
-  sectionHeader: {
-    fontSize: typography.sizes.sm,
-    fontFamily: typography.fonts.ui,
-    color: colors.accent,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-    letterSpacing: 0.5,
-  },
   section: {
     ...shadows.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderRadius: radius.lg,
     overflow: 'hidden',
+    marginBottom: spacing.sm,
+  },
+  accordionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm + 2,
+    paddingHorizontal: spacing.md,
+  },
+  accordionHeaderOpen: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderLight,
+  },
+  accordionTitle: {
+    fontSize: typography.sizes.body,
+    fontFamily: typography.fonts.ui,
+    fontWeight: typography.weights.semibold,
+    color: colors.text,
+    letterSpacing: 0.1,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm + 2,
     paddingHorizontal: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderLight,
@@ -602,7 +652,7 @@ const styles = StyleSheet.create({
   rowHint: {
     fontSize: typography.sizes.sm,
     color: colors.textSecondary,
-    marginTop: 2,
+    marginTop: 1,
   },
   textDisabled: {
     color: colors.textDisabled,
@@ -623,7 +673,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm + 2,
     paddingHorizontal: spacing.md,
   },
   proLockBadge: {

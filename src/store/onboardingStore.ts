@@ -1,21 +1,14 @@
 // No persist middleware — profile is in-memory until written to Supabase at onboarding
-// completion in Plan 02-03. In-memory avoids stale data on reinstall.
+// completion. In-memory avoids stale data on reinstall.
 import { create } from 'zustand';
 import { OnboardingProfile } from '@models/index';
 import type { MoodId } from '@constants/moods';
 
 const INITIAL_PROFILE: OnboardingProfile = {
-  name: '',
-  ageRange: null,
-  gender: null,
-  employment: null,
-  workSetting: null,
-  workHours: null,
   sleepHours: null,
   exercise: null,
   socialFrequency: null,
   stressLevel: null,
-  copingStrategies: [],
   goals: [],
 };
 

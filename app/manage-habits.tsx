@@ -8,17 +8,10 @@ import { Screen, BackButton } from '@components/index';
 import { EmptyState } from '@components/EmptyState';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useHabitsStore } from '@store/habitsStore';
+import { PRESET_HABITS, findPreset } from '@lib/habitPresets';
 import { colors, spacing, typography, radius } from '@constants/theme';
 import { haptics } from '@lib/haptics';
 import type { Habit, HabitTrackingType } from '@models/index';
-
-const PRESET_HABITS: { key: string; name: string; icon: string; trackingType: HabitTrackingType }[] = [
-  { key: 'sleepQuality', name: 'Sleep quality', icon: '😴', trackingType: 'scale' },
-  { key: 'exercise', name: 'Exercise', icon: '🏃', trackingType: 'boolean' },
-  { key: 'meditated', name: 'Meditated', icon: '🧘', trackingType: 'boolean' },
-  { key: 'socialised', name: 'Socialised', icon: '👫', trackingType: 'boolean' },
-  { key: 'alcohol', name: 'Alcohol', icon: '🍺', trackingType: 'boolean' },
-];
 
 export default function ManageHabitsScreen() {
   const router = useRouter();
@@ -65,7 +58,7 @@ export default function ManageHabitsScreen() {
   };
 
   const getHabitDisplayName = (name: string) => {
-    const preset = PRESET_HABITS.find((p) => p.name.toLowerCase() === name.toLowerCase());
+    const preset = findPreset(name);
     return preset ? t(`manageHabits.preset.${preset.key}`) : name;
   };
 

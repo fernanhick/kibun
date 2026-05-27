@@ -56,9 +56,7 @@ export default function ReflectionScreen() {
     return items;
   }, [profile.sleepHours, profile.stressLevel, profile.goals, t]);
 
-  const headline = profile.name
-    ? t('onboarding:reflection.headlineNamed', { name: profile.name })
-    : t('onboarding:reflection.headlineAnon');
+  const headline = t('onboarding:reflection.headline');
 
   return (
     <Screen scrollable edgePadding="large">
@@ -68,7 +66,7 @@ export default function ReflectionScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <OnboardingProgress current={10} total={11} style={styles.progress} />
+        <OnboardingProgress current={7} total={8} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"

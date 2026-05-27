@@ -28,63 +28,8 @@
     "subline": "Pick the mood that feels closest right now.",
     "cta": "Let's go"
   },
-  "yourName": {
-    "title": "What should we call you?",
-    "subtitle": "We'll use your name to keep things personal.",
-    "fieldLabel": "Your name",
-    "placeholder": "e.g. Alex"
-  },
   "moodResponse": {
-    "greetingNamed": "Hey {{name}} 👋",
-    "greetingAnon": "Hey there 👋"
-  },
-  "profilePersonal": {
-    "title": "Tell us about yourself",
-    "subtitle": "This helps Kibun tailor your summaries.",
-    "fieldName": "First name",
-    "namePlaceholder": "e.g. Alex",
-    "ageRange": "Age range",
-    "gender": "Gender (optional)",
-    "age": {
-      "under-18": "Under 18",
-      "18-24": "18–24",
-      "25-34": "25–34",
-      "35-44": "35–44",
-      "45-54": "45–54",
-      "55-64": "55–64",
-      "65+": "65+"
-    },
-    "genderOpt": {
-      "man": "Man",
-      "woman": "Woman",
-      "non-binary": "Non-binary",
-      "prefer-not-to-say": "Prefer not to say"
-    }
-  },
-  "profileWork": {
-    "title": "How do you work?",
-    "subtitle": "Your work style can shape your mood patterns.",
-    "employment": "Employment",
-    "workSetting": "Work setting",
-    "workHours": "Hours per week (optional)",
-    "employmentOpt": {
-      "employed": "Employed",
-      "self-employed": "Self-employed",
-      "student": "Student",
-      "not-working": "Not working",
-      "retired": "Retired"
-    },
-    "settingOpt": {
-      "office": "Office",
-      "remote": "Remote",
-      "hybrid": "Hybrid"
-    },
-    "hoursOpt": {
-      "under-20": "<20h",
-      "20-35": "20–35h",
-      "35-45": "35–45h",
-      "over-45": "45h+"
-    }
+    "greeting": "Hey there 👋"
   },
   "profilePhysical": {
     "title": "Your physical routine",
@@ -134,24 +79,8 @@
     }
   },
   "profileHelpsAndHopes": {
-    "title": "What helps & what you're hoping for",
-    "subtitle": "First what eases tough moments, then what brings you here."
-  },
-  "profileCoping": {
-    "title": "When things feel heavy",
-    "subtitle": "What usually helps you ride it out? Pick all that fit.",
-    "groupLabel": "Your coping moves",
-    "a11yLabel": "Coping strategies",
-    "options": {
-      "talk": "Talk to someone I trust",
-      "move": "Move my body",
-      "music": "Listen to music",
-      "journal": "Write or journal",
-      "breathe": "Breathe slowly",
-      "nature": "Time in nature",
-      "rest": "Rest or sleep",
-      "hobby": "A hobby or distraction"
-    }
+    "title": "What are you hoping for?",
+    "subtitle": "Pick everything that feels right."
   },
   "profileGoals": {
     "title": "What are you hoping for?",
@@ -168,8 +97,7 @@
     }
   },
   "reflection": {
-    "headlineNamed": "{{name}}, here's what we noticed.",
-    "headlineAnon": "Here's what we noticed.",
+    "headline": "Here's what we noticed.",
     "subtitle": "Three things to set the stage.",
     "chipSleep": "Sleep · {{value}}",
     "chipStress": "Stress · {{value}}",
@@ -200,17 +128,13 @@
     },
     "stepsPersonal": {
       "profile": "Read: {{sleep}} · {{exercise}}",
-      "insights": "Watching: {{goal}}",
-      "plan": "{{name}}, your first 14 days are drafted"
+      "insights": "Watching: {{goal}}"
     }
   },
   "planSnapshot": {
-    "titleNamed": "{{name}}, your Kibun plan is ready",
-    "titleAnon": "Your Kibun plan is ready",
-    "subtitle": "Here's what we'll watch in your first 14 days.",
-    "rowSleep": "We'll watch · Sleep",
-    "rowStress": "We'll watch · Stress",
-    "rowGoal": "Your goal",
+    "title": "Your Kibun plan is ready",
+    "subtitle": "Here's what we'll track in your first 14 days.",
+    "rowsHeader": "Your starter habits — edit any time",
     "tagline": "Unlock to start tracking your patterns.",
     "cta": "Unlock your plan"
   }

@@ -15,6 +15,7 @@ import { useMoodEntryStore } from '@store/moodEntryStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
 import { getCheckInSlot } from '@lib/checkInSlot';
 import { saveProfileToSupabase } from '@lib/profileSync';
+import { seedHabitsFromProfile } from '@lib/seedHabitsFromProfile';
 import { NotificationSlot } from '@models/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
 
@@ -71,6 +72,7 @@ export default function NotificationPermissionScreen() {
     // Snapshot personalization for analyzing / plan-snapshot / paywall — survives
     // app kills via AsyncStorage, so cold-start re-entry to /paywall stays personal.
     setPersonalizationSnapshot({ profile, firstMoodId: persistedFirstMoodId });
+    seedHabitsFromProfile(profile);
     setComplete();
     resetOnboarding();
 
@@ -100,6 +102,7 @@ export default function NotificationPermissionScreen() {
     if (userId) saveProfileToSupabase(userId, profile);
 
     setPersonalizationSnapshot({ profile, firstMoodId: persistedFirstMoodId });
+    seedHabitsFromProfile(profile);
     setComplete();
     resetOnboarding();
     router.replace('/(onboarding)/analyzing');
@@ -113,7 +116,7 @@ export default function NotificationPermissionScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <OnboardingProgress current={11} total={11} style={styles.progress} />
+        <OnboardingProgress current={8} total={8} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"

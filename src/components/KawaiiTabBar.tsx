@@ -78,8 +78,8 @@ function TabIcon({
   useEffect(() => {
     if (focused && !reducedMotion) {
       Animated.sequence([
-        Animated.spring(scale, { toValue: 1.25, useNativeDriver: true, speed: 70, bounciness: 16 }),
-        Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 45, bounciness: 10 }),
+        Animated.spring(scale, { toValue: 1.1, useNativeDriver: true, speed: 50, bounciness: 6 }),
+        Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 30, bounciness: 3 }),
       ]).start();
     }
   }, [focused, scale, reducedMotion]);

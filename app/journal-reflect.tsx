@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   hero: {
-    borderRadius: 28,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     padding: spacing.lg,
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   },
   inputSection: {
     backgroundColor: 'rgba(255,255,255,0.96)',
-    borderRadius: 22,
+    borderRadius: 16,
     borderWidth: 1.2,
     borderColor: colors.pinkBorder,
     padding: spacing.md,

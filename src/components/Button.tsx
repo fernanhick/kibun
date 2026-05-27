@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.button,
-    minHeight: 48,
+    minHeight: 44,
     ...shadows.sm,
     overflow: 'hidden',
   },
@@ -129,15 +129,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   lgGradient: {
-    minHeight: 60,
+    minHeight: 54,
     paddingHorizontal: spacing.xl,
   },
   mdGradient: {
-    minHeight: 52,
+    minHeight: 48,
     paddingHorizontal: spacing.lg,
   },
   smGradient: {
-    minHeight: 42,
+    minHeight: 40,
     paddingHorizontal: spacing.md,
   },
   gloss: {
@@ -151,15 +151,15 @@ const styles = StyleSheet.create({
   },
   // ─── Sizes ──────────────────────────────────────────────────────────────
   lg: {
-    paddingVertical: 18,
+    paddingVertical: 15,
     paddingHorizontal: spacing.xl,
   },
   md: {
-    paddingVertical: 14,
+    paddingVertical: 12,
     paddingHorizontal: spacing.lg,
   },
   sm: {
-    paddingVertical: 10,
+    paddingVertical: 9,
     paddingHorizontal: spacing.md,
   },
   // ─── States ─────────────────────────────────────────────────────────────
@@ -175,10 +175,10 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.semibold,
   },
   lgLabel: {
-    fontSize: typography.sizes.xl,
+    fontSize: typography.sizes.lg,
   },
   mdLabel: {
-    fontSize: typography.sizes.lg,
+    fontSize: typography.sizes.body,
   },
   smLabel: {
     fontSize: typography.sizes.sm,

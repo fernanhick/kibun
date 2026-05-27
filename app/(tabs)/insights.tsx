@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Screen, Card, AnimatedNumber } from '@components/index';
+import { Screen, Card, AnimatedNumber, HabitIcon } from '@components/index';
 import { EmptyState } from '@components/EmptyState';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { TabletSplit } from '@components/TabletSplit';
@@ -345,7 +345,7 @@ export default function InsightsScreen() {
             {patterns.map((p) => (
               <View key={p.id} accessibilityLabel={p.text}>
                 <Card style={styles.patternCard}>
-                  <Text style={styles.patternIcon}>{p.icon}</Text>
+                  <Ionicons name={p.icon} size={18} color={colors.primary} style={styles.patternIcon} />
                   <Text style={styles.patternText}>{p.text}</Text>
                 </Card>
               </View>
@@ -365,60 +365,56 @@ export default function InsightsScreen() {
 
       {/* Resilience Score — Pro feature */}
       {filtered.length > 0 && (
-        <View>
-          <Text style={styles.sectionHeader} accessibilityRole="header">
-            {t('insights.sections.resilience')}
-          </Text>
-          {isPro ? (
+        isPro ? (
+          <View style={styles.standaloneCardWrap}>
             <ResilienceCard current={resilienceCurrent} prior={resiliencePrior} />
-          ) : (
-            <Pressable
-              onPress={() => router.push('/paywall')}
-              accessibilityRole="button"
-              accessibilityLabel={t('insights.resilienceCard.lockedA11y')}
-            >
-              <Card style={styles.proLockCard}>
-                <Text style={styles.proLockIcon}>💪</Text>
-                <View style={styles.proLockInfo}>
-                  <Text style={styles.proLockTitle}>{t('insights.resilienceCard.lockedTitle')}</Text>
-                  <Text style={styles.proLockSubtitle}>{t('insights.resilienceCard.lockedSubtitle')}</Text>
-                </View>
-                <View style={styles.proLockBadge}>
-                  <Text style={styles.proLockBadgeText}>{t('insights.proBadge')}</Text>
-                </View>
-              </Card>
-            </Pressable>
-          )}
-        </View>
+          </View>
+        ) : (
+          <Pressable
+            onPress={() => router.push('/paywall')}
+            accessibilityRole="button"
+            accessibilityLabel={t('insights.resilienceCard.lockedA11y')}
+            style={styles.standaloneCardWrap}
+          >
+            <Card style={styles.proLockCard}>
+              <Ionicons name="fitness-outline" size={22} color={colors.primary} style={styles.proLockIcon} />
+              <View style={styles.proLockInfo}>
+                <Text style={styles.proLockTitle}>{t('insights.resilienceCard.lockedTitle')}</Text>
+                <Text style={styles.proLockSubtitle}>{t('insights.resilienceCard.lockedSubtitle')}</Text>
+              </View>
+              <View style={styles.proLockBadge}>
+                <Text style={styles.proLockBadgeText}>{t('insights.proBadge')}</Text>
+              </View>
+            </Card>
+          </Pressable>
+        )
       )}
 
       {/* Correlations — Pro feature */}
       {filtered.length > 0 && (
-        <View>
-          <Text style={styles.sectionHeader} accessibilityRole="header">
-            {t('insights.sections.correlations')}
-          </Text>
-          {isPro ? (
+        isPro ? (
+          <View style={styles.standaloneCardWrap}>
             <CorrelationHeatmap matrix={correlationMatrix} />
-          ) : (
-            <Pressable
-              onPress={() => router.push('/paywall')}
-              accessibilityRole="button"
-              accessibilityLabel={t('insights.correlationsCard.lockedA11y')}
-            >
-              <Card style={styles.proLockCard}>
-                <Text style={styles.proLockIcon}>🔍</Text>
-                <View style={styles.proLockInfo}>
-                  <Text style={styles.proLockTitle}>{t('insights.correlationsCard.lockedTitle')}</Text>
-                  <Text style={styles.proLockSubtitle}>{t('insights.correlationsCard.lockedSubtitle')}</Text>
-                </View>
-                <View style={styles.proLockBadge}>
-                  <Text style={styles.proLockBadgeText}>{t('insights.proBadge')}</Text>
-                </View>
-              </Card>
-            </Pressable>
-          )}
-        </View>
+          </View>
+        ) : (
+          <Pressable
+            onPress={() => router.push('/paywall')}
+            accessibilityRole="button"
+            accessibilityLabel={t('insights.correlationsCard.lockedA11y')}
+            style={styles.standaloneCardWrap}
+          >
+            <Card style={styles.proLockCard}>
+              <Ionicons name="search" size={22} color={colors.primary} style={styles.proLockIcon} />
+              <View style={styles.proLockInfo}>
+                <Text style={styles.proLockTitle}>{t('insights.correlationsCard.lockedTitle')}</Text>
+                <Text style={styles.proLockSubtitle}>{t('insights.correlationsCard.lockedSubtitle')}</Text>
+              </View>
+              <View style={styles.proLockBadge}>
+                <Text style={styles.proLockBadgeText}>{t('insights.proBadge')}</Text>
+              </View>
+            </Card>
+          </Pressable>
+        )
       )}
 
       {/* Habits × Mood — top 2 positive free, full list Pro */}
@@ -433,7 +429,7 @@ export default function InsightsScreen() {
               if (isPro) {
                 return (
                   <Card style={styles.proLockCard}>
-                    <Text style={styles.proLockIcon}>📊</Text>
+                    <Ionicons name="bar-chart" size={22} color={colors.primary} style={styles.proLockIcon} />
                     <View style={styles.proLockInfo}>
                       <Text style={styles.proLockTitle}>{t('insights.habitCorrelations.needsMoreTitle')}</Text>
                       <Text style={styles.proLockSubtitle}>{t('insights.habitCorrelations.needsMoreSubtitle')}</Text>
@@ -448,7 +444,7 @@ export default function InsightsScreen() {
                   accessibilityLabel={t('insights.habitCorrelations.lockedA11y')}
                 >
                   <Card style={styles.proLockCard}>
-                    <Text style={styles.proLockIcon}>📊</Text>
+                    <Ionicons name="bar-chart" size={22} color={colors.primary} style={styles.proLockIcon} />
                     <View style={styles.proLockInfo}>
                       <Text style={styles.proLockTitle}>{t('insights.habitCorrelations.needsMoreTitle')}</Text>
                       <Text style={styles.proLockSubtitle}>{t('insights.habitCorrelations.needsMoreSubtitle')}</Text>
@@ -473,7 +469,7 @@ export default function InsightsScreen() {
                   accessibilityLabel={t('insights.habitCorrelations.seeAllProA11y')}
                 >
                   <Card style={styles.proLockCard}>
-                    <Text style={styles.proLockIcon}>📊</Text>
+                    <Ionicons name="bar-chart" size={22} color={colors.primary} style={styles.proLockIcon} />
                     <View style={styles.proLockInfo}>
                       <Text style={styles.proLockTitle}>{t('insights.habitCorrelations.seeAllPro')}</Text>
                       <Text style={styles.proLockSubtitle}>{t('insights.habitCorrelations.lockedSubtitle')}</Text>
@@ -489,49 +485,47 @@ export default function InsightsScreen() {
         </View>
       )}
 
-      {filtered.length > 0 && (
+      {(filtered.length > 0 || entries.length > 0) && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
-            {t('insights.sections.aiReport')}
+            {t('insights.sections.reports')}
           </Text>
-          <Pressable
-            onPress={() => router.push('/ai-report')}
-            accessibilityRole="button"
-            accessibilityLabel={t('insights.aiReport.a11y')}
-          >
-            <Card style={styles.aiReportCard}>
-              <Text style={styles.aiReportIcon}>{'\u2728'}</Text>
-              <View style={styles.aiReportInfo}>
-                <Text style={styles.aiReportTitle}>{t('insights.aiReport.title')}</Text>
-                <Text style={styles.aiReportSubtitle}>{t('insights.aiReport.subtitle')}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
-            </Card>
-          </Pressable>
-        </View>
-      )}
-
-      {entries.length > 0 && (
-        <View>
-          <Text style={styles.sectionHeader} accessibilityRole="header">
-            {t('insights.sections.yearInMood')}
-          </Text>
-          <Pressable
-            onPress={() => router.push('/annual-report')}
-            accessibilityRole="button"
-            accessibilityLabel={t('insights.yearInMood.a11y')}
-          >
-            <Card style={styles.aiReportCard}>
-              <Text style={styles.aiReportIcon}>🗓️</Text>
-              <View style={styles.aiReportInfo}>
-                <Text style={styles.aiReportTitle}>
-                  {t('insights.yearInMood.title', { year: new Date().getFullYear() })}
-                </Text>
-                <Text style={styles.aiReportSubtitle}>{t('insights.yearInMood.subtitle')}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
-            </Card>
-          </Pressable>
+          <View style={styles.reportsList}>
+            {filtered.length > 0 && (
+              <Pressable
+                onPress={() => router.push('/ai-report')}
+                accessibilityRole="button"
+                accessibilityLabel={t('insights.aiReport.a11y')}
+              >
+                <Card style={styles.aiReportCard}>
+                  <Ionicons name="sparkles" size={22} color={colors.primary} style={styles.aiReportIcon} />
+                  <View style={styles.aiReportInfo}>
+                    <Text style={styles.aiReportTitle}>{t('insights.aiReport.title')}</Text>
+                    <Text style={styles.aiReportSubtitle}>{t('insights.aiReport.subtitle')}</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+                </Card>
+              </Pressable>
+            )}
+            {entries.length > 0 && (
+              <Pressable
+                onPress={() => router.push('/annual-report')}
+                accessibilityRole="button"
+                accessibilityLabel={t('insights.yearInMood.a11y')}
+              >
+                <Card style={styles.aiReportCard}>
+                  <Ionicons name="calendar" size={22} color={colors.primary} style={styles.aiReportIcon} />
+                  <View style={styles.aiReportInfo}>
+                    <Text style={styles.aiReportTitle}>
+                      {t('insights.yearInMood.title', { year: new Date().getFullYear() })}
+                    </Text>
+                    <Text style={styles.aiReportSubtitle}>{t('insights.yearInMood.subtitle')}</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+                </Card>
+              </Pressable>
+            )}
+          </View>
         </View>
       )}
     </Screen>
@@ -557,7 +551,7 @@ function HabitCorrelationList({ correlations }: { correlations: HabitCorrelation
             style={corrStyles.row}
             accessibilityLabel={t('insights.habitCorrelations.rowA11y', { habit: habit.name, label })}
           >
-            <Text style={corrStyles.icon}>{habit.icon}</Text>
+            <HabitIcon icon={habit.icon} size={20} color={colors.primary} style={corrStyles.icon} />
             <View style={corrStyles.info}>
               <View style={corrStyles.nameLine}>
                 <Text style={corrStyles.habitName}>{habit.name}</Text>
@@ -578,7 +572,7 @@ const corrStyles = StyleSheet.create({
   container: {
     ...shadows.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
-    borderRadius: 22,
+    borderRadius: 16,
     padding: spacing.md,
     gap: spacing.md,
     marginBottom: spacing.sm,
@@ -589,7 +583,6 @@ const corrStyles = StyleSheet.create({
     gap: spacing.sm,
   },
   icon: {
-    fontSize: 20,
     width: 28,
   },
   info: {
@@ -657,6 +650,9 @@ function CorrelationHeatmap({
       style={heatmapStyles.container}
       accessibilityLabel={t('screens:insights.correlationsCard.heatmapA11y')}
     >
+      <Text style={heatmapStyles.cardTitle}>
+        {t('screens:insights.correlationsCard.title')}
+      </Text>
       {/* Column headers */}
       <View style={heatmapStyles.row}>
         <View style={heatmapStyles.rowLabel} />
@@ -711,9 +707,16 @@ const heatmapStyles = StyleSheet.create({
   container: {
     ...shadows.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
-    borderRadius: 22,
+    borderRadius: 16,
     padding: spacing.md,
     gap: 4,
+  },
+  cardTitle: {
+    fontSize: typography.sizes.body,
+    fontFamily: typography.fonts.ui,
+    fontWeight: typography.weights.semibold,
+    color: colors.text,
+    marginBottom: spacing.sm,
   },
   row: {
     flexDirection: 'row',
@@ -820,7 +823,7 @@ function ResilienceCard({
           </View>
           <Text style={resilienceStyles.scoreLabel}>{t('insights.resilienceCard.title')}</Text>
         </View>
-        <Text style={resilienceStyles.icon}>💪</Text>
+        <Ionicons name="fitness" size={28} color={colors.primary} style={resilienceStyles.icon} />
       </View>
       <Text style={resilienceStyles.detail}>
         {avgHoursDisplay} · {t('insights.resilienceCard.basedOn', { count: current.recoveries })}
@@ -867,9 +870,7 @@ const resilienceStyles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 2,
   },
-  icon: {
-    fontSize: 28,
-  },
+  icon: {},
   detail: {
     fontSize: typography.sizes.sm,
     color: colors.textSecondary,
@@ -928,7 +929,7 @@ function PeriodToggle({
 const styles = StyleSheet.create({
   heroCard: {
     ...shadows.md,
-    borderRadius: 28,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
@@ -1078,7 +1079,7 @@ const styles = StyleSheet.create({
   chartContainer: {
     marginTop: spacing.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
-    borderRadius: 22,
+    borderRadius: 16,
     borderWidth: 1.2,
     borderColor: '#DCE9FF',
     paddingHorizontal: spacing.sm,
@@ -1097,7 +1098,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderWidth: 1.2,
     borderColor: '#DCE9FF',
-    borderRadius: 22,
+    borderRadius: 16,
+  },
+  standaloneCardWrap: {
+    marginTop: spacing.lg,
+  },
+  reportsList: {
+    gap: spacing.sm,
   },
   patternList: {
     gap: spacing.sm,
@@ -1110,9 +1117,7 @@ const styles = StyleSheet.create({
     borderColor: '#DCE9FF',
     backgroundColor: 'rgba(255,255,255,0.96)',
   },
-  patternIcon: {
-    fontSize: typography.sizes.lg,
-  },
+  patternIcon: {},
   patternText: {
     fontSize: typography.sizes.body,
     color: colors.text,
@@ -1132,9 +1137,7 @@ const styles = StyleSheet.create({
     borderColor: '#DCE9FF',
     backgroundColor: 'rgba(255,255,255,0.96)',
   },
-  aiReportIcon: {
-    fontSize: typography.sizes.xl,
-  },
+  aiReportIcon: {},
   aiReportInfo: {
     flex: 1,
   },
@@ -1156,9 +1159,7 @@ const styles = StyleSheet.create({
     borderColor: '#DCE9FF',
     backgroundColor: 'rgba(255,255,255,0.96)',
   },
-  proLockIcon: {
-    fontSize: typography.sizes.xl,
-  },
+  proLockIcon: {},
   proLockInfo: {
     flex: 1,
   },

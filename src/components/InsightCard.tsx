@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Card } from '@components/Card';
 import { SpringPressable } from '@components/SpringPressable';
 import { colors, radius, spacing, typography } from '@constants/theme';
+import { INSIGHT_CARD_IMAGES } from '@lib/achievements';
 import type { InsightCard as InsightCardData } from '@lib/correlationInsights';
 
 interface InsightCardProps {
@@ -25,7 +27,12 @@ export function InsightCard({ card }: InsightCardProps) {
       accessibilityRole={card.habitId ? 'button' : undefined}
       accessibilityLabel={`${card.title}. ${card.body}`}
     >
-      <Text style={styles.emoji}>{card.emoji}</Text>
+      <Image
+        source={INSIGHT_CARD_IMAGES[card.imageKey]}
+        style={styles.illustration}
+        contentFit="contain"
+        accessibilityIgnoresInvertColors
+      />
       <View style={styles.body}>
         <Text style={styles.title}>{card.title}</Text>
         <Text style={styles.bodyText}>{card.body}</Text>
@@ -54,9 +61,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.card,
     borderWidth: 0.5,
   },
-  emoji: {
-    fontSize: 32,
-    lineHeight: 38,
+  illustration: {
+    width: 56,
+    height: 56,
   },
   body: {
     flex: 1,

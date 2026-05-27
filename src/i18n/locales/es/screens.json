@@ -24,7 +24,7 @@
       "evening": "Buenas noches",
       "windDown": "Hora de bajar el ritmo"
     },
-    "streak": "Racha de {{count}} días 🔥",
+    "streak": "Racha de {{count}} días",
     "streakA11y": "Racha actual: {{count}} días",
     "logMoodCta": "Registrar ánimo",
     "todayHeader": "Hoy",
@@ -89,33 +89,33 @@
     },
     "emptyVariants": {
       "positive": [
-        { "emoji": "🌞", "title": "Bienvenido de vuelta", "body": "Los últimos días se han sentido luminosos. ¿Quieres mantener esa buena energía?", "affirmation": "Hoy es tuyo para brillar. ✨" },
-        { "emoji": "🌻", "title": "Qué bueno verte",      "body": "Has tenido una racha encantadora. Un check-in rápido mantiene el ritmo.", "affirmation": "Pequeños momentos, grandes victorias. 💛" },
-        { "emoji": "🌈", "title": "Sigue así",            "body": "Las cosas se han sentido bien últimamente. Captura cómo te trata el día.", "affirmation": "Tu luz importa. ✨" }
+        { "imageKey": "welcome-back",        "title": "Bienvenido de vuelta", "body": "Los últimos días se han sentido luminosos. ¿Quieres mantener esa buena energía?", "affirmation": "Hoy es tuyo para brillar." },
+        { "imageKey": "glad-you-are-here",   "title": "Qué bueno verte",      "body": "Has tenido una racha encantadora. Un check-in rápido mantiene el ritmo.", "affirmation": "Pequeños momentos, grandes victorias." },
+        { "imageKey": "keep-it-going",       "title": "Sigue así",            "body": "Las cosas se han sentido bien últimamente. Captura cómo te trata el día.", "affirmation": "Tu luz importa." }
       ],
       "struggling": [
-        { "emoji": "🌷", "title": "Estamos contigo",      "body": "Los últimos días se han sentido pesados. Aunque sea un pequeño check-in, te ayuda a entender lo que necesitas.", "affirmation": "Eres más fuerte de lo que sabes. 🤍" },
-        { "emoji": "🍃", "title": "Una respiración a la vez", "body": "Los momentos difíciles no duran para siempre. Registrar cómo te sientes es un acto silencioso de autocuidado.", "affirmation": "Sé amable contigo hoy. 🤍" },
-        { "emoji": "☁️", "title": "Apareciste",           "body": "Y eso es suficiente. Seguir tu ánimo, incluso en días difíciles, es cómo empiezas a verte con claridad.", "affirmation": "Sanar no es lineal — cada paso cuenta. ✨" }
+        { "imageKey": "we-are-here-with-you","title": "Estamos contigo",      "body": "Los últimos días se han sentido pesados. Aunque sea un pequeño check-in, te ayuda a entender lo que necesitas.", "affirmation": "Eres más fuerte de lo que sabes." },
+        { "imageKey": "one-breadth",         "title": "Una respiración a la vez", "body": "Los momentos difíciles no duran para siempre. Registrar cómo te sientes es un acto silencioso de autocuidado.", "affirmation": "Sé amable contigo hoy." },
+        { "imageKey": "you-showed-up",       "title": "Apareciste",           "body": "Y eso es suficiente. Seguir tu ánimo, incluso en días difíciles, es cómo empiezas a verte con claridad.", "affirmation": "Sanar no es lineal — cada paso cuenta." }
       ],
       "neutral": [
-        { "emoji": "🌸", "title": "Importas",             "body": "Aún no hay ánimos registrados — y está bien. Solo aparecer aquí es algo amable contigo mismo.", "affirmation": "Sé amable contigo hoy. ✨" },
-        { "emoji": "🪷", "title": "Una página nueva",     "body": "Cada día es un capítulo nuevo. Tómate un momento para chequear contigo mismo.", "affirmation": "Tus sentimientos son válidos — sean los que sean. ✨" },
-        { "emoji": "✨", "title": "Hola",                 "body": "¿Cómo está tu mundo interior hoy? Un registro rápido te ayuda a notar patrones con el tiempo.", "affirmation": "Vale la pena prestarte atención. 💛" }
+        { "imageKey": "you-matter",          "title": "Importas",             "body": "Aún no hay ánimos registrados — y está bien. Solo aparecer aquí es algo amable contigo mismo.", "affirmation": "Sé amable contigo hoy." },
+        { "imageKey": "a-fresh-page",        "title": "Una página nueva",     "body": "Cada día es un capítulo nuevo. Tómate un momento para chequear contigo mismo.", "affirmation": "Tus sentimientos son válidos — sean los que sean." },
+        { "imageKey": "glad-you-are-here",   "title": "Hola",                 "body": "¿Cómo está tu mundo interior hoy? Un registro rápido te ayuda a notar patrones con el tiempo.", "affirmation": "Vale la pena prestarte atención." }
       ]
     },
     "insightCards": {
       "positiveCorrelation": {
         "title": "{{habit}} parece elevar tu ánimo",
         "body": "Los días que registras {{habit}}, tu ánimo promedio sube {{strength}}. Vale la pena cuidarlo.",
-        "emoji": "🌱"
+        "imageKey": "keep-it-going"
       },
       "lowMoodNudge": {
         "personalisedTitle": "Un empujoncito: {{habit}}",
         "personalisedBody": "En los días más pesados, {{habit}} ha sido uno de tus apoyos confiables. Aunque sea pequeño, cuenta.",
         "genericTitle": "Un pequeño ancla para hoy",
         "genericBody": "Hoy se siente un poco pesado. Un pequeño hábito, aunque sea imperfecto, es suficiente.",
-        "emoji": "🤍"
+        "imageKey": "we-are-here-with-you"
       },
       "strength": {
         "weak": "un poco",
@@ -128,7 +128,7 @@
     "patterns": {
       "dayOfWeek": "A menudo te sientes {{mood}} los {{day}}",
       "timeOfDay": "Sueles sentirte {{mood}} por {{slot}}",
-      "trendUp": "Tu ánimo ha estado mejorando últimamente 🌱",
+      "trendUp": "Tu ánimo ha estado mejorando últimamente",
       "trendDown": "Tu ánimo ha estado bajando últimamente"
     },
     "hero": {
@@ -157,11 +157,8 @@
       "topMoods": "Ánimos más frecuentes",
       "trend": "Tendencia de ánimo",
       "patterns": "Patrones",
-      "resilience": "Recuperación",
-      "correlations": "Correlaciones",
       "habitsAndMood": "Hábitos y ánimo",
-      "aiReport": "Resumen",
-      "yearInMood": "Año en ánimos"
+      "reports": "Informes"
     },
     "charts": {
       "barA11y": "Gráfico de frecuencia con los {{count}} ánimos más frecuentes",
@@ -182,7 +179,8 @@
       "basedOn_other": "basado en {{count}} recuperaciones"
     },
     "correlationsCard": {
-      "lockedTitle": "Correlaciones",
+      "title": "Ánimo por momento × día",
+      "lockedTitle": "Mapa de momento y día",
       "lockedSubtitle": "Descubre en qué momentos y días te sientes mejor. Función Pro.",
       "lockedA11y": "Mejora a Pro para desbloquear correlaciones",
       "heatmapA11y": "Mapa de calor con el ánimo medio por franja del día y día de la semana",
@@ -481,19 +479,19 @@
     "energyTeaserA11y": "Registrar niveles de energía y enfoque — función Pro",
     "exercises": {
       "green": {
-        "title": "¡Aprovecha la ola! 🌟",
+        "title": "¡Aprovecha la ola!",
         "subtitle": "Captura esta buena energía mientras dura."
       },
       "neutral": {
-        "title": "Un suave empujón 🍃",
+        "title": "Un suave empujón",
         "subtitle": "Pequeños cambios pueden transformar tu día."
       },
       "red-orange": {
-        "title": "¿Necesitas un momento? 💛",
+        "title": "¿Necesitas un momento?",
         "subtitle": "Prueba un ejercicio rápido para reiniciar."
       },
       "blue": {
-        "title": "No estás solo 💙",
+        "title": "No estás solo",
         "subtitle": "A veces, sentarte con la emoción es suficiente."
       },
       "options": {
@@ -734,7 +732,7 @@
   "paywall": {
     "hero": {
       "title": "kibun Premium",
-      "subtitle": "Tu historial de ánimo merece la imagen completa.\nRevísalo de forma simple 💕"
+      "subtitle": "Tu historial de ánimo merece la imagen completa.\nRevísalo de forma simple."
     },
     "comparison": {
       "header": {
@@ -767,7 +765,7 @@
       "trial": "Incluye 7 días de prueba gratis · Cancela cuando quieras"
     },
     "cta": {
-      "subscribe": "Suscribirme — 7 días gratis 🌸",
+      "subscribe": "Suscribirme — 7 días gratis",
       "subscribeA11yHint": "Inicia tu suscripción con 7 días de prueba gratis. Cancela cuando quieras desde los ajustes de cuenta.",
       "skip": "Quizás más tarde",
       "skipA11yHint": "Omitir suscripción y continuar con funciones limitadas"
@@ -1014,7 +1012,7 @@
       "dismissA11y": "Cerrar",
       "title": "¿Cómo va kibun?",
       "subtitle": "Tu respuesta honesta nos ayuda a mejorarlo.",
-      "ctaHappy": "Me encanta 💖",
+      "ctaHappy": "Me encanta",
       "ctaHappyA11y": "Me encanta",
       "ctaUnhappy": "No mucho",
       "ctaUnhappyA11y": "No mucho",

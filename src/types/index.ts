@@ -109,7 +109,6 @@ export interface AchievementDefinition {
   id: AchievementId;
   label: string;
   description: string;
-  emoji: string;
 }
 
 // ─── Custom Moods ─────────────────────────────────────────────────────────────

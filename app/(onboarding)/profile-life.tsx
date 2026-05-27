@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   heroCard: {
-    borderRadius: 28,
+    borderRadius: 20,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.lg,
     marginBottom: spacing.lg,
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   },
   sectionCard: {
     backgroundColor: colors.surface,
-    borderRadius: 22,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.borderLight,
     padding: spacing.md,

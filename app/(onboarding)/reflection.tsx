@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   heroCard: {
-    borderRadius: 28,
+    borderRadius: 20,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.lg,
     marginTop: spacing.md,
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderLight,
-    borderRadius: 22,
+    borderRadius: 16,
     padding: spacing.md,
     marginBottom: spacing.lg,
     gap: spacing.sm,

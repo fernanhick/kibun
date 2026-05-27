@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +18,7 @@ import { Screen, Button } from '@components/index';
 import { MoodBubble } from '@components/MoodBubble';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { MoodGroup } from '@constants/moods';
+import { EXERCISE_CHIP_IMAGES, type ExerciseType } from '@constants/exercises';
 import { colors, typography, spacing, radius } from '@constants/theme';
 import { useMoodEntryStore, useSessionStore, useCustomMoodsStore } from '@store/index';
 import { getCheckInSlot } from '@lib/checkInSlot';
@@ -35,16 +36,16 @@ function formatBackdate(d: string) {
   return formatDate(date, { month: 'long', day: 'numeric' });
 }
 
-// Sentiment chip styling — use PNGs if present, fallback to emoji.
-const SENTIMENT_IMAGES: Partial<Record<SentimentLabel, any>> = {
+// Sentiment chip styling — uses Shiba kawaii emotion PNGs (assets/emotions/).
+const SENTIMENT_IMAGES: Record<SentimentLabel, any> = {
   positive: require('../assets/emotions/happy.png'),
-  neutral: require('../assets/emotions/calm.png'),
+  neutral:  require('../assets/emotions/calm.png'),
   negative: require('../assets/emotions/sad.png'),
 };
-const SENTIMENT_STYLE: Record<SentimentLabel, { emoji: string; color: string }> = {
-  positive: { emoji: '😊', color: colors.success },
-  neutral:  { emoji: '😐', color: colors.textSecondary },
-  negative: { emoji: '😔', color: colors.error },
+const SENTIMENT_STYLE: Record<SentimentLabel, { color: string }> = {
+  positive: { color: colors.success },
+  neutral:  { color: colors.textSecondary },
+  negative: { color: colors.error },
 };
 
 function getMoodAwareSentimentLabel(
@@ -60,27 +61,12 @@ function getMoodAwareSentimentLabel(
 }
 
 // ─── Mood-specific exercise suggestions (Pro feature) ─────────────────────────
-// Visual styling per mood group. Uses PNGs for chips if available, else emoji fallback.
 interface MoodExerciseStyle {
   borderColor: string;
   chipBg: string;
   chipBorder: string;
-  optionTypes: { type: string; emoji: string }[];
+  optionTypes: { type: ExerciseType }[];
 }
-
-const EXERCISE_CHIP_IMAGES: Record<string, any> = {
-  gratitude: require('../assets/badges/exercise chips/gratitude.png'),
-  joy_capture: require('../assets/badges/exercise chips/joy-capture.png'),
-  savoring: require('../assets/badges/exercise chips/savoring.png'),
-  energy_boost: require('../assets/badges/exercise chips/energy-boost.png'),
-  curiosity: require('../assets/badges/exercise chips/curiosity.png'),
-  mindful_pause: require('../assets/badges/exercise chips/mindful-pause.png'),
-  box_breathing: require('../assets/badges/exercise chips/box-breathing.png'),
-  body_scan: require('../assets/badges/exercise chips/body-scan.png'),
-  self_compassion: require('../assets/badges/exercise chips/self-compassion.png'),
-  comfort_list: require('../assets/badges/exercise chips/comfort-list.png'),
-  grounding: require('../assets/badges/exercise chips/box-breathing.png'),
-};
 
 const MOOD_EXERCISE_STYLE: Record<MoodGroup, MoodExerciseStyle> = {
   green: {
@@ -88,9 +74,9 @@ const MOOD_EXERCISE_STYLE: Record<MoodGroup, MoodExerciseStyle> = {
     chipBg: '#E8F5E9',
     chipBorder: '#81C784',
     optionTypes: [
-      { type: 'gratitude',      emoji: '🙏' },
-      { type: 'joy_capture',    emoji: '✨' },
-      { type: 'savoring',       emoji: '🌸' },
+      { type: 'gratitude' },
+      { type: 'joy_capture' },
+      { type: 'savoring' },
     ],
   },
   neutral: {
@@ -98,9 +84,9 @@ const MOOD_EXERCISE_STYLE: Record<MoodGroup, MoodExerciseStyle> = {
     chipBg: '#ECEFF1',
     chipBorder: '#B0BEC5',
     optionTypes: [
-      { type: 'energy_boost',   emoji: '⚡' },
-      { type: 'curiosity',      emoji: '🔍' },
-      { type: 'mindful_pause',  emoji: '🧘' },
+      { type: 'energy_boost' },
+      { type: 'curiosity' },
+      { type: 'mindful_pause' },
     ],
   },
   'red-orange': {
@@ -108,9 +94,9 @@ const MOOD_EXERCISE_STYLE: Record<MoodGroup, MoodExerciseStyle> = {
     chipBg: '#FFF3E0',
     chipBorder: '#FFCC80',
     optionTypes: [
-      { type: 'box_breathing',  emoji: '🫁' },
-      { type: 'grounding',      emoji: '🌱' },
-      { type: 'body_scan',      emoji: '🫀' },
+      { type: 'box_breathing' },
+      { type: 'grounding' },
+      { type: 'body_scan' },
     ],
   },
   blue: {
@@ -118,9 +104,9 @@ const MOOD_EXERCISE_STYLE: Record<MoodGroup, MoodExerciseStyle> = {
     chipBg: '#E3F2FD',
     chipBorder: '#64B5F6',
     optionTypes: [
-      { type: 'self_compassion', emoji: '💜' },
-      { type: 'comfort_list',    emoji: '🧸' },
-      { type: 'box_breathing',   emoji: '🫁' },
+      { type: 'self_compassion' },
+      { type: 'comfort_list' },
+      { type: 'box_breathing' },
     ],
   },
 };
@@ -300,15 +286,14 @@ export default function MoodConfirmScreen() {
         {sentiment && (() => {
           const sentimentKey = moodAwareSentimentLabel ?? 'neutral';
           const sStyle = SENTIMENT_STYLE[sentimentKey];
-          const imgSrc = SENTIMENT_IMAGES[sentimentKey];
           return (
             <View style={styles.sentimentRow}>
               <View style={[styles.sentimentChip, { borderColor: sStyle.color }]}>
-                {imgSrc ? (
-                  <Image source={imgSrc} style={{ width: 24, height: 24, marginRight: 4 }} accessibilityIgnoresInvertColors />
-                ) : (
-                  <Text style={styles.sentimentEmoji}>{sStyle.emoji}</Text>
-                )}
+                <Image
+                  source={SENTIMENT_IMAGES[sentimentKey]}
+                  style={{ width: 24, height: 24, marginRight: 4 }}
+                  accessibilityIgnoresInvertColors
+                />
                 <Text style={[styles.sentimentLabel, { color: sStyle.color }]}>
                   {t(`moodConfirm.sentiment.${sentimentKey}`)}
                 </Text>
@@ -333,14 +318,14 @@ export default function MoodConfirmScreen() {
           <Text style={styles.efSubtitle}>{t('moodConfirm.energy.subtitle')}</Text>
           <DotPicker
             label={t('moodConfirm.energy.energy')}
-            emoji="⚡"
+            icon="flash"
             value={energyLevel}
             onChange={setEnergyLevel}
             activeColor={colors.accent}
           />
           <DotPicker
             label={t('moodConfirm.energy.focus')}
-            emoji="🎯"
+            icon="locate"
             value={focusLevel}
             onChange={setFocusLevel}
             activeColor={colors.primary}
@@ -380,7 +365,6 @@ export default function MoodConfirmScreen() {
               <View style={[styles.exerciseRow, !isPro && { opacity: 0.5 }]}>
                 {style.optionTypes.map((opt) => {
                   const optLabel = t(`moodConfirm.exercises.options.${opt.type}`);
-                  const imgSrc = EXERCISE_CHIP_IMAGES[opt.type];
                   return (
                     <TouchableOpacity
                       key={opt.type}
@@ -394,11 +378,11 @@ export default function MoodConfirmScreen() {
                       }}
                       accessibilityLabel={isPro ? optLabel : t('moodConfirm.exercises.requiresPro', { label: optLabel })}
                     >
-                      {imgSrc ? (
-                        <Image source={imgSrc} style={{ width: 28, height: 28, marginRight: 4 }} accessibilityIgnoresInvertColors />
-                      ) : (
-                        <Text style={styles.exerciseEmoji}>{opt.emoji}</Text>
-                      )}
+                      <Image
+                        source={EXERCISE_CHIP_IMAGES[opt.type]}
+                        style={{ width: 28, height: 28, marginRight: 4 }}
+                        accessibilityIgnoresInvertColors
+                      />
                       <Text style={styles.exerciseChipLabel}>{optLabel}</Text>
                     </TouchableOpacity>
                   );
@@ -440,13 +424,13 @@ export default function MoodConfirmScreen() {
 
 function DotPicker({
   label,
-  emoji,
+  icon,
   value,
   onChange,
   activeColor,
 }: {
   label: string;
-  emoji: string;
+  icon: React.ComponentProps<typeof Ionicons>['name'];
   value: number | null;
   onChange: (v: number | null) => void;
   activeColor: string;
@@ -454,7 +438,7 @@ function DotPicker({
   return (
     <View style={dotStyles.row}>
       <View style={dotStyles.labelGroup}>
-        <Text style={dotStyles.emoji}>{emoji}</Text>
+        <Ionicons name={icon} size={16} color={colors.textSecondary} />
         <Text style={dotStyles.label}>{label}</Text>
       </View>
       <View style={dotStyles.dots}>
@@ -498,9 +482,6 @@ const dotStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
     width: 80,
-  },
-  emoji: {
-    fontSize: 14,
   },
   label: {
     fontSize: typography.sizes.sm,
@@ -553,7 +534,7 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     ...heroShadow,
-    borderRadius: 28,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingVertical: spacing.sm,
@@ -608,7 +589,7 @@ const styles = StyleSheet.create({
     ...cardShadow,
     gap: spacing.sm,
     backgroundColor: 'rgba(255,255,255,0.96)',
-    borderRadius: 22,
+    borderRadius: 16,
     padding: spacing.md,
     borderWidth: 1.5,
     borderColor: '#BFCDE2',
@@ -637,7 +618,7 @@ const styles = StyleSheet.create({
   exerciseCard: {
     ...cardShadow,
     backgroundColor: colors.surface,
-    borderRadius: 20,
+    borderRadius: 16,
     borderWidth: 1.5,
     padding: spacing.md,
     gap: spacing.sm,
@@ -702,9 +683,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: spacing.sm,
   },
-  exerciseEmoji: {
-    fontSize: 16,
-  },
   exerciseChipLabel: {
     fontSize: typography.sizes.sm,
     color: colors.text,
@@ -725,9 +703,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     backgroundColor: colors.surface,
   },
-  sentimentEmoji: {
-    fontSize: 14,
-  },
   sentimentLabel: {
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.medium,
@@ -740,7 +715,7 @@ const styles = StyleSheet.create({
   efCard: {
     ...cardShadow,
     backgroundColor: 'rgba(255,255,255,0.96)',
-    borderRadius: 22,
+    borderRadius: 16,
     padding: spacing.md,
     borderWidth: 1.5,
     borderColor: '#BFCDE2',

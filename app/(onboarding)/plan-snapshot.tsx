@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Screen, Button, Shiba } from '@components/index';
+import { Screen, Button, Shiba, HabitIcon } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useHabitsStore } from '@store/habitsStore';
 import { findPreset } from '@lib/habitPresets';
@@ -54,7 +54,7 @@ export default function PlanSnapshotScreen() {
               accessibilityRole="text"
               accessibilityLabel={r.name}
             >
-              <Text style={styles.rowEmoji}>{r.icon}</Text>
+              <HabitIcon icon={r.icon} size={22} color={colors.primary} style={styles.rowEmoji} />
               <Text style={styles.rowName}>{r.name}</Text>
             </View>
           ))}
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 28,
+    borderRadius: 20,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
     alignItems: 'center',
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   rowsCard: {
     ...shadows.sm,
     backgroundColor: colors.surface,
-    borderRadius: 22,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.borderLight,
     paddingHorizontal: spacing.md,
@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   rowEmoji: {
-    fontSize: 26,
     width: 32,
     textAlign: 'center',
   },

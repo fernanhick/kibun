@@ -11,7 +11,7 @@ export interface InsightCard {
   title: string;
   body: string;
   habitId?: string;
-  emoji: string;
+  imageKey: string;
 }
 
 // Stricter than the Insights tab floor: insight cards are unsolicited, so they
@@ -48,7 +48,7 @@ export function generatePositiveCorrelationInsight(
   const strength = t(`home.insightCards.strength.${strengthAdverb(top.correlation)}`);
   return {
     kind: 'positiveCorrelation',
-    emoji: t('home.insightCards.positiveCorrelation.emoji'),
+    imageKey: t('home.insightCards.positiveCorrelation.imageKey'),
     title: t('home.insightCards.positiveCorrelation.title', { habit: top.habit.name }),
     body: t('home.insightCards.positiveCorrelation.body', { habit: top.habit.name, strength }),
     habitId: top.habit.id,
@@ -86,7 +86,7 @@ export function generateLowMoodNudgeInsight(
   if (personalised) {
     return {
       kind: 'lowMoodNudge',
-      emoji: t('home.insightCards.lowMoodNudge.emoji'),
+      imageKey: t('home.insightCards.lowMoodNudge.imageKey'),
       title: t('home.insightCards.lowMoodNudge.personalisedTitle', { habit: personalised.habit.name }),
       body: t('home.insightCards.lowMoodNudge.personalisedBody', { habit: personalised.habit.name }),
       habitId: personalised.habit.id,
@@ -98,7 +98,7 @@ export function generateLowMoodNudgeInsight(
   const fallback = [...habits].sort((a, b) => a.displayOrder - b.displayOrder)[0];
   return {
     kind: 'lowMoodNudge',
-    emoji: t('home.insightCards.lowMoodNudge.emoji'),
+    imageKey: t('home.insightCards.lowMoodNudge.imageKey'),
     title: t('home.insightCards.lowMoodNudge.genericTitle'),
     body: t('home.insightCards.lowMoodNudge.genericBody'),
     habitId: fallback?.id,

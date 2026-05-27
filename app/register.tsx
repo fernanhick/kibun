@@ -512,7 +512,7 @@ export default function RegistrationScreen() {
           accessibilityRole="button"
           accessibilityLabel="Dev: sign in as tester"
         >
-          <Text style={styles.devLoginText}>🛠 Dev: tester login</Text>
+          <Text style={styles.devLoginText}>Dev: tester login</Text>
         </Pressable>
       )}
     </Screen>
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   heroCard: {
-    borderRadius: 28,
+    borderRadius: 20,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.lg,
     marginBottom: spacing.lg,
@@ -535,7 +535,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderLight,
-    borderRadius: 22,
+    borderRadius: 16,
     padding: spacing.md,
     gap: spacing.md,
   },

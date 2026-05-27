@@ -96,10 +96,10 @@ export const spacing = {
   xs: 4,
   sm: 8,
   md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
-  screenPadding: 20,
+  lg: 20,
+  xl: 28,
+  xxl: 40,
+  screenPadding: 16,
 } as const;
 
 // ─── Border Radius ────────────────────────────────────────────────────────────
@@ -107,13 +107,13 @@ export const radius = {
   none: 0,
   sm: 4,
   md: 8,
-  lg: 14,
-  xl: 18,
-  xxl: 26,
+  lg: 10,
+  xl: 14,
+  xxl: 18,
   full: 9999,
   // Specific UI patterns
-  button: 16,
-  card: 22,
+  button: 12,
+  card: 16,
   bubble: 9999,
 } as const;
 

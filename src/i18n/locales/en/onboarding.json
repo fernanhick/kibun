@@ -4,10 +4,10 @@
     "reminderHint": "{{label}} reminder, {{hint}}"
   },
   "disclaimer": {
-    "title": "Before We Begin… 🌸",
+    "title": "Before We Begin…",
     "subtitle": "Just a few things to know about Kibun",
     "cardTitle": "Kibun is a Wellness Tool",
-    "body": "Kibun is here to help you with self-reflection and mood tracking — and to gently show you which daily habits seem to shift how you feel. Think of it as a cozy journal companion. 📝",
+    "body": "Kibun is here to help you with self-reflection and mood tracking — and to gently show you which daily habits seem to shift how you feel. Think of it as a cozy journal companion.",
     "notSection": "What Kibun Is NOT:",
     "bullets": {
       "medicalDevice": "A medical device or app",
@@ -17,9 +17,9 @@
       "emergency": "An emergency service"
     },
     "crisisTitle": "If You're in Crisis",
-    "crisisBody": "Please contact local emergency services or a licensed professional immediately. You matter. 💙",
-    "checkbox": "I understand Kibun is for wellness only ✨",
-    "cta": "Let's Go! 🎉",
+    "crisisBody": "Please contact local emergency services or a licensed professional immediately. You matter.",
+    "checkbox": "I understand Kibun is for wellness only",
+    "cta": "Let's Go!",
     "loginLink": "Already have an account? Sign in and skip onboarding",
     "personalizationNote": "Heads up: these onboarding answers improve your summaries later."
   },
@@ -29,7 +29,7 @@
     "cta": "Let's go"
   },
   "moodResponse": {
-    "greeting": "Hey there 👋"
+    "greeting": "Hey there"
   },
   "profilePhysical": {
     "title": "Your physical routine",

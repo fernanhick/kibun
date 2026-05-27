@@ -2,6 +2,7 @@ export { AnimatedNumber } from './AnimatedNumber';
 export { BackButton } from './BackButton';
 export { Button } from './Button';
 export { Card } from './Card';
+export { HabitIcon } from './HabitIcon';
 export { InsightCard } from './InsightCard';
 export { KawaiiTabBar } from './KawaiiTabBar';
 export { MoodBubble } from './MoodBubble';

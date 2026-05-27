@@ -618,7 +618,7 @@ const styles = StyleSheet.create({
   headerCard: {
     ...shadows.md,
     marginTop: spacing.md,
-    borderRadius: 22,
+    borderRadius: 16,
     paddingTop: spacing.sm,
     paddingBottom: spacing.xs,
     paddingHorizontal: spacing.sm,
@@ -670,7 +670,7 @@ const styles = StyleSheet.create({
   calendarPanel: {
     ...shadows.sm,
     marginTop: spacing.md,
-    borderRadius: 18,
+    borderRadius: 14,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.sm,
     borderWidth: 1,
@@ -731,7 +731,7 @@ const styles = StyleSheet.create({
   snapshotCard: {
     ...shadows.md,
     marginTop: spacing.md,
-    borderRadius: 22,
+    borderRadius: 16,
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,

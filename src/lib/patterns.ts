@@ -1,3 +1,5 @@
+import type React from 'react';
+import type { Ionicons } from '@expo/vector-icons';
 import { MoodEntry, MoodSlot } from '@models/index';
 import { MOOD_MAP, type MoodGroup } from '@constants/moods';
 import { GROUP_SCORES } from '@lib/insights';
@@ -5,9 +7,11 @@ import { getMoodLabel } from '@lib/moodLabels';
 import i18n from '@i18n/index';
 import { getWeekdayLabels } from '@i18n/dateFormat';
 
+export type PatternIconName = React.ComponentProps<typeof Ionicons>['name'];
+
 export interface PatternFlag {
   id: string;
-  icon: string;
+  icon: PatternIconName;
   text: string;
   type: 'day-of-week' | 'time-of-day' | 'trend';
 }
@@ -58,7 +62,7 @@ export function detectDayOfWeekPatterns(entries: MoodEntry[]): PatternFlag[] {
         candidates.push({
           flag: {
             id: `dow-${moodId}-${day}`,
-            icon: '\u{1F4C5}',
+            icon: 'calendar-outline',
             text: i18n.t('screens:insights.patterns.dayOfWeek', {
               mood: getMoodLabel(moodId),
               day: weekdays[day],
@@ -111,7 +115,7 @@ export function detectTimeOfDayPatterns(entries: MoodEntry[]): PatternFlag[] {
         candidates.push({
           flag: {
             id: `tod-${moodId}-${slot}`,
-            icon: '\u{1F550}',
+            icon: 'time-outline',
             text: i18n.t('screens:insights.patterns.timeOfDay', {
               mood: getMoodLabel(moodId),
               slot: i18n.t(`dates:slot.${SLOT_KEYS[slot as MoodSlot]}`),
@@ -154,7 +158,7 @@ export function detectTrendPattern(entries: MoodEntry[]): PatternFlag | null {
   if (diff >= 0.5) {
     return {
       id: 'trend',
-      icon: '\u{1F4C8}',
+      icon: 'trending-up',
       text: i18n.t('screens:insights.patterns.trendUp'),
       type: 'trend',
     };
@@ -163,7 +167,7 @@ export function detectTrendPattern(entries: MoodEntry[]): PatternFlag | null {
   if (diff <= -0.5) {
     return {
       id: 'trend',
-      icon: '\u{1F4C9}',
+      icon: 'trending-down',
       text: i18n.t('screens:insights.patterns.trendDown'),
       type: 'trend',
     };

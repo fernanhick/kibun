@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Screen, BackButton } from '@components/index';
+import { Screen, BackButton, HabitIcon } from '@components/index';
 import { EmptyState } from '@components/EmptyState';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useHabitsStore } from '@store/habitsStore';
@@ -121,7 +121,7 @@ export default function ManageHabitsScreen() {
                   accessibilityLabel={exists ? t('manageHabits.alreadyAddedA11y', { name: presetLabel }) : t('manageHabits.addA11y', { name: presetLabel })}
                   accessibilityState={{ disabled: exists }}
                 >
-                  <Text style={styles.presetIcon}>{p.icon}</Text>
+                  <HabitIcon icon={p.icon} size={20} color={colors.primary} />
                   <Text style={[styles.presetLabel, exists && styles.presetLabelDisabled]}>
                     {presetLabel}
                   </Text>
@@ -224,7 +224,7 @@ function HabitCard({
   return (
     <View style={styles.habitCard}>
       <View style={styles.habitCardTop}>
-        <Text style={styles.habitCardIcon}>{habit.icon}</Text>
+        <HabitIcon icon={habit.icon} size={22} color={colors.primary} style={styles.habitCardIcon} />
         <Pressable
           onPress={onDelete}
           hitSlop={10}
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   heroCard: {
-    borderRadius: 28,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
@@ -311,9 +311,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 2,
   },
-  habitCardIcon: {
-    fontSize: 22,
-  },
+  habitCardIcon: {},
   habitCardDelete: {
     padding: 4,
     borderRadius: radius.full,
@@ -347,9 +345,6 @@ const styles = StyleSheet.create({
   presetChipDisabled: {
     borderColor: '#E8EEF8',
     backgroundColor: '#F5F8FF',
-  },
-  presetIcon: {
-    fontSize: 20,
   },
   presetLabel: {
     flex: 1,

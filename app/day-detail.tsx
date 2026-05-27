@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Pressable, Alert, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,19 +14,22 @@ import { formatDate, formatTime as formatTimeFn } from '@i18n/dateFormat';
 import { colors, spacing, typography, radius } from '@constants/theme';
 import type { MoodSlot, SentimentLabel, LifeEventCategory } from '@models/index';
 
-const EVENT_CATEGORY_CONFIG: Record<LifeEventCategory, { emoji: string; color: string }> = {
-  work:         { emoji: '💼', color: '#5C7CFA' },
-  social:       { emoji: '👥', color: '#F06595' },
-  health:       { emoji: '🏥', color: '#51CF66' },
-  travel:       { emoji: '✈️', color: '#339AF0' },
-  relationship: { emoji: '❤️', color: '#FF6B6B' },
-  personal:     { emoji: '🌟', color: '#CC5DE8' },
+const EVENT_CATEGORY_CONFIG: Record<
+  LifeEventCategory,
+  { icon: React.ComponentProps<typeof Ionicons>['name']; color: string }
+> = {
+  work:         { icon: 'briefcase',   color: '#5C7CFA' },
+  social:       { icon: 'people',      color: '#F06595' },
+  health:       { icon: 'medkit',      color: '#51CF66' },
+  travel:       { icon: 'airplane',    color: '#339AF0' },
+  relationship: { icon: 'heart',       color: '#FF6B6B' },
+  personal:     { icon: 'star',        color: '#CC5DE8' },
 };
 
-const SENTIMENT_EMOJI: Record<SentimentLabel, string> = {
-  positive: '😊',
-  neutral:  '😐',
-  negative: '😔',
+const SENTIMENT_IMAGES: Record<SentimentLabel, any> = {
+  positive: require('../assets/emotions/happy.png'),
+  neutral:  require('../assets/emotions/calm.png'),
+  negative: require('../assets/emotions/sad.png'),
 };
 
 const SLOT_KEYS: Record<MoodSlot, 'morning' | 'afternoon' | 'night' | 'pre_sleep'> = {
@@ -111,7 +115,7 @@ export default function DayDetailScreen() {
             return (
               <View key={event.id} style={[styles.eventCard, { borderLeftColor: cfg.color }]}>
                 <View style={styles.eventRow}>
-                  <Text style={styles.eventEmoji}>{cfg.emoji}</Text>
+                  <Ionicons name={cfg.icon} size={20} color={cfg.color} style={styles.eventIcon} />
                   <View style={styles.eventInfo}>
                     <Text style={styles.eventTitle}>{event.title}</Text>
                     <Text style={styles.eventCategory}>{categoryLabel}</Text>
@@ -206,7 +210,12 @@ export default function DayDetailScreen() {
                         <View style={styles.detailBlock}>
                           <Text style={styles.detailLabel}>{t('dayDetail.sentimentLabel')}</Text>
                           <View style={styles.sentimentRow}>
-                            <Text style={styles.sentimentEmoji}>{SENTIMENT_EMOJI[entry.sentimentLabel]}</Text>
+                            <Image
+                              source={SENTIMENT_IMAGES[entry.sentimentLabel]}
+                              style={styles.sentimentImage}
+                              contentFit="contain"
+                              accessibilityIgnoresInvertColors
+                            />
                             <Text style={styles.detailText}>{sentimentLabel}</Text>
                           </View>
                         </View>
@@ -232,13 +241,13 @@ export default function DayDetailScreen() {
                           <View style={styles.efRow}>
                             {entry.energyLevel != null && (
                               <View style={styles.efChip}>
-                                <Text style={styles.efChipEmoji}>⚡</Text>
+                                <Ionicons name="flash" size={14} color={colors.accent} />
                                 <Text style={styles.efChipText}>{t('dayDetail.energyValue', { value: entry.energyLevel })}</Text>
                               </View>
                             )}
                             {entry.focusLevel != null && (
                               <View style={styles.efChip}>
-                                <Text style={styles.efChipEmoji}>🎯</Text>
+                                <Ionicons name="locate" size={14} color={colors.primary} />
                                 <Text style={styles.efChipText}>{t('dayDetail.focusValue', { value: entry.focusLevel })}</Text>
                               </View>
                             )}
@@ -402,8 +411,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  sentimentEmoji: {
-    fontSize: 14,
+  sentimentImage: {
+    width: 22,
+    height: 22,
   },
   eventsSection: {
     paddingHorizontal: spacing.md,
@@ -419,7 +429,7 @@ const styles = StyleSheet.create({
   },
   eventCard: {
     backgroundColor: colors.surface,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#E8EDF5',
     borderLeftWidth: 3,
@@ -431,8 +441,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
-  eventEmoji: {
-    fontSize: 18,
+  eventIcon: {
+    width: 22,
+    textAlign: 'center',
   },
   eventInfo: {
     flex: 1,
@@ -468,9 +479,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderWidth: 1,
     borderColor: '#C8DCFF',
-  },
-  efChipEmoji: {
-    fontSize: 12,
   },
   efChipText: {
     fontSize: typography.sizes.xs,

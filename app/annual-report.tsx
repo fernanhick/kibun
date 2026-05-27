@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -181,10 +181,10 @@ export default function AnnualReportScreen() {
 
         {/* Stats grid */}
         <View style={reportStyles.statsGrid}>
-          <StatCard emoji="📝" value={`${stats.totalCheckIns}`} label={t('annualReport.statCheckIns')} />
-          <StatCard emoji="🔥" value={t('annualReport.streakDays', { days: stats.longestStreak })} label={t('annualReport.statBestStreak')} />
-          <StatCard emoji="🎨" value={`${stats.emotionalRange}`} label={t('annualReport.statMoodsUsed')} />
-          <StatCard emoji="✨" value={stats.bestMonth} label={t('annualReport.statBestMonth')} />
+          <StatCard icon="create-outline" value={`${stats.totalCheckIns}`} label={t('annualReport.statCheckIns')} />
+          <StatCard icon="flame" value={t('annualReport.streakDays', { days: stats.longestStreak })} label={t('annualReport.statBestStreak')} />
+          <StatCard icon="color-palette-outline" value={`${stats.emotionalRange}`} label={t('annualReport.statMoodsUsed')} />
+          <StatCard icon="sparkles" value={stats.bestMonth} label={t('annualReport.statBestMonth')} />
         </View>
 
         {/* Top moods */}
@@ -204,12 +204,12 @@ export default function AnnualReportScreen() {
           <Text style={reportStyles.sectionTitle}>{t('annualReport.monthHighlights')}</Text>
           <View style={reportStyles.monthRow}>
             <View style={[reportStyles.monthCard, reportStyles.monthCardGood]}>
-              <Text style={reportStyles.monthCardEmoji}>☀️</Text>
+              <Ionicons name="sunny" size={24} color={colors.primary} style={reportStyles.monthCardIcon} />
               <Text style={reportStyles.monthCardLabel}>{stats.bestMonth}</Text>
               <Text style={reportStyles.monthCardHint}>{t('annualReport.bestMonthHint')}</Text>
             </View>
             <View style={[reportStyles.monthCard, reportStyles.monthCardTough]}>
-              <Text style={reportStyles.monthCardEmoji}>🌧️</Text>
+              <Ionicons name="rainy" size={24} color={colors.textSecondary} style={reportStyles.monthCardIcon} />
               <Text style={reportStyles.monthCardLabel}>{stats.worstMonth}</Text>
               <Text style={reportStyles.monthCardHint}>{t('annualReport.toughestMonthHint')}</Text>
             </View>
@@ -251,7 +251,7 @@ export default function AnnualReportScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('annualReport.upgradeA11y')}
           >
-            <Text style={reportStyles.upgradeIcon}>✨</Text>
+            <Ionicons name="sparkles" size={20} color={colors.primary} style={reportStyles.upgradeIcon} />
             <View style={reportStyles.upgradeInfo}>
               <Text style={reportStyles.upgradeTitle}>{t('annualReport.upgradeTitle')}</Text>
               <Text style={reportStyles.upgradeSubtitle}>
@@ -268,10 +268,18 @@ export default function AnnualReportScreen() {
   );
 }
 
-function StatCard({ emoji, value, label }: { emoji: string; value: string; label: string }) {
+function StatCard({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  value: string;
+  label: string;
+}) {
   return (
     <View style={reportStyles.statCard}>
-      <Text style={reportStyles.statEmoji}>{emoji}</Text>
+      <Ionicons name={icon} size={22} color={colors.primary} style={reportStyles.statIcon} />
       <Text style={reportStyles.statValue}>{value}</Text>
       <Text style={reportStyles.statLabel}>{label}</Text>
     </View>
@@ -281,7 +289,7 @@ function StatCard({ emoji, value, label }: { emoji: string; value: string; label
 const reportStyles = StyleSheet.create({
   root: { flex: 1 },
   hero: {
-    borderRadius: 28,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
@@ -340,11 +348,11 @@ const reportStyles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.96)',
     borderWidth: 1.2,
     borderColor: colors.pinkBorder,
-    borderRadius: 22,
+    borderRadius: 16,
     paddingVertical: spacing.md,
     gap: 4,
   },
-  statEmoji: { fontSize: 24 },
+  statIcon: { marginBottom: 2 },
   statValue: {
     fontSize: typography.sizes.xl,
     fontWeight: typography.weights.bold,
@@ -395,7 +403,7 @@ const reportStyles = StyleSheet.create({
   monthCard: {
     flex: 1,
     alignItems: 'center',
-    borderRadius: 22,
+    borderRadius: 16,
     borderWidth: 1.2,
     paddingVertical: spacing.md,
     gap: 4,
@@ -408,7 +416,7 @@ const reportStyles = StyleSheet.create({
     backgroundColor: '#EFF6FF',
     borderColor: '#93C5FD',
   },
-  monthCardEmoji: { fontSize: 24 },
+  monthCardIcon: { marginBottom: 2 },
   monthCardLabel: {
     fontSize: typography.sizes.lg,
     fontWeight: typography.weights.bold,
@@ -422,7 +430,7 @@ const reportStyles = StyleSheet.create({
     backgroundColor: colors.pinkLight,
     borderWidth: 1,
     borderColor: colors.pinkBorder,
-    borderRadius: 20,
+    borderRadius: 16,
     padding: spacing.md,
     gap: spacing.xs,
     alignItems: 'center',
@@ -452,10 +460,10 @@ const reportStyles = StyleSheet.create({
     backgroundColor: colors.pinkLight,
     borderWidth: 1.2,
     borderColor: colors.pinkBorder,
-    borderRadius: 22,
+    borderRadius: 16,
     padding: spacing.md,
   },
-  upgradeIcon: { fontSize: typography.sizes.xl },
+  upgradeIcon: { marginRight: spacing.xs },
   upgradeInfo: { flex: 1 },
   upgradeTitle: {
     fontSize: typography.sizes.body,

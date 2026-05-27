@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 22,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,

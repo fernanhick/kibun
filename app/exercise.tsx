@@ -6,6 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Animated, {
@@ -19,6 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Screen, Button } from '@components/index';
 import { colors, typography, spacing, radius } from '@constants/theme';
+import { EXERCISE_CHIP_IMAGES, type ExerciseType } from '@constants/exercises';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { haptics } from '@lib/haptics';
 
@@ -103,7 +106,7 @@ function BoxBreathing() {
   if (done) {
     return (
       <View style={styles.doneContainer}>
-        <Text style={styles.doneEmoji}>✨</Text>
+        <Ionicons name="sparkles" size={40} color={colors.primary} style={styles.doneEmoji} />
         <Text style={styles.doneTitle}>{t('exercise.boxBreathing.doneTitle')}</Text>
         <Text style={styles.doneSubtitle}>
           {t('exercise.boxBreathing.doneSubtitle', { count: TOTAL_CYCLES })}
@@ -216,26 +219,31 @@ function PromptListExercise({ i18nKey }: PromptListExerciseProps) {
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
-const EXERCISE_META: Record<string, { i18nKey: string; emoji: string }> = {
-  box_breathing:   { i18nKey: 'box_breathing',   emoji: '🫁' },
-  grounding:       { i18nKey: 'grounding',       emoji: '🌱' },
-  gratitude:       { i18nKey: 'gratitude',       emoji: '🙏' },
-  joy_capture:     { i18nKey: 'joy_capture',     emoji: '✨' },
-  savoring:        { i18nKey: 'savoring',        emoji: '🌸' },
-  energy_boost:    { i18nKey: 'energy_boost',    emoji: '⚡' },
-  curiosity:       { i18nKey: 'curiosity',       emoji: '🔍' },
-  mindful_pause:   { i18nKey: 'mindful_pause',   emoji: '🧘' },
-  body_scan:       { i18nKey: 'body_scan',       emoji: '🫀' },
-  self_compassion: { i18nKey: 'self_compassion', emoji: '💜' },
-  comfort_list:    { i18nKey: 'comfort_list',    emoji: '🧸' },
-};
+const EXERCISE_TYPES: ExerciseType[] = [
+  'box_breathing',
+  'grounding',
+  'gratitude',
+  'joy_capture',
+  'savoring',
+  'energy_boost',
+  'curiosity',
+  'mindful_pause',
+  'body_scan',
+  'self_compassion',
+  'comfort_list',
+];
+
+function resolveExerciseType(input: string): ExerciseType {
+  return (EXERCISE_TYPES as string[]).includes(input)
+    ? (input as ExerciseType)
+    : 'box_breathing';
+}
 
 export default function ExerciseScreen() {
   const router = useRouter();
   const { t } = useTranslation(['screens', 'moods']);
   const params = useLocalSearchParams<{ type: string }>();
-  const type = params.type ?? 'box_breathing';
-  const meta = EXERCISE_META[type] ?? EXERCISE_META['box_breathing'];
+  const type = resolveExerciseType(params.type ?? 'box_breathing');
 
   const renderExercise = () => {
     switch (type) {
@@ -260,7 +268,12 @@ export default function ExerciseScreen() {
   return (
     <Screen scrollable contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.headerEmoji}>{meta.emoji}</Text>
+        <Image
+          source={EXERCISE_CHIP_IMAGES[type]}
+          style={styles.headerIllustration}
+          contentFit="contain"
+          accessibilityIgnoresInvertColors
+        />
         <Text style={styles.headerTitle}>{title}</Text>
         <TouchableOpacity onPress={() => router.back()} style={styles.closeBtn} accessibilityLabel={t('screens:exercise.closeA11y')}>
           <Text style={styles.closeText}>✕</Text>
@@ -284,8 +297,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginBottom: spacing.md,
   },
-  headerEmoji: {
-    fontSize: 28,
+  headerIllustration: {
+    width: 48,
+    height: 48,
   },
   headerTitle: {
     flex: 1,
@@ -344,7 +358,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xl,
   },
   doneEmoji: {
-    fontSize: 48,
+    marginBottom: spacing.sm,
   },
   doneTitle: {
     fontSize: typography.sizes.xxl,
@@ -363,7 +377,7 @@ const styles = StyleSheet.create({
   },
   groundingCard: {
     backgroundColor: colors.surface,
-    borderRadius: 22,
+    borderRadius: 16,
     borderWidth: 1.2,
     borderColor: '#DCE9FF',
     padding: spacing.xl,

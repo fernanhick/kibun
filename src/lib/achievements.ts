@@ -4,49 +4,25 @@ import { MOODS } from '@constants/moods';
 // ─── Achievement Definitions ──────────────────────────────────────────────────
 
 export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
-  {
-    id: 'first_week',
-    label: 'First Week',
-    description: 'Logged moods every day for 7 days in a row.',
-    emoji: '🗓️',
-  },
-  {
-    id: 'month_warrior',
-    label: 'Month Warrior',
-    description: 'Kept a 30-day check-in streak.',
-    emoji: '🏆',
-  },
-  {
-    id: 'mood_explorer',
-    label: 'Mood Explorer',
-    description: 'Logged every available mood at least once.',
-    emoji: '🌈',
-  },
-  {
-    id: 'reflector',
-    label: 'Reflector',
-    description: 'Wrote 10 journal reflections.',
-    emoji: '📔',
-  },
-  {
-    id: 'early_bird',
-    label: 'Early Bird',
-    description: 'Logged morning check-ins 7 times.',
-    emoji: '🌅',
-  },
-  {
-    id: 'night_owl',
-    label: 'Night Owl',
-    description: 'Logged pre-sleep check-ins 7 times.',
-    emoji: '🦉',
-  },
-  {
-    id: 'consistent',
-    label: 'Consistent',
-    description: 'Logged 30 mood entries in total.',
-    emoji: '⚡',
-  },
+  { id: 'first_week',    label: 'First Week',    description: 'Logged moods every day for 7 days in a row.' },
+  { id: 'month_warrior', label: 'Month Warrior', description: 'Kept a 30-day check-in streak.' },
+  { id: 'mood_explorer', label: 'Mood Explorer', description: 'Logged every available mood at least once.' },
+  { id: 'reflector',     label: 'Reflector',     description: 'Wrote 10 journal reflections.' },
+  { id: 'early_bird',    label: 'Early Bird',    description: 'Logged morning check-ins 7 times.' },
+  { id: 'night_owl',     label: 'Night Owl',     description: 'Logged pre-sleep check-ins 7 times.' },
+  { id: 'consistent',    label: 'Consistent',    description: 'Logged 30 mood entries in total.' },
 ];
+
+// Achievement badge image mapping (AchievementId → bundled PNG).
+export const ACHIEVEMENT_BADGE_IMAGES: Record<AchievementId, any> = {
+  first_week:    require('../../assets/badges/achievement badges/7-day-streak.png'),
+  month_warrior: require('../../assets/badges/achievement badges/month-warrior.png'),
+  mood_explorer: require('../../assets/badges/achievement badges/mood-explorer.png'),
+  reflector:     require('../../assets/badges/achievement badges/reflector.png'),
+  early_bird:    require('../../assets/badges/achievement badges/early-bird.png'),
+  night_owl:     require('../../assets/badges/achievement badges/night-owl.png'),
+  consistent:    require('../../assets/badges/achievement badges/consistent.png'),
+};
 
 // ─── Streak Calculation ───────────────────────────────────────────────────────
 
@@ -83,16 +59,9 @@ function getStreak(entries: MoodEntry[]): number {
 /**
  * Returns newly unlocked achievement IDs (those not already present in unlockedIds).
  */
-// Insight card illustration mapping (new custom PNGs)
+// Insight card illustration mapping (slug → bundled PNG).
+// Slugs are stored in i18n JSON under `imageKey` and resolved at render time.
 export const INSIGHT_CARD_IMAGES: Record<string, any> = {
-  // Existing keys kept for backward compatibility.
-  sunrise: require('../../assets/badges/insight cards/welcome-back.png'),
-  rainbow: require('../../assets/badges/insight cards/keep-it-going.png'),
-  heart: require('../../assets/badges/insight cards/you-matter.png'),
-  star: require('../../assets/badges/insight cards/you-showed-up.png'),
-  cloud: require('../../assets/badges/insight cards/a-fresh-page.png'),
-  sparkles: require('../../assets/badges/insight cards/glad-you-are-here.png'),
-  // Native card-slug keys from the latest asset pack.
   'a-fresh-page': require('../../assets/badges/insight cards/a-fresh-page.png'),
   'glad-you-are-here': require('../../assets/badges/insight cards/glad-you-are-here.png'),
   'keep-it-going': require('../../assets/badges/insight cards/keep-it-going.png'),

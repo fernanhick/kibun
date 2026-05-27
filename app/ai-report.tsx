@@ -209,7 +209,7 @@ function ReportBody({
   if (state === 'no-entries') {
     return (
       <View style={styles.centeredState}>
-        <Text style={styles.emptyIcon} accessibilityElementsHidden>{'📅'}</Text>
+        <Ionicons name="calendar-outline" size={48} color={colors.textDisabled} style={styles.emptyIcon} />
         <Text style={styles.emptyTitle}>{t('aiReport.notEnoughData')}</Text>
         <Text style={styles.emptySubtitle}>
           {t('aiReport.noEntriesSubtitle')}
@@ -233,9 +233,7 @@ function ReportBody({
   if (state === 'no-report') {
     return (
       <View style={styles.centeredState}>
-        <Text style={styles.emptyIcon} accessibilityElementsHidden>
-          {'\u2728'}
-        </Text>
+        <Ionicons name="sparkles" size={48} color={colors.primary} style={styles.emptyIcon} />
         <Text style={styles.emptyTitle}>{t('aiReport.noReportYet', { period: periodName })}</Text>
         <Text style={styles.emptySubtitle}>
           {t('aiReport.noReportSubtitle', { period: periodName })}
@@ -523,7 +521,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
   },
-  emptyIcon: { fontSize: 48 },
+  emptyIcon: { marginBottom: spacing.sm },
   emptyTitle: {
     fontSize: typography.sizes.xl,
     fontWeight: typography.weights.bold,

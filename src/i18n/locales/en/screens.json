@@ -24,7 +24,7 @@
       "evening": "Good evening",
       "windDown": "Time to wind down"
     },
-    "streak": "{{count}} day streak 🔥",
+    "streak": "{{count}} day streak",
     "streakA11y": "Current streak: {{count}} days",
     "logMoodCta": "Log mood",
     "todayHeader": "Today",
@@ -89,33 +89,33 @@
     },
     "emptyVariants": {
       "positive": [
-        { "emoji": "🌞", "title": "Welcome back",        "body": "Recent days have felt bright. Want to keep that good energy going?", "affirmation": "Today is yours to shine. ✨" },
-        { "emoji": "🌻", "title": "Glad you're here",    "body": "You've been on a lovely streak. A quick check-in keeps the momentum.", "affirmation": "Small moments, big wins. 💛" },
-        { "emoji": "🌈", "title": "Keep it going",       "body": "Things have felt good lately. Capture how today is treating you.", "affirmation": "Your light matters. ✨" }
+        { "imageKey": "welcome-back",        "title": "Welcome back",        "body": "Recent days have felt bright. Want to keep that good energy going?", "affirmation": "Today is yours to shine." },
+        { "imageKey": "glad-you-are-here",   "title": "Glad you're here",    "body": "You've been on a lovely streak. A quick check-in keeps the momentum.", "affirmation": "Small moments, big wins." },
+        { "imageKey": "keep-it-going",       "title": "Keep it going",       "body": "Things have felt good lately. Capture how today is treating you.", "affirmation": "Your light matters." }
       ],
       "struggling": [
-        { "emoji": "🌷", "title": "We're here with you", "body": "Recent days have felt heavy. Even one small check-in helps you understand what you need.", "affirmation": "You're stronger than you know. 🤍" },
-        { "emoji": "🍃", "title": "One breath at a time","body": "Hard moments don't last forever. Logging how you feel is a quiet act of self-care.", "affirmation": "Be tender with yourself today. 🤍" },
-        { "emoji": "☁️", "title": "You showed up",       "body": "And that's enough. Tracking your mood, even on tough days, is how you start to see yourself clearly.", "affirmation": "Healing isn't linear — every step counts. ✨" }
+        { "imageKey": "we-are-here-with-you","title": "We're here with you", "body": "Recent days have felt heavy. Even one small check-in helps you understand what you need.", "affirmation": "You're stronger than you know." },
+        { "imageKey": "one-breadth",         "title": "One breath at a time","body": "Hard moments don't last forever. Logging how you feel is a quiet act of self-care.", "affirmation": "Be tender with yourself today." },
+        { "imageKey": "you-showed-up",       "title": "You showed up",       "body": "And that's enough. Tracking your mood, even on tough days, is how you start to see yourself clearly.", "affirmation": "Healing isn't linear — every step counts." }
       ],
       "neutral": [
-        { "emoji": "🌸", "title": "You matter",          "body": "No moods logged yet — and that's okay. Just showing up here is a kind thing to do for yourself.", "affirmation": "Be gentle with yourself today. ✨" },
-        { "emoji": "🪷", "title": "A fresh page",        "body": "Each day is a new chapter. Take a moment to check in with yourself.", "affirmation": "Your feelings are valid — whatever they are. ✨" },
-        { "emoji": "✨", "title": "Hi there",            "body": "How's your inner world today? A quick log helps you spot patterns over time.", "affirmation": "You're worth paying attention to. 💛" }
+        { "imageKey": "you-matter",          "title": "You matter",          "body": "No moods logged yet — and that's okay. Just showing up here is a kind thing to do for yourself.", "affirmation": "Be gentle with yourself today." },
+        { "imageKey": "a-fresh-page",        "title": "A fresh page",        "body": "Each day is a new chapter. Take a moment to check in with yourself.", "affirmation": "Your feelings are valid — whatever they are." },
+        { "imageKey": "glad-you-are-here",   "title": "Hi there",            "body": "How's your inner world today? A quick log helps you spot patterns over time.", "affirmation": "You're worth paying attention to." }
       ]
     },
     "insightCards": {
       "positiveCorrelation": {
         "title": "{{habit}} seems to lift your mood",
         "body": "On days you log {{habit}}, your mood scores {{strength}} higher on average. Worth protecting.",
-        "emoji": "🌱"
+        "imageKey": "keep-it-going"
       },
       "lowMoodNudge": {
         "personalisedTitle": "A gentle nudge: {{habit}}",
         "personalisedBody": "On heavier days, {{habit}} has been one of your reliable lifts. Even a tiny check counts.",
         "genericTitle": "A small anchor for today",
         "genericBody": "Today feels a bit heavy. One small habit, however imperfect, is enough.",
-        "emoji": "🤍"
+        "imageKey": "we-are-here-with-you"
       },
       "strength": {
         "weak": "slightly",
@@ -128,7 +128,7 @@
     "patterns": {
       "dayOfWeek": "You often feel {{mood}} on {{day}}s",
       "timeOfDay": "You tend to feel {{mood}} in {{slot}}",
-      "trendUp": "Your mood has been improving lately 🌱",
+      "trendUp": "Your mood has been improving lately",
       "trendDown": "Your mood has been dipping recently"
     },
     "hero": {
@@ -157,11 +157,8 @@
       "topMoods": "Top moods",
       "trend": "Mood trend",
       "patterns": "Patterns",
-      "resilience": "Recovery",
-      "correlations": "Correlations",
       "habitsAndMood": "Habits & Mood",
-      "aiReport": "Summary",
-      "yearInMood": "Year in Mood"
+      "reports": "Reports"
     },
     "charts": {
       "barA11y": "Mood frequency chart showing top {{count}} moods",
@@ -182,7 +179,8 @@
       "basedOn_other": "based on {{count}} recoveries"
     },
     "correlationsCard": {
-      "lockedTitle": "Correlations",
+      "title": "Mood by time × day",
+      "lockedTitle": "Time & day mood map",
       "lockedSubtitle": "See which times and days you feel best. Pro feature.",
       "lockedA11y": "Upgrade to Pro to unlock Correlations",
       "heatmapA11y": "Correlation heatmap showing average mood by time-of-day and day-of-week",
@@ -481,19 +479,19 @@
     "energyTeaserA11y": "Track energy and focus levels — Pro feature",
     "exercises": {
       "green": {
-        "title": "Ride the wave! 🌟",
+        "title": "Ride the wave!",
         "subtitle": "Capture this good energy while it lasts."
       },
       "neutral": {
-        "title": "A gentle nudge 🍃",
+        "title": "A gentle nudge",
         "subtitle": "Small shifts can change your whole day."
       },
       "red-orange": {
-        "title": "Need a moment? 💛",
+        "title": "Need a moment?",
         "subtitle": "Try a quick exercise to help reset."
       },
       "blue": {
-        "title": "You are not alone 💙",
+        "title": "You are not alone",
         "subtitle": "Sometimes sitting with feelings is enough."
       },
       "options": {
@@ -734,7 +732,7 @@
   "paywall": {
     "hero": {
       "title": "kibun Premium",
-      "subtitle": "Your feelings deserve the full picture.\nLet's make sense of them together 💕"
+      "subtitle": "Your feelings deserve the full picture.\nLet's make sense of them together."
     },
     "comparison": {
       "header": {
@@ -767,7 +765,7 @@
       "trial": "Includes 7-day free trial · Cancel anytime"
     },
     "cta": {
-      "subscribe": "Subscribe — 7 days free 🌸",
+      "subscribe": "Subscribe — 7 days free",
       "subscribeA11yHint": "Starts your subscription with a 7-day free trial. Cancel anytime in account settings.",
       "skip": "Maybe later",
       "skipA11yHint": "Skip subscription and continue with limited features"
@@ -1014,7 +1012,7 @@
       "dismissA11y": "Dismiss",
       "title": "How's kibun going?",
       "subtitle": "Your honest answer helps us make it better.",
-      "ctaHappy": "Loving it 💖",
+      "ctaHappy": "Loving it",
       "ctaHappyA11y": "Loving it",
       "ctaUnhappy": "Not really",
       "ctaUnhappyA11y": "Not really",

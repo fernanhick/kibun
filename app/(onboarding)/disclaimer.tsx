@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -44,11 +44,11 @@ export default function DisclaimerScreen() {
           <Text style={styles.bodyText}>{t('disclaimer.body')}</Text>
 
           <Text style={styles.sectionTitle}>{t('disclaimer.notSection')}</Text>
-          <BulletPoint emoji="🏥" text={t('disclaimer.bullets.medicalDevice')} />
-          <BulletPoint emoji="🩺" text={t('disclaimer.bullets.medicalAdvice')} />
-          <BulletPoint emoji="💊" text={t('disclaimer.bullets.treatment')} />
-          <BulletPoint emoji="👩‍⚕️" text={t('disclaimer.bullets.professionalCare')} />
-          <BulletPoint emoji="🚨" text={t('disclaimer.bullets.emergency')} />
+          <BulletPoint icon="medkit-outline" text={t('disclaimer.bullets.medicalDevice')} />
+          <BulletPoint icon="pulse-outline" text={t('disclaimer.bullets.medicalAdvice')} />
+          <BulletPoint icon="medical-outline" text={t('disclaimer.bullets.treatment')} />
+          <BulletPoint icon="person-outline" text={t('disclaimer.bullets.professionalCare')} />
+          <BulletPoint icon="warning-outline" text={t('disclaimer.bullets.emergency')} />
 
           <View style={styles.crisisBox}>
             <Ionicons name="call" size={20} color={colors.primary} />
@@ -97,10 +97,16 @@ export default function DisclaimerScreen() {
   );
 }
 
-function BulletPoint({ emoji, text }: { emoji: string; text: string }) {
+function BulletPoint({
+  icon,
+  text,
+}: {
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  text: string;
+}) {
   return (
     <View style={styles.bulletContainer}>
-      <Text style={styles.bulletEmoji}>{emoji}</Text>
+      <Ionicons name={icon} size={18} color={colors.primary} style={styles.bulletIcon} />
       <Text style={styles.bulletText}>{text}</Text>
     </View>
   );
@@ -177,10 +183,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
     paddingLeft: spacing.xs,
   },
-  bulletEmoji: {
-    fontSize: typography.sizes.body,
+  bulletIcon: {
     width: 28,
     marginRight: spacing.sm,
+    textAlign: 'center',
   },
   bulletText: {
     fontFamily: typography.fonts.body,

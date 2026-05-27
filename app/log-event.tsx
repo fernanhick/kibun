@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -11,13 +11,17 @@ import { formatDate } from '@i18n/dateFormat';
 import { colors, spacing, typography, radius } from '@constants/theme';
 import type { LifeEventCategory } from '@models/index';
 
-const CATEGORIES: { value: LifeEventCategory; emoji: string; color: string }[] = [
-  { value: 'work',         emoji: '💼', color: '#5C7CFA' },
-  { value: 'social',       emoji: '👥', color: '#F06595' },
-  { value: 'health',       emoji: '🏥', color: '#51CF66' },
-  { value: 'travel',       emoji: '✈️', color: '#339AF0' },
-  { value: 'relationship', emoji: '❤️', color: '#FF6B6B' },
-  { value: 'personal',     emoji: '🌟', color: '#CC5DE8' },
+const CATEGORIES: {
+  value: LifeEventCategory;
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  color: string;
+}[] = [
+  { value: 'work',         icon: 'briefcase', color: '#5C7CFA' },
+  { value: 'social',       icon: 'people',    color: '#F06595' },
+  { value: 'health',       icon: 'medkit',    color: '#51CF66' },
+  { value: 'travel',       icon: 'airplane',  color: '#339AF0' },
+  { value: 'relationship', icon: 'heart',     color: '#FF6B6B' },
+  { value: 'personal',     icon: 'star',      color: '#CC5DE8' },
 ];
 
 function formatDisplayDate(dateStr: string): string {
@@ -108,7 +112,7 @@ export default function LogEventScreen() {
                   accessibilityState={{ selected }}
                   accessibilityLabel={categoryLabel}
                 >
-                  <Text style={styles.categoryEmoji}>{cat.emoji}</Text>
+                  <Ionicons name={cat.icon} size={20} color={selected ? cat.color : colors.textSecondary} />
                   <Text style={[styles.categoryLabel, selected && { color: cat.color }]}>
                     {categoryLabel}
                   </Text>
@@ -161,7 +165,7 @@ const styles = StyleSheet.create({
     gap: 0,
   },
   heroCard: {
-    borderRadius: 28,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
@@ -241,9 +245,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#D0DDFF',
     backgroundColor: colors.surface,
-  },
-  categoryEmoji: {
-    fontSize: 16,
   },
   categoryLabel: {
     fontSize: typography.sizes.sm,

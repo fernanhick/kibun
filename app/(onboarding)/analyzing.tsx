@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 28,
+    borderRadius: 20,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   stepsCard: {
     ...shadows.sm,
     backgroundColor: colors.surface,
-    borderRadius: 22,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.borderLight,
     paddingVertical: spacing.md,

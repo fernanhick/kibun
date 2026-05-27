@@ -290,7 +290,7 @@ export default function CustomMoodsScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1 },
   heroCard: {
-    borderRadius: 28,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,

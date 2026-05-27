@@ -11,25 +11,14 @@ import { useOnboardingStore } from '@store/onboardingStore';
 import { useHabitsStore } from '@store/habitsStore';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useCustomMoodsStore } from '@store/customMoodsStore';
-import { Button, Card, InsightCard, MoodBubble, Screen } from '@components/index';
+import { Button, Card, HabitIcon, InsightCard, MoodBubble, Screen } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { SpringPressable } from '@components/SpringPressable';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { getMoodDef } from '@lib/moodUtils';
 import { colors, spacing, typography, radius, shadows } from '@constants/theme';
-import { ACHIEVEMENT_DEFINITIONS } from '@lib/achievements';
+import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_BADGE_IMAGES, INSIGHT_CARD_IMAGES } from '@lib/achievements';
 import { fetchDailyInsight } from '@lib/dailyInsight';
-
-// Achievement image assets (new custom PNGs)
-const ACHIEVEMENT_IMAGES: Record<string, number> = {
-  first_week: require('../../assets/badges/achievement badges/7-day-streak.png'),
-  month_warrior: require('../../assets/badges/achievement badges/month-warrior.png'),
-  mood_explorer: require('../../assets/badges/achievement badges/mood-explorer.png'),
-  reflector: require('../../assets/badges/achievement badges/reflector.png'),
-  early_bird: require('../../assets/badges/achievement badges/early-bird.png'),
-  night_owl: require('../../assets/badges/achievement badges/night-owl.png'),
-  consistent: require('../../assets/badges/achievement badges/consistent.png'),
-};
 import {
   generateLowMoodNudgeInsight,
   generatePositiveCorrelationInsight,
@@ -50,7 +39,7 @@ function formatTime(isoString: string): string {
 type MoodSentiment = 'positive' | 'struggling' | 'neutral';
 
 interface EmptyStateVariant {
-  emoji: string;
+  imageKey: string;
   title: string;
   body: string;
   affirmation: string;
@@ -98,7 +87,7 @@ export default function HomeScreen() {
     tipSub: responsive.select({ phone: 14, phoneWide: 15, tablet: 16, tabletLg: 18 }),
     tipSubLine: responsive.select({ phone: 20, phoneWide: 22, tablet: 24, tabletLg: 26 }),
     affirmation: responsive.select({ phone: 14, phoneWide: 15, tablet: 16, tabletLg: 18 }),
-    emoji: responsive.select({ phone: 30, phoneWide: 32, tablet: 38, tabletLg: 44 }),
+    illustration: responsive.select({ phone: 64, phoneWide: 68, tablet: 80, tabletLg: 92 }),
     badgeSize: responsive.select({ phone: 40, phoneWide: 42, tablet: 48, tabletLg: 54 }),
     iconSize: responsive.select({ phone: 22, phoneWide: 24, tablet: 26, tabletLg: 30 }),
     chevronSize: responsive.select({ phone: 16, tablet: 18, tabletLg: 20 }),
@@ -327,11 +316,7 @@ export default function HomeScreen() {
             >
               {unlockedDefs.map((def) => (
                 <View key={def.id} style={styles.achievementWrapper} accessibilityLabel={t('home.achievementA11y', { label: def.label, description: def.description })}>
-                  {ACHIEVEMENT_IMAGES[def.id] ? (
-                    <Image source={ACHIEVEMENT_IMAGES[def.id]} style={styles.achievementFloatingImage} />
-                  ) : (
-                    <Text style={styles.achievementFloatingEmoji}>{def.emoji}</Text>
-                  )}
+                  <Image source={ACHIEVEMENT_BADGE_IMAGES[def.id]} style={styles.achievementFloatingImage} />
                   <Text style={styles.achievementLabel}>{def.label}</Text>
                 </View>
               ))}
@@ -354,9 +339,12 @@ export default function HomeScreen() {
           {todayEntries.length === 0 ? (
             <View style={styles.emptyState}>
               <View style={styles.emptyHeader}>
-                <Text style={[styles.emptyEmoji, { fontSize: emptySizes.emoji }]}>
-                  {emptyVariant.emoji}
-                </Text>
+                <Image
+                  source={INSIGHT_CARD_IMAGES[emptyVariant.imageKey]}
+                  style={{ width: emptySizes.illustration, height: emptySizes.illustration }}
+                  resizeMode="contain"
+                  accessibilityIgnoresInvertColors
+                />
                 <Text style={[styles.emptyTitle, { fontSize: emptySizes.title }]}>
                   {emptyVariant.title}
                 </Text>
@@ -564,7 +552,7 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
                 accessibilityLabel={done ? t('home.habitDoneA11y', { name: h.name }) : t('home.habitNotDoneA11y', { name: h.name })}
               >
                 <View style={habitStyles.cardRow}>
-                  <Text style={habitStyles.cardIcon} maxFontSizeMultiplier={1.3}>{h.icon}</Text>
+                  <HabitIcon icon={h.icon} size={22} color={colors.primary} style={habitStyles.cardIcon} />
                   <Text
                     style={[habitStyles.cardName, done && habitStyles.cardNameDone]}
                     maxFontSizeMultiplier={1.3}
@@ -584,7 +572,7 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
           return (
             <View key={h.id} style={habitStyles.card}>
               <View style={habitStyles.cardRow}>
-                <Text style={habitStyles.cardIcon}>{h.icon}</Text>
+                <HabitIcon icon={h.icon} size={22} color={colors.primary} style={habitStyles.cardIcon} />
                 <Text style={habitStyles.cardName} numberOfLines={1}>{h.name}</Text>
               </View>
               <View style={habitStyles.scaleRow}>
@@ -683,9 +671,7 @@ const habitStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  cardIcon: {
-    fontSize: 18,
-  },
+  cardIcon: {},
   cardName: {
     flex: 1,
     fontSize: typography.sizes.sm,
@@ -756,7 +742,7 @@ const insightStyles = StyleSheet.create({
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
     backgroundColor: colors.pinkLight,
-    borderRadius: 20,
+    borderRadius: 16,
     borderWidth: 0.5,
     borderColor: colors.pinkBorder,
     padding: spacing.md,
@@ -821,7 +807,7 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 28,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.32)',
     paddingHorizontal: spacing.md,
@@ -886,10 +872,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  achievementFloatingEmoji: {
-    fontSize: 44,
-    textAlign: 'center',
-  },
   achievementFloatingImage: {
     width: 72,
     height: 72,
@@ -918,7 +900,7 @@ const styles = StyleSheet.create({
   emptyState: {
     ...shadows.sm,
     backgroundColor: '#FFF6EC',
-    borderRadius: 20,
+    borderRadius: 16,
     padding: spacing.md,
     gap: spacing.sm,
   },
@@ -927,9 +909,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
-  },
-  emptyEmoji: {
-    fontSize: 26,
   },
   emptyTitle: {
     fontSize: typography.sizes.xl,
@@ -990,7 +969,7 @@ const styles = StyleSheet.create({
   },
   entryCard: {
     ...shadows.sm,
-    borderRadius: 14,
+    borderRadius: 12,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: spacing.sm,
     paddingVertical: 10,

@@ -8,7 +8,7 @@ import type { PurchasesPackage } from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen, Button, BackButton } from '@components/index';
+import { Screen, Button, BackButton, Shiba } from '@components/index';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useSessionStore } from '@store/index';
 import {
@@ -175,8 +175,6 @@ export default function PaywallScreen() {
 
   return (
     <Screen scrollable contentContainerStyle={styles.content}>
-      <BackButton onPress={handleSkip} />
-
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <LinearGradient
         colors={['#FF6B9D', '#C060F0']}
@@ -184,11 +182,31 @@ export default function PaywallScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <Text style={styles.heroEmoji}>🌸</Text>
-        <Text style={styles.title} numberOfLines={3}>
-          {t('paywall.hero.title')}
-        </Text>
-        <Text style={styles.subtitle}>{t('paywall.hero.subtitle')}</Text>
+        <LinearGradient
+          colors={['rgba(255,255,255,0.22)', 'rgba(255,255,255,0)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.heroSheen}
+          pointerEvents="none"
+        />
+        <View style={styles.heroTopRow}>
+          <BackButton variant="onHero" onPress={handleSkip} />
+          <View style={styles.premiumPill}>
+            <Ionicons name="sparkles" size={11} color={colors.textInverse} />
+            <Text style={styles.premiumPillText}>
+              {t('paywall.comparison.header.premium')}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.heroBody}>
+          <Shiba variant="excited" size={72} />
+          <View style={styles.heroText}>
+            <Text style={styles.title} numberOfLines={2}>
+              {t('paywall.hero.title')}
+            </Text>
+            <Text style={styles.subtitle}>{t('paywall.hero.subtitle')}</Text>
+          </View>
+        </View>
       </LinearGradient>
 
       {/* ── Comparison table ─────────────────────────────────────────── */}
@@ -203,7 +221,7 @@ export default function PaywallScreen() {
           <Text style={[styles.tableHeaderCell, styles.checkCol]}>
             {t('paywall.comparison.header.free')}
           </Text>
-          <View style={[styles.checkCol, styles.premiumHeaderCell]}>
+          <View style={[styles.premiumCol, styles.premiumHeaderCell]}>
             <LinearGradient
               colors={['#FF6B9D', '#C060F0']}
               start={{ x: 0, y: 0 }}
@@ -234,14 +252,14 @@ export default function PaywallScreen() {
               </Text>
               <View style={[styles.checkCol, styles.checkCell]}>
                 {free ? (
-                  <Ionicons name="checkmark" size={18} color={colors.textSecondary} />
+                  <Ionicons name="checkmark" size={16} color={colors.textSecondary} />
                 ) : (
-                  <Ionicons name="remove" size={18} color={colors.textDisabled} />
+                  <Ionicons name="remove" size={16} color={colors.textDisabled} />
                 )}
               </View>
-              <View style={[styles.checkCol, styles.checkCell]}>
+              <View style={[styles.premiumCol, styles.checkCell]}>
                 <View style={styles.premiumCheckPill}>
-                  <Ionicons name="checkmark" size={14} color={colors.textInverse} />
+                  <Ionicons name="checkmark" size={12} color={colors.textInverse} />
                 </View>
               </View>
             </View>
@@ -348,55 +366,94 @@ const PINK_BORDER = 'rgba(255, 107, 157, 0.20)';
 
 const styles = StyleSheet.create({
   content: {
-    gap: spacing.lg,
-    paddingTop: spacing.lg,
+    gap: spacing.md,
+    paddingTop: 0,
     paddingBottom: spacing.xl,
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 28,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl,
-    alignItems: 'center',
-    gap: spacing.sm,
+    borderRadius: 24,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.lg,
+    gap: spacing.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.28)',
+    overflow: 'hidden',
   },
-  heroEmoji: {
-    fontSize: 52,
+  heroSheen: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 96,
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  premiumPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: radius.full,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.4)',
+  },
+  premiumPillText: {
+    fontSize: 10,
+    fontFamily: typography.fonts.ui,
+    color: colors.textInverse,
+    letterSpacing: 1,
+  },
+  heroBody: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingRight: spacing.xs,
+  },
+  heroText: {
+    flex: 1,
+    gap: 2,
   },
   title: {
-    fontSize: typography.sizes.display,
+    fontSize: typography.sizes.xxl,
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
-    textAlign: 'center',
-    letterSpacing: -1,
-    lineHeight: 44,
+    letterSpacing: -0.6,
+    lineHeight: 30,
   },
   subtitle: {
-    fontSize: typography.sizes.md,
-    color: 'rgba(255,255,255,0.88)',
-    lineHeight: typography.sizes.md * typography.lineHeights.relaxed,
-    textAlign: 'center',
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.body,
+    color: 'rgba(255,255,255,0.9)',
+    lineHeight: 18,
   },
   tableCard: {
     backgroundColor: colors.surface,
-    borderRadius: 24,
+    borderRadius: 18,
     paddingHorizontal: spacing.sm,
-    paddingTop: spacing.xs,
-    paddingBottom: spacing.xs,
+    paddingTop: 2,
+    paddingBottom: 2,
     ...shadows.sm,
   },
   tableHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.xs + 2,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: PINK_BORDER,
   },
   tableHeaderCell: {
-    fontSize: typography.sizes.sm,
+    fontSize: typography.sizes.xs,
     fontFamily: typography.fonts.ui,
     color: colors.textSecondary,
     letterSpacing: 0.4,
+    textTransform: 'uppercase',
   },
   premiumHeaderCell: {
     alignItems: 'center',
@@ -404,7 +461,7 @@ const styles = StyleSheet.create({
   premiumHeaderBadge: {
     borderRadius: radius.full,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
+    paddingVertical: 2,
   },
   premiumHeaderBadgeText: {
     fontSize: 10,
@@ -417,13 +474,17 @@ const styles = StyleSheet.create({
     paddingLeft: spacing.xs,
   },
   checkCol: {
-    width: 64,
+    width: 52,
+    alignItems: 'center',
+  },
+  premiumCol: {
+    width: 76,
     alignItems: 'center',
   },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.sm + 2,
+    paddingVertical: spacing.xs + 2,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(15,23,42,0.06)',
   },
@@ -431,20 +492,20 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   tableCell: {
-    fontSize: typography.sizes.md,
+    fontSize: typography.sizes.sm,
     fontFamily: typography.fonts.body,
     color: colors.text,
   },
   featureCellText: {
-    lineHeight: typography.sizes.md * typography.lineHeights.normal,
+    lineHeight: typography.sizes.sm * typography.lineHeights.tight,
   },
   checkCell: {
     justifyContent: 'center',
   },
   premiumCheckPill: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     backgroundColor: PINK,
     alignItems: 'center',
     justifyContent: 'center',
@@ -480,7 +541,7 @@ const styles = StyleSheet.create({
   },
   trialBox: {
     ...shadows.md,
-    borderRadius: 22,
+    borderRadius: 16,
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.md,
     alignItems: 'center',

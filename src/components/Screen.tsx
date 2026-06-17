@@ -19,7 +19,9 @@ import { useSegments } from 'expo-router';
 // Using react-native's SafeAreaView bypasses the provider context and produces
 // incorrect insets on notched iOS devices (iPhone X+, Dynamic Island) silently.
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, spacing } from '@constants/theme';
+import { spacing } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { SCREEN_MAX_WIDTH } from '@constants/breakpoints';
 import { useResponsive } from '@hooks/useResponsive';
 import {
@@ -63,6 +65,8 @@ export function Screen({
   const segments = useSegments();
   const insets = useSafeAreaInsets();
   const responsive = useResponsive();
+  const { colors, isDark } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const driftA = React.useRef(new Animated.Value(0)).current;
   const driftB = React.useRef(new Animated.Value(0)).current;
   const driftC = React.useRef(new Animated.Value(0)).current;
@@ -151,28 +155,33 @@ export function Screen({
   return (
     <SafeAreaView style={[styles.safeArea, style]}>
       <LinearGradient
-        colors={['#E9F6FF', '#F8FDFF']}
+        colors={[colors.background, colors.surface]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.backgroundGradient}
       />
       <View pointerEvents="none" style={styles.bgDecor}>
         <SparkleOverlay variant="screen" count={34} />
-        <Animated.View style={[styles.cloud, styles.cloudOne, { transform: [{ translateX: driftA }, { scale: 0.95 }] }]}>
-          <View style={styles.cloudBase} />
-          <View style={[styles.cloudPuff, styles.cloudPuffLeft]} />
-          <View style={[styles.cloudPuff, styles.cloudPuffRight]} />
-        </Animated.View>
-        <Animated.View style={[styles.cloud, styles.cloudTwo, { transform: [{ translateX: driftB }, { scale: 1.1 }] }]}>
-          <View style={styles.cloudBase} />
-          <View style={[styles.cloudPuff, styles.cloudPuffLeft]} />
-          <View style={[styles.cloudPuff, styles.cloudPuffRight]} />
-        </Animated.View>
-        <Animated.View style={[styles.cloud, styles.cloudThree, { transform: [{ translateX: driftC }, { scale: 0.88 }] }]}>
-          <View style={styles.cloudBase} />
-          <View style={[styles.cloudPuff, styles.cloudPuffLeft]} />
-          <View style={[styles.cloudPuff, styles.cloudPuffRight]} />
-        </Animated.View>
+        {/* White clouds are a light-mode flourish — they'd glow on dark surfaces. */}
+        {!isDark && (
+          <>
+            <Animated.View style={[styles.cloud, styles.cloudOne, { transform: [{ translateX: driftA }, { scale: 0.95 }] }]}>
+              <View style={styles.cloudBase} />
+              <View style={[styles.cloudPuff, styles.cloudPuffLeft]} />
+              <View style={[styles.cloudPuff, styles.cloudPuffRight]} />
+            </Animated.View>
+            <Animated.View style={[styles.cloud, styles.cloudTwo, { transform: [{ translateX: driftB }, { scale: 1.1 }] }]}>
+              <View style={styles.cloudBase} />
+              <View style={[styles.cloudPuff, styles.cloudPuffLeft]} />
+              <View style={[styles.cloudPuff, styles.cloudPuffRight]} />
+            </Animated.View>
+            <Animated.View style={[styles.cloud, styles.cloudThree, { transform: [{ translateX: driftC }, { scale: 0.88 }] }]}>
+              <View style={styles.cloudBase} />
+              <View style={[styles.cloudPuff, styles.cloudPuffLeft]} />
+              <View style={[styles.cloudPuff, styles.cloudPuffRight]} />
+            </Animated.View>
+          </>
+        )}
       </View>
       {scrollable ? (
         onScroll ? (
@@ -214,7 +223,7 @@ export function Screen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,

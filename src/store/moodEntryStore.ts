@@ -35,6 +35,7 @@ interface MoodEntryState {
   deleteEntry: (entryId: string) => void;
   clearEntries: () => void;
   updateJournalResponse: (entryId: string, prompt: string, response: string) => void;
+  updateEntryMetrics: (entryId: string, metrics: { energyLevel?: number | null; focusLevel?: number | null }) => void;
   getEntriesForDate: (dateStr: string) => MoodEntry[];
   getDaysWithEntries: (yearMonth: string) => Record<string, string>;
   getStreak: () => number;
@@ -131,6 +132,44 @@ export const useMoodEntryStore = create<MoodEntryState>()(
               .then(({ error }) => ({ error })),
             'journal-update'
           );
+        }
+      },
+
+      updateEntryMetrics: (entryId, metrics) => {
+        // Strip undefined so we only patch the fields the caller actually set.
+        const patch: { energyLevel?: number | null; focusLevel?: number | null } = {};
+        if (metrics.energyLevel !== undefined) patch.energyLevel = metrics.energyLevel;
+        if (metrics.focusLevel !== undefined) patch.focusLevel = metrics.focusLevel;
+
+        set((state) => ({
+          entries: state.entries.map((e) =>
+            e.id === entryId
+              ? {
+                  ...e,
+                  energyLevel: patch.energyLevel === null ? undefined : patch.energyLevel ?? e.energyLevel,
+                  focusLevel: patch.focusLevel === null ? undefined : patch.focusLevel ?? e.focusLevel,
+                }
+              : e
+          ),
+        }));
+
+        // Sync energy/focus to Supabase for registered users.
+        const session = useSessionStore.getState().session;
+        if (session?.authStatus === 'registered' && supabase) {
+          const payload: Record<string, number | null> = {};
+          if (patch.energyLevel !== undefined) payload.energy_level = patch.energyLevel;
+          if (patch.focusLevel !== undefined) payload.focus_level = patch.focusLevel;
+          if (Object.keys(payload).length > 0) {
+            withRetry(
+              () => supabase!
+                .from('mood_entries')
+                .update(payload)
+                .eq('id', entryId)
+                .eq('user_id', session.userId)
+                .then(({ error }) => ({ error })),
+              'metrics-update'
+            );
+          }
         }
       },
 

@@ -32,7 +32,7 @@ export default ({ config }: ConfigContext) => ({
   icon: './assets/icons/apple-devices/AppIcon.appiconset/icon-ios-1024x1024.png',
   userInterfaceStyle: 'automatic',
   splash: {
-    backgroundColor: '#4A86FF',
+    backgroundColor: '#4C7A6A',
   },
   assetBundlePatterns: ['**/*'],
   linking: linkingConfig as any,
@@ -54,7 +54,7 @@ export default ({ config }: ConfigContext) => ({
     // Adaptive icon for Android 8.0+.
     adaptiveIcon: {
       foregroundImage: './assets/icons/android/mipmap-xxxhdpi/ic_launcher_foreground.png',
-      backgroundColor: '#4A86FF',
+      backgroundColor: '#4C7A6A',
     },
     package: 'com.kibun.app',
     ...(hasGoogleServices ? { googleServicesFile } : {}),
@@ -88,14 +88,14 @@ export default ({ config }: ConfigContext) => ({
       'expo-notifications',
       {
         icon: './assets/notification-icon.png',
-        color: '#4A86FF',
+        color: '#4C7A6A',
       },
     ],
     'expo-screen-orientation',
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#4A86FF',
+        backgroundColor: '#4C7A6A',
         image: './assets/icons/apple-devices/AppIcon.appiconset/icon-ios-1024x1024.png',
         imageWidth: 400,
       },

@@ -17,7 +17,9 @@ import { getCheckInSlot } from '@lib/checkInSlot';
 import { saveProfileToSupabase } from '@lib/profileSync';
 import { seedHabitsFromProfile } from '@lib/seedHabitsFromProfile';
 import { NotificationSlot } from '@models/index';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 const SLOT_VALUES = ['morning', 'afternoon', 'evening', 'pre-sleep'] as const;
 
@@ -28,6 +30,8 @@ function toggleSlot(prev: string[], value: string): string[] {
 }
 
 export default function NotificationPermissionScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation(['onboarding']);
   const { setComplete, setPersonalizationSnapshot } = useOnboardingGateStore();
   const firstMoodId = useOnboardingStore((s) => s.firstMoodId);
@@ -176,7 +180,7 @@ export default function NotificationPermissionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
   },
@@ -189,7 +193,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   heroCard: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.lg,
     marginBottom: spacing.lg,
@@ -206,7 +210,7 @@ const styles = StyleSheet.create({
   },
   sectionCard: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
+    borderRadius: radius.card,
     borderWidth: 1,
     borderColor: colors.borderLight,
     padding: spacing.md,

@@ -8,7 +8,8 @@
     "history": "Historial",
     "insights": "Análisis",
     "settings": "Ajustes",
-    "logMoodA11y": "Registrar ánimo"
+    "logMoodA11y": "Registrar ánimo",
+    "mascotA11y": "Juega con la mascota"
   },
   "home": {
     "anonBanner": {
@@ -139,6 +140,11 @@
     "period": {
       "label": "{{n}}d",
       "a11y": "Mostrar últimos {{n}} días"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "patterns": "Patrones",
+      "reports": "Informes"
     },
     "stats": {
       "streak": "días de racha",
@@ -448,6 +454,9 @@
     "manage": "Gestionar",
     "create": "+ Crear",
     "createFirst": "Crear un ánimo personalizado",
+    "seeMore": "Ver más",
+    "seeLess": "Ver menos",
+    "manageMoods": "Gestionar ánimos",
     "a11yCancel": "Cancelar",
     "a11yManageCustom": "Gestionar ánimos personalizados",
     "a11yCreateFirst": "Crear tu primer ánimo personalizado"
@@ -456,6 +465,10 @@
     "vibeToday": "Tu vibra de hoy",
     "loggingFor": "Registrando para {{date}}",
     "moodSubLabel": "Esta sensación importa. Vamos a registrarla.",
+    "savedTitle": "Registrado",
+    "savedSubtitle": "¿Quieres profundizar un poco?",
+    "done": "Listo",
+    "reflect": "Reflexionar en el diario",
     "noteLabel": "Añade una nota",
     "notePlaceholder": "¿Cómo te sientes? (opcional)",
     "noteA11y": "Nota de ánimo",
@@ -647,6 +660,20 @@
       "language": "IDIOMA",
       "about": "ACERCA DE"
     },
+    "tabs": {
+      "reminders": "Recordatorios",
+      "general": "General",
+      "about": "Acerca de"
+    },
+    "groups": {
+      "dailyReminders": "RECORDATORIOS DIARIOS",
+      "more": "MÁS",
+      "legal": "LEGAL",
+      "achievements": "LOGROS"
+    },
+    "achievements": {
+      "progress": "{{count}} de {{total}} desbloqueados"
+    },
     "account": {
       "label": "Cuenta",
       "notSignedIn": "Sin sesión iniciada",
@@ -686,6 +713,7 @@
       "overridden": "La hora personalizada anula el horario inteligente ({{time}} calculado)",
       "smartTime": "Hora inteligente: {{time}}",
       "active": "Activo",
+      "auto": "Auto",
       "needsMore": "Registra más check-ins para activar el horario inteligente.",
       "lockedHint": "Aprende cuándo te registras y ajusta los recordatorios. Función Pro.",
       "proBadge": "Pro",
@@ -763,6 +791,23 @@
       "fallbackMonthly": "$5.99",
       "fallbackYearly": "$34.99",
       "trial": "Incluye 7 días de prueba gratis · Cancela cuando quieras"
+    },
+    "plan": {
+      "monthly": {
+        "label": "Mensual",
+        "period": "al mes"
+      },
+      "annual": {
+        "label": "Anual",
+        "period": "al año"
+      },
+      "save": "AHORRA {{percent}}%",
+      "bestValue": "MEJOR VALOR",
+      "perMonth": "{{price}}/mes",
+      "billedYearly": "{{price}} al año tras la prueba",
+      "billedMonthly": "{{price}} al mes tras la prueba",
+      "selectedA11y": "seleccionado",
+      "a11yHint": "Selecciona el plan {{plan}}"
     },
     "cta": {
       "subscribe": "Suscribirme — 7 días gratis",
@@ -979,7 +1024,8 @@
     "customHabit": "Hábito personalizado",
     "addCustomA11y": "Añadir un hábito personalizado",
     "addCustom": "Añadir hábito personalizado",
-    "iconA11y": "Icono emoji del hábito",
+    "iconA11y": "Seleccionar icono del hábito",
+    "chooseIcon": "Elige un icono",
     "namePlaceholder": "Nombre del hábito",
     "nameA11y": "Nombre del hábito",
     "addHabitA11y": "Añadir hábito",

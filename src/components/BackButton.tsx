@@ -8,7 +8,8 @@ import {
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, radius, spacing } from '@constants/theme';
+import { typography, radius, spacing } from '@constants/theme';
+import { useTheme } from '@theme/ThemeContext';
 import { SpringPressable } from '@components/SpringPressable';
 
 type BackButtonVariant = 'light' | 'onHero';
@@ -31,6 +32,7 @@ export function BackButton({
 }: BackButtonProps) {
   const router = useRouter();
   const { t } = useTranslation('screens');
+  const { colors } = useTheme();
   const resolvedLabel = label ?? t('components.backButton.defaultLabel');
 
   const handlePress = () => {

@@ -11,9 +11,13 @@ import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { supabase } from '@lib/supabase';
 import { resetAllLocalUserData } from '@lib/localDataReset';
 import { exportUserData } from '@lib/exportUserData';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 export default function AccountScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const session = useSessionStore((s) => s.session);
@@ -323,6 +327,7 @@ export default function AccountScreen() {
 
 function SubscriptionBadge({ status }: { status: string }) {
   const { t } = useTranslation('screens');
+  const styles = useThemedStyles(createStyles);
   const styleMap: Record<string, { style: object; textStyle: object }> = {
     trial:   { style: styles.badgeTrial,   textStyle: styles.badgeTrialText },
     active:  { style: styles.badgeActive,  textStyle: styles.badgeActiveText },
@@ -341,7 +346,7 @@ function SubscriptionBadge({ status }: { status: string }) {
 
 // ── Styles ─────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',

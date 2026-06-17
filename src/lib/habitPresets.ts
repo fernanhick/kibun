@@ -19,3 +19,40 @@ export function findPreset(name: string): HabitPreset | undefined {
   const lower = name.toLowerCase();
   return PRESET_HABITS.find((p) => p.name.toLowerCase() === lower);
 }
+
+// Curated Ionicons for the custom-habit picker. Using vector glyphs (instead of
+// free-typed emoji) keeps every habit icon consistent with the presets and the
+// rest of the UI. Stored with the `ion:` prefix that HabitIcon understands.
+export const HABIT_ICONS: string[] = [
+  'ion:water-outline',
+  'ion:restaurant-outline',
+  'ion:bed-outline',
+  'ion:walk-outline',
+  'ion:barbell-outline',
+  'ion:bicycle-outline',
+  'ion:fitness-outline',
+  'ion:leaf-outline',
+  'ion:book-outline',
+  'ion:school-outline',
+  'ion:briefcase-outline',
+  'ion:musical-notes-outline',
+  'ion:brush-outline',
+  'ion:people-outline',
+  'ion:heart-outline',
+  'ion:happy-outline',
+  'ion:sunny-outline',
+  'ion:moon-outline',
+  'ion:cafe-outline',
+  'ion:wine-outline',
+  'ion:medkit-outline',
+  'ion:journal-outline',
+  'ion:flower-outline',
+  'ion:paw-outline',
+  'ion:cash-outline',
+  'ion:phone-portrait-outline',
+  'ion:sparkles-outline',
+  'ion:checkmark-circle-outline',
+];
+
+// Default icon for a custom habit when the user doesn't pick one.
+export const DEFAULT_HABIT_ICON = HABIT_ICONS[0];

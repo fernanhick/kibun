@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, type StyleProp, type ViewStyle, type ViewProps } from 'react-native';
-import { colors, spacing, radius, shadows } from '@constants/theme';
+import { spacing, radius, shadows } from '@constants/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import type { ThemePalette } from '@theme/ThemeContext';
 
 interface CardProps extends Pick<ViewProps, 'accessibilityLabel' | 'accessibilityHint' | 'accessibilityRole' | 'accessible'> {
   children: React.ReactNode;
@@ -9,6 +11,7 @@ interface CardProps extends Pick<ViewProps, 'accessibilityLabel' | 'accessibilit
 }
 
 export function Card({ children, style, padding = 'md', ...accessibilityProps }: CardProps) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View
       style={[
@@ -23,7 +26,7 @@ export function Card({ children, style, padding = 'md', ...accessibilityProps }:
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   card: {
     backgroundColor: colors.surfaceElevated,
     borderRadius: radius.card,

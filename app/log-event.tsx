@@ -8,7 +8,9 @@ import { Screen, Button } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useLifeEventsStore } from '@store/index';
 import { formatDate } from '@i18n/dateFormat';
-import { colors, spacing, typography, radius } from '@constants/theme';
+import { spacing, typography, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import type { LifeEventCategory } from '@models/index';
 
 const CATEGORIES: {
@@ -30,6 +32,8 @@ function formatDisplayDate(dateStr: string): string {
 }
 
 export default function LogEventScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{ date?: string }>();
@@ -159,13 +163,13 @@ export default function LogEventScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   root: {
     flex: 1,
     gap: 0,
   },
   heroCard: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
@@ -222,13 +226,13 @@ const styles = StyleSheet.create({
   },
   titleInput: {
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     paddingVertical: 12,
     paddingHorizontal: spacing.md,
     fontSize: typography.sizes.md,
     color: colors.text,
-    backgroundColor: '#F7FBFF',
+    backgroundColor: colors.surface,
   },
   categoryGrid: {
     flexDirection: 'row',
@@ -243,7 +247,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     borderRadius: radius.lg,
     borderWidth: 1.5,
-    borderColor: '#D0DDFF',
+    borderColor: colors.border,
     backgroundColor: colors.surface,
   },
   categoryLabel: {
@@ -253,13 +257,13 @@ const styles = StyleSheet.create({
   },
   notesInput: {
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     paddingVertical: 12,
     paddingHorizontal: spacing.md,
     fontSize: typography.sizes.md,
     color: colors.text,
-    backgroundColor: '#F7FBFF',
+    backgroundColor: colors.surface,
     minHeight: 80,
   },
   actions: {

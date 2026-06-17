@@ -1,14 +1,16 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo, useState } from 'react';
 import { View, Pressable, Text, Animated, StyleSheet, Platform } from 'react-native';
 import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter, type Href } from 'expo-router';
+import { haptics } from '@lib/haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { BlurView } from 'expo-blur';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { colors, typography, spacing } from '@constants/theme';
+import { typography, spacing } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import {
   KAWAII_TAB_BAR_HEIGHT,
   KAWAII_TAB_SAFE_BOTTOM_ANDROID,
@@ -16,7 +18,7 @@ import {
   getKawaiiTabScale,
 } from '@constants/layout';
 import { SCREEN_MAX_WIDTH } from '@constants/breakpoints';
-import { getMascotSource } from '@constants/mascotAnimations';
+import { getMascotSource, getMascotVariant, MASCOT_VARIANTS, type MascotVariant } from '@constants/mascotAnimations';
 import { useResponsive } from '@hooks/useResponsive';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { useTabBarVisibility } from '@hooks/useScreenScroll';
@@ -42,10 +44,10 @@ const BASE_LABEL_FONT = 11;
 const BASE_MASCOT_TRANSLATE_Y = -10;
 
 const TAB_ICONS: Record<string, { outline: IoniconName; filled: IoniconName; accent: string }> = {
-  index:    { outline: 'home-outline',           filled: 'home',           accent: '#89AFFF' },
-  history:  { outline: 'calendar-outline',       filled: 'calendar',       accent: '#FFA62B' },
-  insights: { outline: 'sparkles-outline',       filled: 'sparkles',       accent: '#7AC8FF' },
-  settings: { outline: 'color-palette-outline',  filled: 'color-palette',  accent: '#A7A0FF' },
+  index:    { outline: 'home-outline',           filled: 'home',           accent: '#6E9C8C' },
+  history:  { outline: 'calendar-outline',       filled: 'calendar',       accent: '#C56B86' },
+  insights: { outline: 'sparkles-outline',       filled: 'sparkles',       accent: '#7FA9A0' },
+  settings: { outline: 'color-palette-outline',  filled: 'color-palette',  accent: '#9E8FB0' },
 };
 
 // ─── Animated Tab Icon ────────────────────────────────────────────────────────
@@ -73,6 +75,7 @@ function TabIcon({
 }) {
   const scale = useRef(new Animated.Value(1)).current;
   const reducedMotion = useReducedMotion();
+  const styles = useThemedStyles(createStyles);
   const icons = TAB_ICONS[routeName];
 
   useEffect(() => {
@@ -124,10 +127,36 @@ function TabIcon({
 export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { t } = useTranslation('screens');
   const insets = useSafeAreaInsets();
-  const router = useRouter();
+  const { colors, isDark } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { width } = useResponsive();
   const lastMoodId = useMoodEntryStore((s) => s.entries[0]?.moodId);
   const visibility = useTabBarVisibility();
+
+  // Tapping the center mascot cycles it through its animation variants — a
+  // playful idle interaction (logging now lives inline on the home hero, so
+  // this no longer navigates). A new mood log resets it to that mood's mascot.
+  const reducedMotion = useReducedMotion();
+  const [variantOverride, setVariantOverride] = useState<MascotVariant | null>(null);
+  useEffect(() => {
+    setVariantOverride(null);
+  }, [lastMoodId]);
+
+  const pop = useRef(new Animated.Value(1)).current;
+  const handleMascotPress = () => {
+    haptics.light();
+    const current = variantOverride ?? getMascotVariant(lastMoodId);
+    const nextIndex = (MASCOT_VARIANTS.indexOf(current) + 1) % MASCOT_VARIANTS.length;
+    setVariantOverride(MASCOT_VARIANTS[nextIndex]);
+
+    if (!reducedMotion) {
+      Animated.sequence([
+        Animated.spring(pop, { toValue: 1.12, useNativeDriver: true, speed: 50, bounciness: 8 }),
+        Animated.spring(pop, { toValue: 1, useNativeDriver: true, speed: 30, bounciness: 4 }),
+      ]).start();
+    }
+  };
+  const mascotSource = getMascotSource(variantOverride ?? lastMoodId);
 
   const { tabBarHeight, mascotSize, metrics } = useMemo(() => {
     const scale = getKawaiiTabScale(width);
@@ -200,7 +229,9 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
       opacity: 1 - h * 0.35,
     };
   });
-  const overlayBg = Platform.OS === 'ios' ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.85)';
+  const overlayBg = isDark
+    ? (Platform.OS === 'ios' ? 'rgba(22,20,15,0.55)' : 'rgba(22,20,15,0.88)')
+    : (Platform.OS === 'ios' ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.85)');
   return (
     <Reanimated.View style={[styles.container, hideStyle]} pointerEvents="box-none">
       <View
@@ -209,7 +240,7 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
       >
         <BlurView
           intensity={Platform.OS === 'ios' ? 50 : 36}
-          tint="light"
+          tint={isDark ? 'dark' : 'light'}
           style={StyleSheet.absoluteFill}
         />
         <View style={[StyleSheet.absoluteFill, { backgroundColor: overlayBg }]} />
@@ -223,17 +254,21 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
 
           <View style={[styles.centerSlot, { width: mascotSize }]}>
             <Pressable
-              onPress={() => router.push('/check-in' as Href)}
-              accessibilityLabel={t('tabs.logMoodA11y')}
+              onPress={handleMascotPress}
+              accessibilityLabel={t('tabs.mascotA11y')}
               accessibilityRole="button"
               style={{ width: mascotSize, height: mascotSize, alignItems: 'center', justifyContent: 'center' }}
             >
-              <Image
-                source={getMascotSource(lastMoodId)}
-                style={{ width: mascotSize, height: mascotSize, transform: [{ translateY: BASE_MASCOT_TRANSLATE_Y }] }}
-                contentFit="contain"
-                autoplay
-              />
+              <Animated.View
+                style={{ transform: [{ translateY: BASE_MASCOT_TRANSLATE_Y }, { scale: pop }] }}
+              >
+                <Image
+                  source={mascotSource}
+                  style={{ width: mascotSize, height: mascotSize }}
+                  contentFit="contain"
+                  autoplay
+                />
+              </Animated.View>
             </Pressable>
           </View>
 
@@ -248,7 +283,7 @@ export function KawaiiTabBar({ state, descriptors, navigation }: BottomTabBarPro
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     position: 'absolute',
     left: 0,
@@ -270,7 +305,7 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(15,23,42,0.06)',
+    backgroundColor: colors.border,
   },
   tabRowClamp: {
     width: '100%',

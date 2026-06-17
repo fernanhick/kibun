@@ -6,7 +6,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OnboardingProgress } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 const GOAL_VALUES = [
   'understand-emotions',
@@ -24,6 +26,8 @@ function toggleValue(prev: string[], value: string): string[] {
 }
 
 export default function ProfileHelpsAndHopesScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
   const [goals, setGoals] = useState<string[]>(profile.goals);
@@ -99,7 +103,7 @@ export default function ProfileHelpsAndHopesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
   },
@@ -112,7 +116,7 @@ const styles = StyleSheet.create({
     padding: spacing.xs,
   },
   heroCard: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.lg,
     marginBottom: spacing.lg,
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderLight,
-    borderRadius: 16,
+    borderRadius: radius.card,
     padding: spacing.md,
     marginBottom: spacing.lg,
   },

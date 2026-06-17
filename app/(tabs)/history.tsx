@@ -10,7 +10,9 @@ import { useMoodEntryStore, useSessionStore, useLifeEventsStore } from '@store/i
 import { useResponsive } from '@hooks/useResponsive';
 import { useScreenScroll } from '@hooks/useScreenScroll';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
-import { colors, spacing, typography, radius, shadows } from '@constants/theme';
+import { spacing, typography, radius, shadows } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { getMonthNames, getWeekdayLabels } from '@i18n/dateFormat';
 import { getMoodLabel, getMoodGroupLabel } from '@lib/moodLabels';
 
@@ -81,6 +83,8 @@ function buildCalendarGrid(year: number, month: number): (number | null)[][] {
 }
 
 export default function HistoryScreen() {
+  const { colors, isDark } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const responsive = useResponsive();
@@ -390,7 +394,7 @@ export default function HistoryScreen() {
                         height: cellSize,
                         borderRadius: radius.sm,
                       },
-                      hasEntries && { backgroundColor: mood.tintColor },
+                      hasEntries && { backgroundColor: isDark ? mood.tintColorDark : mood.tintColor },
                       !hasEntries && !isFuture && styles.emptyPastCell,
                       isToday && styles.todayCell,
                       isFuture && styles.futureCell,
@@ -400,8 +404,10 @@ export default function HistoryScreen() {
                       style={[
                         styles.dayNumber,
                         { fontSize: r.dayNumber },
-                        hasEntries ? { color: colors.text } : { color: colors.text },
-                        isFuture && { color: colors.textDisabled },
+                        // Mood tint flips with the theme (light pastel / deep tint), so the
+                        // themed text color contrasts correctly on both.
+                        { color: colors.text },
+                        isFuture && { color: colors.textSecondary },
                       ]}
                     >
                       {day}
@@ -439,6 +445,8 @@ interface MonthSnapshotProps {
 }
 
 function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation('screens');
   const { total, activeDays, groupCounts, topMoodId } = summary;
   const topMood = topMoodId ? MOOD_MAP[topMoodId] : null;
@@ -547,7 +555,7 @@ function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   scrollPadding: {
     paddingBottom: 120,
   },
@@ -618,7 +626,7 @@ const styles = StyleSheet.create({
   headerCard: {
     ...shadows.md,
     marginTop: spacing.md,
-    borderRadius: 16,
+    borderRadius: radius.card,
     paddingTop: spacing.sm,
     paddingBottom: spacing.xs,
     paddingHorizontal: spacing.sm,
@@ -674,7 +682,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.sm,
     borderWidth: 1,
-    borderColor: '#DCE9FF',
+    borderColor: colors.border,
     backgroundColor: 'rgba(255, 218, 218, 0.94)',
   },
   calendarGrid: {
@@ -690,16 +698,16 @@ const styles = StyleSheet.create({
   dayCell: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.98)',
+    backgroundColor: colors.surfaceElevated,
     borderWidth: 1,
-    borderColor: '#D9E5F7',
+    borderColor: colors.border,
   },
   todayCell: {
     borderWidth: 2,
     borderColor: colors.accent,
   },
   futureCell: {
-    opacity: 0.55,
+    opacity: 0.7,
   },
   emptyPastCell: {
     borderStyle: 'dashed',
@@ -731,13 +739,13 @@ const styles = StyleSheet.create({
   snapshotCard: {
     ...shadows.md,
     marginTop: spacing.md,
-    borderRadius: 16,
+    borderRadius: radius.card,
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
-    backgroundColor: 'rgba(255,255,255,0.95)',
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
     gap: spacing.sm,
   },
   snapshotBadge: {

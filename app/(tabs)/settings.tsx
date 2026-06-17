@@ -7,8 +7,7 @@ import {
   StyleSheet,
   Linking,
   Platform,
-  LayoutAnimation,
-  UIManager,
+  Image,
 } from 'react-native';
 import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +20,8 @@ import { SpringPressable } from '@components/SpringPressable';
 import { useScreenScroll } from '@hooks/useScreenScroll';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
+import { useAchievementsStore } from '@store/index';
+import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_BADGE_IMAGES } from '@lib/achievements';
 import { useUiPrefsStore, type LanguagePref } from '@store/uiPrefsStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
 import { restorePurchases } from '@lib/revenuecat';
@@ -33,11 +34,9 @@ import {
   MANAGE_SUBSCRIPTION_URL_IOS,
   MANAGE_SUBSCRIPTION_URL_ANDROID,
 } from '@constants/legal';
-import { colors, typography, spacing, radius, shadows } from '@constants/theme';
-
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+import { typography, spacing, radius, shadows } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 const SLOT_KEYS: { slot: NotificationSlot; i18nKey: 'morning' | 'afternoon' | 'evening' | 'preSleep' }[] = [
   { slot: 'morning', i18nKey: 'morning' },
@@ -46,60 +45,30 @@ const SLOT_KEYS: { slot: NotificationSlot; i18nKey: 'morning' | 'afternoon' | 'e
   { slot: 'pre-sleep', i18nKey: 'preSleep' },
 ];
 
+// Default fire times per slot (24h) — shown as the time-chip placeholder when the
+// user hasn't set a custom time and smart timing isn't driving the slot.
+const DEFAULT_SLOT_TIME: Record<NotificationSlot, string> = {
+  morning: '09:00',
+  afternoon: '14:00',
+  evening: '19:00',
+  'pre-sleep': '22:00',
+};
+
 const LANGUAGE_OPTIONS: LanguagePref[] = ['system', 'en', 'es'];
 
-type SectionKey = 'reminderTimes' | 'customTimes' | 'streakReminder' | 'smartTiming' | 'language' | 'about';
-
-interface AccordionSectionProps {
-  title: string;
-  sectionKey: SectionKey;
-  expanded: boolean;
-  onToggle: (key: SectionKey) => void;
-  children: React.ReactNode;
-}
-
-function AccordionSection({ title, sectionKey, expanded, onToggle, children }: AccordionSectionProps) {
-  return (
-    <View style={styles.section}>
-      <SpringPressable
-        style={[styles.accordionHeader, expanded && styles.accordionHeaderOpen]}
-        onPress={() => onToggle(sectionKey)}
-        accessibilityRole="button"
-        accessibilityState={{ expanded }}
-        accessibilityLabel={title}
-      >
-        <Text style={styles.accordionTitle}>{title}</Text>
-        <Ionicons
-          name={expanded ? 'chevron-up' : 'chevron-down'}
-          size={18}
-          color={colors.textSecondary}
-        />
-      </SpringPressable>
-      {expanded && <View>{children}</View>}
-    </View>
-  );
-}
+type TabKey = 'reminders' | 'general' | 'about';
+const TABS: TabKey[] = ['reminders', 'general', 'about'];
 
 export default function SettingsScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const { onScroll } = useScreenScroll();
   const [permissionStatus, setPermissionStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [openSections, setOpenSections] = useState<Record<SectionKey, boolean>>({
-    reminderTimes: false,
-    customTimes: false,
-    streakReminder: false,
-    smartTiming: false,
-    language: false,
-    about: false,
-  });
-
-  const toggleSection = useCallback((key: SectionKey) => {
-    LayoutAnimation.configureNext(LayoutAnimation.create(220, 'easeInEaseOut', 'opacity'));
-    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
-  }, []);
+  const [activeTab, setActiveTab] = useState<TabKey>('reminders');
 
   useEffect(() => () => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -107,6 +76,9 @@ export default function SettingsScreen() {
 
   const session = useSessionStore((s) => s.session);
   const isAnonymous = !session || session.authStatus === 'anonymous';
+
+  const unlockedIds = useAchievementsStore((s) => s.unlockedIds);
+  const unlockedCount = ACHIEVEMENT_DEFINITIONS.filter((d) => unlockedIds.includes(d.id)).length;
 
   const language = useUiPrefsStore((s) => s.language);
   const setLanguage = useUiPrefsStore((s) => s.setLanguage);
@@ -230,16 +202,16 @@ export default function SettingsScreen() {
         </View>
       </LinearGradient>
 
-      {/* ── Account row (always visible, single nav) ─────────────────── */}
+      {/* ── Account (always visible nav) ─────────────────────────────── */}
       <View style={styles.section}>
         <SpringPressable
-          style={styles.accordionHeader}
+          style={[styles.row, styles.rowLast]}
           onPress={() => router.push('/account' as Href)}
           accessibilityRole="button"
           accessibilityLabel={t('settings.account.a11y')}
         >
           <View style={styles.rowText}>
-            <Text style={styles.accordionTitle}>{t('settings.account.label')}</Text>
+            <Text style={styles.rowLabel}>{t('settings.account.label')}</Text>
             <Text style={styles.rowHint}>
               {isAnonymous ? t('settings.account.notSignedIn') : t('settings.account.manage')}
             </Text>
@@ -248,317 +220,313 @@ export default function SettingsScreen() {
         </SpringPressable>
       </View>
 
-      {/* ── Notification permission banner ──────────────────────────── */}
-      {isDisabled && (
-        <SpringPressable
-          style={styles.permissionBanner}
-          onPress={() => Linking.openSettings()}
-          accessibilityRole="button"
-          accessibilityHint={t('settings.permissionBanner.a11yHint')}
-        >
-          <Text style={styles.bannerText}>{t('settings.permissionBanner.text')}</Text>
-          <Text style={styles.bannerLink}>{t('settings.permissionBanner.link')}</Text>
-        </SpringPressable>
-      )}
-
-      {/* ── Reminder Times ────────────────────────────────────────────── */}
-      <AccordionSection
-        title={t('settings.sections.reminderTimes')}
-        sectionKey="reminderTimes"
-        expanded={openSections.reminderTimes}
-        onToggle={toggleSection}
-      >
-        {slotRows.map((row) => {
-          const isOn = selectedSlots.includes(row.slot);
-          return (
-            <View key={row.slot} style={styles.row}>
-              <View style={styles.rowText}>
-                <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
-                  {row.label}
-                </Text>
-                <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
-                  {row.hint}
-                </Text>
-              </View>
-              <Switch
-                value={isOn}
-                onValueChange={() => handleSlotToggle(row.slot)}
-                disabled={isDisabled}
-                trackColor={{ false: colors.border, true: colors.accent }}
-                accessibilityRole="switch"
-                accessibilityLabel={t('settings.reminders.rowA11y', { label: row.label, hint: row.hint })}
-                accessibilityState={{ checked: isOn, disabled: isDisabled }}
-              />
-            </View>
-          );
-        })}
-      </AccordionSection>
-
-      {/* ── Custom Reminder Times ────────────────────────────────────── */}
-      <AccordionSection
-        title={t('settings.sections.customTimes')}
-        sectionKey="customTimes"
-        expanded={openSections.customTimes}
-        onToggle={toggleSection}
-      >
-        {slotRows.filter((r) => selectedSlots.includes(r.slot)).map((row) => (
-          <View key={row.slot} style={styles.row}>
-            <View style={styles.rowText}>
-              <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
-                {row.label}
-              </Text>
-              <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
-                {customTimes[row.slot]
-                  ? t('settings.customTimes.setTo', { time: customTimes[row.slot] })
-                  : row.hint}
-              </Text>
-            </View>
-            <TextInput
-              style={[styles.timeInput, isDisabled && styles.textDisabled]}
-              defaultValue={customTimes[row.slot] ?? ''}
-              placeholder={t('settings.customTimes.placeholder')}
-              placeholderTextColor={colors.textDisabled}
-              keyboardType="numbers-and-punctuation"
-              maxLength={5}
-              editable={!isDisabled}
-              onEndEditing={(e) => handleCustomTimeChange(row.slot, e.nativeEvent.text)}
-              accessibilityLabel={t('settings.customTimes.inputA11y', { label: row.label })}
-              accessibilityHint={t('settings.customTimes.inputA11yHint')}
-            />
-          </View>
-        ))}
-        {selectedSlots.length === 0 && (
-          <View style={styles.row}>
-            <Text style={[styles.rowHint, { flex: 1 }]}>
-              {t('settings.customTimes.empty')}
-            </Text>
-          </View>
-        )}
-      </AccordionSection>
-
-      {/* ── Streak Reminder ──────────────────────────────────────────── */}
-      <AccordionSection
-        title={t('settings.sections.streakReminder')}
-        sectionKey="streakReminder"
-        expanded={openSections.streakReminder}
-        onToggle={toggleSection}
-      >
-        <View style={styles.row}>
-          <View style={styles.rowText}>
-            <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
-              {t('settings.streak.label')}
-            </Text>
-            <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
-              {t('settings.streak.hint')}
-            </Text>
-          </View>
-          <Switch
-            value={streakNudgeEnabled}
-            onValueChange={handleStreakToggle}
-            disabled={isDisabled}
-            trackColor={{ false: colors.border, true: colors.accent }}
-            accessibilityRole="switch"
-            accessibilityLabel={t('settings.streak.a11y')}
-            accessibilityState={{ checked: streakNudgeEnabled, disabled: isDisabled }}
-          />
-        </View>
-      </AccordionSection>
-
-      {/* ── Smart Timing — Pro feature ───────────────────────────────── */}
-      <AccordionSection
-        title={t('settings.sections.smartTiming')}
-        sectionKey="smartTiming"
-        expanded={openSections.smartTiming}
-        onToggle={toggleSection}
-      >
-        {isPro ? (
-          <>
-            <View style={styles.row}>
-              <View style={styles.rowText}>
-                <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
-                  {t('settings.smartTiming.label')}
-                </Text>
-                <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
-                  {t('settings.smartTiming.hint')}
-                </Text>
-              </View>
-              <Switch
-                value={adaptiveEnabled}
-                onValueChange={(v) => { toggleAdaptive(v); reschedule(); }}
-                disabled={isDisabled}
-                trackColor={{ false: colors.border, true: colors.accent }}
-                accessibilityRole="switch"
-                accessibilityLabel={t('settings.smartTiming.a11y')}
-                accessibilityState={{ checked: adaptiveEnabled, disabled: isDisabled }}
-              />
-            </View>
-            {adaptiveEnabled && slotRows.filter((r) => selectedSlots.includes(r.slot)).map((row) => {
-              const adaptiveTime = adaptiveTimes[row.slot];
-              if (!adaptiveTime) return null;
-              const isOverridden = !!customTimes[row.slot];
-              return (
-                <View key={row.slot} style={styles.row}>
-                  <View style={styles.rowText}>
-                    <Text style={styles.rowLabel}>{row.label}</Text>
-                    <Text style={styles.rowHint}>
-                      {isOverridden
-                        ? t('settings.smartTiming.overridden', { time: adaptiveTime })
-                        : t('settings.smartTiming.smartTime', { time: adaptiveTime })}
-                    </Text>
-                  </View>
-                  {!isOverridden && (
-                    <View style={styles.activeBadge}>
-                      <Text style={styles.activeBadgeText}>{t('settings.smartTiming.active')}</Text>
-                    </View>
-                  )}
-                </View>
-              );
-            })}
-            {adaptiveEnabled && Object.keys(adaptiveTimes).length === 0 && (
-              <View style={styles.row}>
-                <Text style={[styles.rowHint, { flex: 1 }]}>
-                  {t('settings.smartTiming.needsMore')}
-                </Text>
-              </View>
-            )}
-          </>
-        ) : (
-          <SpringPressable
-            onPress={() => router.push('/paywall' as any)}
-            accessibilityRole="button"
-            accessibilityLabel={t('settings.smartTiming.lockedA11y')}
-          >
-            <View style={styles.proLockRow}>
-              <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>{t('settings.smartTiming.label')}</Text>
-                <Text style={styles.rowHint}>{t('settings.smartTiming.lockedHint')}</Text>
-              </View>
-              <View style={styles.proLockBadge}>
-                <Text style={styles.proLockBadgeText}>{t('settings.smartTiming.proBadge')}</Text>
-              </View>
-            </View>
-          </SpringPressable>
-        )}
-      </AccordionSection>
-
-      {/* ── Language picker ──────────────────────────────────────────── */}
-      <AccordionSection
-        title={t('settings.sections.language')}
-        sectionKey="language"
-        expanded={openSections.language}
-        onToggle={toggleSection}
-      >
-        <View style={styles.row}>
-          <View style={styles.rowText}>
-            <Text style={styles.rowLabel}>{t('settings.language.label')}</Text>
-            <Text style={styles.rowHint}>{t('settings.language.hint')}</Text>
-          </View>
-        </View>
-        {LANGUAGE_OPTIONS.map((option) => {
-          const isSelected = language === option;
-          const optionLabel = t(`settings.language.options.${option}`);
+      {/* ── Tab selector ─────────────────────────────────────────────── */}
+      <View style={styles.tabBar} accessibilityRole="tablist">
+        {TABS.map((tab) => {
+          const selected = activeTab === tab;
           return (
             <SpringPressable
-              key={option}
-              style={styles.row}
-              onPress={() => setLanguage(option)}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: isSelected }}
-              accessibilityLabel={t('settings.language.optionA11y', { label: optionLabel })}
+              key={tab}
+              style={[styles.tab, selected && styles.tabActive]}
+              onPress={() => setActiveTab(tab)}
+              accessibilityRole="tab"
+              accessibilityState={{ selected }}
+              accessibilityLabel={t(`settings.tabs.${tab}`)}
             >
-              <Text style={styles.rowLabel}>{optionLabel}</Text>
-              {isSelected && (
-                <Ionicons name="checkmark" size={20} color={colors.accent} />
-              )}
+              <Text style={[styles.tabLabel, selected && styles.tabLabelActive]}>
+                {t(`settings.tabs.${tab}`)}
+              </Text>
             </SpringPressable>
           );
         })}
-      </AccordionSection>
+      </View>
 
-      {/* ── About section ────────────────────────────────────────────── */}
-      <AccordionSection
-        title={t('settings.sections.about')}
-        sectionKey="about"
-        expanded={openSections.about}
-        onToggle={toggleSection}
-      >
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>{t('settings.about.version')}</Text>
-          <Text style={styles.rowHint}>{appVersion}</Text>
-        </View>
-        <SpringPressable
-          style={styles.row}
-          onPress={handleRestore}
-          accessibilityRole="button"
-          accessibilityLabel={t('settings.about.restoreA11y')}
-          disabled={restoreState === 'restoring'}
-        >
-          <View style={styles.rowText}>
-            <Text style={styles.rowLabel}>{t('settings.about.restore')}</Text>
-            {restoreState === 'restored' && (
-              <Text style={styles.rowHint}>{t('settings.about.restored')}</Text>
-            )}
-            {restoreState === 'none' && (
-              <Text style={styles.rowHint}>{t('settings.about.restoreNone')}</Text>
+      {/* ════════════ REMINDERS TAB ════════════ */}
+      {activeTab === 'reminders' && (
+        <>
+          {isDisabled && (
+            <SpringPressable
+              style={styles.permissionBanner}
+              onPress={() => Linking.openSettings()}
+              accessibilityRole="button"
+              accessibilityHint={t('settings.permissionBanner.a11yHint')}
+            >
+              <Text style={styles.bannerText}>{t('settings.permissionBanner.text')}</Text>
+              <Text style={styles.bannerLink}>{t('settings.permissionBanner.link')}</Text>
+            </SpringPressable>
+          )}
+
+          <Text style={styles.groupHeader}>{t('settings.groups.dailyReminders')}</Text>
+          <View style={styles.section}>
+            {slotRows.map((row, i) => {
+              const isOn = selectedSlots.includes(row.slot);
+              const isLast = i === slotRows.length - 1;
+              const adaptiveActive = isPro && adaptiveEnabled && !!adaptiveTimes[row.slot];
+              const hasCustom = !!customTimes[row.slot];
+              const effectiveTime =
+                customTimes[row.slot] ??
+                (adaptiveActive ? adaptiveTimes[row.slot]! : DEFAULT_SLOT_TIME[row.slot]);
+              const showAuto = adaptiveActive && !hasCustom;
+              return (
+                <View key={row.slot} style={[styles.row, isLast && styles.rowLast]}>
+                  <View style={styles.rowText}>
+                    <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
+                      {row.label}
+                    </Text>
+                    {!isOn && (
+                      <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
+                        {row.hint}
+                      </Text>
+                    )}
+                  </View>
+                  <View style={styles.rowRight}>
+                    {isOn && (
+                      <View style={styles.timeChip}>
+                        <TextInput
+                          style={[styles.timeChipInput, isDisabled && styles.textDisabled]}
+                          defaultValue={customTimes[row.slot] ?? ''}
+                          placeholder={effectiveTime}
+                          placeholderTextColor={colors.textDisabled}
+                          keyboardType="numbers-and-punctuation"
+                          maxLength={5}
+                          editable={!isDisabled}
+                          onEndEditing={(e) => handleCustomTimeChange(row.slot, e.nativeEvent.text)}
+                          accessibilityLabel={t('settings.customTimes.inputA11y', { label: row.label })}
+                          accessibilityHint={t('settings.customTimes.inputA11yHint')}
+                        />
+                        {showAuto ? (
+                          <Text style={styles.autoTag}>{t('settings.smartTiming.auto')}</Text>
+                        ) : (
+                          <Ionicons name="pencil" size={11} color={colors.textSecondary} />
+                        )}
+                      </View>
+                    )}
+                    <Switch
+                      value={isOn}
+                      onValueChange={() => handleSlotToggle(row.slot)}
+                      disabled={isDisabled}
+                      trackColor={{ false: colors.border, true: colors.accent }}
+                      accessibilityRole="switch"
+                      accessibilityLabel={t('settings.reminders.rowA11y', { label: row.label, hint: row.hint })}
+                      accessibilityState={{ checked: isOn, disabled: isDisabled }}
+                    />
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+
+          <Text style={styles.groupHeader}>{t('settings.groups.more')}</Text>
+          <View style={styles.section}>
+            {/* Streak nudge */}
+            <View style={styles.row}>
+              <View style={styles.rowText}>
+                <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
+                  {t('settings.streak.label')}
+                </Text>
+                <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
+                  {t('settings.streak.hint')}
+                </Text>
+              </View>
+              <Switch
+                value={streakNudgeEnabled}
+                onValueChange={handleStreakToggle}
+                disabled={isDisabled}
+                trackColor={{ false: colors.border, true: colors.accent }}
+                accessibilityRole="switch"
+                accessibilityLabel={t('settings.streak.a11y')}
+                accessibilityState={{ checked: streakNudgeEnabled, disabled: isDisabled }}
+              />
+            </View>
+
+            {/* Smart timing (Pro) */}
+            {isPro ? (
+              <View style={[styles.row, styles.rowLast]}>
+                <View style={styles.rowText}>
+                  <Text style={[styles.rowLabel, isDisabled && styles.textDisabled]}>
+                    {t('settings.smartTiming.label')}
+                  </Text>
+                  <Text style={[styles.rowHint, isDisabled && styles.textDisabled]}>
+                    {t('settings.smartTiming.hint')}
+                  </Text>
+                </View>
+                <Switch
+                  value={adaptiveEnabled}
+                  onValueChange={(v) => { toggleAdaptive(v); reschedule(); }}
+                  disabled={isDisabled}
+                  trackColor={{ false: colors.border, true: colors.accent }}
+                  accessibilityRole="switch"
+                  accessibilityLabel={t('settings.smartTiming.a11y')}
+                  accessibilityState={{ checked: adaptiveEnabled, disabled: isDisabled }}
+                />
+              </View>
+            ) : (
+              <SpringPressable
+                style={[styles.row, styles.rowLast]}
+                onPress={() => router.push('/paywall' as any)}
+                accessibilityRole="button"
+                accessibilityLabel={t('settings.smartTiming.lockedA11y')}
+              >
+                <View style={styles.rowText}>
+                  <Text style={styles.rowLabel}>{t('settings.smartTiming.label')}</Text>
+                  <Text style={styles.rowHint}>{t('settings.smartTiming.lockedHint')}</Text>
+                </View>
+                <View style={styles.proLockBadge}>
+                  <Text style={styles.proLockBadgeText}>{t('settings.smartTiming.proBadge')}</Text>
+                </View>
+              </SpringPressable>
             )}
           </View>
-          <Ionicons
-            name={restoreState === 'restoring' ? 'sync' : 'refresh'}
-            size={18}
-            color={colors.textSecondary}
-          />
-        </SpringPressable>
-        <SpringPressable
-          style={styles.row}
-          onPress={handleManageSubscription}
-          accessibilityRole="link"
-          accessibilityLabel={t('settings.about.manageSubscriptionA11y')}
-        >
-          <Text style={styles.rowLabel}>{t('settings.about.manageSubscription')}</Text>
-          <Ionicons name="open-outline" size={18} color={colors.textSecondary} />
-        </SpringPressable>
-        <SpringPressable
-          style={styles.row}
-          onPress={() => requestStoreReviewDirect('settings')}
-          accessibilityRole="button"
-          accessibilityLabel={t('settings.about.rateA11y')}
-        >
-          <Text style={styles.rowLabel}>{t('settings.about.rate')}</Text>
-          <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
-        </SpringPressable>
-        <SpringPressable
-          style={styles.row}
-          onPress={() => openSupportFeedback('settings')}
-          accessibilityRole="button"
-          accessibilityLabel={t('settings.about.feedbackA11y')}
-        >
-          <Text style={styles.rowLabel}>{t('settings.about.feedback')}</Text>
-          <Ionicons name="mail-outline" size={18} color={colors.textSecondary} />
-        </SpringPressable>
-        <SpringPressable
-          style={styles.row}
-          onPress={() => Linking.openURL(TERMS_OF_USE_URL)}
-          accessibilityRole="link"
-          accessibilityLabel={t('settings.about.termsA11y')}
-        >
-          <Text style={styles.rowLabel}>{t('settings.about.terms')}</Text>
-          <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
-        </SpringPressable>
-        <SpringPressable
-          style={styles.row}
-          onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
-          accessibilityRole="link"
-          accessibilityLabel={t('settings.about.privacyA11y')}
-        >
-          <Text style={styles.rowLabel}>{t('settings.about.privacy')}</Text>
-          <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
-        </SpringPressable>
-      </AccordionSection>
+          {isPro && adaptiveEnabled && Object.keys(adaptiveTimes).length === 0 && (
+            <Text style={styles.groupFooter}>{t('settings.smartTiming.needsMore')}</Text>
+          )}
+        </>
+      )}
+
+      {/* ════════════ GENERAL TAB ════════════ */}
+      {activeTab === 'general' && (
+        <>
+          <Text style={styles.groupHeader}>{t('settings.groups.achievements')}</Text>
+          <View style={styles.section}>
+            <View style={styles.achievementsGrid}>
+              {ACHIEVEMENT_DEFINITIONS.map((def) => {
+                const unlocked = unlockedIds.includes(def.id);
+                return (
+                  <View
+                    key={def.id}
+                    style={styles.achievementItem}
+                    accessibilityLabel={t('home.achievementA11y', { label: def.label, description: def.description })}
+                  >
+                    <Image
+                      source={ACHIEVEMENT_BADGE_IMAGES[def.id]}
+                      style={[styles.achievementBadge, !unlocked && styles.achievementBadgeLocked]}
+                    />
+                    <Text style={[styles.achievementLabel, !unlocked && styles.textDisabled]} numberOfLines={1}>
+                      {def.label}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+          <Text style={styles.groupFooter}>
+            {t('settings.achievements.progress', { count: unlockedCount, total: ACHIEVEMENT_DEFINITIONS.length })}
+          </Text>
+
+          <Text style={styles.groupHeader}>{t('settings.sections.language')}</Text>
+          <View style={styles.section}>
+            {LANGUAGE_OPTIONS.map((option, i) => {
+              const isSelected = language === option;
+              const optionLabel = t(`settings.language.options.${option}`);
+              return (
+                <SpringPressable
+                  key={option}
+                  style={[styles.row, i === LANGUAGE_OPTIONS.length - 1 && styles.rowLast]}
+                  onPress={() => setLanguage(option)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: isSelected }}
+                  accessibilityLabel={t('settings.language.optionA11y', { label: optionLabel })}
+                >
+                  <Text style={styles.rowLabel}>{optionLabel}</Text>
+                  {isSelected && <Ionicons name="checkmark" size={20} color={colors.accent} />}
+                </SpringPressable>
+              );
+            })}
+          </View>
+          <Text style={styles.groupFooter}>{t('settings.language.hint')}</Text>
+        </>
+      )}
+
+      {/* ════════════ ABOUT TAB ════════════ */}
+      {activeTab === 'about' && (
+        <>
+          <View style={styles.section}>
+            <View style={styles.row}>
+              <Text style={styles.rowLabel}>{t('settings.about.version')}</Text>
+              <Text style={styles.rowHint}>{appVersion}</Text>
+            </View>
+            <SpringPressable
+              style={styles.row}
+              onPress={handleRestore}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.about.restoreA11y')}
+              disabled={restoreState === 'restoring'}
+            >
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>{t('settings.about.restore')}</Text>
+                {restoreState === 'restored' && (
+                  <Text style={styles.rowHint}>{t('settings.about.restored')}</Text>
+                )}
+                {restoreState === 'none' && (
+                  <Text style={styles.rowHint}>{t('settings.about.restoreNone')}</Text>
+                )}
+              </View>
+              <Ionicons
+                name={restoreState === 'restoring' ? 'sync' : 'refresh'}
+                size={18}
+                color={colors.textSecondary}
+              />
+            </SpringPressable>
+            <SpringPressable
+              style={[styles.row, styles.rowLast]}
+              onPress={handleManageSubscription}
+              accessibilityRole="link"
+              accessibilityLabel={t('settings.about.manageSubscriptionA11y')}
+            >
+              <Text style={styles.rowLabel}>{t('settings.about.manageSubscription')}</Text>
+              <Ionicons name="open-outline" size={18} color={colors.textSecondary} />
+            </SpringPressable>
+          </View>
+
+          <View style={styles.section}>
+            <SpringPressable
+              style={styles.row}
+              onPress={() => requestStoreReviewDirect('settings')}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.about.rateA11y')}
+            >
+              <Text style={styles.rowLabel}>{t('settings.about.rate')}</Text>
+              <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
+            </SpringPressable>
+            <SpringPressable
+              style={[styles.row, styles.rowLast]}
+              onPress={() => openSupportFeedback('settings')}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.about.feedbackA11y')}
+            >
+              <Text style={styles.rowLabel}>{t('settings.about.feedback')}</Text>
+              <Ionicons name="mail-outline" size={18} color={colors.textSecondary} />
+            </SpringPressable>
+          </View>
+
+          <Text style={styles.groupHeader}>{t('settings.groups.legal')}</Text>
+          <View style={styles.section}>
+            <SpringPressable
+              style={styles.row}
+              onPress={() => Linking.openURL(TERMS_OF_USE_URL)}
+              accessibilityRole="link"
+              accessibilityLabel={t('settings.about.termsA11y')}
+            >
+              <Text style={styles.rowLabel}>{t('settings.about.terms')}</Text>
+              <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
+            </SpringPressable>
+            <SpringPressable
+              style={[styles.row, styles.rowLast]}
+              onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
+              accessibilityRole="link"
+              accessibilityLabel={t('settings.about.privacyA11y')}
+            >
+              <Text style={styles.rowLabel}>{t('settings.about.privacy')}</Text>
+              <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
+            </SpringPressable>
+          </View>
+        </>
+      )}
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   screenTitle: {
     fontSize: typography.sizes.xxl,
     fontFamily: typography.fonts.display,
@@ -568,7 +536,7 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 16,
+    borderRadius: radius.card,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
@@ -586,15 +554,66 @@ const styles = StyleSheet.create({
     color: colors.sparkle,
     marginTop: 2,
   },
+  // ── Tab selector ──────────────────────────────────────────────────
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    padding: 4,
+    gap: 4,
+    marginTop: spacing.xs,
+    marginBottom: spacing.md,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabActive: {
+    ...shadows.sm,
+    backgroundColor: colors.surfaceElevated,
+  },
+  tabLabel: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.ui,
+    fontWeight: typography.weights.medium,
+    color: colors.textSecondary,
+  },
+  tabLabelActive: {
+    color: colors.text,
+    fontWeight: typography.weights.semibold,
+  },
+  // ── Groups ────────────────────────────────────────────────────────
+  groupHeader: {
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.ui,
+    fontWeight: typography.weights.semibold,
+    color: colors.textSecondary,
+    letterSpacing: 0.8,
+    marginLeft: spacing.sm,
+    marginBottom: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  groupFooter: {
+    fontSize: typography.sizes.xs,
+    color: colors.textSecondary,
+    marginHorizontal: spacing.sm,
+    marginTop: spacing.xs,
+    marginBottom: spacing.sm,
+    lineHeight: 16,
+  },
   permissionBanner: {
     backgroundColor: colors.errorLight,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderRadius: radius.md,
     marginBottom: spacing.sm,
-    marginTop: spacing.xs,
     borderWidth: 1,
-    borderColor: '#FFD6D1',
+    borderColor: colors.errorBorder,
   },
   bannerText: {
     fontSize: typography.sizes.sm,
@@ -608,28 +627,10 @@ const styles = StyleSheet.create({
   },
   section: {
     ...shadows.sm,
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    backgroundColor: colors.surfaceElevated,
     borderRadius: radius.lg,
     overflow: 'hidden',
     marginBottom: spacing.sm,
-  },
-  accordionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm + 2,
-    paddingHorizontal: spacing.md,
-  },
-  accordionHeaderOpen: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  accordionTitle: {
-    fontSize: typography.sizes.body,
-    fontFamily: typography.fonts.ui,
-    fontWeight: typography.weights.semibold,
-    color: colors.text,
-    letterSpacing: 0.1,
   },
   row: {
     flexDirection: 'row',
@@ -640,9 +641,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.borderLight,
   },
+  rowLast: {
+    borderBottomWidth: 0,
+  },
   rowText: {
     flex: 1,
     marginRight: spacing.md,
+  },
+  rowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   rowLabel: {
     fontSize: typography.sizes.body,
@@ -657,24 +666,31 @@ const styles = StyleSheet.create({
   textDisabled: {
     color: colors.textDisabled,
   },
-  timeInput: {
-    width: 64,
-    borderWidth: 1.5,
-    borderColor: '#C8DCFF',
-    borderRadius: radius.md,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    fontSize: typography.sizes.sm,
-    color: colors.text,
-    backgroundColor: '#F7FBFF',
-    textAlign: 'center',
-  },
-  proLockRow: {
+  // ── Time chip (merged into each reminder slot row) ────────────────
+  timeChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm + 2,
-    paddingHorizontal: spacing.md,
+    gap: 4,
+    minWidth: 70,
+    justifyContent: 'flex-end',
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    backgroundColor: colors.surface,
+  },
+  timeChipInput: {
+    fontSize: typography.sizes.sm,
+    color: colors.text,
+    padding: 0,
+    minWidth: 38,
+    textAlign: 'right',
+  },
+  autoTag: {
+    fontSize: typography.sizes.xs,
+    fontWeight: typography.weights.semibold,
+    color: colors.accent,
   },
   proLockBadge: {
     backgroundColor: colors.primary,
@@ -682,22 +698,37 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
   },
+  // ── Achievements grid ─────────────────────────────────────────────
+  achievementsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: spacing.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+  },
+  achievementItem: {
+    width: '25%',
+    alignItems: 'center',
+    gap: 6,
+  },
+  achievementBadge: {
+    width: 60,
+    height: 60,
+    resizeMode: 'contain',
+  },
+  achievementBadgeLocked: {
+    opacity: 0.25,
+  },
+  achievementLabel: {
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.ui,
+    color: colors.text,
+    textAlign: 'center',
+  },
   proLockBadgeText: {
     fontSize: typography.sizes.xs,
     color: colors.textInverse,
-    fontWeight: typography.weights.semibold,
-  },
-  activeBadge: {
-    backgroundColor: '#E8F5E9',
-    borderRadius: 999,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-    borderWidth: 1,
-    borderColor: '#A5D6A7',
-  },
-  activeBadgeText: {
-    fontSize: typography.sizes.xs,
-    color: '#388E3C',
     fontWeight: typography.weights.semibold,
   },
 });

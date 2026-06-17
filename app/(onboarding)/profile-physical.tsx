@@ -6,13 +6,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OptionPicker, OnboardingProgress } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
-import { colors, typography, spacing } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { PickerOption } from '@models/index';
 
 const SLEEP_VALUES = ['under-5', '5-6', '6-7', '7-8', '8-9', 'over-9'] as const;
 const EXERCISE_VALUES = ['never', '1-2-week', '3-4-week', 'daily'] as const;
 
 export default function ProfilePhysicalScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation(['onboarding', 'common']);
   const { profile, updateProfile } = useOnboardingStore();
   const [sleepHours, setSleepHours] = useState<string | null>(profile.sleepHours);
@@ -89,7 +93,7 @@ export default function ProfilePhysicalScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
   },
@@ -102,7 +106,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   heroCard: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.lg,
     marginBottom: spacing.lg,
@@ -119,7 +123,7 @@ const styles = StyleSheet.create({
   },
   sectionCard: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
+    borderRadius: radius.card,
     borderWidth: 1,
     borderColor: colors.borderLight,
     padding: spacing.md,

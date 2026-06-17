@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>kibun — palette before / after</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { font-family: -apple-system, "Segoe UI", system-ui, sans-serif; }
+  /* Before: Fredoka everywhere. After: Fredoka headers + Nunito Sans body. */
+  .fredoka { font-family: "Fredoka", sans-serif; }
+  .before .hello, .before .cardTitle, .before .cardText, .before .btn, .before .helloSub, .before .bub, .before .pill { font-family: "Fredoka", sans-serif; }
+  .after .hello, .after .cardTitle { font-family: "Fredoka", sans-serif; font-weight: 700; }
+  .after .cardText, .after .btn, .after .helloSub, .after .pill { font-family: "Nunito Sans", sans-serif; }
+  .after .cardText { font-weight: 400; }
+  .after .btn { font-weight: 600; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #2c2c2c; color: #eee; padding: 32px; }
+  h1 { font-weight: 700; font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #aaa; font-size: 13px; margin: 0 0 28px; }
+  .row { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; }
+  .col { width: 340px; }
+  .col h2 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #bbb; text-align: center; margin: 0 0 12px; }
+  /* phone frame */
+  .phone { border-radius: 36px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.5); }
+  .screen { min-height: 620px; padding: 20px 16px 28px; }
+  .headerGrad { margin: -20px -16px 18px; padding: 56px 20px 22px; border-radius: 0 0 26px 26px; }
+  .hello { color:#fff; font-weight:700; font-size:24px; }
+  .helloSub { color:rgba(255,255,255,.85); font-size:14px; margin-top:4px; }
+  .pill { display:inline-flex; gap:6px; align-items:center; background:rgba(255,255,255,.18); color:#fff; font-size:11px; font-weight:600; padding:5px 10px; border-radius:999px; }
+  .card { border-radius:16px; padding:16px; margin-bottom:14px; }
+  .cardTitle { font-weight:700; font-size:15px; margin:0 0 10px; }
+  .cardText { font-size:13px; line-height:1.5; margin:0; }
+  .btn { display:block; width:100%; text-align:center; font-weight:600; font-size:16px; padding:14px; border-radius:12px; color:#fff; margin-top:10px; border:none; }
+  .btnGhost { background:transparent; border:1.5px solid; }
+  .bubbles { display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
+  .bub { width:54px; height:54px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#1A1A2E; }
+  .swrow { display:flex; gap:6px; margin-top:14px; }
+  .sw { flex:1; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:9px; }
+</style>
+</head>
+<body>
+  <h1>kibun — palette comparison</h1>
+  <p class="sub">Same mock screen rendered in the current palette vs the proposed “Grounded Calm” theme. Open this file in any browser.</p>
+  <div class="row">
+
+    <!-- BEFORE -->
+    <div class="col">
+      <h2>Before — current</h2>
+      <div class="phone before">
+        <div class="screen" style="background:#E6F4FF;">
+          <div class="headerGrad" style="background:linear-gradient(135deg,#3F83F8,#63CCFF);">
+            <span class="pill">✦ Premium</span>
+            <div class="hello" style="margin-top:14px;">Hi there 👋</div>
+            <div class="helloSub">How are you feeling today?</div>
+          </div>
+          <div class="card" style="background:#FFFDFB; border:1px solid #E7E5F5;">
+            <p class="cardTitle" style="color:#1A1A2E;">Today’s check-in</p>
+            <p class="cardText" style="color:#6B6B8A;">Log your mood and a quick note. Small daily steps build the habit.</p>
+            <button class="btn" style="background:linear-gradient(135deg,#FFB22E,#FFD959); color:#1A1A2E;">Start check-in</button>
+            <button class="btn btnGhost" style="color:#4A86FF; border-color:#4A86FF;">Maybe later</button>
+          </div>
+          <div class="card" style="background:#FFFDFB; border:1px solid #E7E5F5;">
+            <p class="cardTitle" style="color:#1A1A2E;">Pick a mood</p>
+            <div class="bubbles">
+              <div class="bub" style="background:#66BB6A;">Happy</div>
+              <div class="bub" style="background:#C6E82B;">Excited</div>
+              <div class="bub" style="background:#80DEEA;">Calm</div>
+              <div class="bub" style="background:#FFD54F;">Confused</div>
+              <div class="bub" style="background:#90CAF9;">Blue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AFTER -->
+    <div class="col">
+      <h2>After — Grounded Calm</h2>
+      <div class="phone after">
+        <div class="screen" style="background:#F6F3EE;">
+          <div class="headerGrad" style="background:linear-gradient(135deg,#4C7A6A,#44786A);">
+            <span class="pill">✦ Premium</span>
+            <div class="hello" style="margin-top:14px;">Hi there 👋</div>
+            <div class="helloSub">How are you feeling today?</div>
+          </div>
+          <div class="card" style="background:#FCFAF6; border:1px solid #E5E0D6;">
+            <p class="cardTitle" style="color:#2A2A26;">Today’s check-in</p>
+            <p class="cardText" style="color:#6E6B63;">Log your mood and a quick note. Small daily steps build the habit.</p>
+            <button class="btn" style="background:linear-gradient(135deg,#B65E37,#A24E2C);">Start check-in</button>
+            <button class="btn btnGhost" style="color:#4C7A6A; border-color:#4C7A6A;">Maybe later</button>
+          </div>
+          <div class="card" style="background:#FCFAF6; border:1px solid #E5E0D6;">
+            <p class="cardTitle" style="color:#2A2A26;">Pick a mood</p>
+            <div class="bubbles">
+              <div class="bub" style="background:#81C784;">Happy</div>
+              <div class="bub" style="background:#B7CE63;">Excited</div>
+              <div class="bub" style="background:#80DEEA;">Calm</div>
+              <div class="bub" style="background:#EFC85A;">Confused</div>
+              <div class="bub" style="background:#90CAF9;">Blue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -11,10 +11,14 @@ import { SparkleOverlay } from '@components/SparkleOverlay';
 import { OnboardingProgress } from '@components/OnboardingProgress';
 import { Ionicons } from '@expo/vector-icons';
 import { MOODS, type MoodDefinition } from '@constants/moods';
-import { colors, typography, spacing } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { useOnboardingStore } from '@store/onboardingStore';
 
 export default function FirstMoodScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation('onboarding');
   const [selectedMood, setSelectedMood] = useState<MoodDefinition | null>(null);
   const router = useRouter();
@@ -69,7 +73,7 @@ export default function FirstMoodScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   backButton: {
     alignSelf: 'flex-start',
     padding: spacing.xs,
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   heroCard: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginTop: spacing.md,
@@ -103,7 +107,7 @@ const styles = StyleSheet.create({
   },
   gridCard: {
     backgroundColor: colors.surface,
-    borderRadius: 18,
+    borderRadius: radius.xxl,
     borderWidth: 1,
     borderColor: colors.borderLight,
     padding: spacing.md,

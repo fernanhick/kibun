@@ -1,6 +1,7 @@
 import { View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, radius } from '@constants/theme';
+import { spacing, radius } from '@constants/theme';
+import { useTheme } from '@theme/ThemeContext';
 
 interface Props {
   current: number;
@@ -12,9 +13,10 @@ interface Props {
 
 export function OnboardingProgress({ current, total, tone = 'light', style }: Props) {
   const { t } = useTranslation('screens');
+  const { colors } = useTheme();
   const filledColor = tone === 'light' ? colors.textInverse : colors.primary;
   const emptyColor =
-    tone === 'light' ? 'rgba(255,255,255,0.35)' : 'rgba(74,134,255,0.25)';
+    tone === 'light' ? 'rgba(255,255,255,0.35)' : 'rgba(76,122,106,0.25)';
 
   return (
     <View

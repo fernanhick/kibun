@@ -6,6 +6,7 @@ export { HabitIcon } from './HabitIcon';
 export { InsightCard } from './InsightCard';
 export { KawaiiTabBar } from './KawaiiTabBar';
 export { MoodBubble } from './MoodBubble';
+export { MoodLogger } from './MoodLogger';
 export { OptionPicker } from './OptionPicker';
 export { PersistentMascotOverlay } from './PersistentMascotOverlay';
 export { ReviewPromptModal } from './ReviewPromptModal';

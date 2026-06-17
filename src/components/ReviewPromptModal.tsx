@@ -3,7 +3,9 @@ import { Animated, Easing, Modal, Pressable, StyleSheet, Text, View } from 'reac
 import { useTranslation } from 'react-i18next';
 import * as StoreReview from 'expo-store-review';
 import { Shiba } from './Shiba';
-import { colors, typography, spacing, radius, shadows } from '@constants/theme';
+import { typography, spacing, radius, shadows } from '@constants/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import type { ThemePalette } from '@theme/ThemeContext';
 import { useReviewPromptStore } from '@store/reviewPromptStore';
 import {
   reviewPromptEvents,
@@ -14,6 +16,7 @@ import { trackEvent } from '@lib/analytics';
 
 export function ReviewPromptModal() {
   const { t } = useTranslation('screens');
+  const styles = useThemedStyles(createStyles);
   const [visible, setVisible] = useState(false);
   const sourceRef = useRef<ReviewPromptSource>('achievement_unlock');
   const opacity = useRef(new Animated.Value(0)).current;
@@ -137,7 +140,7 @@ export function ReviewPromptModal() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: colors.overlay,

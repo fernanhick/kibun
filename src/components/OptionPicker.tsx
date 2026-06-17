@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { PickerOption } from '@models/index';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import type { ThemePalette } from '@theme/ThemeContext';
 
 interface OptionPickerProps {
   label: string;
@@ -18,6 +20,7 @@ export function OptionPicker({
   onSelect,
   accessibilityLabel,
 }: OptionPickerProps) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View>
       <Text style={styles.label}>{label}</Text>
@@ -50,7 +53,7 @@ export function OptionPicker({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   label: {
     fontSize: typography.sizes.sm,
     fontWeight: typography.weights.semibold,

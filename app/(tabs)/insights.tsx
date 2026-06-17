@@ -15,14 +15,21 @@ import { filterEntriesByDays, getMoodFrequency, getDailyMoodScores, GROUP_SCORES
 import { detectPatterns, calculateResilienceScore, type ResilienceResult } from '@lib/patterns';
 import { computeHabitCorrelations, correlationColor, type HabitCorrelation } from '@lib/correlations';
 import { BarChart, LineChart } from 'react-native-gifted-charts';
-import { colors, typography, spacing, radius, shadows } from '@constants/theme';
+import { typography, spacing, radius, shadows } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { MOOD_MAP } from '@constants/moods';
 import type { MoodSlot } from '@models/index';
 
 type Period = 7 | 30;
+type InsightsTab = 'overview' | 'patterns' | 'reports';
+const INSIGHTS_TABS: InsightsTab[] = ['overview', 'patterns', 'reports'];
 
 export default function InsightsScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const [period, setPeriod] = useState<Period>(7);
+  const [activeTab, setActiveTab] = useState<InsightsTab>('overview');
   const router = useRouter();
   const { t } = useTranslation('screens');
   const { onScroll } = useScreenScroll();
@@ -195,7 +202,7 @@ export default function InsightsScreen() {
   }
 
   return (
-    <Screen scrollable={true} layout="wide">
+    <Screen scrollable={true} layout="wide" onScroll={onScroll}>
       <LinearGradient
         colors={[colors.skyStart, colors.skyEnd]}
         start={{ x: 0, y: 0 }}
@@ -214,6 +221,28 @@ export default function InsightsScreen() {
         <PeriodToggle period={period} onSelect={setPeriod} />
       </LinearGradient>
 
+      <View style={styles.tabBar} accessibilityRole="tablist">
+        {INSIGHTS_TABS.map((tab) => {
+          const selected = activeTab === tab;
+          return (
+            <Pressable
+              key={tab}
+              style={[styles.tab, selected && styles.tabActive]}
+              onPress={() => setActiveTab(tab)}
+              accessibilityRole="tab"
+              accessibilityState={{ selected }}
+              accessibilityLabel={t(`insights.tabs.${tab}`)}
+            >
+              <Text style={[styles.tabLabel, selected && styles.tabLabelActive]}>
+                {t(`insights.tabs.${tab}`)}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {activeTab === 'overview' && (
+        <>
       <View style={styles.heroStatCard}>
         <View style={styles.heroStatLeft}>
           <Text style={styles.heroStatLabel} maxFontSizeMultiplier={1.3}>
@@ -335,7 +364,11 @@ export default function InsightsScreen() {
           }
         />
       )}
+        </>
+      )}
 
+      {activeTab === 'patterns' && (
+        <>
       {patterns.length > 0 && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
@@ -484,8 +517,10 @@ export default function InsightsScreen() {
           })()}
         </View>
       )}
+        </>
+      )}
 
-      {(filtered.length > 0 || entries.length > 0) && (
+      {activeTab === 'reports' && (filtered.length > 0 || entries.length > 0) && (
         <View>
           <Text style={styles.sectionHeader} accessibilityRole="header">
             {t('insights.sections.reports')}
@@ -538,6 +573,8 @@ export default function InsightsScreen() {
 // list component.
 
 function HabitCorrelationList({ correlations }: { correlations: HabitCorrelation[] }) {
+  const { colors } = useTheme();
+  const corrStyles = useThemedStyles(createCorrStyles);
   const { t } = useTranslation('screens');
   return (
     <View style={corrStyles.container}>
@@ -551,7 +588,7 @@ function HabitCorrelationList({ correlations }: { correlations: HabitCorrelation
             style={corrStyles.row}
             accessibilityLabel={t('insights.habitCorrelations.rowA11y', { habit: habit.name, label })}
           >
-            <HabitIcon icon={habit.icon} size={20} color={colors.primary} style={corrStyles.icon} />
+            <HabitIcon icon={habit.icon} size={18} color={colors.primary} circle circleSize={32} />
             <View style={corrStyles.info}>
               <View style={corrStyles.nameLine}>
                 <Text style={corrStyles.habitName}>{habit.name}</Text>
@@ -568,11 +605,11 @@ function HabitCorrelationList({ correlations }: { correlations: HabitCorrelation
   );
 }
 
-const corrStyles = StyleSheet.create({
+const createCorrStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     ...shadows.sm,
-    backgroundColor: 'rgba(255,255,255,0.96)',
-    borderRadius: 16,
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: radius.card,
     padding: spacing.md,
     gap: spacing.md,
     marginBottom: spacing.sm,
@@ -581,9 +618,6 @@ const corrStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-  },
-  icon: {
-    width: 28,
   },
   info: {
     flex: 1,
@@ -635,6 +669,8 @@ function CorrelationHeatmap({
   matrix: Record<string, Record<number, number[]>>;
 }) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
+  const heatmapStyles = useThemedStyles(createHeatmapStyles);
   const weekdayInitials = t('dates:weekdayInitial', { returnObjects: true }) as string[];
   // dates.weekdayInitial is Sunday-first; reorder to Mon..Sun to match DOW_ORDER.
   const dowLabels = DOW_ORDER.map((dow) => weekdayInitials[dow]);
@@ -703,11 +739,11 @@ function CorrelationHeatmap({
   );
 }
 
-const heatmapStyles = StyleSheet.create({
+const createHeatmapStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     ...shadows.sm,
-    backgroundColor: 'rgba(255,255,255,0.96)',
-    borderRadius: 16,
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: radius.card,
     padding: spacing.md,
     gap: 4,
   },
@@ -783,6 +819,8 @@ function ResilienceCard({
   current: ResilienceResult | null;
   prior: ResilienceResult | null;
 }) {
+  const { colors } = useTheme();
+  const resilienceStyles = useThemedStyles(createResilienceStyles);
   const { t } = useTranslation('screens');
   if (!current) {
     return (
@@ -795,7 +833,8 @@ function ResilienceCard({
   }
 
   const trendDiff = prior ? current.score - prior.score : null;
-  const trendArrow = trendDiff === null ? null : trendDiff > 5 ? '↑' : trendDiff < -5 ? '↓' : '→';
+  const trendIcon: React.ComponentProps<typeof Ionicons>['name'] | null =
+    trendDiff === null ? null : trendDiff > 5 ? 'arrow-up' : trendDiff < -5 ? 'arrow-down' : 'arrow-forward';
   const trendColor = trendDiff === null ? colors.textSecondary : trendDiff > 5 ? '#66BB6A' : trendDiff < -5 ? '#EF5350' : colors.textSecondary;
 
   const avgHoursDisplay =
@@ -817,8 +856,8 @@ function ResilienceCard({
               {current.score}
             </Text>
             <Text style={resilienceStyles.scoreMax}>/100</Text>
-            {trendArrow && (
-              <Text style={[resilienceStyles.trendArrow, { color: trendColor }]}>{trendArrow}</Text>
+            {trendIcon && (
+              <Ionicons name={trendIcon} size={18} color={trendColor} style={resilienceStyles.trendArrow} />
             )}
           </View>
           <Text style={resilienceStyles.scoreLabel}>{t('insights.resilienceCard.title')}</Text>
@@ -835,7 +874,7 @@ function ResilienceCard({
   );
 }
 
-const resilienceStyles = StyleSheet.create({
+const createResilienceStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     borderWidth: 1,
     borderColor: colors.borderLight,
@@ -861,9 +900,8 @@ const resilienceStyles = StyleSheet.create({
     color: colors.textSecondary,
   },
   trendArrow: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '700',
     marginLeft: 4,
+    alignSelf: 'center',
   },
   scoreLabel: {
     fontSize: typography.sizes.sm,
@@ -902,6 +940,8 @@ function PeriodToggle({
   period: Period;
   onSelect: (p: Period) => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation('screens');
   return (
     <View style={styles.toggleRow}>
@@ -926,17 +966,48 @@ function PeriodToggle({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   heroCard: {
     ...shadows.md,
-    borderRadius: 20,
+    borderRadius: radius.card,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
-    marginTop: spacing.md,
-    marginBottom: spacing.lg,
-    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    marginTop: spacing.sm,
+    marginBottom: spacing.md,
+    gap: spacing.xs,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    padding: 4,
+    gap: 4,
+    marginBottom: spacing.md,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabActive: {
+    ...shadows.sm,
+    backgroundColor: colors.surfaceElevated,
+  },
+  tabLabel: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.ui,
+    fontWeight: typography.weights.medium,
+    color: colors.textSecondary,
+  },
+  tabLabelActive: {
+    color: colors.text,
+    fontWeight: typography.weights.semibold,
   },
   badgeRow: {
     flexDirection: 'row',
@@ -958,20 +1029,20 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   screenTitle: {
-    fontSize: typography.sizes.xxl,
+    fontSize: typography.sizes.xl,
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
-    letterSpacing: -0.6,
-    lineHeight: 34,
+    letterSpacing: -0.4,
+    lineHeight: 28,
   },
   heroSubtitle: {
-    fontSize: typography.sizes.body,
+    fontSize: typography.sizes.sm,
     color: colors.sparkle,
   },
   toggleRow: {
     flexDirection: 'row',
     gap: spacing.sm,
-    marginTop: spacing.sm,
+    marginTop: spacing.xs,
   },
   togglePill: {
     paddingVertical: spacing.sm,
@@ -1056,8 +1127,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
   },
   statValue: {
     fontSize: typography.sizes.xxl,
@@ -1078,10 +1149,10 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     marginTop: spacing.sm,
-    backgroundColor: 'rgba(255,255,255,0.96)',
-    borderRadius: 16,
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: radius.card,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
+    borderColor: colors.border,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.md,
     overflow: 'hidden',
@@ -1095,10 +1166,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing.xxl,
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    backgroundColor: colors.surfaceElevated,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
-    borderRadius: 16,
+    borderColor: colors.border,
+    borderRadius: radius.card,
   },
   standaloneCardWrap: {
     marginTop: spacing.lg,
@@ -1114,8 +1185,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
   },
   patternIcon: {},
   patternText: {
@@ -1134,8 +1205,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
   },
   aiReportIcon: {},
   aiReportInfo: {
@@ -1156,8 +1227,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
   },
   proLockIcon: {},
   proLockInfo: {

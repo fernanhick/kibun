@@ -20,7 +20,9 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { Screen, Button } from '@components/index';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { EXERCISE_CHIP_IMAGES, type ExerciseType } from '@constants/exercises';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { haptics } from '@lib/haptics';
@@ -31,6 +33,8 @@ const PHASE_DURATION_MS = 4000;
 const PHASE_KEYS = ['inhale', 'hold', 'exhale', 'hold'] as const;
 
 function BoxBreathing() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation('screens');
   const scale = useSharedValue(0.5);
   const opacity = useSharedValue(0.6);
@@ -143,6 +147,8 @@ interface StepListExerciseProps {
 }
 
 function StepListExercise({ i18nKey, showCount = false, countMode = 'index' }: StepListExerciseProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation('screens');
   const [step, setStep] = useState(0);
   const router = useRouter();
@@ -181,6 +187,8 @@ interface PromptListExerciseProps {
 }
 
 function PromptListExercise({ i18nKey }: PromptListExerciseProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation('screens');
   const router = useRouter();
   const prompts = t(`${i18nKey}.prompts`, { returnObjects: true }) as string[];
@@ -240,6 +248,8 @@ function resolveExerciseType(input: string): ExerciseType {
 }
 
 export default function ExerciseScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation(['screens', 'moods']);
   const params = useLocalSearchParams<{ type: string }>();
@@ -276,7 +286,7 @@ export default function ExerciseScreen() {
         />
         <Text style={styles.headerTitle}>{title}</Text>
         <TouchableOpacity onPress={() => router.back()} style={styles.closeBtn} accessibilityLabel={t('screens:exercise.closeA11y')}>
-          <Text style={styles.closeText}>✕</Text>
+          <Ionicons name="close" size={22} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
 
@@ -285,7 +295,7 @@ export default function ExerciseScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
@@ -309,10 +319,6 @@ const styles = StyleSheet.create({
   },
   closeBtn: {
     padding: spacing.xs,
-  },
-  closeText: {
-    fontSize: 18,
-    color: colors.textSecondary,
   },
   exerciseDescription: {
     fontSize: typography.sizes.md,
@@ -377,9 +383,9 @@ const styles = StyleSheet.create({
   },
   groundingCard: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
+    borderRadius: radius.card,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
+    borderColor: colors.border,
     padding: spacing.xl,
     alignItems: 'center',
     gap: spacing.sm,
@@ -420,12 +426,12 @@ const styles = StyleSheet.create({
   gratitudeInput: {
     flex: 1,
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     paddingVertical: 12,
     paddingHorizontal: spacing.md,
     fontSize: typography.sizes.md,
     color: colors.text,
-    backgroundColor: '#F7FBFF',
+    backgroundColor: colors.surface,
   },
 });

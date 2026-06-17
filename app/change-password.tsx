@@ -6,7 +6,9 @@ import type { TFunction } from 'i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, BackButton } from '@components/index';
 import { supabase } from '@lib/supabase';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 type Mode = 'change' | 'set';
 
@@ -30,6 +32,8 @@ function friendlyAuthError(message: string, t: TFunction<'screens'>): string {
 }
 
 export default function ChangePasswordScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
 
@@ -300,7 +304,7 @@ export default function ChangePasswordScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     paddingBottom: spacing.xl,
     gap: spacing.md,

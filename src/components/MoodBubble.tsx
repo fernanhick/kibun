@@ -6,6 +6,7 @@ import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { MoodDefinition, MOOD_MAP, MOODS, MoodGroup } from '@constants/moods';
 import { MOOD_IMAGES, normalizeMoodImageKey } from '@constants/moodImages';
 import { typography, spacing, radius } from '@constants/theme';
+import { useTheme } from '@theme/ThemeContext';
 import { getContentScale } from '@constants/layout';
 import { useResponsive } from '@hooks/useResponsive';
 import { useReducedMotion } from '@hooks/useReducedMotion';
@@ -13,15 +14,20 @@ import { haptics } from '@lib/haptics';
 
 interface MoodBubbleProps {
   mood: MoodDefinition;
-  size?: 'sm' | 'md' | 'mdCompact' | 'lg' | 'xl';
+  size?: 'xs' | 'smCompact' | 'sm' | 'md' | 'mdCompact' | 'lg' | 'xl';
   selected?: boolean;
   onPress?: (mood: MoodDefinition) => void;
   disabled?: boolean;
   showLabel?: boolean;
   showGradient?: boolean;
+  labelColor?: string;
+  /** Explicit pixel size (width + image) — bypasses the size token + tablet scale. */
+  sizeOverride?: number;
 }
 
 const BONE_SIZES = {
+  xs: { width: 46, imageSize: 46 },
+  smCompact: { width: 56, imageSize: 56 },
   sm: { width: 74, imageSize: 48 },
   md: { width: 90, imageSize: 60 },
   mdCompact: { width: 78, imageSize: 78 },
@@ -30,6 +36,8 @@ const BONE_SIZES = {
 } as const;
 
 const FONT_SIZES = {
+  xs: typography.sizes.xs,
+  smCompact: typography.sizes.xs,
   sm: typography.sizes.xs,
   md: typography.sizes.sm,
   mdCompact: typography.sizes.sm,
@@ -111,8 +119,11 @@ export function MoodBubble({
   disabled = false,
   showLabel = true,
   showGradient = true,
+  labelColor,
+  sizeOverride,
 }: MoodBubbleProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const { width: winWidth } = useResponsive();
   // Built-in moods resolve through i18n; custom moods carry user-typed labels.
   const label = mood.id in MOOD_MAP ? t(`moods:${mood.id}.label`) : mood.label;
@@ -120,7 +131,7 @@ export function MoodBubble({
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    const target = selected ? 1.12 : 1;
+    const target = selected ? 1.16 : 1;
     if (reducedMotion) {
       scaleAnim.setValue(target);
       return;
@@ -137,8 +148,8 @@ export function MoodBubble({
 
   const baseSizes = BONE_SIZES[size];
   const contentScale = getContentScale(winWidth);
-  const width = Math.round(baseSizes.width * contentScale);
-  const imageSize = Math.round(baseSizes.imageSize * contentScale);
+  const width = sizeOverride ?? Math.round(baseSizes.width * contentScale);
+  const imageSize = sizeOverride ?? Math.round(baseSizes.imageSize * contentScale);
   const fontSizeStyle = { fontSize: FONT_SIZES[size] };
   const gradientColor = getMoodGradientColor(mood);
   const gradientIntensity = getMoodGradientIntensity(mood);
@@ -178,6 +189,11 @@ export function MoodBubble({
         style={({ pressed }) => [
           styles.bone,
           { width },
+          selected && {
+            backgroundColor: mood.tintColor,
+            borderWidth: 2.5,
+            borderColor: mood.bubbleColor,
+          },
           disabled && styles.disabled,
           pressed && !disabled && styles.pressed,
         ]}
@@ -231,7 +247,7 @@ export function MoodBubble({
         )}
         {showLabel && (
           <Text
-            style={[styles.label, fontSizeStyle, { color: mood.textColor }]}
+            style={[styles.label, fontSizeStyle, { color: labelColor ?? colors.text }]}
             numberOfLines={1}
             adjustsFontSizeToFit
           >

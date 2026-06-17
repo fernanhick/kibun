@@ -8,12 +8,16 @@ import { Screen, BackButton, HabitIcon } from '@components/index';
 import { EmptyState } from '@components/EmptyState';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useHabitsStore } from '@store/habitsStore';
-import { PRESET_HABITS, findPreset } from '@lib/habitPresets';
-import { colors, spacing, typography, radius } from '@constants/theme';
+import { PRESET_HABITS, findPreset, HABIT_ICONS, DEFAULT_HABIT_ICON } from '@lib/habitPresets';
+import { spacing, typography, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { haptics } from '@lib/haptics';
 import type { Habit, HabitTrackingType } from '@models/index';
 
 export default function ManageHabitsScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const habits = useHabitsStore((s) => s.habits);
@@ -21,7 +25,7 @@ export default function ManageHabitsScreen() {
   const deleteHabit = useHabitsStore((s) => s.deleteHabit);
 
   const [customName, setCustomName] = useState('');
-  const [customIcon, setCustomIcon] = useState('');
+  const [customIcon, setCustomIcon] = useState(DEFAULT_HABIT_ICON);
   const [customType, setCustomType] = useState<HabitTrackingType>('boolean');
   const [showCustomForm, setShowCustomForm] = useState(false);
 
@@ -34,11 +38,11 @@ export default function ManageHabitsScreen() {
 
   const handleAddCustom = () => {
     const name = customName.trim();
-    const icon = customIcon.trim() || '✓';
+    const icon = customIcon || DEFAULT_HABIT_ICON;
     if (name.length < 2) return;
     addHabit({ name, icon, trackingType: customType });
     setCustomName('');
-    setCustomIcon('');
+    setCustomIcon(DEFAULT_HABIT_ICON);
     setCustomType('boolean');
     setShowCustomForm(false);
   };
@@ -121,7 +125,7 @@ export default function ManageHabitsScreen() {
                   accessibilityLabel={exists ? t('manageHabits.alreadyAddedA11y', { name: presetLabel }) : t('manageHabits.addA11y', { name: presetLabel })}
                   accessibilityState={{ disabled: exists }}
                 >
-                  <HabitIcon icon={p.icon} size={20} color={colors.primary} />
+                  <HabitIcon icon={p.icon} size={18} color={colors.primary} circle circleSize={34} />
                   <Text style={[styles.presetLabel, exists && styles.presetLabelDisabled]}>
                     {presetLabel}
                   </Text>
@@ -146,25 +150,39 @@ export default function ManageHabitsScreen() {
             </Pressable>
           ) : (
             <View style={styles.customForm}>
-              <View style={styles.customInputRow}>
-                <TextInput
-                  style={[styles.input, styles.iconInput]}
-                  value={customIcon}
-                  onChangeText={setCustomIcon}
-                  placeholder="🌟"
-                  placeholderTextColor={colors.textDisabled}
-                  maxLength={2}
-                  accessibilityLabel={t('manageHabits.iconA11y')}
-                />
-                <TextInput
-                  style={[styles.input, styles.nameInput]}
-                  value={customName}
-                  onChangeText={setCustomName}
-                  placeholder={t('manageHabits.namePlaceholder')}
-                  placeholderTextColor={colors.textDisabled}
-                  maxLength={30}
-                  accessibilityLabel={t('manageHabits.nameA11y')}
-                />
+              <TextInput
+                style={[styles.input, styles.nameInput]}
+                value={customName}
+                onChangeText={setCustomName}
+                placeholder={t('manageHabits.namePlaceholder')}
+                placeholderTextColor={colors.textDisabled}
+                maxLength={30}
+                accessibilityLabel={t('manageHabits.nameA11y')}
+              />
+              <Text style={styles.iconPickerLabel}>{t('manageHabits.chooseIcon')}</Text>
+              <View style={styles.iconGrid}>
+                {HABIT_ICONS.map((iconKey) => {
+                  const selected = customIcon === iconKey;
+                  return (
+                    <Pressable
+                      key={iconKey}
+                      onPress={() => {
+                        haptics.light();
+                        setCustomIcon(iconKey);
+                      }}
+                      style={[styles.iconOption, selected && styles.iconOptionSelected]}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected }}
+                      accessibilityLabel={t('manageHabits.iconA11y')}
+                    >
+                      <HabitIcon
+                        icon={iconKey}
+                        size={20}
+                        color={selected ? colors.textInverse : colors.primary}
+                      />
+                    </Pressable>
+                  );
+                })}
               </View>
               <View style={styles.typeRow}>
                 {(['boolean', 'scale'] as HabitTrackingType[]).map((type) => (
@@ -219,12 +237,14 @@ function HabitCard({
   displayName: string;
   onDelete: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation('screens');
 
   return (
     <View style={styles.habitCard}>
       <View style={styles.habitCardTop}>
-        <HabitIcon icon={habit.icon} size={22} color={colors.primary} style={styles.habitCardIcon} />
+        <HabitIcon icon={habit.icon} size={20} color={colors.primary} circle circleSize={36} />
         <Pressable
           onPress={onDelete}
           hitSlop={10}
@@ -247,12 +267,12 @@ function HabitCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   root: {
     flex: 1,
   },
   heroCard: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
@@ -297,9 +317,9 @@ const styles = StyleSheet.create({
   },
   habitCard: {
     width: '48%',
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    backgroundColor: colors.surfaceElevated,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -311,7 +331,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 2,
   },
-  habitCardIcon: {},
   habitCardDelete: {
     padding: 4,
     borderRadius: radius.full,
@@ -335,16 +354,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    backgroundColor: colors.surfaceElevated,
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     paddingVertical: 10,
     paddingHorizontal: spacing.md,
   },
   presetChipDisabled: {
-    borderColor: '#E8EEF8',
-    backgroundColor: '#F5F8FF',
+    borderColor: colors.borderLight,
+    backgroundColor: colors.background,
   },
   presetLabel: {
     flex: 1,
@@ -361,10 +380,10 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.md,
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     borderStyle: 'dashed',
-    backgroundColor: '#F7FBFF',
+    backgroundColor: colors.surface,
   },
   addCustomText: {
     fontSize: typography.sizes.body,
@@ -372,33 +391,51 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.ui,
   },
   customForm: {
-    backgroundColor: '#F7FBFF',
+    backgroundColor: colors.surface,
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.md,
   },
-  customInputRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
   input: {
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.md,
     paddingVertical: 10,
     paddingHorizontal: spacing.sm,
     fontSize: typography.sizes.body,
     color: colors.text,
-    backgroundColor: '#FFFFFF',
-  },
-  iconInput: {
-    width: 48,
-    textAlign: 'center',
+    backgroundColor: colors.surfaceElevated,
   },
   nameInput: {
-    flex: 1,
+    alignSelf: 'stretch',
+  },
+  iconPickerLabel: {
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.ui,
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  iconGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  iconOption: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
+  },
+  iconOptionSelected: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
   },
   typeRow: {
     flexDirection: 'row',
@@ -409,8 +446,8 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     borderRadius: radius.md,
     borderWidth: 1.5,
-    borderColor: '#D0DDFF',
-    backgroundColor: '#FFFFFF',
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
     alignItems: 'center',
   },
   typePillSelected: {
@@ -435,9 +472,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: radius.md,
     borderWidth: 1.5,
-    borderColor: '#D0DDFF',
+    borderColor: colors.border,
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceElevated,
   },
   cancelText: {
     fontSize: typography.sizes.body,

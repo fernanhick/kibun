@@ -30,9 +30,9 @@ interface NotificationPrefsState {
 export const useNotificationPrefsStore = create<NotificationPrefsState>()(
   persist(
     (set) => ({
-      selectedSlots: [],
+      selectedSlots: ['morning', 'evening'],
       permissionGranted: false,
-      streakNudgeEnabled: false,
+      streakNudgeEnabled: true,
       customTimes: {},
       adaptiveTimes: {},
       adaptiveEnabled: true,

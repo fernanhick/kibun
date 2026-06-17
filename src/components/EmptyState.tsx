@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { Button } from '@components/Button';
 import { Sapling } from '@components/illustrations/Sapling';
 import { ChartBars } from '@components/illustrations/ChartBars';
@@ -29,6 +31,8 @@ export function EmptyState({
   onCtaPress,
   illustrationSize = 140,
 }: EmptyStateProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const accent = colors.accent;
   const soilTint = withAlpha(accent, 0.18);
   const trackTint = colors.border;
@@ -63,7 +67,7 @@ export function EmptyState({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   wrap: {
     alignItems: 'center',
     justifyContent: 'center',

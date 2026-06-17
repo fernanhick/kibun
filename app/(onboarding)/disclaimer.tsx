@@ -8,9 +8,13 @@ import { Button } from '@components/Button';
 import { Shiba } from '@components/Shiba';
 import { Card } from '@components/Card';
 import { OnboardingProgress } from '@components/OnboardingProgress';
-import { colors, typography, spacing, radius, shadows } from '@constants/theme';
+import { typography, spacing, radius, shadows } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 export default function DisclaimerScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('onboarding');
   const [acknowledged, setAcknowledged] = useState(false);
@@ -104,6 +108,8 @@ function BulletPoint({
   icon: React.ComponentProps<typeof Ionicons>['name'];
   text: string;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.bulletContainer}>
       <Ionicons name={icon} size={18} color={colors.primary} style={styles.bulletIcon} />
@@ -112,7 +118,7 @@ function BulletPoint({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     flex: 1,
     paddingVertical: spacing.lg,

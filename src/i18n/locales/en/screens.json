@@ -8,7 +8,8 @@
     "history": "History",
     "insights": "Insights",
     "settings": "Settings",
-    "logMoodA11y": "Log mood"
+    "logMoodA11y": "Log mood",
+    "mascotA11y": "Play with the mascot"
   },
   "home": {
     "anonBanner": {
@@ -139,6 +140,11 @@
     "period": {
       "label": "{{n}}d",
       "a11y": "Show last {{n}} days"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "patterns": "Patterns",
+      "reports": "Reports"
     },
     "stats": {
       "streak": "day streak",
@@ -448,6 +454,9 @@
     "manage": "Manage",
     "create": "+ Create",
     "createFirst": "Create a custom mood",
+    "seeMore": "See more",
+    "seeLess": "See less",
+    "manageMoods": "Manage moods",
     "a11yCancel": "Cancel",
     "a11yManageCustom": "Manage custom moods",
     "a11yCreateFirst": "Create your first custom mood"
@@ -456,6 +465,10 @@
     "vibeToday": "Your vibe today",
     "loggingFor": "Logging for {{date}}",
     "moodSubLabel": "This feeling matters. Let us log it.",
+    "savedTitle": "Logged",
+    "savedSubtitle": "Want to go a little deeper?",
+    "done": "Done",
+    "reflect": "Reflect in journal",
     "noteLabel": "Add a note",
     "notePlaceholder": "How are you feeling? (optional)",
     "noteA11y": "Mood note",
@@ -647,6 +660,20 @@
       "language": "LANGUAGE",
       "about": "ABOUT"
     },
+    "tabs": {
+      "reminders": "Reminders",
+      "general": "General",
+      "about": "About"
+    },
+    "groups": {
+      "dailyReminders": "DAILY REMINDERS",
+      "more": "MORE",
+      "legal": "LEGAL",
+      "achievements": "ACHIEVEMENTS"
+    },
+    "achievements": {
+      "progress": "{{count}} of {{total}} unlocked"
+    },
     "account": {
       "label": "Account",
       "notSignedIn": "Not signed in",
@@ -686,6 +713,7 @@
       "overridden": "Custom time overrides smart timing ({{time}} computed)",
       "smartTime": "Smart time: {{time}}",
       "active": "Active",
+      "auto": "Auto",
       "needsMore": "Log more check-ins to activate smart timing.",
       "lockedHint": "Learns when you actually check in and adjusts reminder times. Pro feature.",
       "proBadge": "Pro",
@@ -763,6 +791,23 @@
       "fallbackMonthly": "$5.99",
       "fallbackYearly": "$34.99",
       "trial": "Includes 7-day free trial · Cancel anytime"
+    },
+    "plan": {
+      "monthly": {
+        "label": "Monthly",
+        "period": "per month"
+      },
+      "annual": {
+        "label": "Yearly",
+        "period": "per year"
+      },
+      "save": "SAVE {{percent}}%",
+      "bestValue": "BEST VALUE",
+      "perMonth": "{{price}}/mo",
+      "billedYearly": "{{price}} billed yearly after trial",
+      "billedMonthly": "{{price}} billed monthly after trial",
+      "selectedA11y": "selected",
+      "a11yHint": "Selects the {{plan}} plan"
     },
     "cta": {
       "subscribe": "Subscribe — 7 days free",
@@ -979,7 +1024,8 @@
     "customHabit": "Custom habit",
     "addCustomA11y": "Add a custom habit",
     "addCustom": "Add custom habit",
-    "iconA11y": "Habit emoji icon",
+    "iconA11y": "Select habit icon",
+    "chooseIcon": "Choose an icon",
     "namePlaceholder": "Habit name",
     "nameA11y": "Habit name",
     "addHabitA11y": "Add habit",

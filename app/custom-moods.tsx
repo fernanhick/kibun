@@ -10,7 +10,9 @@ import { EmptyState } from '@components/EmptyState';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useCustomMoodsStore } from '@store/customMoodsStore';
 import { MOOD_IMAGES } from '@constants/moodImages';
-import { colors, spacing, typography, radius } from '@constants/theme';
+import { spacing, typography, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { useResponsive } from '@hooks/useResponsive';
 import type { MoodGroup } from '@constants/moods';
 
@@ -33,6 +35,8 @@ const GROUP_OPTIONS: { value: MoodGroup }[] = [
 const IMAGE_KEYS = Object.keys(MOOD_IMAGES) as string[];
 
 export default function CustomMoodsScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const responsive = useResponsive();
@@ -287,10 +291,10 @@ export default function CustomMoodsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   root: { flex: 1 },
   heroCard: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
@@ -328,9 +332,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    backgroundColor: colors.surfaceElevated,
     borderWidth: 1.2,
-    borderColor: '#DCE9FF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     paddingVertical: 12,
     paddingHorizontal: spacing.md,
@@ -338,7 +342,7 @@ const styles = StyleSheet.create({
   moodDot: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: radius.xxl,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
@@ -365,10 +369,10 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.md,
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     borderStyle: 'dashed',
-    backgroundColor: '#F7FBFF',
+    backgroundColor: colors.surface,
   },
   addButtonText: {
     fontSize: typography.sizes.body,
@@ -380,10 +384,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     padding: spacing.md,
-    backgroundColor: '#FFF6EC',
+    backgroundColor: colors.warningLight,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#FFE4BF',
+    borderColor: colors.warningBorder,
   },
   limitText: {
     fontSize: typography.sizes.sm,
@@ -391,9 +395,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   formBlock: {
-    backgroundColor: '#F7FBFF',
+    backgroundColor: colors.surface,
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.md,
@@ -407,13 +411,13 @@ const styles = StyleSheet.create({
   },
   nameInput: {
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.md,
     paddingVertical: 10,
     paddingHorizontal: spacing.md,
     fontSize: typography.sizes.body,
     color: colors.text,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceElevated,
   },
   colorGrid: {
     flexDirection: 'row',
@@ -423,14 +427,14 @@ const styles = StyleSheet.create({
   colorSwatch: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: radius.xxl,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.8)',
   },
   colorSwatchSelected: {
-    borderColor: '#1A1A2E',
+    borderColor: colors.text,
     borderWidth: 2.5,
   },
   groupRow: {
@@ -440,8 +444,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     borderRadius: radius.md,
     borderWidth: 1.5,
-    borderColor: '#D0DDFF',
-    backgroundColor: '#FFFFFF',
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
   },
   groupRowSelected: {
     borderColor: colors.primary,
@@ -489,7 +493,7 @@ const styles = StyleSheet.create({
   previewBubbleLabel: {
     fontSize: typography.sizes.xs,
     fontWeight: typography.weights.semibold,
-    color: '#1A1A2E',
+    color: colors.text,
     textAlign: 'center',
   },
   imageGrid: {
@@ -501,8 +505,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: '#D0DDFF',
-    backgroundColor: '#FFFFFF',
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
     overflow: 'hidden',
   },
   imageSwatchImg: {},
@@ -515,9 +519,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: radius.md,
     borderWidth: 1.5,
-    borderColor: '#D0DDFF',
+    borderColor: colors.border,
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceElevated,
   },
   cancelText: {
     fontSize: typography.sizes.body,

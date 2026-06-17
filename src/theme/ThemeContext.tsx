@@ -1,7 +1,5 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
-import { useColorScheme } from 'react-native';
 import { colors as lightColors } from '@constants/theme';
-import { useUiPrefsStore } from '@store/uiPrefsStore';
 
 // The light palette in @constants/theme is `as const`, so its inferred type
 // is a record of string-literal types. ThemePalette widens that shape to
@@ -9,37 +7,50 @@ import { useUiPrefsStore } from '@store/uiPrefsStore';
 // `satisfies ThemePalette` still forces every key to be present.
 export type ThemePalette = { readonly [K in keyof typeof lightColors]: string };
 
+// Dark variant of "Grounded Calm" — "Sage Night": sage/clay/rose accents on a
+// deep desaturated GREEN-SLATE base (biophilic, low-arousal — not pure black,
+// which reads harsh). Neutrals carry a subtle sage undertone; text is a soft
+// off-white (#ECEFEA), not pure white. Brand hues are lightened so dark text
+// (textInverse) stays legible on filled accents.
 const darkColors = {
-  primary: '#4A86FF',
-  primaryLight: '#1A2540',
-  primaryDark: '#7BA8FF',
-  skyStart: '#3F83F8',
-  skyEnd: '#63CCFF',
-  sparkle: '#1F2538',
-  warmCtaStart: '#FFB22E',
-  warmCtaEnd: '#FFD959',
+  primary: '#74AD9A',
+  primaryLight: '#1E2A25',
+  primaryDark: '#9CCBBB',
+  skyStart: '#74AD9A',
+  skyEnd: '#6FB3A4',
+  sparkle: '#20251F',
+  warmCtaStart: '#D2855B',
+  warmCtaEnd: '#E0A878',
   chipSurface: 'rgba(255, 255, 255, 0.06)',
-  chipBorder: 'rgba(123, 168, 255, 0.30)',
-  accent: '#FFA62B',
-  accentLight: '#2A2418',
-  accentBorder: '#5B4019',
-  pink: '#FF6B9D',
-  pinkEnd: '#C77DFF',
-  pinkLight: 'rgba(255, 107, 157, 0.15)',
-  pinkBorder: 'rgba(255, 107, 157, 0.30)',
-  background: '#0E1322',
-  surface: '#161B2C',
-  surfaceElevated: '#1F2538',
-  text: '#F5F7FF',
-  textSecondary: '#9EA4C2',
-  textDisabled: '#5C6080',
-  textInverse: '#1A1A2E',
-  border: '#262B40',
-  borderLight: '#1B1F30',
-  success: '#66BB6A',
-  warning: '#FFA726',
-  error: '#EF5350',
-  errorLight: '#3A1F22',
+  chipBorder: 'rgba(111, 165, 147, 0.30)',
+  accent: '#D2855B',
+  accentLight: '#2A2118',
+  accentBorder: '#5B4327',
+  pink: '#CE8A97',
+  pinkEnd: '#B58FB0',
+  pinkLight: 'rgba(206, 138, 151, 0.15)',
+  pinkBorder: 'rgba(206, 138, 151, 0.30)',
+  background: '#161B19',
+  surface: '#1F2522',
+  surfaceElevated: '#28302C',
+  text: '#ECEFEA',
+  textSecondary: '#A8B0AA',
+  textDisabled: '#6B726C',
+  textInverse: '#141815',
+  border: '#333B36',
+  borderLight: '#232A26',
+  success: '#6FB385',
+  warning: '#E0A23E',
+  error: '#E07268',
+  errorLight: '#33201C',
+  successLight: '#1C2A20',
+  successText: '#8FD3A6',
+  successBorder: '#305A41',
+  warningLight: '#2C2416',
+  warningText: '#E6B566',
+  warningBorder: '#5A4624',
+  errorText: '#E89A92',
+  errorBorder: '#5A3330',
   overlay: 'rgba(0, 0, 0, 0.6)',
 } as const satisfies ThemePalette;
 
@@ -52,23 +63,12 @@ export interface ThemeValue {
 const ThemeContext = createContext<ThemeValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const themePreference = useUiPrefsStore((s) => s.themePreference);
-  const systemScheme = useColorScheme();
-
-  const resolved: 'light' | 'dark' =
-    themePreference === 'system'
-      ? systemScheme === 'dark'
-        ? 'dark'
-        : 'light'
-      : themePreference;
-
+  // Dark mode is disabled for now — always render the light palette. The
+  // `darkColors` palette above is kept so it can be re-enabled later.
+  void darkColors;
   const value = useMemo<ThemeValue>(
-    () => ({
-      colors: resolved === 'dark' ? darkColors : lightColors,
-      isDark: resolved === 'dark',
-      resolved,
-    }),
-    [resolved],
+    () => ({ colors: lightColors, isDark: false, resolved: 'light' as const }),
+    [],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

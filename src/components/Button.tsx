@@ -2,11 +2,12 @@ import React from 'react';
 import {
   Text,
   ActivityIndicator,
-  View,
   StyleSheet,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, typography, spacing, radius, shadows } from '@constants/theme';
+import { typography, spacing, radius, shadows } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { SpringPressable } from '@components/SpringPressable';
 
 interface ButtonProps {
@@ -30,6 +31,8 @@ export function Button({
   fullWidth = false,
   accessibilityHint,
 }: ButtonProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const isBlocked = disabled || loading;
   const isGradient = variant === 'primary' || variant === 'sunrise';
 
@@ -70,7 +73,6 @@ export function Button({
           end={{ x: 1, y: 1 }}
           style={[styles.gradientFill, styles[`${size}Gradient`]]}
         >
-          <View style={styles.gloss} />
           {loading ? (
             <ActivityIndicator size="small" color={textColor} />
           ) : (
@@ -92,7 +94,7 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   base: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -120,7 +122,7 @@ const styles = StyleSheet.create({
   sunrise: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#FFD37A',
+    borderColor: '#D9A06F',
   },
   gradientFill: {
     width: '100%',
@@ -139,15 +141,6 @@ const styles = StyleSheet.create({
   smGradient: {
     minHeight: 40,
     paddingHorizontal: spacing.md,
-  },
-  gloss: {
-    position: 'absolute',
-    top: 2,
-    left: 10,
-    right: 10,
-    height: 14,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.28)',
   },
   // ─── Sizes ──────────────────────────────────────────────────────────────
   lg: {

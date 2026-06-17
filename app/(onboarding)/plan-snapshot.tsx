@@ -7,7 +7,9 @@ import { Screen, Button, Shiba, HabitIcon } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { useHabitsStore } from '@store/habitsStore';
 import { findPreset } from '@lib/habitPresets';
-import { colors, typography, spacing, shadows } from '@constants/theme';
+import { typography, spacing, shadows, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 interface PlanRow {
   key: string;
@@ -16,6 +18,8 @@ interface PlanRow {
 }
 
 export default function PlanSnapshotScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation(['onboarding', 'common', 'screens']);
   const router = useRouter();
   const habits = useHabitsStore((s) => s.habits);
@@ -54,7 +58,7 @@ export default function PlanSnapshotScreen() {
               accessibilityRole="text"
               accessibilityLabel={r.name}
             >
-              <HabitIcon icon={r.icon} size={22} color={colors.primary} style={styles.rowEmoji} />
+              <HabitIcon icon={r.icon} size={20} color={colors.primary} circle circleSize={36} />
               <Text style={styles.rowName}>{r.name}</Text>
             </View>
           ))}
@@ -73,14 +77,14 @@ export default function PlanSnapshotScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
     gap: spacing.lg,
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
     alignItems: 'center',
@@ -106,7 +110,7 @@ const styles = StyleSheet.create({
   rowsCard: {
     ...shadows.sm,
     backgroundColor: colors.surface,
-    borderRadius: 16,
+    borderRadius: radius.card,
     borderWidth: 1,
     borderColor: colors.borderLight,
     paddingHorizontal: spacing.md,
@@ -131,10 +135,6 @@ const styles = StyleSheet.create({
   },
   rowLast: {
     borderBottomWidth: 0,
-  },
-  rowEmoji: {
-    width: 32,
-    textAlign: 'center',
   },
   rowName: {
     flex: 1,

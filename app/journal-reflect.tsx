@@ -7,7 +7,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Button } from '@components/index';
 import { MOOD_MAP, MoodId, MoodDefinition } from '@constants/moods';
 import { MOOD_IMAGES, normalizeMoodImageKey } from '@constants/moodImages';
-import { colors, typography, spacing } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { useMoodEntryStore } from '@store/index';
 
 function resolveMoodImage(mood: MoodDefinition | null) {
@@ -25,6 +27,8 @@ function resolveMoodImage(mood: MoodDefinition | null) {
 }
 
 export default function JournalReflectScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{
@@ -113,7 +117,7 @@ export default function JournalReflectScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
@@ -123,7 +127,7 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   hero: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     padding: spacing.lg,
@@ -153,8 +157,8 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   inputSection: {
-    backgroundColor: 'rgba(255,255,255,0.96)',
-    borderRadius: 16,
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: radius.card,
     borderWidth: 1.2,
     borderColor: colors.pinkBorder,
     padding: spacing.md,

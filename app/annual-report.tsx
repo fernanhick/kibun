@@ -11,7 +11,9 @@ import { getMoodFrequency, GROUP_SCORES } from '@lib/insights';
 import { MOOD_MAP } from '@constants/moods';
 import { supabase } from '@lib/supabase';
 import i18n from '@i18n/index';
-import { colors, spacing, typography, radius } from '@constants/theme';
+import { spacing, typography, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { getMonthNames } from '@i18n/dateFormat';
 
 // Locale-aware: re-resolved per render so language switches reflow the chart.
@@ -54,6 +56,8 @@ function computeMonthAvg(entries: { loggedAt: string; moodId: string }[]) {
 }
 
 export default function AnnualReportScreen() {
+  const { colors } = useTheme();
+  const reportStyles = useThemedStyles(createReportStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const session = useSessionStore((s) => s.session);
@@ -277,6 +281,8 @@ function StatCard({
   value: string;
   label: string;
 }) {
+  const { colors } = useTheme();
+  const reportStyles = useThemedStyles(createReportStyles);
   return (
     <View style={reportStyles.statCard}>
       <Ionicons name={icon} size={22} color={colors.primary} style={reportStyles.statIcon} />
@@ -286,10 +292,10 @@ function StatCard({
   );
 }
 
-const reportStyles = StyleSheet.create({
+const createReportStyles = (colors: ThemePalette) => StyleSheet.create({
   root: { flex: 1 },
   hero: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.35)',
     paddingHorizontal: spacing.md,
@@ -345,10 +351,10 @@ const reportStyles = StyleSheet.create({
     flex: 1,
     minWidth: '44%',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    backgroundColor: colors.surfaceElevated,
     borderWidth: 1.2,
     borderColor: colors.pinkBorder,
-    borderRadius: 16,
+    borderRadius: radius.card,
     paddingVertical: spacing.md,
     gap: 4,
   },
@@ -403,18 +409,18 @@ const reportStyles = StyleSheet.create({
   monthCard: {
     flex: 1,
     alignItems: 'center',
-    borderRadius: 16,
+    borderRadius: radius.card,
     borderWidth: 1.2,
     paddingVertical: spacing.md,
     gap: 4,
   },
   monthCardGood: {
-    backgroundColor: '#F1FFF2',
-    borderColor: '#A5D6A7',
+    backgroundColor: colors.successLight,
+    borderColor: colors.successBorder,
   },
   monthCardTough: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#93C5FD',
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.border,
   },
   monthCardIcon: { marginBottom: 2 },
   monthCardLabel: {
@@ -430,7 +436,7 @@ const reportStyles = StyleSheet.create({
     backgroundColor: colors.pinkLight,
     borderWidth: 1,
     borderColor: colors.pinkBorder,
-    borderRadius: 16,
+    borderRadius: radius.card,
     padding: spacing.md,
     gap: spacing.xs,
     alignItems: 'center',
@@ -460,7 +466,7 @@ const reportStyles = StyleSheet.create({
     backgroundColor: colors.pinkLight,
     borderWidth: 1.2,
     borderColor: colors.pinkBorder,
-    borderRadius: 16,
+    borderRadius: radius.card,
     padding: spacing.md,
   },
   upgradeIcon: { marginRight: spacing.xs },

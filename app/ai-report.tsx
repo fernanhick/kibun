@@ -9,12 +9,16 @@ import { useSessionStore } from '@store/sessionStore';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { requestReport, getLatestReport } from '@lib/aiReports';
 import type { AIReport, AIReportStructured, AIReportTone } from '@models/index';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 type ReportType = 'weekly' | 'monthly';
 type ScreenState = 'loading' | 'no-report' | 'generating' | 'has-report' | 'error' | 'no-entries' | 'subscription-error';
 
 export default function AIReportScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const session = useSessionStore((s) => s.session);
@@ -115,6 +119,7 @@ export default function AIReportScreen() {
 // ── Sub-components ───────────────────────────────────────────────────────────
 
 function ScreenHeader() {
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation('screens');
   return (
     <View style={styles.header}>
@@ -134,6 +139,7 @@ function ReportTypeToggle({
   onSelect: (t: ReportType) => void;
 }) {
   const { t: i18nT } = useTranslation('screens');
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.toggleRow}>
       {(['weekly', 'monthly'] as ReportType[]).map((period) => {
@@ -172,6 +178,8 @@ function ReportBody({
   onRetry: () => void;
 }) {
   const { t } = useTranslation(['screens', 'moods']);
+  const styles = useThemedStyles(createStyles);
+  const { colors } = useTheme();
   const periodName = reportType === 'weekly' ? t('aiReport.weekly') : t('aiReport.monthly');
 
   if (state === 'loading') {
@@ -316,6 +324,7 @@ function ReportBody({
 // ── Report content (structured → markdown → plain text) ─────────────────────
 
 function ReportContent({ report }: { report: AIReport }) {
+  const styles = useThemedStyles(createStyles);
   if (report.structured) {
     return <StructuredReport data={report.structured} />;
   }
@@ -330,6 +339,8 @@ function ReportContent({ report }: { report: AIReport }) {
 }
 
 function StructuredReport({ data }: { data: AIReportStructured }) {
+  const styles = useThemedStyles(createStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('screens');
   return (
     <View style={styles.structuredContainer}>
@@ -388,6 +399,8 @@ function StructuredReport({ data }: { data: AIReportStructured }) {
 }
 
 function MarkdownReport({ content }: { content: string }) {
+  const styles = useThemedStyles(createStyles);
+  const markdownStyles = useThemedStyles(createMarkdownStyles);
   return (
     <Card style={styles.contentCard}>
       <Markdown style={markdownStyles}>{content}</Markdown>
@@ -397,7 +410,9 @@ function MarkdownReport({ content }: { content: string }) {
 
 function ToneChip({ tone }: { tone: AIReportTone }) {
   const { t } = useTranslation('screens');
-  const meta = TONE_META[tone];
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const meta = getToneMeta(colors)[tone];
   return (
     <View style={[styles.toneChip, { backgroundColor: meta.bg, borderColor: meta.border }]}>
       <Text style={[styles.toneChipText, { color: meta.text }]}>{t(meta.labelKey)}</Text>
@@ -405,12 +420,12 @@ function ToneChip({ tone }: { tone: AIReportTone }) {
   );
 }
 
-const TONE_META: Record<AIReportTone, { labelKey: string; bg: string; border: string; text: string }> = {
-  positive: { labelKey: 'aiReport.tone.positive', bg: '#F1FFF2', border: '#A5D6A7', text: '#2E7D32' },
+const getToneMeta = (colors: ThemePalette): Record<AIReportTone, { labelKey: string; bg: string; border: string; text: string }> => ({
+  positive: { labelKey: 'aiReport.tone.positive', bg: colors.successLight, border: colors.successBorder, text: colors.successText },
   neutral:  { labelKey: 'aiReport.tone.neutral', bg: colors.primaryLight, border: colors.chipBorder, text: colors.primaryDark },
-  mixed:    { labelKey: 'aiReport.tone.mixed', bg: colors.accentLight, border: colors.accentBorder, text: '#8A5A00' },
-  tough:    { labelKey: 'aiReport.tone.tough', bg: colors.pinkLight, border: colors.pinkBorder, text: '#9D2E5C' },
-};
+  mixed:    { labelKey: 'aiReport.tone.mixed', bg: colors.warningLight, border: colors.warningBorder, text: colors.warningText },
+  tough:    { labelKey: 'aiReport.tone.tough', bg: colors.pinkLight, border: colors.pinkBorder, text: colors.pink },
+});
 
 function looksLikeMarkdown(s: string): boolean {
   return /(^|\n)\s*(#{1,6}\s|[-*]\s|\d+\.\s)/.test(s) || /\*\*[^*]+\*\*/.test(s);
@@ -440,7 +455,7 @@ function formatRelativeDate(isoString: string): string {
 
 // ── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -667,7 +682,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceElevated,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 2,
@@ -708,7 +723,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const markdownStyles = StyleSheet.create({
+const createMarkdownStyles = (colors: ThemePalette) => StyleSheet.create({
   body: {
     color: colors.text,
     fontSize: typography.sizes.body,

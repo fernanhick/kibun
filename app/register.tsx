@@ -12,7 +12,9 @@ import { supabase } from '@lib/supabase';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useSessionStore } from '@store/sessionStore';
 import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '@constants/legal';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 // Required by expo-web-browser to complete any pending auth sessions on mount.
 WebBrowser.maybeCompleteAuthSession();
@@ -61,6 +63,8 @@ function validateInputs(email: string, password: string, mode: 'register' | 'log
 }
 
 export default function RegistrationScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{ mode?: string | string[]; source?: string | string[] }>();
@@ -519,14 +523,14 @@ export default function RegistrationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
     gap: spacing.lg,
   },
   heroCard: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.lg,
     marginBottom: spacing.lg,
@@ -535,7 +539,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderLight,
-    borderRadius: 16,
+    borderRadius: radius.card,
     padding: spacing.md,
     gap: spacing.md,
   },

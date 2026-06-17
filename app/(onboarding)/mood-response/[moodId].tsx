@@ -8,7 +8,9 @@ import { MoodBubble } from '@components/MoodBubble';
 import { OnboardingProgress } from '@components/OnboardingProgress';
 import { Ionicons } from '@expo/vector-icons';
 import { MOOD_MAP, type MoodId, type MoodGroup } from '@constants/moods';
-import { colors, typography, spacing } from '@constants/theme';
+import { typography, spacing } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 function shibaVariant(group: MoodGroup, id: MoodId): ShibaVariant {
   if (group === 'green') return id === 'excited' ? 'excited' : 'happy';
@@ -17,6 +19,8 @@ function shibaVariant(group: MoodGroup, id: MoodId): ShibaVariant {
 }
 
 export default function MoodResponseScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { moodId } = useLocalSearchParams<{ moodId: MoodId }>();
   const router = useRouter();
   const { t } = useTranslation(['common', 'moods', 'onboarding']);
@@ -60,7 +64,7 @@ export default function MoodResponseScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',

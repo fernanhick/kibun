@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Linking, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
 import Purchases from 'react-native-purchases';
 import type { PurchasesPackage } from 'react-native-purchases';
-import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, BackButton, Shiba } from '@components/index';
@@ -13,12 +11,13 @@ import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useSessionStore } from '@store/index';
 import {
   getSubscriptionStatusFromCustomerInfo,
-  REVENUECAT_ENTITLEMENT_ID,
   restorePurchases,
 } from '@lib/revenuecat';
 import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
 import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '@constants/legal';
-import { colors, typography, spacing, radius, shadows } from '@constants/theme';
+import { typography, spacing, radius, shadows } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 type ComparisonRowKey =
   | 'aiPrompts'
@@ -39,23 +38,62 @@ const COMPARISON_ROWS: ReadonlyArray<{ key: ComparisonRowKey; free: boolean }> =
   { key: 'achievements', free: false },
 ];
 
-function formatPriceLine(
-  t: TFunction<'screens'>,
-  monthly?: PurchasesPackage,
-  yearly?: PurchasesPackage
-): string {
-  const m = monthly?.product.priceString;
-  const y = yearly?.product.priceString;
-  if (m && y) return t('paywall.price.both', { monthly: m, yearly: y });
-  if (m) return t('paywall.price.monthlyOnly', { monthly: m });
-  if (y) return t('paywall.price.yearlyOnly', { yearly: y });
-  return t('paywall.price.both', {
-    monthly: t('paywall.price.fallbackMonthly'),
-    yearly: t('paywall.price.fallbackYearly'),
-  });
+type PlanType = 'monthly' | 'annual';
+
+function PlanCard({
+  selected,
+  onPress,
+  label,
+  price,
+  period,
+  badge,
+  a11yLabel,
+  a11yHint,
+}: {
+  selected: boolean;
+  onPress: () => void;
+  label: string;
+  price: string;
+  period: string;
+  badge?: string;
+  a11yLabel: string;
+  a11yHint: string;
+}) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[styles.planCard, selected && styles.planCardSelected]}
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      accessibilityLabel={a11yLabel}
+      accessibilityHint={a11yHint}
+    >
+      {badge ? (
+        <View style={[styles.planBadge, selected && styles.planBadgeSelected]}>
+          <Text style={[styles.planBadgeText, selected && styles.planBadgeTextSelected]}>
+            {badge}
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.planBadgeSpacer} />
+      )}
+      <View style={styles.planCardBody}>
+        <View style={[styles.planRadio, selected && styles.planRadioSelected]}>
+          {selected && <Ionicons name="checkmark" size={12} color={colors.textInverse} />}
+        </View>
+        <Text style={styles.planLabel}>{label}</Text>
+        <Text style={styles.planPrice}>{price}</Text>
+        <Text style={styles.planPeriod}>{period}</Text>
+      </View>
+    </Pressable>
+  );
 }
 
 export default function PaywallScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const { setPaywallSeen } = useOnboardingGateStore();
@@ -64,7 +102,9 @@ export default function PaywallScreen() {
   const [purchasing, setPurchasing] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
-  const [priceLine, setPriceLine] = useState<string>(() => formatPriceLine(t));
+  const [monthlyPkg, setMonthlyPkg] = useState<PurchasesPackage | null>(null);
+  const [yearlyPkg, setYearlyPkg] = useState<PurchasesPackage | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
 
   useEffect(() => {
     let cancelled = false;
@@ -75,7 +115,8 @@ export default function PaywallScreen() {
         if (!current) return;
         const monthly = current.monthly ?? current.availablePackages.find((p) => p.packageType === 'MONTHLY');
         const yearly = current.annual ?? current.availablePackages.find((p) => p.packageType === 'ANNUAL');
-        setPriceLine(formatPriceLine(t, monthly ?? undefined, yearly ?? undefined));
+        setMonthlyPkg(monthly ?? null);
+        setYearlyPkg(yearly ?? null);
       })
       .catch((err) => {
         if (__DEV__) console.warn('[kibun:rc] getOfferings failed:', err);
@@ -83,28 +124,36 @@ export default function PaywallScreen() {
     return () => {
       cancelled = true;
     };
-  }, [t]);
+  }, []);
+
+  const selectedPackage = selectedPlan === 'annual' ? yearlyPkg : monthlyPkg;
+
+  // Per-month equivalent of the yearly plan, used for the savings badge.
+  const savingsPercent =
+    monthlyPkg && yearlyPkg && monthlyPkg.product.price > 0
+      ? Math.round((1 - yearlyPkg.product.price / (monthlyPkg.product.price * 12)) * 100)
+      : 0;
+
+  const monthlyPriceStr = monthlyPkg?.product.priceString ?? t('paywall.price.fallbackMonthly');
+  const yearlyPriceStr = yearlyPkg?.product.priceString ?? t('paywall.price.fallbackYearly');
+  const billedLine =
+    selectedPlan === 'annual'
+      ? t('paywall.plan.billedYearly', { price: yearlyPriceStr })
+      : t('paywall.plan.billedMonthly', { price: monthlyPriceStr });
 
   const handlePurchase = async () => {
     if (purchasing) return;
+
+    const pkg = selectedPackage;
+    if (!pkg) {
+      setPurchaseError(t('paywall.errors.notConfigured'));
+      return;
+    }
+
     setPurchasing(true);
     setPurchaseError(null);
     try {
-      const paywallResult = await RevenueCatUI.presentPaywallIfNeeded({
-        requiredEntitlementIdentifier: REVENUECAT_ENTITLEMENT_ID,
-        displayCloseButton: true,
-      });
-
-      if (__DEV__) {
-        console.log('[kibun:rc] Paywall result:', paywallResult);
-      }
-
-      if (paywallResult === PAYWALL_RESULT.CANCELLED) {
-        setPurchasing(false);
-        return;
-      }
-
-      const customerInfo = await Purchases.getCustomerInfo();
+      const { customerInfo } = await Purchases.purchasePackage(pkg);
       if (__DEV__) {
         console.log('[kibun:rc] Active entitlements:', JSON.stringify(customerInfo.entitlements.active));
       }
@@ -118,17 +167,18 @@ export default function PaywallScreen() {
         setPaywallSeen();
         router.replace(session?.authStatus === 'registered' ? '/(tabs)' : '/register');
       } else {
-        if (paywallResult === PAYWALL_RESULT.NOT_PRESENTED) {
-          setPurchaseError(t('paywall.errors.notConfigured'));
-        } else if (paywallResult === PAYWALL_RESULT.ERROR) {
-          setPurchaseError(t('paywall.errors.loadFailed'));
-        } else {
-          setPurchaseError(t('paywall.errors.noEntitlement'));
-        }
+        setPurchaseError(t('paywall.errors.noEntitlement'));
         setPurchasing(false);
       }
     } catch (error: unknown) {
-      const rcError = error as { code?: string; message?: string };
+      const rcError = error as { code?: string; message?: string; userCancelled?: boolean };
+
+      // User dismissed the native purchase sheet — not an error, just reset.
+      if (rcError?.userCancelled) {
+        setPurchasing(false);
+        return;
+      }
+
       if (rcError?.message?.includes('Native module not found')) {
         setPurchaseError(t('paywall.errors.nativeMissing'));
         setPurchasing(false);
@@ -177,13 +227,13 @@ export default function PaywallScreen() {
     <Screen scrollable contentContainerStyle={styles.content}>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <LinearGradient
-        colors={['#FF6B9D', '#C060F0']}
+        colors={['#BC6B7A', '#9E6E97']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
         <LinearGradient
-          colors={['rgba(255,255,255,0.22)', 'rgba(255,255,255,0)']}
+          colors={['rgba(255,255,255,0.12)', 'rgba(255,255,255,0)']}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           style={styles.heroSheen}
@@ -223,7 +273,7 @@ export default function PaywallScreen() {
           </Text>
           <View style={[styles.premiumCol, styles.premiumHeaderCell]}>
             <LinearGradient
-              colors={['#FF6B9D', '#C060F0']}
+              colors={['#BC6B7A', '#9E6E97']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.premiumHeaderBadge}
@@ -289,15 +339,30 @@ export default function PaywallScreen() {
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
       <View style={styles.bottom}>
-        <LinearGradient
-          colors={['#FF6B9D', '#C060F0']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.trialBox}
-        >
-          <Text style={styles.priceMain}>{priceLine}</Text>
-          <Text style={styles.priceSub}>{t('paywall.price.trial')}</Text>
-        </LinearGradient>
+        {/* ── Plan selector ──────────────────────────────────────────── */}
+        <View style={styles.planRow}>
+          <PlanCard
+            selected={selectedPlan === 'annual'}
+            onPress={() => setSelectedPlan('annual')}
+            label={t('paywall.plan.annual.label')}
+            price={yearlyPriceStr}
+            period={t('paywall.plan.annual.period')}
+            badge={savingsPercent > 0 ? t('paywall.plan.save', { percent: savingsPercent }) : t('paywall.plan.bestValue')}
+            a11yLabel={`${t('paywall.plan.annual.label')}, ${yearlyPriceStr} ${t('paywall.plan.annual.period')}${selectedPlan === 'annual' ? `, ${t('paywall.plan.selectedA11y')}` : ''}`}
+            a11yHint={t('paywall.plan.a11yHint', { plan: t('paywall.plan.annual.label') })}
+          />
+          <PlanCard
+            selected={selectedPlan === 'monthly'}
+            onPress={() => setSelectedPlan('monthly')}
+            label={t('paywall.plan.monthly.label')}
+            price={monthlyPriceStr}
+            period={t('paywall.plan.monthly.period')}
+            a11yLabel={`${t('paywall.plan.monthly.label')}, ${monthlyPriceStr} ${t('paywall.plan.monthly.period')}${selectedPlan === 'monthly' ? `, ${t('paywall.plan.selectedA11y')}` : ''}`}
+            a11yHint={t('paywall.plan.a11yHint', { plan: t('paywall.plan.monthly.label') })}
+          />
+        </View>
+
+        <Text style={styles.billedLine}>{billedLine}</Text>
 
         <View style={styles.ctaGlow}>
           <Button
@@ -361,10 +426,10 @@ export default function PaywallScreen() {
   );
 }
 
-const PINK = '#FF6B9D';
-const PINK_BORDER = 'rgba(255, 107, 157, 0.20)';
+const PINK = '#BC6B7A';
+const PINK_BORDER = 'rgba(188, 107, 122, 0.20)';
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     gap: spacing.md,
     paddingTop: 0,
@@ -372,7 +437,7 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 24,
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.lg,
@@ -435,7 +500,7 @@ const styles = StyleSheet.create({
   },
   tableCard: {
     backgroundColor: colors.surface,
-    borderRadius: 18,
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.sm,
     paddingTop: 2,
     paddingBottom: 2,
@@ -486,7 +551,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.xs + 2,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(15,23,42,0.06)',
+    borderBottomColor: colors.border,
   },
   tableRowLast: {
     borderBottomWidth: 0,
@@ -505,7 +570,7 @@ const styles = StyleSheet.create({
   premiumCheckPill: {
     width: 20,
     height: 20,
-    borderRadius: 10,
+    borderRadius: radius.lg,
     backgroundColor: PINK,
     alignItems: 'center',
     justifyContent: 'center',
@@ -539,26 +604,90 @@ const styles = StyleSheet.create({
   bottom: {
     gap: spacing.md,
   },
-  trialBox: {
-    ...shadows.md,
-    borderRadius: 16,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.md,
-    alignItems: 'center',
-    gap: spacing.xs,
+  planRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
   },
-  priceMain: {
+  planCard: {
+    flex: 1,
+    backgroundColor: colors.surface,
+    borderRadius: radius.card,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    paddingBottom: spacing.md,
+    overflow: 'hidden',
+    ...shadows.sm,
+  },
+  planCardSelected: {
+    borderColor: PINK,
+    backgroundColor: colors.pinkLight,
+  },
+  planBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.borderLight,
+    borderBottomRightRadius: 12,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+  },
+  planBadgeSelected: {
+    backgroundColor: PINK,
+  },
+  planBadgeSpacer: {
+    height: 22,
+  },
+  planBadgeText: {
+    fontSize: 9,
+    fontFamily: typography.fonts.ui,
+    color: colors.textSecondary,
+    letterSpacing: 0.6,
+  },
+  planBadgeTextSelected: {
+    color: colors.textInverse,
+  },
+  planCardBody: {
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingTop: spacing.xs,
+    gap: 2,
+  },
+  planRadio: {
+    width: 20,
+    height: 20,
+    borderRadius: radius.lg,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
+  },
+  planRadioSelected: {
+    borderColor: PINK,
+    backgroundColor: PINK,
+  },
+  planLabel: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.ui,
+    color: colors.textSecondary,
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  planPrice: {
     fontSize: typography.sizes.xl,
     fontFamily: typography.fonts.display,
-    color: colors.textInverse,
-    textAlign: 'center',
+    color: colors.text,
+    letterSpacing: -0.4,
   },
-  priceSub: {
-    fontSize: typography.sizes.md,
+  planPeriod: {
+    fontSize: typography.sizes.xs,
     fontFamily: typography.fonts.body,
-    color: colors.textInverse,
+    color: colors.textSecondary,
+  },
+  billedLine: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.body,
+    color: colors.textSecondary,
     textAlign: 'center',
-    opacity: 0.92,
+    marginTop: -spacing.xs,
   },
   skipRow: {
     marginTop: spacing.xs,

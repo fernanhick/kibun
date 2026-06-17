@@ -20,12 +20,12 @@ interface SplashScreenViewProps {
 }
 
 const SPARKLE_RECIPE: { xPct: number; yPct: number; size: number; delay: number; opacity: number }[] = [
-  { xPct: 0.18, yPct: 0.28, size: 8,  delay: 0,   opacity: 0.35 },
-  { xPct: 0.75, yPct: 0.32, size: 12, delay: 200, opacity: 0.25 },
-  { xPct: 0.12, yPct: 0.55, size: 6,  delay: 400, opacity: 0.4  },
-  { xPct: 0.82, yPct: 0.58, size: 10, delay: 100, opacity: 0.3  },
-  { xPct: 0.5,  yPct: 0.22, size: 7,  delay: 300, opacity: 0.2  },
-  { xPct: 0.65, yPct: 0.68, size: 9,  delay: 500, opacity: 0.28 },
+  { xPct: 0.18, yPct: 0.28, size: 7,  delay: 0,   opacity: 0.20 },
+  { xPct: 0.75, yPct: 0.32, size: 9,  delay: 200, opacity: 0.16 },
+  { xPct: 0.12, yPct: 0.55, size: 5,  delay: 400, opacity: 0.22 },
+  { xPct: 0.82, yPct: 0.58, size: 8,  delay: 100, opacity: 0.18 },
+  { xPct: 0.5,  yPct: 0.22, size: 6,  delay: 300, opacity: 0.14 },
+  { xPct: 0.65, yPct: 0.68, size: 7,  delay: 500, opacity: 0.16 },
 ];
 
 function Sparkle({ x, y, size, delay, baseOpacity }: {
@@ -115,7 +115,7 @@ export function SplashScreenView({ onFinish }: SplashScreenViewProps) {
 
   return (
     <LinearGradient
-      colors={['#4A86FF', '#7B5EA7', '#C77DFF']}
+      colors={['#4C7A6A', '#6E8E86', '#9E6E97']}
       start={{ x: 0.3, y: 0 }}
       end={{ x: 0.7, y: 1 }}
       style={styles.container}

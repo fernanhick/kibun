@@ -7,7 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { Screen, Button, OnboardingProgress, Shiba, type ShibaVariant } from '@components/index';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { MOOD_MAP, type MoodGroup, type MoodId } from '@constants/moods';
-import { colors, typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 
 function shibaVariantFor(firstMoodId: MoodId | null): ShibaVariant {
   if (!firstMoodId) return 'happy';
@@ -20,6 +22,8 @@ function shibaVariantFor(firstMoodId: MoodId | null): ShibaVariant {
 }
 
 export default function ReflectionScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { t } = useTranslation(['onboarding', 'common']);
   const router = useRouter();
   const { profile, firstMoodId } = useOnboardingStore();
@@ -105,7 +109,7 @@ export default function ReflectionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   backButton: {
     alignSelf: 'flex-start',
     padding: spacing.xs,
@@ -115,7 +119,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   heroCard: {
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.lg,
     marginTop: spacing.md,
@@ -142,7 +146,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderLight,
-    borderRadius: 16,
+    borderRadius: radius.card,
     padding: spacing.md,
     marginBottom: spacing.lg,
     gap: spacing.sm,

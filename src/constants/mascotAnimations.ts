@@ -10,6 +10,9 @@ const MASCOT_SOURCES = {
   angry: require('../../assets/webp animation/mascot-angry.webp'),
 } as const;
 
+/** Cycle order for tapping the tab-bar mascot. */
+export const MASCOT_VARIANTS: MascotVariant[] = ['happy', 'calm', 'tired', 'sad', 'angry'];
+
 const MOOD_TO_MASCOT: Record<MoodId, MascotVariant> = {
   happy:      'happy',
   excited:    'happy',
@@ -31,9 +34,14 @@ const MOOD_TO_MASCOT: Record<MoodId, MascotVariant> = {
   angry:      'angry',
 };
 
+/** Resolve a MoodId or MascotVariant to its mascot variant. Defaults to 'happy'. */
+export function getMascotVariant(key?: string): MascotVariant {
+  if (!key) return 'happy';
+  if (key in MASCOT_SOURCES) return key as MascotVariant;
+  return MOOD_TO_MASCOT[key as MoodId] ?? 'happy';
+}
+
 /** Accept a MoodId or a MascotVariant directly. Defaults to 'happy'. */
 export function getMascotSource(key?: string) {
-  if (!key) return MASCOT_SOURCES.happy;
-  if (key in MASCOT_SOURCES) return MASCOT_SOURCES[key as MascotVariant];
-  return MASCOT_SOURCES[MOOD_TO_MASCOT[key as MoodId] ?? 'happy'];
+  return MASCOT_SOURCES[getMascotVariant(key)];
 }

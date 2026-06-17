@@ -19,7 +19,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Screen, Shiba } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
-import { colors, typography, spacing, radius, shadows } from '@constants/theme';
+import { typography, spacing, radius, shadows } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { haptics } from '@lib/haptics';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
@@ -38,6 +40,8 @@ const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function AnalyzingScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('onboarding');
   const reducedMotion = useReducedMotion();
@@ -201,6 +205,8 @@ interface StepRowProps {
 }
 
 function StepRow({ label, state, indexDelayMs, reducedMotion }: StepRowProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const enterOpacity = useSharedValue(0);
   const enterTranslate = useSharedValue(8);
 
@@ -249,7 +255,7 @@ function StepRow({ label, state, indexDelayMs, reducedMotion }: StepRowProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     paddingTop: spacing.xxl,
     gap: spacing.lg,
@@ -258,7 +264,7 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
@@ -293,7 +299,7 @@ const styles = StyleSheet.create({
   stepsCard: {
     ...shadows.sm,
     backgroundColor: colors.surface,
-    borderRadius: 16,
+    borderRadius: radius.card,
     borderWidth: 1,
     borderColor: colors.borderLight,
     paddingVertical: spacing.md,

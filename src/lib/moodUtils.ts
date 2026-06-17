@@ -28,6 +28,8 @@ export function getMoodDef(
     bubbleColor: custom.color,
     textColor: TEXT,
     tintColor: custom.color + '33',
+    // Mood color at ~25% composites to a visible-but-deep tint over the dark surface.
+    tintColorDark: custom.color + '40',
     imageKey: custom.imageKey,
   };
 }

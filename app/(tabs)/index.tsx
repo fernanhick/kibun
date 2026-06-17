@@ -5,19 +5,21 @@ import { useRouter, Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useSessionStore, useMoodEntryStore, useAchievementsStore, useDailyInsightStore } from '@store/index';
+import { useSessionStore, useMoodEntryStore, useDailyInsightStore } from '@store/index';
 import { useUiPrefsStore } from '@store/uiPrefsStore';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { useHabitsStore } from '@store/habitsStore';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useCustomMoodsStore } from '@store/customMoodsStore';
-import { Button, Card, HabitIcon, InsightCard, MoodBubble, Screen } from '@components/index';
+import { Card, HabitIcon, InsightCard, MoodBubble, MoodLogger, Screen } from '@components/index';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { SpringPressable } from '@components/SpringPressable';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { getMoodDef } from '@lib/moodUtils';
-import { colors, spacing, typography, radius, shadows } from '@constants/theme';
-import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_BADGE_IMAGES, INSIGHT_CARD_IMAGES } from '@lib/achievements';
+import { spacing, typography, radius, shadows } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { INSIGHT_CARD_IMAGES } from '@lib/achievements';
 import { fetchDailyInsight } from '@lib/dailyInsight';
 import {
   generateLowMoodNudgeInsight,
@@ -66,6 +68,8 @@ function getMoodSentiment(recentEntries: Array<{ moodId: string }>): MoodSentime
 }
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const insets = useSafeAreaInsets();
@@ -152,12 +156,6 @@ export default function HomeScreen() {
     return count;
   }, [entries]);
 
-  const unlockedIds = useAchievementsStore((s) => s.unlockedIds);
-  const unlockedDefs = useMemo(
-    () => ACHIEVEMENT_DEFINITIONS.filter((d) => unlockedIds.includes(d.id)),
-    [unlockedIds]
-  );
-
   const isPro = session?.subscriptionStatus === 'trial' || session?.subscriptionStatus === 'active';
   const profile = useOnboardingStore((s) => s.profile);
   const insightContent = useDailyInsightStore((s) => s.insight);
@@ -221,6 +219,10 @@ export default function HomeScreen() {
     [habits, allHabitLogs, entries, today, t],
   );
 
+  const handleMoodLogged = (entryId: string, moodId: string) => {
+    router.push(`/mood-confirm?entryId=${entryId}&moodId=${moodId}` as Href);
+  };
+
   return (
     <View style={styles.container}>
       {showBanner && (
@@ -269,16 +271,14 @@ export default function HomeScreen() {
               </Text>
             )}
           </View>
-
-          <View style={styles.ctaSection}>
-            <Button
-              label={t('home.logMoodCta')}
-              onPress={() => router.push('/check-in' as Href)}
-              variant="sunrise"
-              fullWidth
-            />
-          </View>
         </LinearGradient>
+
+        <View style={styles.loggerCard}>
+          <Text style={styles.loggerTitle} accessibilityRole="header">
+            {t('checkIn.title')}
+          </Text>
+          <MoodLogger variant="screen" onLogged={handleMoodLogged} />
+        </View>
 
         <HabitsSection
           habits={habits}
@@ -302,26 +302,6 @@ export default function HomeScreen() {
             content={insightContent?.date === today ? insightContent.content : null}
             isLoading={insightLoading}
           />
-        )}
-
-        {unlockedDefs.length > 0 && (
-          <View style={styles.achievementsSection}>
-            <View style={styles.sectionHeaderChip}>
-              <Text style={styles.sectionHeader}>{t('home.achievementsHeader')}</Text>
-            </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.achievementsRow}
-            >
-              {unlockedDefs.map((def) => (
-                <View key={def.id} style={styles.achievementWrapper} accessibilityLabel={t('home.achievementA11y', { label: def.label, description: def.description })}>
-                  <Image source={ACHIEVEMENT_BADGE_IMAGES[def.id]} style={styles.achievementFloatingImage} />
-                  <Text style={styles.achievementLabel}>{def.label}</Text>
-                </View>
-              ))}
-            </ScrollView>
-          </View>
         )}
 
         <View style={styles.todaySection}>
@@ -491,6 +471,9 @@ interface HabitsSectionProps {
 }
 
 function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onManage }: HabitsSectionProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const habitStyles = useThemedStyles(createHabitStyles);
   const { t } = useTranslation('screens');
 
   // Group by tracking type so same-height cards land on the same grid row.
@@ -552,7 +535,7 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
                 accessibilityLabel={done ? t('home.habitDoneA11y', { name: h.name }) : t('home.habitNotDoneA11y', { name: h.name })}
               >
                 <View style={habitStyles.cardRow}>
-                  <HabitIcon icon={h.icon} size={22} color={colors.primary} style={habitStyles.cardIcon} />
+                  <HabitIcon icon={h.icon} size={18} color={colors.primary} circle circleSize={30} />
                   <Text
                     style={[habitStyles.cardName, done && habitStyles.cardNameDone]}
                     maxFontSizeMultiplier={1.3}
@@ -572,7 +555,7 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
           return (
             <View key={h.id} style={habitStyles.card}>
               <View style={habitStyles.cardRow}>
-                <HabitIcon icon={h.icon} size={22} color={colors.primary} style={habitStyles.cardIcon} />
+                <HabitIcon icon={h.icon} size={18} color={colors.primary} circle circleSize={30} />
                 <Text style={habitStyles.cardName} numberOfLines={1}>{h.name}</Text>
               </View>
               <View style={habitStyles.scaleRow}>
@@ -596,9 +579,8 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
   );
 }
 
-const habitStyles = StyleSheet.create({
+const createHabitStyles = (colors: ThemePalette) => StyleSheet.create({
   wrapper: {
-    paddingHorizontal: spacing.md,
     marginTop: spacing.md,
     gap: spacing.sm,
   },
@@ -613,9 +595,9 @@ const habitStyles = StyleSheet.create({
     gap: spacing.sm,
   },
   progressChip: {
-    backgroundColor: '#F1FFF2',
+    backgroundColor: colors.successLight,
     borderWidth: 1,
-    borderColor: '#A5D6A7',
+    borderColor: colors.successBorder,
     borderRadius: 999,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
@@ -623,7 +605,7 @@ const habitStyles = StyleSheet.create({
   progressChipText: {
     fontSize: typography.sizes.xs,
     fontFamily: typography.fonts.ui,
-    color: '#388E3C',
+    color: colors.successText,
   },
   manageLink: {
     fontSize: typography.sizes.sm,
@@ -634,15 +616,14 @@ const habitStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    marginHorizontal: spacing.md,
     marginTop: spacing.md,
     paddingVertical: 12,
     paddingHorizontal: spacing.md,
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     borderRadius: radius.lg,
     borderStyle: 'dashed',
-    backgroundColor: '#F7FBFF',
+    backgroundColor: colors.surface,
   },
   emptyText: {
     fontSize: typography.sizes.sm,
@@ -657,21 +638,20 @@ const habitStyles = StyleSheet.create({
   card: {
     ...shadows.sm,
     width: '48%',
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    backgroundColor: colors.surfaceElevated,
     borderRadius: radius.md,
     paddingVertical: 8,
     paddingHorizontal: 10,
     gap: 6,
   },
   cardDone: {
-    backgroundColor: '#F1FFF2',
+    backgroundColor: colors.primaryLight,
   },
   cardRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
-  cardIcon: {},
   cardName: {
     flex: 1,
     fontSize: typography.sizes.sm,
@@ -679,20 +659,20 @@ const habitStyles = StyleSheet.create({
     color: colors.text,
   },
   cardNameDone: {
-    color: '#388E3C',
+    color: colors.primaryDark,
   },
   checkBox: {
     width: 20,
     height: 20,
-    borderRadius: 6,
+    borderRadius: radius.md,
     borderWidth: 2,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkBoxDone: {
-    borderColor: '#66BB6A',
-    backgroundColor: '#66BB6A',
+    borderColor: colors.success,
+    backgroundColor: colors.success,
   },
   scaleRow: {
     flexDirection: 'row',
@@ -706,8 +686,8 @@ const habitStyles = StyleSheet.create({
     height: 14,
     borderRadius: 7,
     borderWidth: 1.5,
-    borderColor: '#C8DCFF',
-    backgroundColor: '#F0F5FF',
+    borderColor: colors.border,
+    backgroundColor: colors.background,
   },
   scaleDotActive: {
     borderColor: colors.primary,
@@ -718,6 +698,8 @@ const habitStyles = StyleSheet.create({
 // ─── Daily Insight Card ───────────────────────────────────────────────────────
 
 function DailyInsightCard({ content, isLoading }: { content: string | null; isLoading: boolean }) {
+  const { colors } = useTheme();
+  const insightStyles = useThemedStyles(createInsightStyles);
   const { t } = useTranslation('screens');
   return (
     <View style={insightStyles.wrapper}>
@@ -737,12 +719,11 @@ function DailyInsightCard({ content, isLoading }: { content: string | null; isLo
   );
 }
 
-const insightStyles = StyleSheet.create({
+const createInsightStyles = (colors: ThemePalette) => StyleSheet.create({
   wrapper: {
-    marginHorizontal: spacing.md,
     marginTop: spacing.md,
     backgroundColor: colors.pinkLight,
-    borderRadius: 16,
+    borderRadius: radius.card,
     borderWidth: 0.5,
     borderColor: colors.pinkBorder,
     padding: spacing.md,
@@ -777,7 +758,7 @@ const insightStyles = StyleSheet.create({
   },
 });
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -807,14 +788,13 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: 20,
+    borderRadius: radius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.32)',
     paddingHorizontal: spacing.md,
     paddingTop: spacing.lg,
     paddingBottom: spacing.md,
     marginTop: spacing.xs,
-    marginHorizontal: spacing.md,
   },
   heroTextCol: {
     alignItems: 'center',
@@ -836,7 +816,7 @@ const styles = StyleSheet.create({
   streakBadge: {
     fontSize: typography.sizes.xs,
     fontWeight: typography.weights.semibold,
-    color: '#7A4A00',
+    color: colors.accent,
     backgroundColor: colors.accentLight,
     borderWidth: 1,
     borderColor: colors.accentBorder,
@@ -844,44 +824,30 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     paddingHorizontal: spacing.sm,
   },
-  ctaSection: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.sm,
+  loggerCard: {
+    ...shadows.sm,
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: radius.card,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    marginTop: spacing.md,
+    paddingHorizontal: 0,
+    paddingVertical: spacing.md,
+    gap: spacing.sm,
+  },
+  loggerTitle: {
+    fontSize: typography.sizes.md,
+    fontFamily: typography.fonts.display,
+    color: colors.text,
+    textAlign: 'center',
   },
   todaySection: {
-    paddingHorizontal: spacing.md,
     paddingBottom: spacing.xl,
     gap: spacing.sm,
     marginTop: spacing.md,
   },
   insightCardsWrapper: {
-    paddingHorizontal: spacing.md,
     marginTop: spacing.md,
-  },
-  achievementsSection: {
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.lg,
-    gap: spacing.md,
-  },
-  achievementsRow: {
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 6,
-  },
-  achievementWrapper: {
-    alignItems: 'center',
-    gap: 6,
-  },
-  achievementFloatingImage: {
-    width: 72,
-    height: 72,
-    resizeMode: 'contain',
-  },
-  achievementLabel: {
-    fontSize: typography.sizes.xs,
-    fontFamily: typography.fonts.ui,
-    color: colors.primaryDark,
-    textAlign: 'center',
   },
   sectionHeaderChip: {
     alignSelf: 'flex-start',
@@ -895,12 +861,12 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: typography.sizes.md,
     fontFamily: typography.fonts.ui,
-    color: '#B07000',
+    color: colors.accent,
   },
   emptyState: {
     ...shadows.sm,
-    backgroundColor: '#FFF6EC',
-    borderRadius: 16,
+    backgroundColor: colors.accentLight,
+    borderRadius: radius.card,
     padding: spacing.md,
     gap: spacing.sm,
   },
@@ -913,7 +879,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: typography.sizes.xl,
     fontFamily: typography.fonts.display,
-    color: '#7A4A00',
+    color: colors.accent,
   },
   emptyBody: {
     fontSize: typography.sizes.body,
@@ -931,7 +897,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: 'rgba(255,255,255,0.85)',
+    backgroundColor: colors.surfaceElevated,
     borderRadius: radius.md,
     paddingVertical: 12,
     paddingHorizontal: spacing.md,
@@ -939,7 +905,7 @@ const styles = StyleSheet.create({
   emptyTipBadge: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: radius.xxl,
     backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
@@ -961,7 +927,7 @@ const styles = StyleSheet.create({
   },
   emptyAffirmation: {
     fontSize: typography.sizes.sm,
-    color: '#B07000',
+    color: colors.accent,
     textAlign: 'center',
     fontFamily: typography.fonts.ui,
     fontWeight: typography.weights.semibold,
@@ -970,7 +936,7 @@ const styles = StyleSheet.create({
   entryCard: {
     ...shadows.sm,
     borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceElevated,
     paddingHorizontal: spacing.sm,
     paddingVertical: 10,
   },
@@ -988,7 +954,7 @@ const styles = StyleSheet.create({
   entrySlotInline: {
     fontSize: typography.sizes.xs,
     color: colors.primaryDark,
-    backgroundColor: '#FFF4DF',
+    backgroundColor: colors.primaryLight,
     borderRadius: 999,
     paddingHorizontal: 6,
     paddingVertical: 2,

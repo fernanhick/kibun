@@ -2,18 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform, AppState } from 'react-native';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Stack, useRouter, type Href } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
+import { Fredoka_700Bold } from '@expo-google-fonts/fredoka';
 import {
-  Fredoka_500Medium,
-  Fredoka_600SemiBold,
-  Fredoka_700Bold,
-} from '@expo-google-fonts/fredoka';
+  NunitoSans_400Regular,
+  NunitoSans_600SemiBold,
+  NunitoSans_700Bold,
+} from '@expo-google-fonts/nunito-sans';
 import * as Notifications from 'expo-notifications';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
 import { prewarmMoodImages } from '@constants/moodImages';
-import { ThemeProvider } from '@theme/ThemeContext';
+import { colors } from '@constants/theme';
+import { ThemeProvider, useTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
 import { PersistentMascotOverlay } from '@components/PersistentMascotOverlay';
@@ -130,14 +133,24 @@ class ErrorBoundary extends React.Component<
   }
 }
 
+// Status bar glyph color must track the active theme. Lives inside ThemeProvider
+// (RootLayout itself renders above the provider, so it can't read useTheme).
+function ThemedStatusBar() {
+  const { isDark } = useTheme();
+  return <StatusBar style={isDark ? 'light' : 'dark'} />;
+}
+
 // ─── Root Layout ─────────────────────────────────────────────────────────────
 export default function RootLayout() {
   const router = useRouter();
   const { isReady } = useAuth();
   const [fontsLoaded] = useFonts({
-    Fredoka_500Medium,
-    Fredoka_600SemiBold,
+    // Fredoka reserved for display/headers only; body & UI use Nunito Sans
+    // (humanist sans — calmer, more grown-up than fully-rounded Fredoka).
     Fredoka_700Bold,
+    NunitoSans_400Regular,
+    NunitoSans_600SemiBold,
+    NunitoSans_700Bold,
   });
   const [splashDone, setSplashDone] = useState(false);
 
@@ -292,6 +305,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ErrorBoundary>
           <ThemeProvider>
+            <ThemedStatusBar />
             <View style={styles.appShell}>
             <Stack initialRouteName="(tabs)">
               <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
@@ -330,28 +344,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   errorTitle: {
     fontSize: 20,
     fontWeight: '600',
     marginBottom: 8,
-    color: '#1A1A2E',
+    color: colors.text,
   },
   errorMessage: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
   },
   restartButton: {
-    backgroundColor: '#6C63FF',
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
   restartText: {
-    color: '#fff',
+    color: colors.textInverse,
     fontWeight: '600',
     fontSize: 16,
   },

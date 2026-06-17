@@ -11,7 +11,9 @@ import { getMoodLabel } from '@lib/moodLabels';
 import { getMoodDef } from '@lib/moodUtils';
 import { safeParseDateString } from '@lib/safeDate';
 import { formatDate, formatTime as formatTimeFn } from '@i18n/dateFormat';
-import { colors, spacing, typography, radius } from '@constants/theme';
+import { spacing, typography, radius } from '@constants/theme';
+import { useTheme, type ThemePalette } from '@theme/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
 import type { MoodSlot, SentimentLabel, LifeEventCategory } from '@models/index';
 
 const EVENT_CATEGORY_CONFIG: Record<
@@ -40,6 +42,8 @@ const SLOT_KEYS: Record<MoodSlot, 'morning' | 'afternoon' | 'night' | 'pre_sleep
 };
 
 export default function DayDetailScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { t } = useTranslation('screens');
   const params = useLocalSearchParams<{ date: string }>();
@@ -294,7 +298,7 @@ function formatDateHeading(isoDate: string): string {
   });
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -338,9 +342,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#EEF4FF',
+    backgroundColor: colors.primaryLight,
     borderWidth: 1,
-    borderColor: '#D6E4FF',
+    borderColor: colors.border,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -365,9 +369,9 @@ const styles = StyleSheet.create({
     color: colors.primaryDark,
     marginTop: spacing.xs,
     marginLeft: 48 + spacing.sm,
-    backgroundColor: '#FFF4DF',
+    backgroundColor: colors.warningLight,
     borderWidth: 1,
-    borderColor: '#FFE2B1',
+    borderColor: colors.warningBorder,
     borderRadius: 999,
     paddingHorizontal: 8,
     paddingVertical: 3,
@@ -377,7 +381,7 @@ const styles = StyleSheet.create({
     marginLeft: 48 + spacing.sm,
     gap: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: '#E8EDF5',
+    borderTopColor: colors.border,
     paddingTop: spacing.md,
   },
   detailBlock: {
@@ -429,9 +433,9 @@ const styles = StyleSheet.create({
   },
   eventCard: {
     backgroundColor: colors.surface,
-    borderRadius: 10,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#E8EDF5',
+    borderColor: colors.border,
     borderLeftWidth: 3,
     padding: spacing.sm,
     gap: 4,
@@ -473,12 +477,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#F0F7FF',
+    backgroundColor: colors.primaryLight,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: '#C8DCFF',
+    borderColor: colors.border,
   },
   efChipText: {
     fontSize: typography.sizes.xs,
@@ -494,9 +498,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: radius.lg,
-    backgroundColor: '#FFF0F0',
+    backgroundColor: colors.errorLight,
     borderWidth: 1,
-    borderColor: '#FFCDD2',
+    borderColor: colors.errorBorder,
   },
   deleteText: {
     fontSize: typography.sizes.sm,
@@ -514,7 +518,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     backgroundColor: colors.primaryLight,
     borderWidth: 1,
-    borderColor: '#C6DBFF',
+    borderColor: colors.border,
   },
   logAnotherText: {
     fontSize: typography.sizes.body,

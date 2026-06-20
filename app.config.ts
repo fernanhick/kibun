@@ -21,7 +21,7 @@ export default ({ config }: ConfigContext) => ({
   ...config,
   name: 'Kibun',
   slug: 'kibun',
-  version: '1.0.0',
+  version: '1.0.1',
   scheme: 'kibun',
   // Portrait-only on all devices (phone + tablet). Native manifest enforces
   // this; @lib/orientation:applyOrientationPolicy also locks at runtime as a
@@ -39,7 +39,7 @@ export default ({ config }: ConfigContext) => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.kibun.app',
-    buildNumber: '1',
+    buildNumber: '2',
     // Use the high-quality 1024x1024 icon; platform-specific sizes are in
     // assets/icons/apple-devices/AppIcon.appiconset and are applied during the
     // EAS/Xcode build process.
@@ -57,6 +57,7 @@ export default ({ config }: ConfigContext) => ({
       backgroundColor: '#4C7A6A',
     },
     package: 'com.kibun.app',
+    versionCode: 2,
     ...(hasGoogleServices ? { googleServicesFile } : {}),
     resizeableActivity: true,
     // SYSTEM_ALERT_WINDOW leaks in from RN's debug manifest; AD_ID is auto-injected

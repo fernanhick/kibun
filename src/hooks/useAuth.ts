@@ -11,6 +11,7 @@ import {
 import { useAchievementsStore } from '@store/achievementsStore';
 import { refreshSubscriptionStatus, loginPurchases, logoutPurchases } from '@lib/revenuecat';
 import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
+import { migrateHabitIcon } from '@lib/habitPresets';
 import { safeParseIsoDate } from '@lib/safeDate';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import type { Habit, HabitLog, CustomMood, LifeEvent, LifeEventCategory, HabitTrackingType, UserSession } from '@models/index';
@@ -303,14 +304,24 @@ async function syncHabitsForUser(userId: string): Promise<void> {
     return;
   }
 
-  const habits: Habit[] = (habitsRes.data ?? []).map((row) => ({
-    id: row.id,
-    name: row.name,
-    icon: row.icon,
-    trackingType: row.tracking_type as HabitTrackingType,
-    displayOrder: row.display_order,
-    createdAt: row.created_at,
-  }));
+  // One-time icon backfill: rows created by pre-vector-glyph builds still store
+  // the old emoji. Collect rows whose icon upgrades to a new `ion:` glyph so we
+  // can write the corrected value back. Self-limiting — once the DB is clean the
+  // diff is empty, so this no-ops on every subsequent sync.
+  const iconBackfill: { id: string; icon: string }[] = [];
+
+  const habits: Habit[] = (habitsRes.data ?? []).map((row) => {
+    const icon = migrateHabitIcon(row.icon);
+    if (icon !== row.icon) iconBackfill.push({ id: row.id, icon });
+    return {
+      id: row.id,
+      name: row.name,
+      icon,
+      trackingType: row.tracking_type as HabitTrackingType,
+      displayOrder: row.display_order,
+      createdAt: row.created_at,
+    };
+  });
 
   const logs: HabitLog[] = (logsRes.data ?? []).map((row) => ({
     id: row.id,
@@ -320,6 +331,18 @@ async function syncHabitsForUser(userId: string): Promise<void> {
   }));
 
   useHabitsStore.getState().mergeRemote(habits, logs);
+
+  // Fire-and-forget — never blocks the sync. Updates only the `icon` column so a
+  // locally-stale row can't clobber other fields.
+  for (const { id, icon } of iconBackfill) {
+    void withFreshAuth(() =>
+      supabase!.from('habits').update({ icon }).eq('id', id).eq('user_id', userId)
+    ).then(({ error }) => {
+      if (error && __DEV__) {
+        console.error('[kibun:sync] Failed to backfill habit icon:', error.message);
+      }
+    });
+  }
 }
 
 async function syncCustomMoodsForUser(userId: string): Promise<void> {

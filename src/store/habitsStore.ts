@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import { Habit, HabitLog, HabitTrackingType } from '@models/index';
+import { migrateHabitIcon } from '@lib/habitPresets';
 import { supabase } from '@lib/supabase';
 import { withRetry } from '@lib/syncRetry';
 import { useSessionStore } from './sessionStore';
@@ -145,7 +146,8 @@ export const useHabitsStore = create<HabitsState>()(
         set((s) => {
           const habitMap = new Map(s.habits.map((h) => [h.id, h]));
           for (const h of remoteHabits) {
-            if (!habitMap.has(h.id)) habitMap.set(h.id, h);
+            // Remote rows may still hold the pre-vector-glyph emoji icons.
+            if (!habitMap.has(h.id)) habitMap.set(h.id, { ...h, icon: migrateHabitIcon(h.icon) });
           }
           const logKey = (l: HabitLog) => `${l.habitId}:${l.logDate}`;
           const logMap = new Map(s.logs.map((l) => [logKey(l), l]));
@@ -167,6 +169,16 @@ export const useHabitsStore = create<HabitsState>()(
       name: 'kibun-habits',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (s) => ({ habits: s.habits, logs: s.logs }),
+      version: 1,
+      // v0 → v1: habits stored emoji icons before the switch to `ion:` vector
+      // glyphs. Remap any known legacy emoji to the current glyph on load.
+      migrate: (persisted, version) => {
+        const state = persisted as { habits?: Habit[]; logs?: HabitLog[] } | undefined;
+        if (state?.habits && version < 1) {
+          state.habits = state.habits.map((h) => ({ ...h, icon: migrateHabitIcon(h.icon) }));
+        }
+        return state as HabitsState;
+      },
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },

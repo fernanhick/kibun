@@ -20,6 +20,7 @@ import { ThemeProvider, useTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
 import { PersistentMascotOverlay } from '@components/PersistentMascotOverlay';
+import { MoodImageWarmer } from '@components/MoodImageWarmer';
 import { ReviewPromptModal } from '@components/ReviewPromptModal';
 import { initPurchases, refreshSubscriptionStatus } from '@lib/revenuecat';
 import { configureNotificationHandler, scheduleSlotNotifications } from '@lib/notifications';
@@ -327,6 +328,7 @@ export default function RootLayout() {
             </Stack>
             <PersistentMascotOverlay />
             <ReviewPromptModal />
+            <MoodImageWarmer />
           </View>
           </ThemeProvider>
         </ErrorBoundary>

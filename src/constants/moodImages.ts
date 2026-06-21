@@ -46,9 +46,13 @@ export function prewarmMoodImages(): Promise<void> {
       // Non-fatal: prefetch below will still try to fetch via the resolved URI.
     }
 
-    // Step 2 — resolve each require() id to a URI expo-image understands,
-    // then prefetch into the memory+disk cache so the first <Image> render
-    // does not block on PNG decode.
+    // Step 2 — warm expo-image's cache for the screens that still render moods
+    // through expo-image (e.g. custom-moods). MoodBubble itself renders with RN's
+    // built-in <Image>, which has its own native cache — that path is warmed by
+    // <MoodImageWarmer> mounted in the root layout, not by this prefetch.
+    // Resolve each require() id to a URI expo-image understands, then prefetch
+    // into the memory+disk cache so the first expo-image render does not block on
+    // PNG decode.
     const uris = modules
       .map((mod) => RNImage.resolveAssetSource(mod as any)?.uri)
       .filter((uri): uri is string => typeof uri === 'string' && uri.length > 0);

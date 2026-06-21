@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import * as Crypto from 'expo-crypto';
 import * as Notifications from 'expo-notifications';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,9 +10,7 @@ import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { useSessionStore } from '@store/sessionStore';
-import { useMoodEntryStore } from '@store/moodEntryStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
-import { getCheckInSlot } from '@lib/checkInSlot';
 import { saveProfileToSupabase } from '@lib/profileSync';
 import { seedHabitsFromProfile } from '@lib/seedHabitsFromProfile';
 import { NotificationSlot } from '@models/index';
@@ -34,7 +31,6 @@ export default function NotificationPermissionScreen() {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation(['onboarding']);
   const { setComplete, setPersonalizationSnapshot } = useOnboardingGateStore();
-  const firstMoodId = useOnboardingStore((s) => s.firstMoodId);
   const resetOnboarding = useOnboardingStore((s) => s.resetProfile);
   const [selectedSlots, setSelectedSlots] = useState<string[]>(['morning', 'evening']);
   const [requesting, setRequesting] = useState(false);
@@ -46,18 +42,6 @@ export default function NotificationPermissionScreen() {
     hint: t(`onboarding:notificationPermission.slotOpt.${value}.hint`),
   }));
 
-  const maybeLogFirstMood = () => {
-    if (!firstMoodId) return;
-    const entry = {
-      id: Crypto.randomUUID(),
-      moodId: firstMoodId,
-      note: null,
-      slot: getCheckInSlot(),
-      loggedAt: new Date().toISOString(),
-    };
-    useMoodEntryStore.getState().addEntry(entry);
-  };
-
   const handleSlotToggle = (value: string) => {
     setSelectedSlots((prev) => toggleSlot(prev, value));
   };
@@ -65,7 +49,6 @@ export default function NotificationPermissionScreen() {
   const handleEnable = async () => {
     if (requesting) return;
     setRequesting(true);
-    maybeLogFirstMood();
 
     // Persist profile to Supabase before clearing in-memory state
     const profile = useOnboardingStore.getState().profile;
@@ -97,8 +80,6 @@ export default function NotificationPermissionScreen() {
   };
 
   const handleSkip = () => {
-    maybeLogFirstMood();
-
     // Persist profile to Supabase before clearing in-memory state
     const profile = useOnboardingStore.getState().profile;
     const persistedFirstMoodId = useOnboardingStore.getState().firstMoodId;
@@ -120,7 +101,7 @@ export default function NotificationPermissionScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <OnboardingProgress current={8} total={8} style={styles.progress} />
+        <OnboardingProgress current={6} total={6} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"

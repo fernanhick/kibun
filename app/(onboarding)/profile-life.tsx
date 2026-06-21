@@ -46,7 +46,7 @@ export default function ProfileLifeScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <OnboardingProgress current={5} total={8} style={styles.progress} />
+        <OnboardingProgress current={4} total={6} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"

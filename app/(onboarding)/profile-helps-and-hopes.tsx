@@ -38,7 +38,7 @@ export default function ProfileHelpsAndHopesScreen() {
   const handleContinue = () => {
     if (!canContinue) return;
     updateProfile({ goals });
-    router.push('/(onboarding)/reflection');
+    router.push('/(onboarding)/notification-permission');
   };
 
   return (
@@ -49,7 +49,7 @@ export default function ProfileHelpsAndHopesScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
       >
-        <OnboardingProgress current={6} total={8} style={styles.progress} />
+        <OnboardingProgress current={5} total={6} style={styles.progress} />
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"

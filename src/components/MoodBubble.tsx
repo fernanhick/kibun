@@ -1,6 +1,5 @@
-import { useRef, useEffect } from 'react';
-import { Animated, Pressable, Text, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { memo, useRef, useEffect } from 'react';
+import { Animated, Image, Pressable, Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { MoodDefinition, MOOD_MAP, MOODS, MoodGroup } from '@constants/moods';
@@ -62,6 +61,29 @@ const GROUP_MOOD_ORDER: Record<MoodGroup, string[]> = {
   'red-orange': MOODS.filter((m) => m.group === 'red-orange').map((m) => m.id),
   blue: MOODS.filter((m) => m.group === 'blue').map((m) => m.id),
 };
+
+// The mood face uses React Native's built-in <Image> (not expo-image): these are
+// tiny, bundled, prewarmed PNGs, and expo-image was dropping its bitmap when a
+// neighbouring bubble's `selected` state flipped — making the *previous* image
+// vanish on the next tap. RN Image renders bundled require() assets directly with
+// no memory-disk recycling, so it doesn't blank. Memoized on the stable source +
+// size so selection changes never re-render it.
+const MoodFace = memo(function MoodFace({
+  source,
+  size,
+}: {
+  source: NonNullable<(typeof MOOD_IMAGES)[string]>;
+  size: number;
+}) {
+  return (
+    <Image
+      source={source}
+      style={{ width: size, height: size }}
+      resizeMode="contain"
+      fadeDuration={0}
+    />
+  );
+});
 
 const getMoodImage = (mood: MoodDefinition) => {
   const resolvedKeys = [
@@ -169,7 +191,9 @@ export function MoodBubble({
           shadowOffset: { width: 0, height: 6 },
           shadowOpacity: 0.35,
           shadowRadius: 18,
-          elevation: 8,
+          // NOTE: no Android `elevation` here. Elevation on a view that also runs
+          // a scale spring makes Android drop child content (the mood image blanks
+          // and never redraws). iOS shadow props above are safe.
         },
         { transform: [{ scale: scaleAnim }] },
       ]}
@@ -189,6 +213,10 @@ export function MoodBubble({
         style={({ pressed }) => [
           styles.bone,
           { width },
+          // `overflow: hidden` only where the radial gradient must be clipped to
+          // the rounded corners. Applying it unconditionally + the parent scale
+          // spring triggers the Android child-blanking bug on the mood image.
+          showGradient && styles.clip,
           selected && {
             backgroundColor: mood.tintColor,
             borderWidth: 2.5,
@@ -220,14 +248,7 @@ export function MoodBubble({
           </Svg>
         )}
         {getMoodImage(mood) ? (
-          <Image
-            source={getMoodImage(mood)!}
-            style={{ width: imageSize, height: imageSize }}
-            contentFit="contain"
-            cachePolicy="memory-disk"
-            recyclingKey={`mood-${mood.id}`}
-            transition={0}
-          />
+          <MoodFace source={getMoodImage(mood)!} size={imageSize} />
         ) : (
           <View
             style={[
@@ -270,8 +291,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     gap: spacing.xs,
     borderRadius: radius.lg,
-    overflow: 'hidden',
     backgroundColor: 'transparent',
+  },
+  clip: {
+    overflow: 'hidden',
   },
   pressed: {
     opacity: 0.82,

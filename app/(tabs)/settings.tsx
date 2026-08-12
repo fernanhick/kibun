@@ -54,7 +54,7 @@ const DEFAULT_SLOT_TIME: Record<NotificationSlot, string> = {
   'pre-sleep': '22:00',
 };
 
-const LANGUAGE_OPTIONS: LanguagePref[] = ['system', 'en', 'es'];
+const LANGUAGE_OPTIONS: LanguagePref[] = ['system', 'en', 'es', 'pt', 'de'];
 
 type TabKey = 'reminders' | 'general' | 'about';
 const TABS: TabKey[] = ['reminders', 'general', 'about'];

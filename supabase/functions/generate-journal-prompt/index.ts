@@ -6,14 +6,24 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-type AppLanguage = "en" | "es";
+type AppLanguage = "en" | "es" | "pt" | "de";
 
 function toSupportedLanguage(value: unknown): AppLanguage {
   if (typeof value !== "string") return "en";
   const normalized = value.toLowerCase();
   if (normalized.startsWith("es")) return "es";
+  if (normalized.startsWith("pt")) return "pt";
+  if (normalized.startsWith("de")) return "de";
   return "en";
 }
+
+// Target language the model writes the question in. Prompt scaffolding stays English.
+const LANGUAGE_NAMES: Record<AppLanguage, string> = {
+  en: "English",
+  es: "Spanish",
+  pt: "Brazilian Portuguese",
+  de: "German",
+};
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -87,25 +97,18 @@ Deno.serve(async (req: Request) => {
           .join("\n")
       : "";
 
-    const systemMessage = language === "es"
-      ? "Eres un coach de bienestar emocional calido y empatico para la app de seguimiento de animo Kibun. " +
-        "Genera exactamente UNA pregunta abierta de reflexion basada en el animo actual del usuario y su contexto emocional reciente. " +
-        "La pregunta debe ser pensada, especifica, sin juicio, e invitar a una reflexion genuina. " +
-        "Mantenla en una sola frase. No uses comillas ni numeracion. " +
-        "No preguntes algo que la persona no pueda responder ahora mismo. " +
-        "Ejemplos de buenas preguntas: " +
-        "'Has sentido ansiedad varias veces esta semana, que parte se siente mas incierta hoy?' " +
-        "'Hoy te sientes en calma, que ayudo a crear ese espacio?' " +
-        "'Volviste a registrar cansancio esta tarde, hay algo que te este drenando energia ultimamente?'"
-      : "You are a warm, empathetic emotional wellness coach for the Kibun mood tracking app. " +
-        "Generate exactly ONE open-ended reflection question based on the user's current mood and recent emotional context. " +
-        "The question should be thoughtful, specific, non-judgmental, and invite genuine self-reflection. " +
-        "Keep it to one sentence. Do not include quotation marks or numbering. " +
-        "Do not ask about something the user cannot answer right now. " +
-        "Examples of good questions: " +
-        "'You have been feeling anxious several times this week - what feels most uncertain right now?' " +
-        "'You are feeling calm today - what contributed to that sense of ease?' " +
-        "'You logged tired again this afternoon - is there something draining your energy lately?'";
+    const languageName = LANGUAGE_NAMES[language];
+    const systemMessage =
+      "You are a warm, empathetic emotional wellness coach for the Kibun mood tracking app. " +
+      "Generate exactly ONE open-ended reflection question based on the user's current mood and recent emotional context. " +
+      "The question should be thoughtful, specific, non-judgmental, and invite genuine self-reflection. " +
+      "Keep it to one sentence. Do not include quotation marks or numbering. " +
+      "Do not ask about something the user cannot answer right now. " +
+      "Examples of good questions: " +
+      "'You have been feeling worried several times this week - what feels most uncertain right now?' " +
+      "'You are feeling calm today - what contributed to that sense of ease?' " +
+      "'You logged tired again this afternoon - is there something draining your energy lately?' " +
+      `Write the question in ${languageName}.`;
 
     const userMessage = [
       `Current mood: ${mood_label} (group: ${mood_group})`,
@@ -114,9 +117,7 @@ Deno.serve(async (req: Request) => {
         : "",
       recentLines ? `\nRecent mood history:\n${recentLines}` : "",
       profileContext ? `\nUser profile:\n${profileContext}` : "",
-      language === "es"
-        ? "\nGenera una pregunta de reflexion para esta persona basada en su animo y contexto."
-        : "\nGenerate one reflection question for this user based on their current mood and context.",
+      "\nGenerate one reflection question for this user based on their current mood and context.",
     ]
       .filter(Boolean)
       .join("\n");

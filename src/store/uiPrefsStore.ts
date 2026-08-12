@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type LanguagePref = 'system' | 'en' | 'es';
+export type LanguagePref = 'system' | 'en' | 'es' | 'pt' | 'de';
 export type ThemePref = 'system' | 'light' | 'dark';
 
 interface UiPrefsState {

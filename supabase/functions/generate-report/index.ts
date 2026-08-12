@@ -32,31 +32,60 @@ function pearsonR(xs: number[], ys: number[]): number {
   return denom === 0 ? 0 : num / denom;
 }
 
-type AppLanguage = "en" | "es";
+type AppLanguage = "en" | "es" | "pt" | "de";
 
 function toSupportedLanguage(value: unknown): AppLanguage {
   if (typeof value !== "string") return "en";
   const normalized = value.toLowerCase();
   if (normalized.startsWith("es")) return "es";
+  if (normalized.startsWith("pt")) return "pt";
+  if (normalized.startsWith("de")) return "de";
   return "en";
 }
 
-function reportTypeLabel(reportType: "weekly" | "monthly", language: AppLanguage): string {
-  if (language === "es") return reportType === "weekly" ? "semanal" : "mensual";
-  return reportType;
-}
+// Human-readable target language. The prompt scaffolding stays in English; the
+// model is told to write all user-facing output in this language. Add a locale
+// here (+ toSupportedLanguage above) and every AI surface follows automatically.
+const LANGUAGE_NAMES: Record<AppLanguage, string> = {
+  en: "English",
+  es: "Spanish",
+  pt: "Brazilian Portuguese",
+  de: "German",
+};
 
+// Localized "weekly"/"monthly" — used ONLY for the deterministic (non-AI) push body.
+const REPORT_TYPE_LABEL: Record<AppLanguage, Record<"weekly" | "monthly", string>> = {
+  en: { weekly: "weekly", monthly: "monthly" },
+  es: { weekly: "semanal", monthly: "mensual" },
+  pt: { weekly: "semanal", monthly: "mensal" },
+  de: { weekly: "wöchentliche", monthly: "monatliche" },
+};
+
+// Deterministic "report ready" push copy (not model-generated).
 function getPushCopy(language: AppLanguage, reportType: "weekly" | "monthly") {
-  if (language === "es") {
-    return {
-      title: "Tu reporte de kibun esta listo",
-      body: `Tu analisis emocional ${reportTypeLabel(reportType, language)} te esta esperando`,
-    };
+  const label = REPORT_TYPE_LABEL[language][reportType];
+  switch (language) {
+    case "es":
+      return {
+        title: "Tu reporte de kibun esta listo",
+        body: `Tu analisis emocional ${label} te esta esperando`,
+      };
+    case "pt":
+      return {
+        title: "Seu resumo do kibun está pronto",
+        body: `Sua análise de humor ${label} está esperando por você`,
+      };
+    case "de":
+      return {
+        title: "Dein kibun-Bericht ist fertig",
+        body: `Deine ${label} Stimmungsanalyse wartet auf dich`,
+      };
+    default:
+      return {
+        title: "Your kibun report is ready",
+        body: `Your ${reportType} mood analysis is waiting for you`,
+      };
   }
-  return {
-    title: "Your kibun report is ready",
-    body: `Your ${reportType} mood analysis is waiting for you`,
-  };
 }
 
 Deno.serve(async (req: Request) => {
@@ -288,35 +317,28 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    const systemMessage = language === "es"
-      ? "Eres un analista emocional calido y perspicaz para la app kibun. " +
-        "Genera un reporte emocional personalizado como objeto JSON para que el cliente lo renderice en secciones ricas de UI. " +
-        "Se empatico, especifico y accionable. Usa el nombre de la persona cuando sea natural. " +
-        "Manten el texto conciso: todo el reporte debe leerse en menos de 60 segundos.\n\n" +
-        "Devuelve JSON con exactamente estos campos:\n" +
-        '- "headline": string. Titulo breve y calido (max ~70 caracteres), por ejemplo "Una semana tranquila y con buen ritmo".\n' +
-        '- "summary": string. 2-4 frases en prosa sobre el periodo. Sin markdown.\n' +
-        '- "patterns": array de 2-4 strings. Cada string es una observacion sobre horarios, mezcla de animo, tendencia o correlacion con habitos cuando sea relevante. Sin markdown ni guiones.\n' +
-        '- "highlight": object o null. Si hay algo notable: { "label": frase corta, "detail": una frase de contexto }. Usa null cuando no destaque nada.\n' +
-        '- "nudge": object. { "title": frase corta en imperativo, "body": 1-2 frases con una sugerencia suave y accionable }.\n' +
-        '- "tone": uno de "positive" | "neutral" | "mixed" | "tough". Mejor caracterizacion general del periodo.\n' +
-        "Devuelve solo JSON, sin bloques markdown."
-      : "You are a warm, insightful mood analyst for the kibun app. " +
-        "Generate a personalized mood report as a JSON object that the client " +
-        "will render into rich UI sections. Be supportive, specific, and actionable. " +
-        "Use the user's name when natural. Keep prose concise - the whole report " +
-        "should read in under 60 seconds.\n\n" +
-        "Return JSON with exactly these fields:\n" +
-        '- "headline": string. A short, warm one-line title (max ~70 chars), e.g. "A gentle, mostly-calm week".\n' +
-        '- "summary": string. 2-4 sentences of plain prose summarising the period. No markdown.\n' +
-        '- "patterns": array of 2-4 strings. Each string is a single observation about timing, mood mix, trend, or notable habit correlations when relevant. No markdown, no leading bullet characters.\n' +
-        '- "highlight": object or null. When notable, { "label": short phrase, "detail": one sentence of context }. Use null when nothing stands out.\n' +
-        '- "nudge": object. { "title": short imperative phrase, "body": 1-2 sentences with one gentle, actionable suggestion }.\n' +
-        '- "tone": one of "positive" | "neutral" | "mixed" | "tough". Best characterisation of the period overall.\n' +
-        "Output JSON only - do not wrap in markdown fences.";
+    const languageName = LANGUAGE_NAMES[language];
+    const systemMessage =
+      "You are a warm, insightful mood analyst for the kibun app. " +
+      "Generate a personalized mood report as a JSON object that the client " +
+      "will render into rich UI sections. Be supportive, specific, and actionable. " +
+      "Use the user's name when natural. Keep prose concise - the whole report " +
+      "should read in under 60 seconds.\n\n" +
+      "Return JSON with exactly these fields:\n" +
+      '- "headline": string. A short, warm one-line title (max ~70 chars), e.g. "A gentle, mostly-calm week".\n' +
+      '- "summary": string. 2-4 sentences of plain prose summarising the period. No markdown.\n' +
+      '- "patterns": array of 2-4 strings. Each string is a single observation about timing, mood mix, trend, or notable habit correlations when relevant. No markdown, no leading bullet characters.\n' +
+      '- "highlight": object or null. When notable, { "label": short phrase, "detail": one sentence of context }. Use null when nothing stands out.\n' +
+      '- "nudge": object. { "title": short imperative phrase, "body": 1-2 sentences with one gentle, actionable suggestion }.\n' +
+      '- "tone": one of "positive" | "neutral" | "mixed" | "tough". Best characterisation of the period overall.\n' +
+      "Output JSON only - do not wrap in markdown fences.\n\n" +
+      `Write every user-facing string value (headline, summary, each entry in patterns, ` +
+      `highlight.label, highlight.detail, nudge.title, nudge.body) in ${languageName}. ` +
+      `Keep all JSON keys in English, and return the "tone" value as one of the exact ` +
+      `English enum words listed above (do not translate it).`;
 
     const userMessage = [
-      language === "es" ? `Tipo de reporte: ${reportTypeLabel(reportType, language)}` : `Report type: ${reportType}`,
+      `Report type: ${reportType}`,
       `Period: ${periodStart} to ${periodEnd}`,
       `\nMood check-ins (${entries.length} entries):`,
       moodLines.join("\n"),
@@ -326,9 +348,7 @@ Deno.serve(async (req: Request) => {
             habitSummaryLines.length > 1 ? "s" : ""
           }):\n` + habitSummaryLines.join("\n")
         : "",
-      language === "es"
-        ? `\nGenera un reporte emocional ${reportTypeLabel(reportType, language)} para ${userName} con el formato JSON indicado.`
-        : `\nGenerate a ${reportType} mood report for ${userName} as the JSON object described.`,
+      `\nGenerate a ${reportType} mood report for ${userName} as the JSON object described.`,
     ].filter((s) => s !== "").join("\n");
 
     // --- Call OpenAI API ---
@@ -388,7 +408,7 @@ Deno.serve(async (req: Request) => {
       }
 
       reportContent = structured
-        ? renderStructuredAsMarkdown(structured)
+        ? renderStructuredAsMarkdown(structured, language)
         : rawContent;
     } catch (err) {
       console.error("[generate-report] OpenAI fetch failed:", err);
@@ -538,13 +558,23 @@ function sanitizeStructured(raw: Record<string, unknown>): Record<string, unknow
   };
 }
 
-function renderStructuredAsMarkdown(s: Record<string, unknown>): string {
+// Localized header for the markdown fallback copy stored alongside `structured`.
+// The model-generated labels (highlight/nudge) are already in-language; only this
+// fixed section header needs translating.
+const PATTERNS_HEADER: Record<AppLanguage, string> = {
+  en: "Patterns we noticed",
+  es: "Patrones que notamos",
+  pt: "Padrões que percebemos",
+  de: "Muster, die uns aufgefallen sind",
+};
+
+function renderStructuredAsMarkdown(s: Record<string, unknown>, language: AppLanguage): string {
   const lines: string[] = [];
   if (s.headline) lines.push(`## ${s.headline}`);
   if (s.summary) lines.push("", String(s.summary));
   const patterns = Array.isArray(s.patterns) ? (s.patterns as string[]) : [];
   if (patterns.length) {
-    lines.push("", "### Patterns we noticed");
+    lines.push("", `### ${PATTERNS_HEADER[language]}`);
     for (const p of patterns) lines.push(`- ${p}`);
   }
   if (s.highlight && typeof s.highlight === "object") {

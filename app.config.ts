@@ -6,8 +6,14 @@ import { existsSync } from 'node:fs';
 const googleServicesFile = './google-services.json';
 const hasGoogleServices = existsSync(googleServicesFile);
 
+// NOTE: `kibun.app` is NOT our domain — it belongs to an unrelated product
+// ("Kibun — Share your status in one click"). Our site is kibun-app.com.
+// Universal Links / App Links are intentionally omitted here: enabling them
+// requires an apple-app-site-association + assetlinks.json served from a
+// domain we control. Add 'https://www.kibun-app.com' back only once those
+// files are deployed and verified.
 const linkingConfig = {
-  prefixes: ['kibun://', 'https://kibun.app'],
+  prefixes: ['kibun://'],
   config: {
     screens: {
       '(tabs)': '(tabs)',

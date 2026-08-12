@@ -6,14 +6,24 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-type AppLanguage = "en" | "es";
+type AppLanguage = "en" | "es" | "pt" | "de";
 
 function toSupportedLanguage(value: unknown): AppLanguage {
   if (typeof value !== "string") return "en";
   const normalized = value.toLowerCase();
   if (normalized.startsWith("es")) return "es";
+  if (normalized.startsWith("pt")) return "pt";
+  if (normalized.startsWith("de")) return "de";
   return "en";
 }
+
+// Target language the model writes the narrative in. Prompt scaffolding stays English.
+const LANGUAGE_NAMES: Record<AppLanguage, string> = {
+  en: "English",
+  es: "Spanish",
+  pt: "Brazilian Portuguese",
+  de: "German",
+};
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -123,16 +133,12 @@ Deno.serve(async (req: Request) => {
       `Hardest month: ${worstMonth}`,
     ].join('\n');
 
-    const prompt = language === "es"
-      ? `Eres un acompanante de bienestar calido y reflexivo que resume el ano de seguimiento emocional de una persona.
-  Con estas estadisticas, escribe una narrativa personalizada de 3 frases con tono reflexivo y alentador.
-  Enfocate en crecimiento, patrones y resiliencia. No uses vietas. Maximo 80 palabras.
-
-  Estadisticas:
-  ${statsContext}`
-      : `You are a warm, thoughtful wellness companion summarising a user's year of mood tracking.
+    const languageName = LANGUAGE_NAMES[language];
+    const prompt =
+      `You are a warm, thoughtful wellness companion summarising a user's year of mood tracking.
   Based on the following stats, write a personalised 3-sentence narrative that feels reflective and encouraging.
   Focus on growth, patterns, and resilience. Do not use bullet points. Keep it under 80 words.
+  Write the narrative in ${languageName}.
 
   Stats:
   ${statsContext}`;

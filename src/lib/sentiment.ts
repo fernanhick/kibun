@@ -52,12 +52,24 @@ let weights: ModelWeights | null = null;
 let vocab: Record<string, number> | null = null;
 let initPromise: Promise<void> | null = null;
 let loadedLanguage: SentimentLanguage | null = null;
-let activeLanguage: SentimentLanguage = 'en';
+// null = the active UI language has no trained sentiment model, so the feature
+// is disabled (analyseSentiment returns null) rather than mis-scoring foreign
+// text with the English model.
+let activeLanguage: SentimentLanguage | null = 'en';
 const unavailableLanguages = new Set<SentimentLanguage>();
 
-function normalizeLanguage(language?: string): SentimentLanguage {
+/**
+ * Resolve a UI language code to a sentiment model that actually exists on device.
+ * Returns null when no trained model matches (e.g. pt, de) — callers then skip
+ * inference entirely instead of falling back to the English model.
+ * Add a locale here once its assets ship (see scripts/train_sentiment_model.py).
+ */
+function resolveSentimentLanguage(language?: string): SentimentLanguage | null {
   if (!language) return 'en';
-  return language.toLowerCase().startsWith('es') ? 'es' : 'en';
+  const code = language.toLowerCase();
+  if (code.startsWith('es')) return 'es';
+  if (code.startsWith('en')) return 'en';
+  return null;
 }
 
 const vocabLoaders: Record<SentimentLanguage, () => Record<string, number>> = {
@@ -126,7 +138,7 @@ function gelu(x: number): number {
 
 // â”€â”€â”€ Initialization â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-async function init(language: SentimentLanguage = activeLanguage): Promise<void> {
+async function init(language: SentimentLanguage): Promise<void> {
   if (weights && vocab && loadedLanguage === language) return;
   if (unavailableLanguages.has(language)) return;
   if (initPromise) return initPromise;
@@ -249,11 +261,13 @@ export interface SentimentResult {
  * Never throws.
  */
 export async function analyseSentiment(text: string): Promise<SentimentResult | null> {
+  const language = activeLanguage;
+  if (language === null) return null; // no model for the current locale — feature off
   const tokens = tokenize(text);
   if (tokens.length < 3) return null;
 
   try {
-    await init(activeLanguage);
+    await init(language);
     if (!weights || !vocab) return null;
 
     const probs      = forward(tokens);
@@ -281,15 +295,18 @@ export async function analyseSentiment(text: string): Promise<SentimentResult | 
  * Fire-and-forget â€” never throws.
  */
 export function prewarmSentimentModel(): void {
-  init(activeLanguage).catch(() => {});
+  const language = activeLanguage;
+  if (language === null) return; // no model for the current locale — nothing to warm
+  init(language).catch(() => {});
 }
 
 /**
- * Switch active sentiment locale. If locale assets are unavailable,
- * analyseSentiment() returns null and UI falls back gracefully.
+ * Switch active sentiment locale. Locales without a trained model (e.g. pt, de)
+ * resolve to null, which disables sentiment — analyseSentiment() returns null and
+ * the UI falls back gracefully rather than scoring text with the wrong model.
  */
 export function setSentimentLanguage(language?: string): void {
-  const next = normalizeLanguage(language);
+  const next = resolveSentimentLanguage(language);
   if (activeLanguage === next) return;
   activeLanguage = next;
   weights = null;

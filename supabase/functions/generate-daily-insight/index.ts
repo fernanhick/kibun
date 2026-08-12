@@ -16,14 +16,24 @@ const MOOD_GROUPS: Record<string, string> = {
   melancholy: "blue", lonely: "blue",
 };
 
-type AppLanguage = "en" | "es";
+type AppLanguage = "en" | "es" | "pt" | "de";
 
 function toSupportedLanguage(value: unknown): AppLanguage {
   if (typeof value !== "string") return "en";
   const normalized = value.toLowerCase();
   if (normalized.startsWith("es")) return "es";
+  if (normalized.startsWith("pt")) return "pt";
+  if (normalized.startsWith("de")) return "de";
   return "en";
 }
+
+// Target language the model writes its response in. Prompt scaffolding stays English.
+const LANGUAGE_NAMES: Record<AppLanguage, string> = {
+  en: "English",
+  es: "Spanish",
+  pt: "Brazilian Portuguese",
+  de: "German",
+};
 
 function pearsonR(xs: number[], ys: number[]): number {
   const n = xs.length;
@@ -262,19 +272,15 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    const systemMessage = language === "es"
-      ? "Eres un acompanante diario calido y perspicaz para la app de seguimiento de animo Kibun. " +
-        "Genera exactamente 2 frases cortas: una observacion especifica sobre el patron emocional reciente de la persona, " +
-        "y un aliento o sugerencia suave para hoy. " +
-        "Haz referencia a nombres de animo, patrones de horario o habitos cuando aporte valor. " +
-        "Usa un tono cercano y optimista, nunca clinico ni generico. " +
-        "No comiences con 'Noto que' ni 'Parece que'. Sin listas ni encabezados."
-      : "You are a warm, perceptive daily companion for the Kibun mood tracking app. " +
-        "Generate exactly 2 short sentences: one specific observation about the user's recent mood pattern, " +
-        "and one gentle encouragement or nudge relevant to today. " +
-        "Reference actual mood names, time-of-day patterns, or habits when there is a meaningful connection. " +
-        "Be conversational and uplifting, never clinical or generic. " +
-        "Do not open with 'I notice' or 'It looks like'. No bullet points or headers.";
+    const languageName = LANGUAGE_NAMES[language];
+    const systemMessage =
+      "You are a warm, perceptive daily companion for the Kibun mood tracking app. " +
+      "Generate exactly 2 short sentences: one specific observation about the user's recent mood pattern, " +
+      "and one gentle encouragement or nudge relevant to today. " +
+      "Reference actual mood names, time-of-day patterns, or habits when there is a meaningful connection. " +
+      "Be conversational and uplifting, never clinical or generic. " +
+      "Do not open with 'I notice' or 'It looks like'. No bullet points or headers. " +
+      `Write your entire response in ${languageName}.`;
 
     const userMessage = [
       `Top moods (last 14 days): ${topMoods}`,
@@ -283,9 +289,7 @@ Deno.serve(async (req: Request) => {
       `Total check-ins: ${entries.length}`,
       profileLines ? `\nProfile:\n${profileLines}` : "",
       habitContext,
-      language === "es"
-        ? "\nGenera exactamente 2 frases de insight diario personalizado."
-        : "\nGenerate exactly 2 sentences of personalized daily insight.",
+      "\nGenerate exactly 2 sentences of personalized daily insight.",
     ].filter(Boolean).join("\n");
 
     let insight: string;

@@ -214,17 +214,20 @@ These are the user-facing claims, all backed by code. Use these on the privacy p
 
 ## 9. App Store facts (use verbatim where possible)
 
+> **Reconciled 2026-07-26 to the live V3 listing.** The values below were stale (they predated the Guideline 1.1 compliance rework that stripped clinical terms and moved the category off Health & Fitness). Source of truth for listing copy: `ASO/V3/apple-app-store-submission.md` (live) and `ASO/V4/keyword-strategy.md` (pending keyword-field optimization).
+
 | Field | Value |
 |---|---|
-| App name | Kibun: Mood Tracker & Journal |
-| Subtitle | Track moods. Find what shifts. |
+| App name | Kibun: Mood Tracker Journal |
+| Subtitle | Cute daily diary & self-care |
 | iOS bundle ID | `com.kibun.app` |
 | Android package | `com.kibun.app` |
 | iOS App Store ID | `6761697507` |
 | EAS project ID | `17e23791-25d6-473c-a2df-62698a5763b6` |
-| Primary category | Health & Fitness |
-| Secondary category | Lifestyle |
-| Keywords (current) | `mental,health,wellness,selfcare,emotions,stress,mindfulness,journaling,gratitude,habits,calm,zen` |
+| Primary category | Lifestyle |
+| Secondary category | *(verify in App Store Connect — no longer Health & Fitness under the compliance posture)* |
+| Keywords (live, EN) | `emotion,feelings,wellness,gratitude,kawaii,habit,pattern,gentle,calm,sleep,mindful,breathing,joy,pet` |
+| Keywords (pending V4, EN) | `emotion,feelings,wellness,gratitude,kawaii,habit,log,reflect,companion,calm,mindful,breathing,pet` |
 | Support email | `fernanhick@gmail.com` |
 | Privacy policy | https://fernanhick.github.io/kibun/privacy-policy.html |
 | Account deletion (web) | https://fernanhick.github.io/kibun/delete-account.html |

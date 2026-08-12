@@ -1,0 +1,174 @@
+region,country,world_bank_region,income_group,currency,usd_fallback,monthly_local,yearly_local,monthly_gross_usd,monthly_net_usd,yearly_net_usd,monthly_net_vs_us_pct,yearly_over_monthly,annual_savings_pct,tax_rate,gni_per_capita_ppp,gni_source,income_index_vs_us,band
+AE,United Arab Emirates,"Middle East, North Africa, Afghanistan & Pakistan",High income,AED,,22.99,134.99,6.26,5.96,35.01,-0.5,5.87,51.1,0.05,81640,WorldBank 2024,0.912,A
+AG,Antigua and Barbuda,Latin America & Caribbean ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,34670,WorldBank 2025,0.387,C
+AL,Albania,Europe & Central Asia,Upper middle income,USD,YES,7.19,41.99,7.19,5.99,34.99,0,5.84,51.3,0.2,28170,WorldBank 2025,0.315,C
+AM,Armenia,Europe & Central Asia,Upper middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,24020,WorldBank 2025,0.268,D
+AO,Angola,Sub-Saharan Africa ,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,9840,WorldBank 2025,0.11,E
+AR,Argentina,Latin America & Caribbean ,Upper middle income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,31920,WorldBank 2025,0.357,C
+AT,Austria,Europe & Central Asia,High income,EUR,,5.99,34.99,6.9,5.75,33.56,-4.1,5.84,51.3,0.2,77010,WorldBank 2025,0.861,A
+AU,Australia,East Asia & Pacific,High income,AUD,,9.49,55.99,6.64,6.04,35.62,0.8,5.9,50.8,0.1,69930,WorldBank 2025,0.781,A
+AW,Aruba,Latin America & Caribbean ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,48900,WorldBank 2024,0.546,B
+AZ,Azerbaijan,Europe & Central Asia,Upper middle income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,25430,WorldBank 2025,0.284,C
+BA,Bosnia and Herzegovina,Europe & Central Asia,Upper middle income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,25810,WorldBank 2025,0.288,C
+BD,Bangladesh,South Asia,Lower middle income,BDT,,250,1449,2.03,1.76,10.21,-70.6,5.8,51.7,0.15,10710,WorldBank 2025,0.12,E
+BE,Belgium,Europe & Central Asia,High income,EUR,,6.49,37.99,7.47,6.17,36.14,3.1,5.85,51.2,0.21,75620,WorldBank 2025,0.845,A
+BF,Burkina Faso,Sub-Saharan Africa ,Low income,EUR,,1.56,9.09,1.8,1.8,10.46,-70,5.83,51.4,0,2890,WorldBank 2025,0.032,E
+BG,Bulgaria,Europe & Central Asia,High income,EUR,,5.99,35.99,6.9,5.75,34.52,-4.1,6.01,49.9,0.2,42170,WorldBank 2025,0.471,B
+BH,Bahrain,"Middle East, North Africa, Afghanistan & Pakistan",High income,USD,YES,6.49,37.99,6.49,5.9,34.54,-1.5,5.85,51.2,0.1,65500,WorldBank 2025,0.732,A
+BJ,Benin,Sub-Saharan Africa ,Lower middle income,EUR,,1.56,9.09,1.8,1.8,10.46,-70,5.83,51.4,0,4760,WorldBank 2025,0.053,E
+BM,Bermuda,North America,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,122530,WorldBank 2024,1.369,A
+BO,Bolivia,Latin America & Caribbean ,Lower middle income,BOB,,21.99,129.99,1.85,1.85,10.91,-69.2,5.91,50.7,0,12530,WorldBank 2025,0.14,E
+BR,Brazil,Latin America & Caribbean ,Upper middle income,BRL,,11.99,69.99,2.36,2.36,13.8,-60.5,5.84,51.4,0,22670,WorldBank 2025,0.253,D
+BS,"Bahamas, The",Latin America & Caribbean ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,39610,WorldBank 2024,0.443,C
+BW,Botswana,Sub-Saharan Africa ,Upper middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,19960,WorldBank 2025,0.223,D
+BY,Belarus,Europe & Central Asia,Upper middle income,USD,YES,7.19,41.99,7.19,5.99,34.99,0,5.84,51.3,0.2,34310,WorldBank 2025,0.383,C
+BZ,Belize,Latin America & Caribbean ,Upper middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,14230,WorldBank 2025,0.159,D
+CA,Canada,North America,High income,CAD,,8.49,48.99,6.05,6.05,34.89,0.9,5.77,51.9,0,66820,WorldBank 2025,0.747,A
+CD,"Congo, Dem. Rep.",Sub-Saharan Africa ,Low income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,1850,WorldBank 2025,0.021,E
+CF,Central African Republic,Sub-Saharan Africa ,Low income,EUR,,1.56,9.09,1.8,1.8,10.46,-70,5.83,51.4,0,1390,WorldBank 2025,0.016,E
+CG,"Congo, Rep.",Sub-Saharan Africa ,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,6490,WorldBank 2025,0.073,E
+CH,Switzerland,Europe & Central Asia,High income,CHF,,4.8,28,5.93,5.93,34.57,-1.1,5.83,51.4,0,101690,WorldBank 2025,1.136,A
+CI,Cote d'Ivoire,Sub-Saharan Africa ,Lower middle income,XOF,,1200,6999,2.11,1.78,10.41,-70.2,5.83,51.4,0.18,7750,WorldBank 2025,0.087,E
+CL,Chile,Latin America & Caribbean ,High income,CLP,,6500,38200,6.99,5.87,34.51,-2,5.88,51,0.19,35730,WorldBank 2025,0.399,C
+CM,Cameroon,Sub-Saharan Africa ,Lower middle income,XAF,,1200,6999,2.11,1.77,10.3,-70.5,5.83,51.4,0.1925,5700,WorldBank 2025,0.064,E
+CO,Colombia,Latin America & Caribbean ,Upper middle income,COP,,7500,43999,2.38,2.38,13.95,-60.3,5.87,51.1,0,22250,WorldBank 2025,0.249,D
+CR,Costa Rica,Latin America & Caribbean ,High income,CRC,,2800,16200,6.17,6.17,35.72,3.1,5.79,51.8,0,30760,WorldBank 2025,0.344,C
+CV,Cabo Verde,Sub-Saharan Africa ,Upper middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,12010,WorldBank 2025,0.134,E
+CY,Cyprus,Europe & Central Asia,High income,EUR,,5.99,35.99,6.9,5.79,34.81,-3.3,6.01,49.9,0.19,57390,WorldBank 2025,0.641,B
+CZ,Czechia,Europe & Central Asia,High income,CZK,,149.99,899.99,7.14,5.9,35.4,-1.5,6,50,0.21,57870,WorldBank 2025,0.647,B
+DE,Germany,Europe & Central Asia,High income,EUR,,5.99,34.99,6.9,5.79,33.85,-3.3,5.84,51.3,0.19,78140,WorldBank 2025,0.873,A
+DJ,Djibouti,"Middle East, North Africa, Afghanistan & Pakistan",Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,8660,WorldBank 2025,0.097,E
+DK,Denmark,Europe & Central Asia,High income,DKK,,48,279,7.41,5.93,34.44,-1.1,5.81,51.6,0.25,85460,WorldBank 2025,0.955,A
+DM,Dominica,Latin America & Caribbean ,Upper middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,22130,WorldBank 2025,0.247,D
+DO,Dominican Republic,Latin America & Caribbean ,Upper middle income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,26980,WorldBank 2025,0.301,C
+DZ,Algeria,"Middle East, North Africa, Afghanistan & Pakistan",Upper middle income,DZD,,325,1899,2.45,2.45,14.29,-59.2,5.84,51.3,0,18240,WorldBank 2025,0.204,D
+EC,Ecuador,Latin America & Caribbean ,Upper middle income,USD,YES,2.39,13.99,2.39,2.39,13.99,-60.1,5.85,51.2,0,16290,WorldBank 2025,0.182,D
+EE,Estonia,Europe & Central Asia,High income,EUR,,6.49,37.99,7.47,6.02,35.27,0.6,5.85,51.2,0.24,51370,WorldBank 2025,0.574,B
+EG,"Egypt, Arab Rep.","Middle East, North Africa, Afghanistan & Pakistan",Lower middle income,EGP,,139.99,819.99,2.79,2.44,14.31,-59.2,5.86,51.2,0.14,19330,WorldBank 2025,0.216,D
+ER,Eritrea,Sub-Saharan Africa ,Low income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,2200,estimate,0.025,E
+ES,Spain,Europe & Central Asia,High income,EUR,,6.49,36.99,7.47,6.17,35.19,3.1,5.7,52.5,0.21,59830,WorldBank 2025,0.669,B
+FI,Finland,Europe & Central Asia,High income,EUR,,6.49,37.99,7.47,5.95,34.85,-0.6,5.85,51.2,0.255,66300,WorldBank 2025,0.741,A
+FJ,Fiji,East Asia & Pacific,Upper middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,15360,WorldBank 2025,0.172,D
+FM,"Micronesia, Fed. Sts.",East Asia & Pacific,Upper middle income,USD,YES,1.79,10.49,1.79,1.79,10.49,-70.1,5.86,51.2,0,5080,WorldBank 2025,0.057,E
+FR,France,Europe & Central Asia,High income,EUR,,5.99,34.99,6.9,5.75,33.56,-4.1,5.84,51.3,0.2,65110,WorldBank 2025,0.728,A
+GA,Gabon,Sub-Saharan Africa ,Upper middle income,EUR,,2.08,11.99,2.39,2.39,13.8,-60,5.76,52,0,21660,WorldBank 2025,0.242,D
+GB,United Kingdom,Europe & Central Asia,High income,GBP,,5.49,31.49,7.38,6.15,35.27,2.6,5.74,52.2,0.2,64210,WorldBank 2025,0.718,A
+GD,Grenada,Latin America & Caribbean ,Upper middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,20170,WorldBank 2025,0.225,D
+GE,Georgia,Europe & Central Asia,Upper middle income,GEL,,19,99,7.25,6.14,31.99,2.5,5.21,56.6,0.18,27570,WorldBank 2025,0.308,C
+GH,Ghana,Sub-Saharan Africa ,Lower middle income,GHS,,25,144,2.14,1.78,10.26,-70.3,5.76,52,0.2,8080,WorldBank 2025,0.09,E
+GI,Gibraltar,Europe & Central Asia,High income,GBP,,4.49,26.49,6.03,6.03,35.6,0.7,5.9,50.8,0,61000,estimate,0.682,B
+GM,"Gambia, The",Sub-Saharan Africa ,Low income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,3660,WorldBank 2025,0.041,E
+GN,Guinea,Sub-Saharan Africa ,Lower middle income,USD,YES,1.79,10.49,1.79,1.79,10.49,-70.1,5.86,51.2,0,4730,WorldBank 2025,0.053,E
+GR,Greece,Europe & Central Asia,High income,EUR,,6.49,37.99,7.47,6.02,35.27,0.6,5.85,51.2,0.24,44310,WorldBank 2025,0.495,B
+GT,Guatemala,Latin America & Caribbean ,Upper middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,15020,WorldBank 2025,0.168,D
+GW,Guinea-Bissau,Sub-Saharan Africa ,Low income,EUR,,1.56,9.09,1.8,1.8,10.46,-70,5.83,51.4,0,3320,WorldBank 2025,0.037,E
+HK,"Hong Kong SAR, China",East Asia & Pacific,High income,HKD,,48,278,6.12,6.12,35.45,2.2,5.79,51.7,0,88500,WorldBank 2025,0.989,A
+HN,Honduras,Latin America & Caribbean ,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,7270,WorldBank 2025,0.081,E
+HR,Croatia,Europe & Central Asia,High income,EUR,,6.49,37.99,7.47,5.98,34.98,-0.2,5.85,51.2,0.25,50410,WorldBank 2025,0.563,B
+HT,Haiti,Latin America & Caribbean ,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,3130,WorldBank 2025,0.035,E
+HU,Hungary,Europe & Central Asia,High income,HUF,,2499,14499,7.91,6.23,36.12,3.9,5.8,51.7,0.27,48630,WorldBank 2025,0.543,B
+ID,Indonesia,East Asia & Pacific,Upper middle income,IDR,,43000,249999,2.39,2.39,13.89,-60.1,5.81,51.6,0,17190,WorldBank 2025,0.192,D
+IE,Ireland,Europe & Central Asia,High income,EUR,,6.49,37.99,7.47,6.07,35.55,1.4,5.85,51.2,0.23,106310,WorldBank 2025,1.188,A
+IL,Israel,"Middle East, North Africa, Afghanistan & Pakistan",High income,ILS,,18.9,99.9,6.2,6.2,32.76,3.5,5.29,56,0,58870,WorldBank 2025,0.658,B
+IN,India,South Asia,Lower middle income,INR,,200,1149,2.1,1.78,10.21,-70.3,5.75,52.1,0.18,11600,WorldBank 2025,0.13,E
+IQ,Iraq,"Middle East, North Africa, Afghanistan & Pakistan",Upper middle income,IQD,,3150,18499,2.4,2.4,14.1,-59.9,5.87,51.1,0,14290,WorldBank 2025,0.16,D
+IS,Iceland,Europe & Central Asia,High income,EUR,,6.44,37.58,7.41,5.98,34.89,-0.2,5.84,51.4,0.24,83250,WorldBank 2025,0.93,A
+IT,Italy,Europe & Central Asia,High income,EUR,,6.49,37.99,7.47,6.12,35.85,2.2,5.85,51.2,0.22,62870,WorldBank 2025,0.703,A
+JM,Jamaica,Latin America & Caribbean ,Upper middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,13090,WorldBank 2025,0.146,E
+JO,Jordan,"Middle East, North Africa, Afghanistan & Pakistan",Upper middle income,JOD,,1.3,7.59,1.83,1.83,10.71,-69.4,5.84,51.3,0,12440,WorldBank 2025,0.139,E
+JP,Japan,East Asia & Pacific,High income,JPY,,1050,6100,6.68,6.07,35.28,1.4,5.81,51.6,0.1,58920,WorldBank 2025,0.658,B
+KE,Kenya,Sub-Saharan Africa ,Lower middle income,KES,,300,1749,2.32,2,11.66,-66.6,5.83,51.4,0.16,6910,WorldBank 2025,0.077,E
+KG,Kyrgyz Republic,Europe & Central Asia,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,9120,WorldBank 2025,0.102,E
+KH,Cambodia,East Asia & Pacific,Lower middle income,USD,YES,1.79,10.49,1.79,1.79,10.49,-70.1,5.86,51.2,0,8390,WorldBank 2025,0.094,E
+KM,Comoros,Sub-Saharan Africa ,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,4260,WorldBank 2025,0.048,E
+KN,St. Kitts and Nevis,Latin America & Caribbean ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,36430,WorldBank 2025,0.407,C
+KR,"Korea, Rep.",East Asia & Pacific,High income,KRW,,9900,59000,6.93,6.3,37.52,5.1,5.96,50.3,0.1,64210,WorldBank 2025,0.718,A
+KW,Kuwait,"Middle East, North Africa, Afghanistan & Pakistan",High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,64040,WorldBank 2024,0.716,A
+KY,Cayman Islands,Latin America & Caribbean ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,74470,WorldBank 2024,0.832,A
+KZ,Kazakhstan,Europe & Central Asia,Upper middle income,KZT,,3190,18990,6.73,5.8,34.52,-3.2,5.95,50.4,0.16,41090,WorldBank 2025,0.459,B
+LA,Lao PDR,East Asia & Pacific,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,9800,WorldBank 2025,0.11,E
+LB,Lebanon,"Middle East, North Africa, Afghanistan & Pakistan",Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,11790,WorldBank 2024,0.132,E
+LC,St. Lucia,Latin America & Caribbean ,Upper middle income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,26180,WorldBank 2025,0.293,C
+LI,Liechtenstein,Europe & Central Asia,High income,CHF,,5.2,30,6.42,5.94,34.27,-0.8,5.77,51.9,0.081,100000,estimate,1.117,A
+LK,Sri Lanka,South Asia,Upper middle income,LKR,,800,4649,2.38,2.38,13.85,-60.2,5.81,51.6,0,16750,WorldBank 2025,0.187,D
+LR,Liberia,Sub-Saharan Africa ,Low income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,1840,WorldBank 2025,0.021,E
+LT,Lithuania,Europe & Central Asia,High income,EUR,,6.49,36.99,7.47,6.17,35.19,3.1,5.7,52.5,0.21,55010,WorldBank 2025,0.615,B
+LU,Luxembourg,Europe & Central Asia,High income,EUR,,5.99,34.99,6.9,5.89,34.43,-1.6,5.84,51.3,0.17,106640,WorldBank 2025,1.192,A
+LV,Latvia,Europe & Central Asia,High income,EUR,,6.49,36.99,7.47,6.17,35.19,3.1,5.7,52.5,0.21,45740,WorldBank 2025,0.511,B
+LY,Libya,"Middle East, North Africa, Afghanistan & Pakistan",Upper middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,17150,WorldBank 2025,0.192,D
+MA,Morocco,"Middle East, North Africa, Afghanistan & Pakistan",Lower middle income,MAD,,19.99,114.99,2.14,1.79,10.27,-70.2,5.75,52.1,0.2,10960,WorldBank 2025,0.122,E
+MC,Monaco,Europe & Central Asia,High income,EUR,,5.99,34.99,6.9,5.75,33.56,-4.1,5.84,51.3,0.2,90000,estimate,1.006,A
+MD,Moldova,Europe & Central Asia,Upper middle income,USD,YES,2.88,16.99,2.88,2.4,14.16,-59.9,5.9,50.8,0.2,19990,WorldBank 2025,0.223,D
+MK,North Macedonia,Europe & Central Asia,Upper middle income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,26680,WorldBank 2025,0.298,C
+ML,Mali,Sub-Saharan Africa ,Low income,EUR,,1.56,9.09,1.8,1.8,10.46,-70,5.83,51.4,0,3400,WorldBank 2025,0.038,E
+MM,Myanmar,East Asia & Pacific,Lower middle income,MMK,,4000,23499,1.91,1.91,11.19,-68.2,5.87,51,0,5890,WorldBank 2025,0.066,E
+MN,Mongolia,East Asia & Pacific,Upper middle income,MNT,,8620,50499,2.4,2.4,14.08,-59.9,5.86,51.2,0,18460,WorldBank 2025,0.206,D
+MO,"Macao SAR, China",East Asia & Pacific,High income,MOP,,47.99,279,5.94,5.94,34.54,-0.8,5.81,51.6,0,125630,WorldBank 2024,1.404,A
+MT,Malta,"Middle East, North Africa, Afghanistan & Pakistan",High income,EUR,,6.12,35.77,7.04,5.97,34.89,-0.3,5.84,51.3,0.18,64900,WorldBank 2025,0.725,A
+MU,Mauritius,Sub-Saharan Africa ,Upper middle income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,37000,WorldBank 2025,0.413,C
+MV,Maldives,South Asia,Upper middle income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,25600,WorldBank 2025,0.286,C
+MX,Mexico,Latin America & Caribbean ,Upper middle income,MXN,,125,719,7.22,6.22,35.78,3.8,5.75,52.1,0.16,25070,WorldBank 2025,0.28,C
+MY,Malaysia,East Asia & Pacific,Upper middle income,MYR,,25.99,149.99,6.35,5.88,33.92,-1.9,5.77,51.9,0.08,40070,WorldBank 2025,0.448,C
+MZ,Mozambique,Sub-Saharan Africa ,Low income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,1540,WorldBank 2025,0.017,E
+NA,Namibia,Sub-Saharan Africa ,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,11260,WorldBank 2025,0.126,E
+NE,Niger,Sub-Saharan Africa ,Low income,EUR,,1.56,9.09,1.8,1.8,10.46,-70,5.83,51.4,0,2150,WorldBank 2025,0.024,E
+NG,Nigeria,Sub-Saharan Africa ,Lower middle income,NGN,,2640,15499,1.93,1.8,10.56,-70,5.87,51.1,0.075,9230,WorldBank 2025,0.103,E
+NI,Nicaragua,Latin America & Caribbean ,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,8780,WorldBank 2025,0.098,E
+NL,Netherlands,Europe & Central Asia,High income,EUR,,6.49,37.99,7.47,6.17,36.14,3.1,5.85,51.2,0.21,85480,WorldBank 2025,0.955,A
+NO,Norway,Europe & Central Asia,High income,NOK,,75,425,7.86,6.29,35.64,5,5.67,52.8,0.25,107770,WorldBank 2025,1.204,A
+NP,Nepal,South Asia,Lower middle income,USD,YES,2.03,11.99,2.03,1.8,10.61,-70,5.91,50.8,0.13,6250,WorldBank 2025,0.07,E
+NZ,New Zealand,East Asia & Pacific,High income,NZD,,11.99,69.99,7.04,6.12,35.71,2.1,5.84,51.4,0.15,53600,WorldBank 2025,0.599,B
+OM,Oman,"Middle East, North Africa, Afghanistan & Pakistan",High income,USD,YES,6.49,36.99,6.49,6.18,35.23,3.2,5.7,52.5,0.05,39390,WorldBank 2024,0.44,C
+PA,Panama,Latin America & Caribbean ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,41770,WorldBank 2025,0.467,B
+PE,Peru,Latin America & Caribbean ,Upper middle income,PEN,,7.99,46.49,2.36,2.36,13.75,-60.5,5.82,51.5,0,17540,WorldBank 2025,0.196,D
+PG,Papua New Guinea,East Asia & Pacific,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,4840,WorldBank 2025,0.054,E
+PH,Philippines,East Asia & Pacific,Upper middle income,PHP,,165,964,2.71,2.42,14.13,-59.6,5.84,51.3,0.12,14460,WorldBank 2025,0.162,D
+PK,Pakistan,"Middle East, North Africa, Afghanistan & Pakistan",Lower middle income,PKR,,500,2899,1.8,1.8,10.44,-69.9,5.8,51.7,0,6430,WorldBank 2025,0.072,E
+PL,Poland,Europe & Central Asia,High income,PLN,,26.99,159.99,7.21,5.86,34.76,-2.1,5.93,50.6,0.23,52290,WorldBank 2025,0.584,B
+PT,Portugal,Europe & Central Asia,High income,EUR,,6.49,36.99,7.47,6.07,34.62,1.4,5.7,52.5,0.23,52240,WorldBank 2025,0.584,B
+PY,Paraguay,Latin America & Caribbean ,Upper middle income,PYG,,10000,58499,1.68,1.68,9.81,-72,5.85,51.3,0,19390,WorldBank 2025,0.217,D
+QA,Qatar,"Middle East, North Africa, Afghanistan & Pakistan",High income,QAR,,22,130,6.04,6.04,35.71,0.9,5.91,50.8,0,126290,WorldBank 2025,1.411,A
+RO,Romania,Europe & Central Asia,High income,RON,,31.99,184.99,7.03,5.81,33.59,-3,5.78,51.8,0.21,49550,WorldBank 2025,0.554,B
+RS,Serbia,Europe & Central Asia,Upper middle income,RSD,,749,4299,7.35,6.13,35.17,2.3,5.74,52.2,0.2,31780,WorldBank 2025,0.355,C
+RU,Russian Federation,Europe & Central Asia,High income,RUB,,469,2790,5.86,5.86,34.89,-2.1,5.95,50.4,0,49220,WorldBank 2025,0.55,B
+RW,Rwanda,Sub-Saharan Africa ,Low income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,4070,WorldBank 2025,0.045,E
+SA,Saudi Arabia,"Middle East, North Africa, Afghanistan & Pakistan",High income,SAR,,25.99,149.99,6.93,6.03,34.78,0.6,5.77,51.9,0.15,74400,WorldBank 2025,0.831,A
+SB,Solomon Islands,East Asia & Pacific,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,2790,WorldBank 2025,0.031,E
+SC,Seychelles,Sub-Saharan Africa ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,34930,WorldBank 2025,0.39,C
+SE,Sweden,Europe & Central Asia,High income,SEK,,69,404,7.22,5.78,33.83,-3.6,5.86,51.2,0.25,76090,WorldBank 2025,0.85,A
+SG,Singapore,East Asia & Pacific,High income,SGD,,8.48,48.99,6.61,6.07,35.04,1.3,5.78,51.9,0.09,135750,WorldBank 2025,1.517,A
+SI,Slovenia,Europe & Central Asia,High income,EUR,,6.49,36.99,7.47,6.12,34.9,2.2,5.7,52.5,0.22,58880,WorldBank 2025,0.658,B
+SK,Slovak Republic,Europe & Central Asia,High income,EUR,,6.49,36.99,7.47,6.07,34.62,1.4,5.7,52.5,0.23,47920,WorldBank 2025,0.535,B
+SL,Sierra Leone,Sub-Saharan Africa ,Low income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,3690,WorldBank 2025,0.041,E
+SM,San Marino,Europe & Central Asia,High income,EUR,,4.99,28.99,5.74,5.74,33.37,-4.1,5.81,51.6,0,71920,WorldBank 2023,0.804,A
+SN,Senegal,Sub-Saharan Africa ,Lower middle income,XOF,,1200,6999,2.11,1.78,10.41,-70.2,5.83,51.4,0.18,5100,WorldBank 2025,0.057,E
+SO,"Somalia, Fed. Rep.",Sub-Saharan Africa ,Low income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,1640,WorldBank 2025,0.018,E
+SR,Suriname,Latin America & Caribbean ,Upper middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,21000,WorldBank 2025,0.235,D
+SV,El Salvador,Latin America & Caribbean ,Upper middle income,USD,YES,1.79,10.49,1.79,1.79,10.49,-70.1,5.86,51.2,0,13140,WorldBank 2025,0.147,E
+TC,Turks and Caicos Islands,Latin America & Caribbean ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,37500,WorldBank 2024,0.419,C
+TD,Chad,Sub-Saharan Africa ,Low income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,2770,WorldBank 2025,0.031,E
+TG,Togo,Sub-Saharan Africa ,Lower middle income,EUR,,1.56,9.09,1.8,1.8,10.46,-70,5.83,51.4,0,4090,WorldBank 2025,0.046,E
+TH,Thailand,East Asia & Pacific,Upper middle income,THB,,200,1225,5.99,5.6,34.28,-6.6,6.13,49,0.07,25570,WorldBank 2025,0.286,C
+TJ,Tajikistan,Europe & Central Asia,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,8240,WorldBank 2025,0.092,E
+TM,Turkmenistan,Europe & Central Asia,Upper middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,22830,WorldBank 2025,0.255,D
+TN,Tunisia,"Middle East, North Africa, Afghanistan & Pakistan",Lower middle income,USD,YES,2.4,13.99,2.4,2.4,13.99,-59.9,5.83,51.4,0,14870,WorldBank 2025,0.166,D
+TO,Tonga,East Asia & Pacific,Upper middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,9240,WorldBank 2025,0.103,E
+TR,Turkiye,Europe & Central Asia,Upper middle income,TRY,,319.99,1869.99,6.73,5.61,32.77,-6.4,5.84,51.3,0.2,44630,WorldBank 2025,0.499,B
+TT,Trinidad and Tobago,Latin America & Caribbean ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,36080,WorldBank 2025,0.403,C
+TW,TW,,,TWD,,200,1170,6.18,5.89,34.46,-1.7,5.85,51.2,0.05,76000,estimate,0.849,A
+TZ,Tanzania,Sub-Saharan Africa ,Lower middle income,TZS,,4800,27999,1.81,1.81,10.59,-69.7,5.83,51.4,0,4370,WorldBank 2025,0.049,E
+UA,Ukraine,Europe & Central Asia,Upper middle income,UAH,,129.99,759.99,2.9,2.42,14.14,-59.6,5.85,51.3,0.2,18750,WorldBank 2025,0.21,D
+UG,Uganda,Sub-Saharan Africa ,Low income,USD,YES,2.12,12.49,2.12,1.8,10.58,-70,5.89,50.9,0.18,3410,WorldBank 2025,0.038,E
+US,United States,North America,High income,USD,,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,89490,WorldBank 2025,1,A
+UY,Uruguay,Latin America & Caribbean ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,36330,WorldBank 2025,0.406,C
+UZ,Uzbekistan,Europe & Central Asia,Lower middle income,USD,YES,2.69,15.49,2.69,2.4,13.83,-59.9,5.76,52,0.12,13640,WorldBank 2025,0.152,D
+VA,VA,,,EUR,,4.99,29.99,5.74,5.74,34.52,-4.1,6.01,49.9,0,60000,estimate,0.67,B
+VE,"Venezuela, RB",Latin America & Caribbean ,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,8000,estimate,0.089,E
+VG,British Virgin Islands,Latin America & Caribbean ,High income,USD,YES,5.99,34.99,5.99,5.99,34.99,0,5.84,51.3,0,45000,estimate,0.503,B
+VN,Viet Nam,East Asia & Pacific,Upper middle income,VND,,63000,369999,2.41,2.41,14.14,-59.8,5.87,51.1,0,17580,WorldBank 2025,0.196,D
+VU,Vanuatu,East Asia & Pacific,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,4970,WorldBank 2025,0.056,E
+WS,Samoa,East Asia & Pacific,Upper middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,9300,WorldBank 2025,0.104,E
+YE,"Yemen, Rep.","Middle East, North Africa, Afghanistan & Pakistan",Low income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,3500,estimate,0.039,E
+ZA,South Africa,Sub-Saharan Africa ,Upper middle income,ZAR,,45.99,269.99,2.78,2.42,14.21,-59.6,5.87,51.1,0.15,15600,WorldBank 2025,0.174,D
+ZM,Zambia,Sub-Saharan Africa ,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,3990,WorldBank 2025,0.045,E
+ZW,Zimbabwe,Sub-Saharan Africa ,Lower middle income,USD,YES,1.8,10.49,1.8,1.8,10.49,-69.9,5.83,51.4,0,6390,WorldBank 2025,0.071,E

@@ -806,12 +806,16 @@
       "perMonth": "{{price}}/mo",
       "billedYearly": "{{price}} billed yearly after trial",
       "billedMonthly": "{{price}} billed monthly after trial",
+      "billedYearlyNoTrial": "{{price}} billed yearly",
+      "billedMonthlyNoTrial": "{{price}} billed monthly",
       "selectedA11y": "selected",
       "a11yHint": "Selects the {{plan}} plan"
     },
     "cta": {
       "subscribe": "Subscribe — 7 days free",
       "subscribeA11yHint": "Starts your subscription with a 7-day free trial. Cancel anytime in account settings.",
+      "subscribeNoTrial": "Subscribe",
+      "subscribeA11yHintNoTrial": "Starts your subscription. Cancel anytime in account settings.",
       "skip": "Maybe later",
       "skipA11yHint": "Skip subscription and continue with limited features"
     },

@@ -1,0 +1,176 @@
+territory,region,country,band,band_label,income_index,currency,action,monthly_current,monthly_recommended,monthly_change_pct,yearly_current,yearly_recommended,yearly_change_pct,monthly_net_usd_now,monthly_net_usd_new,annual_savings_now_pct,annual_savings_new_pct
+AFG,AF,Afghanistan,E,Low-income,0.025,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+AGO,AO,Angola,E,Low-income,0.11,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+AIA,AI,AIA,C,Mid,0.335,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+ALB,AL,Albania,C,Mid,0.315,USD,cut,6.99,4.29,-38.6,39.99,25,-37.5,5.82,3.58,52.3,51.4
+ARE,AE,United Arab Emirates,A,Parity,0.912,AED,normalize-annual,22.99,22.99,0,129.99,133.99,3.1,5.96,5.96,52.9,51.4
+ARG,AR,Argentina,C,Mid,0.357,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+ARM,AM,Armenia,D,Emerging,0.268,USD,cut,6.99,2.89,-58.7,39.99,16.9,-57.7,5.82,2.41,52.3,51.3
+ATG,AG,Antigua and Barbuda,C,Mid,0.387,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+AUS,AU,Australia,A,Parity,0.781,AUD,normalize-annual,9.99,9.99,0,59.99,58,-3.3,6.39,6.39,50,51.6
+AUT,AT,Austria,A,Parity,0.861,EUR,cut,6.99,6.19,-11.4,39.99,36,-10,6.72,5.95,52.3,51.5
+AZE,AZ,Azerbaijan,C,Mid,0.284,USD,cut,6.99,4.19,-40.1,39.99,24.49,-38.8,5.93,3.55,52.3,51.3
+BEL,BE,Belgium,A,Parity,0.845,EUR,cut,6.99,6.29,-10,39.99,36.9,-7.7,6.66,6,52.3,51.1
+BEN,BJ,Benin,E,Low-income,0.053,USD,cut,6.99,2.09,-70.1,39.99,12,-70,5.93,1.78,52.3,52.2
+BFA,BF,Burkina Faso,E,Low-income,0.032,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+BGR,BG,Bulgaria,B,Near-parity,0.471,EUR,cut,6.99,4.99,-28.6,39.99,29,-27.5,6.72,4.79,52.3,51.6
+BHR,BH,Bahrain,A,Parity,0.732,USD,normalize-annual,6.99,6.99,0,39.99,40.9,2.3,6.35,6.35,52.3,51.2
+BHS,BS,"Bahamas, The",C,Mid,0.443,USD,cut,6.99,3.95,-43.5,39.99,23,-42.5,6.35,3.59,52.3,51.5
+BIH,BA,Bosnia and Herzegovina,C,Mid,0.288,EUR,cut,6.99,3.59,-48.6,39.99,20.99,-47.5,6.9,3.54,52.3,51.3
+BLR,BY,Belarus,C,Mid,0.383,USD,cut,6.99,4.29,-38.6,39.99,25,-37.5,5.82,3.58,52.3,51.4
+BLZ,BZ,Belize,D,Emerging,0.159,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+BMU,BM,Bermuda,A,Parity,1.369,USD,keep,5.99,5.99,0,34.99,34.99,0,5.99,5.99,51.3,51.3
+BOL,BO,Bolivia,E,Low-income,0.14,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+BRA,BR,Brazil,D,Emerging,0.253,BRL,cut,39.9,13.9,-65.2,229.9,80.9,-64.8,6.87,2.39,52,51.5
+BRB,BB,Barbados,D,Emerging,0.278,USD,cut,6.99,2.79,-60.1,39.99,16.49,-58.8,5.95,2.38,52.3,50.7
+BRN,BN,Brunei Darussalam,A,Parity,1.066,USD,keep,5.99,5.99,0,34.99,34.99,0,5.99,5.99,51.3,51.3
+BTN,BT,Bhutan,D,Emerging,0.207,USD,cut,5.99,2.49,-58.4,34.99,14.49,-58.6,5.71,2.38,51.3,51.5
+BWA,BW,Botswana,D,Emerging,0.223,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+CAN,CA,Canada,A,Parity,0.747,CAD,normalize-annual,7.99,7.99,0,49.99,46.49,-7,5.7,5.7,47.9,51.5
+CHE,CH,Switzerland,A,Parity,1.136,CHF,normalize-annual,5,5,0,30,29,-3.3,5.73,5.73,50,51.7
+CHL,CL,Chile,C,Mid,0.399,CLP,cut,6990,3990,-42.9,39990,23490,-41.3,6.33,3.61,52.3,50.9
+CHN,CN,China,C,Mid,0.326,CNY,cut,38,24.8,-34.7,228,145,-36.4,5.57,3.64,50,51.3
+CIV,CI,Cote d'Ivoire,E,Low-income,0.087,USD,cut,6.99,2.09,-70.1,39.99,12,-70,5.93,1.78,52.3,52.2
+CMR,CM,Cameroon,E,Low-income,0.064,USD,cut,6.99,2.19,-68.7,39.99,12.9,-67.7,5.86,1.84,52.3,50.9
+COD,CD,"Congo, Dem. Rep.",E,Low-income,0.021,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+COG,CG,"Congo, Rep.",E,Low-income,0.073,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+COL,CO,Colombia,D,Emerging,0.249,COP,cut,29900,9000,-69.9,149900,52500,-65,7.99,2.41,58.2,51.4
+CPV,CV,Cabo Verde,E,Low-income,0.134,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+CRI,CR,Costa Rica,C,Mid,0.344,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+CYM,KY,Cayman Islands,A,Parity,0.832,USD,keep,5.99,5.99,0,34.99,34.99,0,5.99,5.99,51.3,51.3
+CYP,CY,Cyprus,B,Near-parity,0.641,EUR,cut,6.99,4.95,-29.2,39.99,28.9,-27.7,6.77,4.81,52.3,51.3
+CZE,CZ,Czechia,B,Near-parity,0.647,CZK,cut,149,120,-19.5,999,700,-29.9,5.87,4.73,44.1,51.4
+DEU,DE,Germany,A,Parity,0.873,EUR,cut,6.99,6.19,-11.4,39.99,36,-10,6.77,6,52.3,51.5
+DMA,DM,Dominica,D,Emerging,0.247,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+DNK,DK,Denmark,A,Parity,0.955,DKK,normalize-annual,49,49,0,299,285,-4.7,6.06,6.06,49.1,51.5
+DOM,DO,Dominican Republic,C,Mid,0.301,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+DZA,DZ,Algeria,D,Emerging,0.204,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+ECU,EC,Ecuador,D,Emerging,0.182,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+EGY,EG,"Egypt, Arab Rep.",D,Emerging,0.216,EGP,cut,299.99,139,-53.7,1999.99,809.99,-59.5,5.18,2.4,44.4,51.4
+ESP,ES,Spain,B,Near-parity,0.669,EUR,cut,6.99,4.99,-28.6,39.99,29,-27.5,6.65,4.75,52.3,51.6
+EST,EE,Estonia,B,Near-parity,0.574,EUR,cut,6.99,5.19,-25.8,39.99,30.49,-23.8,6.5,4.83,52.3,51
+FIN,FI,Finland,A,Parity,0.741,EUR,normalize-annual,6.99,6.99,0,39.99,40.9,2.3,6.42,6.42,52.3,51.2
+FJI,FJ,Fiji,D,Emerging,0.172,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+FRA,FR,France,A,Parity,0.728,EUR,cut,6.99,6.19,-11.4,39.99,36,-10,6.72,5.95,52.3,51.5
+FSM,FM,"Micronesia, Fed. Sts.",E,Low-income,0.057,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+GAB,GA,Gabon,D,Emerging,0.242,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+GBR,GB,United Kingdom,A,Parity,0.718,GBP,cut,5.99,5.39,-10,34.99,31.49,-10,6.71,6.04,51.3,51.3
+GEO,GE,Georgia,C,Mid,0.308,USD,cut,6.99,4.19,-40.1,39.99,24.49,-38.8,5.93,3.55,52.3,51.3
+GHA,GH,Ghana,E,Low-income,0.09,USD,cut,6.99,2.19,-68.7,39.99,12.9,-67.7,5.82,1.82,52.3,50.9
+GMB,GM,"Gambia, The",E,Low-income,0.041,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+GNB,GW,Guinea-Bissau,E,Low-income,0.037,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+GRC,GR,Greece,B,Near-parity,0.495,EUR,cut,6.99,5.19,-25.8,39.99,30.49,-23.8,6.5,4.83,52.3,51
+GRD,GD,Grenada,D,Emerging,0.225,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+GTM,GT,Guatemala,D,Emerging,0.168,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+GUY,GY,Guyana,A,Parity,0.897,USD,keep,5.99,5.99,0,34.99,34.99,0,5.99,5.99,51.3,51.3
+HKG,HK,"Hong Kong SAR, China",A,Parity,0.989,HKD,normalize-annual,48,48,0,288,280,-2.8,6.12,6.12,50,51.4
+HND,HN,Honduras,E,Low-income,0.081,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+HRV,HR,Croatia,B,Near-parity,0.563,EUR,cut,6.99,5.19,-25.8,39.99,30.49,-23.8,6.45,4.79,52.3,51
+HUN,HU,Hungary,B,Near-parity,0.543,HUF,cut,2490,1900,-23.7,14990,11090,-26,6.22,4.75,49.8,51.4
+IDN,ID,Indonesia,D,Emerging,0.192,IDR,cut,99000,48000,-51.5,599000,280000,-53.3,4.93,2.39,49.6,51.4
+IND,IN,India,E,Low-income,0.13,INR,cut,599,205,-65.8,3499,1199,-65.7,5.32,1.82,51.3,51.3
+IRL,IE,Ireland,A,Parity,1.188,EUR,cut,6.99,6.39,-8.6,39.99,37.49,-6.3,6.56,6,52.3,51.1
+IRQ,IQ,Iraq,D,Emerging,0.16,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+ISL,IS,Iceland,A,Parity,0.93,USD,normalize-annual,6.99,6.99,0,39.99,40.9,2.3,5.64,5.64,52.3,51.2
+ISR,IL,Israel,B,Near-parity,0.658,ILS,cut,19.9,14.5,-27.1,119.9,84.9,-29.2,6.52,4.75,49.8,51.2
+ITA,IT,Italy,A,Parity,0.703,EUR,cut,6.99,6.39,-8.6,39.99,37.49,-6.3,6.58,6.01,52.3,51.1
+JAM,JM,Jamaica,E,Low-income,0.146,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+JOR,JO,Jordan,E,Low-income,0.139,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+JPN,JP,Japan,B,Near-parity,0.658,JPY,cut,1000,830,-17,6000,4880,-18.7,5.76,4.77,50,51
+KAZ,KZ,Kazakhstan,B,Near-parity,0.459,KZT,cut,3490,2650,-24.1,19990,15490,-22.5,6.34,4.82,52.3,51.3
+KEN,KE,Kenya,E,Low-income,0.077,USD,cut,6.99,2.09,-70.1,39.99,12,-70,6.01,1.8,52.3,52.2
+KGZ,KG,Kyrgyz Republic,E,Low-income,0.102,USD,cut,6.99,2,-71.4,39.99,11.49,-71.3,6.24,1.79,52.3,52.1
+KHM,KH,Cambodia,E,Low-income,0.094,USD,cut,6.99,1.99,-71.5,39.99,11.49,-71.3,6.35,1.81,52.3,51.9
+KNA,KN,St. Kitts and Nevis,C,Mid,0.407,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+KOR,KR,"Korea, Rep.",A,Parity,0.718,KRW,normalize-annual,8800,8800,0,49000,51500,5.1,5.55,5.55,53.6,51.2
+KWT,KW,Kuwait,A,Parity,0.716,USD,keep,5.99,5.99,0,34.99,34.99,0,5.99,5.99,51.3,51.3
+LAO,LA,Lao PDR,E,Low-income,0.11,USD,cut,6.99,1.99,-71.5,39.99,11.49,-71.3,6.35,1.81,52.3,51.9
+LBN,LB,Lebanon,E,Low-income,0.132,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+LBR,LR,Liberia,E,Low-income,0.021,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+LBY,LY,Libya,D,Emerging,0.192,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+LCA,LC,St. Lucia,C,Mid,0.293,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+LKA,LK,Sri Lanka,D,Emerging,0.187,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+LTU,LT,Lithuania,B,Near-parity,0.615,EUR,cut,6.99,4.99,-28.6,39.99,29,-27.5,6.66,4.76,52.3,51.6
+LUX,LU,Luxembourg,A,Parity,1.192,EUR,cut,6.99,6.09,-12.9,39.99,35.49,-11.3,6.9,6,52.3,51.4
+LVA,LV,Latvia,B,Near-parity,0.511,EUR,cut,6.99,4.99,-28.6,39.99,29,-27.5,6.66,4.76,52.3,51.6
+MAC,MO,"Macao SAR, China",A,Parity,1.404,USD,keep,5.99,5.99,0,34.99,34.99,0,5.99,5.99,51.3,51.3
+MAR,MA,Morocco,E,Low-income,0.122,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+MDA,MD,Moldova,D,Emerging,0.223,USD,cut,6.99,2.89,-58.7,39.99,16.9,-57.7,5.82,2.41,52.3,51.3
+MDG,MG,Madagascar,E,Low-income,0.021,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+MDV,MV,Maldives,C,Mid,0.286,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+MEX,MX,Mexico,C,Mid,0.28,MXN,cut,129,72,-44.2,799,420,-47.4,6.42,3.59,48.4,51.4
+MKD,MK,North Macedonia,C,Mid,0.298,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+MLI,ML,Mali,E,Low-income,0.038,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+MLT,MT,Malta,A,Parity,0.725,EUR,cut,6.99,6.09,-12.9,39.99,35.49,-11.3,6.84,5.96,52.3,51.4
+MMR,MM,Myanmar,E,Low-income,0.066,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+MNE,ME,Montenegro,C,Mid,0.399,EUR,cut,5.99,3.09,-48.4,29.99,18,-40,6.91,3.57,58.3,51.5
+MNG,MN,Mongolia,D,Emerging,0.206,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+MOZ,MZ,Mozambique,E,Low-income,0.017,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+MRT,MR,Mauritania,E,Low-income,0.085,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+MSR,MS,MSR,D,Emerging,0.223,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+MUS,MU,Mauritius,C,Mid,0.413,USD,cut,6.99,4.09,-41.5,39.99,23.9,-40.2,6.08,3.55,52.3,51.3
+MWI,MW,Malawi,E,Low-income,0.021,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+MYS,MY,Malaysia,C,Mid,0.448,MYR,cut,29.9,15.9,-46.8,149.9,92.9,-38,6.77,3.6,58.2,51.3
+NAM,NA,Namibia,E,Low-income,0.126,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+NER,NE,Niger,E,Low-income,0.024,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+NGA,NG,Nigeria,E,Low-income,0.103,NGN,cut,9900,2650,-73.2,59900,15500,-74.1,6.76,1.81,49.6,51.3
+NIC,NI,Nicaragua,E,Low-income,0.098,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+NLD,NL,Netherlands,A,Parity,0.955,EUR,cut,6.99,6.29,-10,39.99,36.9,-7.7,6.66,6,52.3,51.1
+NOR,NO,Norway,A,Parity,1.204,NOK,cut,79,71,-10.1,449,415,-7.6,6.66,5.99,52.6,51.3
+NPL,NP,Nepal,E,Low-income,0.07,USD,cut,6.99,2.09,-70.1,39.99,12,-70,6.06,1.81,52.3,52.2
+NRU,NR,Naoero,D,Emerging,0.226,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+NZL,NZ,New Zealand,B,Near-parity,0.599,NZD,normalize-annual,9.99,9.99,0,59.99,58,-3.3,5.12,5.12,50,51.6
+OMN,OM,Oman,C,Mid,0.44,USD,cut,5.99,3.79,-36.7,34.99,22,-37.1,5.71,3.61,51.3,51.6
+PAK,PK,Pakistan,E,Low-income,0.072,PKR,cut,1700,500,-70.6,9900,2900,-70.7,6.12,1.8,51.5,51.7
+PAN,PA,Panama,B,Near-parity,0.467,USD,cut,5.99,4.79,-20,34.99,27.99,-20,5.99,4.79,51.3,51.3
+PER,PE,Peru,D,Emerging,0.196,PEN,cut,24.9,9.5,-61.8,149.9,55.9,-62.7,6.22,2.37,49.8,51
+PHL,PH,Philippines,D,Emerging,0.162,PHP,cut,399,165,-58.6,2290,960,-58.1,5.82,2.41,52.2,51.5
+PLW,PW,Palau,D,Emerging,0.262,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+PNG,PG,Papua New Guinea,E,Low-income,0.054,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+POL,PL,Poland,B,Near-parity,0.584,PLN,cut,29.99,21.99,-26.7,149.99,127.99,-14.7,6.53,4.79,58.3,51.5
+PRT,PT,Portugal,B,Near-parity,0.584,EUR,cut,6.99,5.09,-27.2,39.99,29.9,-25.2,6.56,4.78,52.3,51
+PRY,PY,Paraguay,D,Emerging,0.217,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+QAT,QA,Qatar,A,Parity,1.411,QAR,raise,19.99,21.99,10,129.99,127.99,-1.5,5.49,6.04,45.8,51.5
+ROU,RO,Romania,B,Near-parity,0.554,RON,cut,29.99,26.49,-11.7,199.99,154.99,-22.5,5.44,4.8,44.4,51.2
+RUS,RU,Russian Federation,B,Near-parity,0.55,RUB,normalize-annual,499,499,0,2990,2900,-3,5.14,5.14,50.1,51.6
+RWA,RW,Rwanda,E,Low-income,0.045,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+SAU,SA,Saudi Arabia,A,Parity,0.831,SAR,normalize-annual,24.99,24.99,0,149.99,145.99,-2.7,5.79,5.79,50,51.3
+SEN,SN,Senegal,E,Low-income,0.057,USD,cut,6.99,2.09,-70.1,39.99,12,-70,5.93,1.78,52.3,52.2
+SGP,SG,Singapore,A,Parity,1.517,SGD,normalize-annual,8.98,8.98,0,49.98,52.9,5.8,6.42,6.42,53.6,50.9
+SLB,SB,Solomon Islands,E,Low-income,0.031,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+SLE,SL,Sierra Leone,E,Low-income,0.041,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+SLV,SV,El Salvador,E,Low-income,0.147,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+SRB,RS,Serbia,C,Mid,0.355,EUR,cut,6.99,3.69,-47.2,39.99,21.49,-46.3,6.72,3.54,52.3,51.5
+STP,ST,Sao Tome and Principe,E,Low-income,0.077,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+SUR,SR,Suriname,D,Emerging,0.235,USD,cut,6.99,2.59,-62.9,39.99,15,-62.5,6.35,2.35,52.3,51.7
+SVK,SK,Slovak Republic,B,Near-parity,0.535,EUR,cut,6.99,5.09,-27.2,39.99,29.9,-25.2,6.56,4.78,52.3,51
+SVN,SI,Slovenia,B,Near-parity,0.658,EUR,cut,6.99,5.09,-27.2,39.99,29.9,-25.2,6.61,4.82,52.3,51
+SWE,SE,Sweden,A,Parity,0.85,SEK,cut,79,71,-10.1,499,415,-16.8,6.64,5.97,47.4,51.3
+SWZ,SZ,Eswatini,E,Low-income,0.127,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+SYC,SC,Seychelles,C,Mid,0.39,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+TCA,TC,Turks and Caicos Islands,C,Mid,0.419,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+TCD,TD,Chad,E,Low-income,0.031,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+THA,TH,Thailand,C,Mid,0.286,THB,cut,199,129,-35.2,1290,750,-41.9,5.57,3.61,46,51.6
+TJK,TJ,Tajikistan,E,Low-income,0.092,USD,cut,6.99,2.09,-70.1,39.99,12,-70,6.13,1.84,52.3,52.2
+TKM,TM,Turkmenistan,D,Emerging,0.255,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+TON,TO,Tonga,E,Low-income,0.103,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+TTO,TT,Trinidad and Tobago,C,Mid,0.403,USD,cut,5.99,3.59,-40.1,34.99,20.99,-40,5.99,3.59,51.3,51.3
+TUN,TN,Tunisia,D,Emerging,0.166,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+TUR,TR,Turkiye,B,Near-parity,0.499,TRY,normalize-annual,299.99,299.99,0,1999.99,1749.99,-12.5,5,5,44.4,51.4
+TWN,TW,TWN,A,Parity,0.849,TWD,raise,190,210,10.5,1190,1225,2.9,5.43,6.01,47.8,51.4
+TZA,TZ,Tanzania,E,Low-income,0.049,TZS,cut,17900,5700,-68.2,99900,33500,-66.5,5.62,1.79,53.5,51
+UGA,UG,Uganda,E,Low-income,0.038,USD,cut,6.99,2.19,-68.7,39.99,12.9,-67.7,5.62,1.76,52.3,50.9
+UKR,UA,Ukraine,D,Emerging,0.21,USD,cut,6.99,2.89,-58.7,39.99,16.9,-57.7,5.82,2.41,52.3,51.3
+URY,UY,Uruguay,C,Mid,0.406,USD,cut,5.99,3.69,-38.4,34.99,21.49,-38.6,5.89,3.64,51.3,51.5
+USA,US,United States,A,Parity,1,USD,keep,5.99,5.99,0,34.99,34.99,0,5.99,5.99,51.3,51.3
+UZB,UZ,Uzbekistan,D,Emerging,0.152,USD,cut,6.99,2.69,-61.5,39.99,15.9,-60.2,6.24,2.4,52.3,50.7
+VCT,VC,St. Vincent and the Grenadines,D,Emerging,0.25,USD,cut,5.99,2.39,-60.1,34.99,13.95,-60.1,5.99,2.39,51.3,51.4
+VEN,VE,"Venezuela, RB",E,Low-income,0.089,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+VGB,VG,British Virgin Islands,B,Near-parity,0.503,USD,cut,5.99,4.79,-20,34.99,27.99,-20,5.99,4.79,51.3,51.3
+VNM,VN,Viet Nam,D,Emerging,0.196,VND,cut,199000,70000,-64.8,999000,409000,-59.1,6.84,2.41,58.2,51.3
+VUT,VU,Vanuatu,E,Low-income,0.056,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+XKS,,XKS,A,Parity,1,EUR,cut,6.99,6.09,-12.9,39.99,35.49,-11.3,6.84,5.96,52.3,51.4
+YEM,YE,"Yemen, Rep.",E,Low-income,0.039,USD,cut,5.99,1.79,-70.1,34.99,10.49,-70,5.99,1.79,51.3,51.2
+ZAF,ZA,South Africa,D,Emerging,0.174,ZAR,cut,119.99,45.99,-61.7,699.99,269,-61.6,6.33,2.43,51.4,51.3
+ZMB,ZM,Zambia,E,Low-income,0.045,USD,cut,6.99,2.09,-70.1,39.99,12,-70,6.02,1.8,52.3,52.2
+ZWE,ZW,Zimbabwe,E,Low-income,0.071,USD,cut,6.99,2.19,-68.7,39.99,12.9,-67.7,5.75,1.8,52.3,50.9

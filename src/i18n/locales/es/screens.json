@@ -806,12 +806,16 @@
       "perMonth": "{{price}}/mes",
       "billedYearly": "{{price}} al año tras la prueba",
       "billedMonthly": "{{price}} al mes tras la prueba",
+      "billedYearlyNoTrial": "{{price}} al año",
+      "billedMonthlyNoTrial": "{{price}} al mes",
       "selectedA11y": "seleccionado",
       "a11yHint": "Selecciona el plan {{plan}}"
     },
     "cta": {
       "subscribe": "Suscribirme — 7 días gratis",
       "subscribeA11yHint": "Inicia tu suscripción con 7 días de prueba gratis. Cancela cuando quieras desde los ajustes de cuenta.",
+      "subscribeNoTrial": "Suscribirme",
+      "subscribeA11yHintNoTrial": "Inicia tu suscripción. Cancela cuando quieras desde los ajustes de cuenta.",
       "skip": "Quizás más tarde",
       "skipA11yHint": "Omitir suscripción y continuar con funciones limitadas"
     },

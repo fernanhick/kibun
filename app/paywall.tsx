@@ -19,6 +19,23 @@ import { typography, spacing, radius, shadows } from '@constants/theme';
 import { useTheme, type ThemePalette } from '@theme/ThemeContext';
 import { useThemedStyles } from '@hooks/useThemedStyles';
 
+/**
+ * Whether the store will actually give this package a free trial.
+ *
+ * iOS exposes it as `introPrice` with a zero price; Android exposes it as a free
+ * phase on the default subscription option, and only populates `introPrice` in
+ * newer SDK versions, so both are checked. A non-zero `introPrice` is a discounted
+ * intro period, not a free trial, and must not count.
+ */
+function hasFreeTrial(pkg: PurchasesPackage | null): boolean {
+  const product = pkg?.product as
+    | { introPrice?: { price: number } | null; defaultOption?: { freePhase?: unknown } | null }
+    | undefined;
+  if (!product) return false;
+  if (product.introPrice && Number(product.introPrice.price) === 0) return true;
+  return Boolean(product.defaultOption?.freePhase);
+}
+
 type ComparisonRowKey =
   | 'aiPrompts'
   | 'customMoods'
@@ -136,10 +153,19 @@ export default function PaywallScreen() {
 
   const monthlyPriceStr = monthlyPkg?.product.priceString ?? t('paywall.price.fallbackMonthly');
   const yearlyPriceStr = yearlyPkg?.product.priceString ?? t('paywall.price.fallbackYearly');
-  const billedLine =
-    selectedPlan === 'annual'
+
+  // Never promise a trial the store will not honour. The trial is configured per
+  // plan per store, so it can legitimately exist on one and not the other — and
+  // getting this wrong means the purchase sheet charges immediately right after
+  // the paywall said "7 days free".
+  const trialOnSelected = hasFreeTrial(selectedPackage);
+  const billedLine = trialOnSelected
+    ? selectedPlan === 'annual'
       ? t('paywall.plan.billedYearly', { price: yearlyPriceStr })
-      : t('paywall.plan.billedMonthly', { price: monthlyPriceStr });
+      : t('paywall.plan.billedMonthly', { price: monthlyPriceStr })
+    : selectedPlan === 'annual'
+      ? t('paywall.plan.billedYearlyNoTrial', { price: yearlyPriceStr })
+      : t('paywall.plan.billedMonthlyNoTrial', { price: monthlyPriceStr });
 
   const handlePurchase = async () => {
     if (purchasing) return;
@@ -318,21 +344,17 @@ export default function PaywallScreen() {
       </View>
 
       {/* ── Trust signal ─────────────────────────────────────────────── */}
+      {/* Claims here must be true and backed by shipping behaviour. This
+          surface is the 3.1.2 disclosure frame — never put an unearned
+          rating or review count on it. */}
       <View
         style={styles.trustRow}
         accessibilityRole="text"
-        accessibilityLabel={`${t('paywall.trust.starsA11y')}. ${t('paywall.trust.tagline')}`}
+        accessibilityLabel={`${t('paywall.trust.privacy')}. ${t('paywall.trust.tagline')}`}
       >
-        <View style={styles.starsRow}>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <Ionicons
-              key={i}
-              name="star"
-              size={16}
-              color="#F6B100"
-              style={i > 0 ? styles.starSpacing : undefined}
-            />
-          ))}
+        <View style={styles.trustBadgeRow}>
+          <Ionicons name="shield-checkmark" size={15} color={colors.primary} />
+          <Text style={styles.trustBadgeText}>{t('paywall.trust.privacy')}</Text>
         </View>
         <Text style={styles.trustTagline}>{t('paywall.trust.tagline')}</Text>
       </View>
@@ -366,12 +388,16 @@ export default function PaywallScreen() {
 
         <View style={styles.ctaGlow}>
           <Button
-            label={t('paywall.cta.subscribe')}
+            label={trialOnSelected ? t('paywall.cta.subscribe') : t('paywall.cta.subscribeNoTrial')}
             onPress={handlePurchase}
             variant="sunrise"
             loading={purchasing}
             fullWidth
-            accessibilityHint={t('paywall.cta.subscribeA11yHint')}
+            accessibilityHint={
+              trialOnSelected
+                ? t('paywall.cta.subscribeA11yHint')
+                : t('paywall.cta.subscribeA11yHintNoTrial')
+            }
           />
         </View>
         {purchaseError && (
@@ -580,12 +606,15 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     gap: spacing.xs,
     marginTop: -spacing.xs,
   },
-  starsRow: {
+  trustBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.xs,
   },
-  starSpacing: {
-    marginLeft: 2,
+  trustBadgeText: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.body,
+    color: colors.primary,
   },
   trustTagline: {
     fontSize: typography.sizes.sm,

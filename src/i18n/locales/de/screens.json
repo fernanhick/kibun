@@ -1,0 +1,1132 @@
+{
+  "appErrors": {
+    "title": "Etwas ist schiefgelaufen",
+    "restart": "App neu starten"
+  },
+  "tabs": {
+    "home": "Start",
+    "history": "Verlauf",
+    "insights": "Insights",
+    "settings": "Einstellungen",
+    "logMoodA11y": "Stimmung festhalten",
+    "mascotA11y": "Mit dem Maskottchen spielen"
+  },
+  "home": {
+    "anonBanner": {
+      "text": "Deine Daten liegen nur auf diesem Gerät.",
+      "link": "Registriere dich zum Synchronisieren →",
+      "a11ySignup": "Registriere dich, um deine Daten zu sichern",
+      "a11yHint": "Deine Stimmungsdaten liegen nur auf diesem Gerät. Tippe, um ein Konto zu erstellen.",
+      "a11yDismiss": "Hinweis schließen"
+    },
+    "greeting": {
+      "morning": "Guten Morgen",
+      "afternoon": "Guten Tag",
+      "evening": "Guten Abend",
+      "windDown": "Zeit zum Runterkommen"
+    },
+    "streak": "{{count}} Tage Serie",
+    "streakA11y": "Aktuelle Serie: {{count}} Tage",
+    "logMoodCta": "Stimmung festhalten",
+    "todayHeader": "Heute",
+    "todayHeaderCount": "Heute ({{count}})",
+    "achievementsHeader": "Erfolge",
+    "achievementA11y": "{{label}}: {{description}}",
+    "habitsHeader": "Gewohnheiten",
+    "habitsManage": "Verwalten",
+    "habitsManageA11y": "Gewohnheiten verwalten",
+    "habitsTrackDaily": "Tägliche Gewohnheiten verfolgen",
+    "habitsEmptyA11y": "Richte Gewohnheiten ein, die du neben deiner Stimmung verfolgst",
+    "habitDoneA11y": "{{name}}: erledigt, tippe zum Abwählen",
+    "habitNotDoneA11y": "{{name}}: nicht erledigt, tippe zum Markieren",
+    "habitLevelA11y": "{{name}} Stufe {{n}}",
+    "entryA11y": "{{mood}} um {{time}}. Tippe für Details.",
+    "slot": {
+      "morning": "Morgen",
+      "afternoon": "Nachmittag",
+      "night": "Abend",
+      "pre_sleep": "Nacht"
+    },
+    "insightHeader": "Heutiger Insight",
+    "insightLoading": "Dein Insight wird personalisiert…",
+    "tipLogTitle": "Halte fest, wie du dich fühlst",
+    "tipLogSub": "Tippe oben auf \"Stimmung festhalten\" — dauert nur ein paar Sekunden.",
+    "tipLogA11y": "Halte deine erste Stimmung des Tages fest",
+    "tipHabitsTitle": "Tägliche Gewohnheiten verfolgen",
+    "tipHabitsSub": "Füge Schlaf, Wasser oder Bewegung hinzu, um zu sehen, was dich aufbaut.",
+    "tipHabitsA11y": "Richte tägliche Gewohnheiten zum Verfolgen ein",
+    "motivational": {
+      "positive": [
+        "Du bist in Fahrt — halt diese Energie!",
+        "Gestern war ein guter Tag. Bauen wir darauf auf!",
+        "Gute Vibes überall. Du schaffst das!",
+        "Deine Positivität strahlt. Weiter so!",
+        "Gestern war strahlend — mach heute noch schöner.",
+        "Du bist in einem tollen Flow. Genieße jeden Moment.",
+        "Du reitest die gute Welle — bleib dran!",
+        "Gute Tage darf man feiern. Das hast du gut gemacht!"
+      ],
+      "struggling": [
+        "Jeder Tag ist ein Neuanfang. Du schaffst das.",
+        "Es ist okay, nicht okay zu sein — einen Atemzug nach dem anderen.",
+        "Sei heute sanft zu dir. Du machst das besser, als du denkst.",
+        "Schwere Momente stärken die Widerstandskraft. Wir sind bei dir.",
+        "Du bist da — und das zählt.",
+        "Schwere Zeiten dauern nicht ewig. Du bist stärker, als du glaubst.",
+        "Auch der kleinste Erfolg zählt heute. Was war eine gute Sache?",
+        "Du bist damit nicht allein. Atme durch — du packst heute.",
+        "Heilung verläuft nicht geradlinig. Jeder Schritt nach vorn zählt."
+      ],
+      "neutral": [
+        "Mach einen Check-in mit dir — jeder Moment zählt.",
+        "Ein neuer Tag, ein neues Kapitel. Wie fühlst du dich?",
+        "Deine Gefühle zählen. Erkunden wir sie zusammen.",
+        "Bereit, dich einzustimmen? Schauen wir, wie es dir geht.",
+        "Kleine Check-ins führen zu großer Selbstwahrnehmung.",
+        "Wie geht es deiner inneren Welt heute?",
+        "Nimm dir einen Moment — wie fühlst du dich wirklich?",
+        "Heute ist ein guter Tag, dich besser zu verstehen."
+      ]
+    },
+    "emptyVariants": {
+      "positive": [
+        {
+          "imageKey": "welcome-back",
+          "title": "Willkommen zurück",
+          "body": "Die letzten Tage waren strahlend. Möchtest du diese gute Energie halten?",
+          "affirmation": "Heute ist dein Tag zu strahlen."
+        },
+        {
+          "imageKey": "glad-you-are-here",
+          "title": "Schön, dass du da bist",
+          "body": "Du hast eine schöne Serie. Ein kurzer Check-in hält den Schwung.",
+          "affirmation": "Kleine Momente, große Erfolge."
+        },
+        {
+          "imageKey": "keep-it-going",
+          "title": "Bleib dran",
+          "body": "Zuletzt lief es gut. Halte fest, wie der heutige Tag dir bekommt.",
+          "affirmation": "Dein Licht zählt."
+        }
+      ],
+      "struggling": [
+        {
+          "imageKey": "we-are-here-with-you",
+          "title": "Wir sind bei dir",
+          "body": "Die letzten Tage waren schwer. Schon ein kleiner Check-in hilft dir zu verstehen, was du brauchst.",
+          "affirmation": "Du bist stärker, als du glaubst."
+        },
+        {
+          "imageKey": "one-breadth",
+          "title": "Ein Atemzug nach dem anderen",
+          "body": "Schwere Momente dauern nicht ewig. Festzuhalten, wie du dich fühlst, ist ein stiller Akt der Selbstfürsorge.",
+          "affirmation": "Sei heute sanft zu dir."
+        },
+        {
+          "imageKey": "you-showed-up",
+          "title": "Du bist da",
+          "body": "Und das genügt. Deine Stimmung festzuhalten — auch an schweren Tagen — hilft dir, dich klarer zu sehen.",
+          "affirmation": "Heilung verläuft nicht geradlinig — jeder Schritt zählt."
+        }
+      ],
+      "neutral": [
+        {
+          "imageKey": "you-matter",
+          "title": "Du bist wichtig",
+          "body": "Noch keine Stimmung festgehalten — und das ist okay. Schon hier zu sein, ist etwas Gutes für dich.",
+          "affirmation": "Sei heute sanft zu dir."
+        },
+        {
+          "imageKey": "a-fresh-page",
+          "title": "Ein leeres Blatt",
+          "body": "Jeder Tag ist ein neues Kapitel. Nimm dir einen Moment für einen Check-in mit dir.",
+          "affirmation": "Deine Gefühle sind gültig — welche auch immer."
+        },
+        {
+          "imageKey": "glad-you-are-here",
+          "title": "Hallo du",
+          "body": "Wie geht es deiner inneren Welt heute? Ein kurzer Eintrag hilft, mit der Zeit Muster zu erkennen.",
+          "affirmation": "Du verdienst Aufmerksamkeit."
+        }
+      ]
+    },
+    "insightCards": {
+      "positiveCorrelation": {
+        "title": "{{habit}} scheint deine Stimmung zu heben",
+        "body": "An Tagen, an denen du {{habit}} festhältst, ist deine Stimmung im Schnitt {{strength}} höher. Wert, es zu schützen.",
+        "imageKey": "keep-it-going"
+      },
+      "lowMoodNudge": {
+        "personalisedTitle": "Ein sanfter Anstoß: {{habit}}",
+        "personalisedBody": "An schwereren Tagen war {{habit}} einer deiner verlässlichen Aufheller. Auch ein kleiner Haken zählt.",
+        "genericTitle": "Ein kleiner Anker für heute",
+        "genericBody": "Heute fühlt sich etwas schwer an. Eine kleine Gewohnheit, so unvollkommen sie auch ist, genügt.",
+        "imageKey": "we-are-here-with-you"
+      },
+      "strength": {
+        "weak": "leicht",
+        "moderate": "mäßig",
+        "strong": "deutlich"
+      }
+    }
+  },
+  "insights": {
+    "patterns": {
+      "dayOfWeek": "An {{day}}en fühlst du dich oft {{mood}}",
+      "timeOfDay": "Du fühlst dich {{slot}} oft {{mood}}",
+      "trendUp": "Deine Stimmung hat sich zuletzt gebessert",
+      "trendDown": "Deine Stimmung ist zuletzt gesunken"
+    },
+    "hero": {
+      "title": "Insights",
+      "subtitle": "Verfolge deine Stimmungsmuster über die Zeit",
+      "badge": "Stimmungsgeschichte"
+    },
+    "period": {
+      "label": "{{n}}T",
+      "a11y": "Letzte {{n}} Tage anzeigen"
+    },
+    "tabs": {
+      "overview": "Überblick",
+      "patterns": "Muster",
+      "reports": "Berichte"
+    },
+    "stats": {
+      "streak": "Tage Serie",
+      "streakA11y": "{{count}} Tage Serie",
+      "checkIns": "Check-ins",
+      "checkInsA11y": "{{count}} Check-ins",
+      "activeDays": "aktive Tage",
+      "activeDaysA11y": "{{count}} aktive Tage",
+      "streakHero": {
+        "label": "Aktuelle Serie",
+        "subActive": "Bleib dran",
+        "subZero": "Halte heute fest, um zu starten"
+      }
+    },
+    "sections": {
+      "topMoods": "Top-Stimmungen",
+      "trend": "Stimmungstrend",
+      "patterns": "Muster",
+      "habitsAndMood": "Gewohnheiten & Stimmung",
+      "reports": "Berichte"
+    },
+    "charts": {
+      "barA11y": "Häufigkeitsdiagramm der Top-{{count}}-Stimmungen",
+      "trendA11y": "Liniendiagramm des Stimmungstrends über {{count}} Tage"
+    },
+    "patternsHint": "Halte mehr Check-ins fest, um Muster zu sehen",
+    "resilienceCard": {
+      "title": "Erholungswert",
+      "scoreA11y": "Erholungswert: {{score}} von 100",
+      "lockedTitle": "Erholungswert",
+      "lockedSubtitle": "Sieh, wie schnell du dich von schwierigen Stimmungen erholst. Pro-Funktion.",
+      "lockedA11y": "Hol dir Pro, um den Erholungswert freizuschalten",
+      "empty": "Halte mehr Stimmungen fest — auch einige schwierige — um deinen Erholungswert zu sehen.",
+      "recoveryMinutes": "{{n}}min Ø-Erholung",
+      "recoveryHours": "{{n}}h Ø-Erholung",
+      "recoveryDays": "{{n}}T Ø-Erholung",
+      "basedOn_one": "basierend auf {{count}} Erholung",
+      "basedOn_other": "basierend auf {{count}} Erholungen"
+    },
+    "correlationsCard": {
+      "title": "Stimmung nach Zeit × Tag",
+      "lockedTitle": "Stimmungskarte nach Zeit & Tag",
+      "lockedSubtitle": "Sieh, zu welchen Zeiten und an welchen Tagen es dir am besten geht. Pro-Funktion.",
+      "lockedA11y": "Hol dir Pro, um Korrelationen freizuschalten",
+      "heatmapA11y": "Heatmap der durchschnittlichen Stimmung nach Tageszeit und Wochentag",
+      "cellA11y": "Wert {{score}}",
+      "noDataA11y": "keine Daten",
+      "slotShort": {
+        "morning": "Morg.",
+        "afternoon": "Nachm.",
+        "night": "Abend",
+        "pre_sleep": "Nacht"
+      },
+      "legend": {
+        "low": "Niedrig",
+        "mixed": "Gemischt",
+        "good": "Gut",
+        "great": "Super",
+        "noData": "Keine Daten"
+      }
+    },
+    "habitCorrelations": {
+      "lockedTitle": "Gewohnheit × Stimmung",
+      "lockedSubtitle": "Sieh, welche Gewohnheiten deine Stimmung am meisten beeinflussen. Pro-Funktion.",
+      "lockedA11y": "Hol dir Pro, um Gewohnheits-Korrelationen freizuschalten",
+      "needsMoreTitle": "Noch nicht genug Daten",
+      "needsMoreSubtitle": "Halte Gewohnheiten mindestens 5 Tage fest, um Korrelationen zu sehen.",
+      "rowA11y": "{{habit}}: {{label}}",
+      "seeAllPro": "Sieh jedes Gewohnheit-Stimmung-Signal mit Pro",
+      "seeAllProA11y": "Hol dir Pro, um alle Gewohnheit-Stimmung-Korrelationen zu sehen",
+      "strength": {
+        "strongPositive": "Hebt die Stimmung stark",
+        "strongNegative": "Drückt die Stimmung stark",
+        "moderatePositive": "Hebt die Stimmung",
+        "moderateNegative": "Drückt die Stimmung",
+        "weakPositive": "Leichter Schub",
+        "weakNegative": "Leichter Rückgang",
+        "none": "Noch kein Muster"
+      }
+    },
+    "aiReport": {
+      "title": "Wochen- & Monatsübersicht",
+      "subtitle": "Sieh dir deinen jüngsten Stimmungsverlauf an",
+      "a11y": "Übersicht deines Stimmungsverlaufs ansehen"
+    },
+    "yearInMood": {
+      "title": "{{year}} in Stimmungen",
+      "subtitle": "Dein Jahresrückblick der Stimmungen",
+      "a11y": "Deinen Jahresrückblick 'Jahr in Stimmungen' ansehen"
+    },
+    "proBadge": "Pro",
+    "empty": {
+      "title": "Noch keine Stimmung festgehalten",
+      "subtitle": "Beginne mit Check-ins, um hier deine Muster zu sehen"
+    }
+  },
+  "history": {
+    "header": {
+      "badge": "Stimmungskalender",
+      "monthYear": "{{month}} {{year}}",
+      "prevMonthA11y": "Voriger Monat",
+      "nextMonthA11y": "Nächster Monat"
+    },
+    "actions": {
+      "event": "Ereignis",
+      "eventA11y": "Ein Lebensereignis festhalten",
+      "export": "Exportieren",
+      "exportA11y": "Stimmungsverlauf als CSV exportieren",
+      "exportLockedA11y": "Hol dir Pro, um den Stimmungsverlauf zu exportieren"
+    },
+    "exportTitle": "Kibun Stimmungs-Export",
+    "calendar": {
+      "today": "heute",
+      "tapToLog": "tippen zum Festhalten",
+      "noEntries": "keine Einträge",
+      "cellA11y": "{{month}} {{day}}"
+    },
+    "snapshot": {
+      "badge": "Monatsüberblick",
+      "emptyTitle": "Noch keine Stimmung für {{month}}",
+      "emptySubtitle": "Tippe oben auf einen Tag, um festzuhalten, wie du dich fühlst.",
+      "moodsLogged": "Stimmungen festgehalten",
+      "activeDays": "aktive Tage",
+      "topMood": "Top: {{mood}}"
+    }
+  },
+  "register": {
+    "hero": {
+      "registerTitle": "Erstelle dein Konto",
+      "loginTitle": "Willkommen zurück!",
+      "registerSubtitle": "Verknüpfe deine Daten mit einem Konto, damit du sie nie verlierst",
+      "loginSubtitle": "Melde dich an und mach dort weiter, wo du aufgehört hast",
+      "fromOnboardingNote": "Du kannst die Einführung jetzt überspringen. Diese Fragen später zu beantworten, hilft uns, deine Insights zu personalisieren."
+    },
+    "social": {
+      "apple": "Weiter mit Apple",
+      "google": "Weiter mit Google"
+    },
+    "divider": "oder",
+    "form": {
+      "emailLabel": "E-Mail",
+      "emailA11y": "E-Mail-Adresse",
+      "emailPlaceholder": "du@beispiel.com",
+      "passwordLabel": "Passwort",
+      "passwordA11y": "Passwort",
+      "passwordPlaceholderRegister": "Mind. 8 Zeichen",
+      "passwordPlaceholderLogin": "Dein Passwort",
+      "submitRegister": "Konto erstellen",
+      "submitLogin": "Anmelden",
+      "forgot": "Passwort vergessen?",
+      "forgotA11y": "Passwort vergessen",
+      "legalIntro": "Mit dem Erstellen eines Kontos stimmst du unseren ",
+      "legalAnd": " und ",
+      "legalSuffix": " zu.",
+      "termsOfUse": "Nutzungsbedingungen",
+      "privacyPolicy": "Datenschutzrichtlinie"
+    },
+    "toggle": {
+      "haveAccount": "Schon ein Konto? ",
+      "noAccount": "Noch kein Konto? ",
+      "linkLogin": "Anmelden",
+      "linkRegister": "Erstelle eins"
+    },
+    "skip": "Erst mal überspringen",
+    "skipA11yHint": "Ohne Konto fortfahren",
+    "errors": {
+      "configMissing": "Konfigurationsfehler: Supabase ist für diese Version nicht eingerichtet.",
+      "differentPassword": "Bitte wähle ein anderes Passwort und versuche es erneut.",
+      "alreadyRegistered": "Es existiert bereits ein Konto mit dieser E-Mail. Versuche dich stattdessen anzumelden.",
+      "incorrectCredentials": "E-Mail oder Passwort falsch.",
+      "confirmFirst": "Bitte prüfe deinen Posteingang und bestätige zuerst deine E-Mail.",
+      "signupDisabled": "Die Kontoerstellung ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.",
+      "tooManyRequests": "Zu viele Versuche. Bitte warte einen Moment und versuche es erneut.",
+      "networkError": "Verbindungsfehler. Bitte prüfe dein Internet und versuche es erneut.",
+      "passwordTooShort": "Das Passwort muss mindestens 8 Zeichen haben.",
+      "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
+      "enterEmailFirst": "Bitte gib zuerst oben deine E-Mail-Adresse ein.",
+      "oauthUnavailable": "Anmeldung mit {{provider}} nicht verfügbar",
+      "oauthFailedGoogle": "Google-Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+      "oauthFailedApple": "Apple-Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+      "signInIncomplete": "Anmeldung konnte nicht abgeschlossen werden. Bitte versuche es erneut."
+    },
+    "info": {
+      "accountCreated": "Konto erstellt. Bitte bestätige deine E-Mail und melde dich dann an.",
+      "confirmBeforeSignIn": "Bitte prüfe deinen Posteingang und bestätige deine E-Mail vor dem Anmelden.",
+      "confirmFirstThenSignIn": "Bitte bestätige zuerst deine E-Mail und melde dich dann an.",
+      "resetEmailSent": "E-Mail zum Zurücksetzen des Passworts gesendet. Prüfe deinen Posteingang."
+    }
+  },
+  "account": {
+    "title": "Konto",
+    "anonymous": {
+      "title": "Nicht angemeldet",
+      "subtitle": "Deine Stimmungsdaten liegen nur auf diesem Gerät. Erstelle ein Konto, um sie geräteübergreifend zu sichern.",
+      "createAccount": "Konto erstellen"
+    },
+    "connected": "Verbundenes Konto",
+    "sections": {
+      "subscription": "ABO",
+      "security": "SICHERHEIT",
+      "privacy": "DATENSCHUTZ",
+      "danger": "GEFAHRENZONE"
+    },
+    "subscription": {
+      "statusLabel": "Status",
+      "manage": "Abo verwalten",
+      "manageA11y": "Abo verwalten",
+      "badge": {
+        "trial": "Kostenlose Testphase",
+        "active": "Aktiv",
+        "expired": "Abgelaufen",
+        "none": "Kein Plan"
+      }
+    },
+    "security": {
+      "change": "Passwort ändern",
+      "set": "Passwort festlegen",
+      "setHint": "Füge ein Passwort als Backup zur Google- oder Apple-Anmeldung hinzu.",
+      "changeA11y": "Passwort ändern",
+      "setA11y": "Passwort festlegen"
+    },
+    "signOut": {
+      "label": "Abmelden",
+      "loading": "Wird abgemeldet...",
+      "hint": "Beim Abmelden endet deine Sitzung. Deine Stimmungsdaten bleiben auf diesem Gerät."
+    },
+    "export": {
+      "label": "Meine Daten exportieren",
+      "loading": "Export wird vorbereitet...",
+      "hint": "Lade eine JSON-Kopie deiner Stimmungen, Tagebücher, Gewohnheiten und deines Profils herunter.",
+      "a11y": "Meine Daten exportieren",
+      "savedTitle": "Export gespeichert",
+      "savedFallback": "Teilen ist auf diesem Gerät nicht verfügbar. Datei: {{uri}}",
+      "dialogTitle": "Kibun-Daten exportieren",
+      "failedTitle": "Export fehlgeschlagen",
+      "failedBody": "Deine Daten konnten nicht exportiert werden. Bitte versuche es erneut."
+    },
+    "deleteData": {
+      "title": "Meine Daten löschen",
+      "loading": "Daten werden gelöscht...",
+      "subtitle": "Entfernt Stimmungsverlauf und Profil, behält das Konto",
+      "a11y": "Meine Daten löschen",
+      "confirmTitle": "Meine Daten löschen",
+      "confirmBody": "Dies löscht dauerhaft alle deine Stimmungseinträge, Zusammenfassungen und Profilinformationen. Dein Konto bleibt aktiv. Dies kann nicht rückgängig gemacht werden.",
+      "confirmAction": "Daten löschen",
+      "errorTitle": "Fehler",
+      "errorBody": "Daten konnten nicht gelöscht werden. Bitte versuche es erneut."
+    },
+    "deleteAccount": {
+      "title": "Konto löschen",
+      "loading": "Wird gelöscht...",
+      "subtitle": "Entfernt dauerhaft Konto und alle Daten",
+      "a11y": "Konto löschen",
+      "confirmTitle": "Konto löschen",
+      "confirmBody": "Dies löscht dauerhaft dein Konto und alle deine Stimmungsdaten. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirmAction": "Löschen",
+      "errorTitle": "Fehler",
+      "errorBody": "Konto konnte nicht gelöscht werden. Bitte versuche es erneut."
+    },
+    "common": {
+      "cancel": "Abbrechen"
+    }
+  },
+  "changePassword": {
+    "titleChange": "Passwort ändern",
+    "titleSet": "Passwort festlegen",
+    "ineligible": "Die Passwort-Anmeldung braucht eine hinterlegte E-Mail-Adresse für dieses Konto. Bitte kontaktiere den Support, wenn du Hilfe brauchst.",
+    "goBack": "Zurück",
+    "setSubtitle": "Füge ein Passwort hinzu, damit du dich mit deiner E-Mail als Backup zur Google- oder Apple-Anmeldung anmelden kannst.",
+    "fields": {
+      "currentLabel": "Aktuelles Passwort",
+      "currentA11y": "Aktuelles Passwort",
+      "currentPlaceholder": "Aktuelles Passwort eingeben",
+      "newLabel": "Neues Passwort",
+      "newA11y": "Neues Passwort",
+      "newPlaceholder": "Mind. 8 Zeichen",
+      "confirmLabel": "Neues Passwort bestätigen",
+      "confirmA11y": "Neues Passwort bestätigen",
+      "confirmPlaceholder": "Neues Passwort erneut eingeben"
+    },
+    "submitChange": "Passwort aktualisieren",
+    "submitSet": "Passwort festlegen",
+    "forgot": "Aktuelles Passwort vergessen?",
+    "forgotA11y": "Aktuelles Passwort vergessen",
+    "errors": {
+      "incorrectCurrent": "Aktuelles Passwort falsch.",
+      "mustDiffer": "Das neue Passwort muss sich vom aktuellen unterscheiden.",
+      "tooShort": "Das Passwort muss mindestens 8 Zeichen haben.",
+      "tooManyRequests": "Zu viele Versuche. Bitte warte einen Moment und versuche es erneut.",
+      "networkError": "Verbindungsfehler. Bitte prüfe dein Internet und versuche es erneut.",
+      "enterCurrent": "Bitte gib dein aktuelles Passwort ein.",
+      "fillBoth": "Bitte fülle beide Passwortfelder aus.",
+      "noMatch": "Die Passwörter stimmen nicht überein."
+    },
+    "info": {
+      "passwordSet": "Passwort festgelegt. Du kannst dich jetzt mit {{email}} und diesem Passwort anmelden.",
+      "updated": "Passwort aktualisiert.",
+      "resetEmailSent": "E-Mail zum Zurücksetzen des Passworts gesendet. Prüfe deinen Posteingang."
+    }
+  },
+  "checkIn": {
+    "title": "Wie fühlst du dich?",
+    "subtitlePick": "Wähle die Stimmung, die zu diesem Moment passt.",
+    "subtitleBackdate": "Eintrag für {{date}}",
+    "groupHeading": "{{group}} Stimmungen",
+    "customSection": "Deine Stimmungen",
+    "manage": "Verwalten",
+    "create": "+ Erstellen",
+    "createFirst": "Eigene Stimmung erstellen",
+    "seeMore": "Mehr anzeigen",
+    "seeLess": "Weniger anzeigen",
+    "manageMoods": "Stimmungen verwalten",
+    "a11yCancel": "Abbrechen",
+    "a11yManageCustom": "Eigene Stimmungen verwalten",
+    "a11yCreateFirst": "Erstelle deine erste eigene Stimmung"
+  },
+  "moodConfirm": {
+    "vibeToday": "Dein Vibe heute",
+    "loggingFor": "Eintrag für {{date}}",
+    "moodSubLabel": "Dieses Gefühl zählt. Halten wir es fest.",
+    "savedTitle": "Festgehalten",
+    "savedSubtitle": "Möchtest du etwas tiefer gehen?",
+    "done": "Fertig",
+    "reflect": "Im Tagebuch reflektieren",
+    "noteLabel": "Notiz hinzufügen",
+    "notePlaceholder": "Wie fühlst du dich? (optional)",
+    "noteA11y": "Stimmungsnotiz",
+    "closeA11y": "Ohne Speichern schließen",
+    "sentiment": {
+      "positive": "Klingt positiv",
+      "neutral": "Klingt neutral",
+      "negative": "Klingt schwierig"
+    },
+    "alignmentHintGreen": "Die Notiz klingt schwierig — das darfst du fühlen.",
+    "alignmentHintNegative": "Die Notiz klingt hoffnungsvoll — das ist es wert, bemerkt zu werden.",
+    "energy": {
+      "title": "Energie & Fokus",
+      "subtitle": "Optional — hilft, tiefere Muster zu zeigen",
+      "energy": "Energie",
+      "focus": "Fokus",
+      "level": "{{label}} Stufe {{n}}",
+      "clear": "{{label}} zurücksetzen"
+    },
+    "energyTeaser": "Energie- & Fokuslevel verfolgen",
+    "energyTeaserA11y": "Energie- und Fokuslevel verfolgen — Pro-Funktion",
+    "exercises": {
+      "green": {
+        "title": "Reite die Welle!",
+        "subtitle": "Fang diese gute Energie ein, solange sie da ist."
+      },
+      "neutral": {
+        "title": "Ein sanfter Anstoß",
+        "subtitle": "Kleine Veränderungen können deinen ganzen Tag verändern."
+      },
+      "red-orange": {
+        "title": "Brauchst du einen Moment?",
+        "subtitle": "Probier eine kurze Übung zum Durchatmen."
+      },
+      "blue": {
+        "title": "Du bist nicht allein",
+        "subtitle": "Manchmal genügt es, das Gefühl einfach zuzulassen."
+      },
+      "options": {
+        "gratitude": "Dankbarkeit",
+        "joy_capture": "Freude festhalten",
+        "savoring": "Genießen",
+        "energy_boost": "Energieschub",
+        "curiosity": "Neugier-Funke",
+        "mindful_pause": "Achtsame Pause",
+        "box_breathing": "Box-Atmung",
+        "grounding": "Fünf Sinne",
+        "body_scan": "Body-Scan",
+        "self_compassion": "Selbstmitgefühl",
+        "comfort_list": "Trostliste"
+      },
+      "requiresPro": "{{label}} — erfordert Pro",
+      "unlockPro": "Mit Pro freischalten",
+      "unlockProA11y": "Übungen mit Pro freischalten"
+    },
+    "save": "Speichern",
+    "changeMood": "Stimmung ändern",
+    "proBadge": "Pro"
+  },
+  "journalReflect": {
+    "promptLabel": "Reflektieren",
+    "placeholder": "Schreib frei — das ist nur für dich.",
+    "a11y": "Tagebuchantwort",
+    "save": "Reflexion speichern",
+    "skip": "Erst mal überspringen"
+  },
+  "exercise": {
+    "closeA11y": "Schließen",
+    "step": "Schritt {{n}} von {{total}}",
+    "next": "Weiter",
+    "continue": "Weiter",
+    "finish": "Fertigstellen",
+    "done": "Fertig",
+    "boxBreathing": {
+      "phases": {
+        "inhale": "Einatmen",
+        "hold": "Halten",
+        "exhale": "Ausatmen"
+      },
+      "description": "Folge dem Kreis. Atme im Rhythmus — {{count}} Zyklen.",
+      "cycle": "Zyklus {{n}} / {{total}}",
+      "doneTitle": "Gut gemacht!",
+      "doneSubtitle": "Du hast {{count}} Zyklen Box-Atmung abgeschlossen."
+    },
+    "grounding": {
+      "description": "Nutze deine Sinne, um dich sanft in den gegenwärtigen Moment zurückzubringen.",
+      "steps": [
+        "Nenne 5 Dinge, die du gerade sehen kannst.",
+        "Nenne 4 Dinge, die du körperlich berühren kannst.",
+        "Nenne 3 Dinge, die du hören kannst.",
+        "Nenne 2 Dinge, die du riechen kannst.",
+        "Nenne 1 Ding, das du schmecken kannst."
+      ]
+    },
+    "gratitude": {
+      "description": "Nenne drei Dinge, für die du gerade dankbar bist.",
+      "prompts": [
+        "Etwas, das dich heute zum Lächeln gebracht hat.",
+        "Ein Mensch, der dir Trost gibt.",
+        "Etwas an deinem Körper, das gut funktioniert."
+      ],
+      "itemA11y": "Dankbarkeits-Punkt {{n}}"
+    },
+    "joyCapture": {
+      "description": "Halte fest, was dich glücklich macht. Es aufzuschreiben lässt es bleiben.",
+      "prompts": [
+        "Was hat dich heute zum Lächeln oder Lachen gebracht?",
+        "Worauf freust du dich gerade am meisten?",
+        "Wer hat dir kürzlich Freude bereitet?"
+      ],
+      "itemA11y": "Freude-Punkt {{n}}"
+    },
+    "savoring": {
+      "description": "Genießen hilft dir, positive Gefühle festzuhalten, indem du langsamer wirst und sie bemerkst.",
+      "steps": [
+        "Schließ die Augen. Spiel einen glücklichen Moment von heute in allen Details noch einmal ab.",
+        "Bemerke, wie sich dein Körper gerade anfühlt — Wärme, Leichtigkeit, Gelöstheit.",
+        "Lächle sanft. Lass das Gefühl noch etwas länger bleiben."
+      ]
+    },
+    "energyBoost": {
+      "description": "Schnelle körperliche Resets, um den Nebel abzuschütteln und deine Energie zurückzuholen.",
+      "steps": [
+        "Steh auf und streck die Arme 10 Sekunden über den Kopf.",
+        "Nimm 5 tiefe Atemzüge — durch die Nase ein, durch den Mund aus.",
+        "Schüttle die Hände aus und roll die Schultern nach hinten.",
+        "Spritz dir kaltes Wasser ins Gesicht oder halte einen Eiswürfel."
+      ]
+    },
+    "curiosity": {
+      "description": "Neugier holt dich aus dem Autopiloten. Beantworte diese, um dich wieder mit der Welt zu verbinden.",
+      "prompts": [
+        "Worüber würdest du heute gern mehr erfahren?",
+        "Was in deiner Umgebung hast du nie wirklich genau angesehen?",
+        "Wenn du gerade jemandem eine Frage stellen könntest, welche wäre es?"
+      ],
+      "itemA11y": "Neugier-Punkt {{n}}"
+    },
+    "mindfulPause": {
+      "description": "Ein schneller Reset, der dich in den gegenwärtigen Moment zurückbringt.",
+      "steps": [
+        "Halte inne bei dem, was du tust. Sitz einen Moment still.",
+        "Bemerke drei Geräusche um dich herum, ohne sie zu bewerten.",
+        "Spüre das Gewicht deines Körpers auf dem Stuhl oder Boden.",
+        "Nimm einen langsamen, tiefen Atemzug und lass ihn sanft ausströmen."
+      ]
+    },
+    "bodyScan": {
+      "description": "Scanne deinen Körper langsam von Kopf bis Fuß. Lass Spannung los, wo du sie findest.",
+      "steps": [
+        "Schließ die Augen. Beginne am Scheitel. Bemerke jede Spannung.",
+        "Lenke deine Aufmerksamkeit auf Gesicht und Kiefer. Lass sie weich werden.",
+        "Lass die Schultern sinken. Lass die Arme schwer werden.",
+        "Bemerke Brust und Bauch. Lass deinen Atem natürlich langsamer werden.",
+        "Scanne hinunter zu Beinen und Füßen. Spüre sie fest auf dem Boden."
+      ]
+    },
+    "selfCompassion": {
+      "description": "Selbstmitgefühls-Übung nach Kristin Neff — sei einen Moment dein eigener bester Freund.",
+      "steps": [
+        "Leg eine Hand auf die Brust. Erkenne an: \"Das ist ein schwerer Moment.\"",
+        "Erinnere dich: \"Kämpfe gehören zum Menschsein. Ich bin damit nicht allein.\"",
+        "Sag zu dir: \"Möge ich gerade freundlich zu mir sein.\"",
+        "Nimm einen langsamen Atemzug und lass zu, was auch immer kommt."
+      ]
+    },
+    "comfortList": {
+      "description": "Bau dir ein Trost-Set. Zu wissen, was hilft, macht schwere Momente leichter.",
+      "prompts": [
+        "Ein Ort, an dem du dich sicher fühlst.",
+        "Ein Lied, eine Serie oder ein Buch, das dich tröstet.",
+        "Etwas Kleines, das du heute für dich tun kannst."
+      ],
+      "itemA11y": "Trost-Punkt {{n}}"
+    }
+  },
+  "settings": {
+    "hero": {
+      "title": "Einstellungen",
+      "subtitle": "Erinnerungen und deinen Tagesablauf abstimmen"
+    },
+    "sections": {
+      "account": "KONTO",
+      "reminderTimes": "ERINNERUNGSZEITEN",
+      "customTimes": "EIGENE ZEITEN",
+      "streakReminder": "SERIEN-ERINNERUNG",
+      "smartTiming": "SMARTE ZEITEN",
+      "appearance": "DARSTELLUNG",
+      "language": "SPRACHE",
+      "about": "ÜBER"
+    },
+    "tabs": {
+      "reminders": "Erinnerungen",
+      "general": "Allgemein",
+      "about": "Über"
+    },
+    "groups": {
+      "dailyReminders": "TÄGLICHE ERINNERUNGEN",
+      "more": "MEHR",
+      "legal": "RECHTLICHES",
+      "achievements": "ERFOLGE"
+    },
+    "achievements": {
+      "progress": "{{count}} von {{total}} freigeschaltet"
+    },
+    "account": {
+      "label": "Konto",
+      "notSignedIn": "Nicht angemeldet",
+      "manage": "Konto und Abo verwalten",
+      "a11y": "Konto verwalten"
+    },
+    "permissionBanner": {
+      "text": "Benachrichtigungen sind deaktiviert. Aktiviere sie in den Einstellungen, um Erinnerungen zu erhalten.",
+      "link": "Einstellungen öffnen",
+      "a11yHint": "Öffnet die Geräteeinstellungen, um Benachrichtigungen zu aktivieren"
+    },
+    "slots": {
+      "morning": {
+        "label": "Morgens",
+        "hint": "Gegen 9 Uhr"
+      },
+      "afternoon": {
+        "label": "Nachmittags",
+        "hint": "Gegen 14 Uhr"
+      },
+      "evening": {
+        "label": "Abends",
+        "hint": "Gegen 19 Uhr"
+      },
+      "preSleep": {
+        "label": "Vor dem Schlafen",
+        "hint": "Gegen 22 Uhr"
+      }
+    },
+    "reminders": {
+      "rowA11y": "{{label}}-Erinnerung um {{hint}}"
+    },
+    "customTimes": {
+      "setTo": "Auf {{time}} gesetzt",
+      "placeholder": "HH:MM",
+      "inputA11y": "Eigene Zeit für die {{label}}-Erinnerung",
+      "inputA11yHint": "Gib die Uhrzeit im 24-Stunden-Format HH:MM ein",
+      "empty": "Aktiviere oben Erinnerungen, um eigene Zeiten festzulegen."
+    },
+    "streak": {
+      "label": "Abend-Erinnerung",
+      "hint": "Erinnert dich um 20 Uhr, falls du heute noch nichts festgehalten hast",
+      "a11y": "Abendliche Serien-Erinnerung um 20 Uhr"
+    },
+    "smartTiming": {
+      "label": "Adaptive Erinnerungen",
+      "hint": "Verschiebt die Erinnerungszeiten dahin, wann du normalerweise eincheckst",
+      "a11y": "Adaptive Erinnerungszeiten aktivieren",
+      "overridden": "Eigene Zeit überschreibt die smarte Zeit ({{time}} berechnet)",
+      "smartTime": "Smarte Zeit: {{time}}",
+      "active": "Aktiv",
+      "auto": "Auto",
+      "needsMore": "Halte mehr Check-ins fest, um smarte Zeiten zu aktivieren.",
+      "lockedHint": "Lernt, wann du tatsächlich eincheckst, und passt die Erinnerungszeiten an. Pro-Funktion.",
+      "proBadge": "Pro",
+      "lockedA11y": "Hol dir Pro, um smarte Zeiten freizuschalten"
+    },
+    "appearance": {
+      "label": "Design",
+      "hint": "Folgt deinem Gerät, wenn auf System gestellt",
+      "options": {
+        "system": "Systemstandard",
+        "light": "Hell",
+        "dark": "Dunkel"
+      },
+      "optionA11y": "Design auf {{label}} setzen"
+    },
+    "language": {
+      "label": "App-Sprache",
+      "hint": "Änderungen gelten sofort",
+      "options": {
+        "system": "Systemstandard",
+        "en": "English",
+        "es": "Español",
+        "pt": "Português",
+        "de": "Deutsch"
+      },
+      "optionA11y": "Sprache auf {{label}} setzen"
+    },
+    "about": {
+      "version": "Version",
+      "restore": "Käufe wiederherstellen",
+      "restoreA11y": "Käufe wiederherstellen",
+      "restored": "Abo wiederhergestellt.",
+      "restoreNone": "Keine früheren Käufe gefunden.",
+      "manageSubscription": "Abo verwalten",
+      "manageSubscriptionA11y": "Abo verwalten",
+      "rate": "kibun bewerten ⭐",
+      "rateA11y": "kibun bewerten",
+      "feedback": "Feedback senden",
+      "feedbackA11y": "Feedback senden",
+      "terms": "Nutzungsbedingungen",
+      "termsA11y": "Nutzungsbedingungen",
+      "privacy": "Datenschutzrichtlinie",
+      "privacyA11y": "Datenschutzrichtlinie"
+    }
+  },
+  "paywall": {
+    "hero": {
+      "title": "kibun Premium",
+      "subtitle": "Deine Gefühle verdienen das ganze Bild.\nErgründen wir sie gemeinsam."
+    },
+    "comparison": {
+      "header": {
+        "feature": "Funktion",
+        "free": "Gratis",
+        "premium": "Premium"
+      },
+      "rows": {
+        "aiPrompts": "Persönliche Impulse",
+        "customMoods": "Eigene Stimmungen",
+        "breathing": "Atemübungen",
+        "correlations": "Gewohnheits- & Lebens-Korrelationen",
+        "aiReports": "Stimmungsberichte",
+        "customReminders": "Eigene Erinnerungszeiten",
+        "achievements": "Erfolge & Serienschutz"
+      },
+      "includedA11y": "enthalten",
+      "notIncludedA11y": "nicht enthalten"
+    },
+    "trust": {
+      "tagline": "Jederzeit kündbar · Keine Verpflichtung",
+      "privacy": "Standardmäßig privat · Niemals Werbung"
+    },
+    "price": {
+      "both": "{{monthly}} / Monat oder {{yearly}} / Jahr",
+      "monthlyOnly": "{{monthly}} / Monat",
+      "yearlyOnly": "{{yearly}} / Jahr",
+      "fallbackMonthly": "$5.99",
+      "fallbackYearly": "$34.99",
+      "trial": "Inkl. 7 Tage kostenlos · Jederzeit kündbar"
+    },
+    "plan": {
+      "monthly": {
+        "label": "Monatlich",
+        "period": "pro Monat"
+      },
+      "annual": {
+        "label": "Jährlich",
+        "period": "pro Jahr"
+      },
+      "save": "SPARE {{percent}}%",
+      "bestValue": "BESTER WERT",
+      "perMonth": "{{price}}/Mon.",
+      "billedYearly": "{{price}} jährlich nach der Testphase",
+      "billedMonthly": "{{price}} monatlich nach der Testphase",
+      "selectedA11y": "ausgewählt",
+      "a11yHint": "Wählt den {{plan}}-Plan",
+      "billedYearlyNoTrial": "{{price}} jährlich",
+      "billedMonthlyNoTrial": "{{price}} monatlich"
+    },
+    "cta": {
+      "subscribe": "Abonnieren — 7 Tage gratis",
+      "subscribeA11yHint": "Startet dein Abo mit 7 Tagen gratis. Jederzeit in den Kontoeinstellungen kündbar.",
+      "skip": "Vielleicht später",
+      "skipA11yHint": "Abo überspringen und mit eingeschränkten Funktionen fortfahren",
+      "subscribeNoTrial": "Abonnieren",
+      "subscribeA11yHintNoTrial": "Startet dein Abo. Jederzeit in den Kontoeinstellungen kündbar."
+    },
+    "disclosure": "Die Zahlung wird bei Kaufbestätigung deinem Konto belastet. Dein Abo verlängert sich automatisch, sofern es nicht mindestens 24 Stunden vor Ende des laufenden Zeitraums gekündigt wird. Verwalte oder kündige jederzeit in deinen Kontoeinstellungen.",
+    "restore": {
+      "label": "Käufe wiederherstellen",
+      "loading": "Wird wiederhergestellt…",
+      "a11y": "Frühere Käufe wiederherstellen"
+    },
+    "legal": {
+      "terms": "Nutzungsbedingungen",
+      "termsA11y": "Nutzungsbedingungen",
+      "privacy": "Datenschutzrichtlinie",
+      "privacyA11y": "Datenschutzrichtlinie"
+    },
+    "errors": {
+      "notConfigured": "Premium ist nicht eingerichtet. Bitte versuche es später.",
+      "loadFailed": "Paywall konnte nicht geladen werden. Bitte versuche es erneut.",
+      "noEntitlement": "Kauf abgeschlossen, aber die Berechtigung wurde nicht gefunden. Bitte kontaktiere den Support.",
+      "nativeMissing": "Die Premium-Oberfläche ist in dieser Version nicht verfügbar. Bitte aktualisiere die App und versuche es erneut.",
+      "billingUnavailable": "In-App-Käufe sind auf diesem Gerät nicht verfügbar. Stelle sicher, dass du bei Google Play angemeldet bist.",
+      "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+      "noPriorPurchases": "Keine früheren Käufe für dieses Konto gefunden."
+    }
+  },
+  "event": {
+    "category": {
+      "work": "Arbeit",
+      "social": "Soziales",
+      "health": "Gesundheit",
+      "travel": "Reisen",
+      "relationship": "Beziehung",
+      "personal": "Persönliches"
+    }
+  },
+  "sentiment": {
+    "positive": "Positiv",
+    "neutral": "Neutral",
+    "negative": "Schwierig"
+  },
+  "dayDetail": {
+    "deleteEntryTitle": "Eintrag löschen",
+    "deleteEntryMessage": "Möchtest du diesen \"{{moodLabel}}\"-Eintrag wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
+    "deleteAction": "Löschen",
+    "lifeEvents": "Lebensereignisse",
+    "deleteEventTitle": "Ereignis löschen",
+    "deleteEventMessage": "\"{{title}}\" löschen?",
+    "deleteEventA11y": "Ereignis löschen",
+    "empty": "An diesem Tag keine Stimmung festgehalten",
+    "entryA11y": "{{mood}} um {{time}}{{note}}. Tippe zum {{action}}.",
+    "expand": "Aufklappen",
+    "collapse": "Zuklappen",
+    "slot": {
+      "morning": "Morgen",
+      "afternoon": "Nachmittag",
+      "night": "Abend",
+      "pre_sleep": "Nacht"
+    },
+    "note": "Notiz",
+    "noNote": "Keine Notiz hinzugefügt",
+    "sentimentLabel": "Ton der Notiz",
+    "sentiment": {
+      "positive": "Positiv",
+      "neutral": "Neutral",
+      "negative": "Schwierig"
+    },
+    "journalPrompt": "Tagebuch-Impuls",
+    "yourReflection": "Deine Reflexion",
+    "energyFocus": "Energie & Fokus",
+    "energyValue": "Energie {{value}}/5",
+    "focusValue": "Fokus {{value}}/5",
+    "deleteEntryA11y": "Diesen Eintrag löschen",
+    "deleteEntryAction": "Eintrag löschen",
+    "logAnother": "Weitere Stimmung festhalten",
+    "logAnotherA11y": "Weitere Stimmung für diesen Tag festhalten"
+  },
+  "logEvent": {
+    "closeA11y": "Schließen",
+    "heroTitle": "Ein Lebensereignis festhalten",
+    "heroSubtitle": "Markiere Momente, die deine Stimmungsmuster prägen",
+    "whatHappened": "Was ist passiert?",
+    "titlePlaceholder": "z. B. Große Präsentation, Erstes Date, Arztbesuch",
+    "titleA11y": "Ereignistitel",
+    "category": "Kategorie",
+    "notes": "Notizen (optional)",
+    "notesPlaceholder": "Zusätzlicher Kontext...",
+    "notesA11y": "Ereignisnotizen",
+    "save": "Ereignis speichern",
+    "cancel": "Abbrechen"
+  },
+  "aiReport": {
+    "premiumTitle": "Premium-Funktion",
+    "premiumSubtitle": "Erhalte wöchentliche und monatliche Stimmungsübersichten",
+    "startTrial": "Kostenlose Testphase starten",
+    "title": "Übersicht",
+    "weekly": "Wöchentlich",
+    "monthly": "Monatlich",
+    "reportTypeA11y": "{{label}}-Bericht",
+    "generating": "Deine Übersicht wird vorbereitet...",
+    "loadErrorTitle": "Bericht konnte nicht geladen werden",
+    "loadErrorSubtitle": "Prüfe deine Verbindung und versuche es erneut",
+    "tryAgain": "Erneut versuchen",
+    "notEnoughData": "Noch nicht genug Daten",
+    "noEntriesSubtitle": "Halte deine Stimmung ein paar Tage fest und komm dann zurück, um deinen Bericht zu erstellen.",
+    "subscriptionErrorTitle": "Abo nicht bestätigt",
+    "subscriptionErrorSubtitle": "Dein Abo konnte auf dem Server nicht bestätigt werden. Versuche, die App zu schließen und neu zu öffnen. Falls das Problem bleibt, stelle deinen Kauf wieder her.",
+    "noReportYet": "Noch kein {{period}}-Bericht",
+    "noReportSubtitle": "Erstelle deine erste {{period}}-Übersicht",
+    "generateMyReport": "Übersicht erstellen",
+    "periodA11y": "Berichtszeitraum: {{period}}",
+    "moodSummary": "Stimmungsübersicht",
+    "checkInsA11y": "{{count}} Check-ins",
+    "checkIns": "Check-ins",
+    "perDayA11y": "{{value}} pro Tag im Schnitt",
+    "perDayAvg": "pro Tag Ø",
+    "moodTimesA11y": "{{moodId}}, {{count}}-mal",
+    "generated": "Erstellt am {{date}}",
+    "generateNewReport": "Neue Übersicht erstellen",
+    "patterns": "Highlights",
+    "tone": {
+      "positive": "Meist strahlend",
+      "neutral": "Stabil",
+      "mixed": "Gemischt",
+      "tough": "Eine härtere Phase"
+    }
+  },
+  "annualReport": {
+    "heroTitle": "{{year}} in Stimmungen",
+    "notEnoughData": "Noch nicht genug Daten",
+    "emptySubtitle": "Mach weiter mit Check-ins — deine {{year}}-Geschichte erscheint hier.",
+    "badge": "Jahresrückblick",
+    "heroSubtitle": "{{total}} Momente der Selbstwahrnehmung",
+    "statCheckIns": "Check-ins",
+    "streakDays": "{{days}}T",
+    "statBestStreak": "Beste Serie",
+    "statMoodsUsed": "Genutzte Stimmungen",
+    "statBestMonth": "Bester Monat",
+    "topMoods": "Top-Stimmungen",
+    "timesCount": "{{count}}×",
+    "monthHighlights": "Monats-Highlights",
+    "bestMonthHint": "Bester Monat",
+    "toughestMonthHint": "Härtester Monat",
+    "yourStory": "Deine Geschichte",
+    "writingStory": "Dein Jahr wird in Worte gefasst...",
+    "unlockStoryHint": "Halte dieses Jahr mindestens 10 Check-ins fest, um deine Geschichte freizuschalten.",
+    "upgradeA11y": "Hol dir Pro, um deine 'Jahr in Worten'-Erzählung freizuschalten",
+    "upgradeTitle": "Dein Jahr in Worten",
+    "upgradeSubtitle": "Schalte eine personalisierte Erzählung deines {{year}} frei. Pro-Funktion.",
+    "pro": "Pro",
+    "storyError": "Deine Geschichte konnte nicht erstellt werden. Bitte versuche es später."
+  },
+  "customMoods": {
+    "deleteTitle": "Stimmung löschen",
+    "deleteMessage": "\"{{name}}\" aus deinen eigenen Stimmungen entfernen?",
+    "deleteAction": "Löschen",
+    "heroTitle": "Eigene Stimmungen",
+    "heroSubtitle": "Erstelle bis zu {{max}} Stimmungen, die ganz zu dir passen",
+    "yourMoods": "Deine eigenen Stimmungen",
+    "deleteA11y": "{{name}} löschen",
+    "createA11y": "Eine neue eigene Stimmung erstellen",
+    "createMood": "Stimmung erstellen ({{count}}/{{max}})",
+    "limitReached": "Du hast das Limit von {{max}} eigenen Stimmungen erreicht.",
+    "newMood": "Neue Stimmung",
+    "nameLabel": "Name (max. 12 Zeichen)",
+    "namePlaceholder": "z. B. Nostalgisch",
+    "nameA11y": "Stimmungsname",
+    "imageLabel": "Maskottchen-Bild",
+    "colour": "Farbe",
+    "moodType": "Stimmungstyp",
+    "preview": "Vorschau:",
+    "saveA11y": "Eigene Stimmung speichern",
+    "saveMood": "Stimmung speichern",
+    "empty": {
+      "title": "Noch keine eigenen Stimmungen",
+      "description": "Erstelle Stimmungen, die zu dem passen, was du wirklich fühlst — nicht nur die Basics.",
+      "cta": "Erstelle deine erste Stimmung"
+    },
+    "group": {
+      "green": {
+        "label": "Positiv",
+        "hint": "Aufbauend, gute Energie"
+      },
+      "neutral": {
+        "label": "Neutral",
+        "hint": "Gemischte oder ruhige Gefühle"
+      },
+      "blue": {
+        "label": "Nachdenklich",
+        "hint": "Introspektiv, ruhig"
+      },
+      "red-orange": {
+        "label": "Schwierig",
+        "hint": "Herausfordernde Emotionen"
+      }
+    }
+  },
+  "manageHabits": {
+    "deleteTitle": "Gewohnheit löschen",
+    "deleteMessage": "\"{{name}}\" und alle Einträge entfernen?",
+    "deleteAction": "Löschen",
+    "heroTitle": "Meine Gewohnheiten",
+    "heroSubtitle": "Verfolge tägliche Verhaltensweisen neben deiner Stimmung",
+    "yourHabits": "Deine Gewohnheiten",
+    "scaleType": "1-5-Skala",
+    "booleanType": "Ja / Nein",
+    "deleteA11y": "{{name}} löschen",
+    "quickAdd": "Schnell hinzufügen",
+    "alreadyAddedA11y": "{{name}} bereits hinzugefügt",
+    "addA11y": "{{name}} hinzufügen",
+    "customHabit": "Eigene Gewohnheit",
+    "addCustomA11y": "Eine eigene Gewohnheit hinzufügen",
+    "addCustom": "Eigene Gewohnheit hinzufügen",
+    "iconA11y": "Gewohnheits-Symbol auswählen",
+    "chooseIcon": "Wähle ein Symbol",
+    "namePlaceholder": "Name der Gewohnheit",
+    "nameA11y": "Name der Gewohnheit",
+    "addHabitA11y": "Gewohnheit hinzufügen",
+    "add": "Hinzufügen",
+    "empty": {
+      "title": "Noch keine Gewohnheiten",
+      "description": "Verfolge Verhaltensweisen, die deine Stimmung prägen — Schlaf, Bewegung, Zeit mit anderen.",
+      "cta": "Füge deine erste Gewohnheit hinzu"
+    },
+    "preset": {
+      "sleepQuality": "Schlafqualität",
+      "exercise": "Bewegung",
+      "meditated": "Meditiert",
+      "socialised": "Leute getroffen",
+      "alcohol": "Alkohol"
+    }
+  },
+  "components": {
+    "backButton": {
+      "defaultLabel": "Start",
+      "a11y": "Zu {{label}} gehen"
+    },
+    "onboardingProgress": {
+      "a11y": "Schritt {{current}} von {{total}}"
+    },
+    "wisdomScreen": {
+      "mascotA11y": "Maskottchen {{mascot}}"
+    },
+    "reviewPrompt": {
+      "dismissA11y": "Schließen",
+      "title": "Wie läuft's mit kibun?",
+      "subtitle": "Deine ehrliche Antwort hilft uns, es besser zu machen.",
+      "ctaHappy": "Liebe es",
+      "ctaHappyA11y": "Liebe es",
+      "ctaUnhappy": "Nicht so",
+      "ctaUnhappyA11y": "Nicht so",
+      "ctaLater": "Vielleicht später",
+      "ctaLaterA11y": "Vielleicht später"
+    }
+  }
+}

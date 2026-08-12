@@ -1,0 +1,141 @@
+{
+  "a11y": {
+    "goBack": "Voltar",
+    "reminderHint": "Lembrete de {{label}}, {{hint}}"
+  },
+  "disclaimer": {
+    "title": "Antes de começar…",
+    "subtitle": "Só algumas coisas para você saber sobre o Kibun",
+    "cardTitle": "O Kibun é uma ferramenta de bem-estar",
+    "body": "O Kibun existe para te ajudar com autorreflexão e registro de humor — e para mostrar, com gentileza, quais hábitos diários parecem mudar como você se sente. Pense nele como um diário companheiro aconchegante.",
+    "notSection": "O que o Kibun NÃO é:",
+    "bullets": {
+      "medicalDevice": "Um dispositivo ou app médico",
+      "medicalAdvice": "Aconselhamento ou diagnóstico médico",
+      "treatment": "Um tratamento para qualquer condição",
+      "professionalCare": "Um substituto para cuidados profissionais de saúde mental",
+      "emergency": "Um serviço de emergência"
+    },
+    "crisisTitle": "Se você estiver em crise",
+    "crisisBody": "Por favor, contate os serviços de emergência locais ou um profissional licenciado imediatamente. Você importa.",
+    "checkbox": "Entendo que o Kibun é apenas para bem-estar",
+    "cta": "Vamos lá!",
+    "loginLink": "Já tem uma conta? Entre e pule a introdução",
+    "personalizationNote": "Aviso: essas respostas iniciais melhoram seus resumos depois."
+  },
+  "firstMood": {
+    "headline": "Como você está se sentindo?",
+    "subline": "Escolha o humor mais próximo de agora.",
+    "cta": "Vamos lá"
+  },
+  "moodResponse": {
+    "greeting": "Olá"
+  },
+  "profilePhysical": {
+    "title": "Sua rotina física",
+    "subtitle": "Sono e movimento têm grande impacto em como nos sentimos.",
+    "sleep": "Sono por noite (média)",
+    "exercise": "Frequência de exercícios",
+    "sleepOpt": {
+      "under-5": "<5h",
+      "5-6": "5–6h",
+      "6-7": "6–7h",
+      "7-8": "7–8h",
+      "8-9": "8–9h",
+      "over-9": "9h+"
+    },
+    "exerciseOpt": {
+      "never": "Nunca",
+      "1-2-week": "1–2×/semana",
+      "3-4-week": "3–4×/semana",
+      "daily": "Todo dia"
+    }
+  },
+  "profileLife": {
+    "title": "Como estão as coisas fora do trabalho?",
+    "subtitle": "Duas perguntas rápidas — ritmo social e nível de estresse."
+  },
+  "profileSocial": {
+    "title": "Sua vida social",
+    "subtitle": "A conexão social molda como nos sentimos no dia a dia.",
+    "frequency": "Com que frequência você socializa?",
+    "frequencyOpt": {
+      "rarely": "Raramente",
+      "few-times-week": "Algumas vezes por semana",
+      "most-days": "Quase todo dia",
+      "daily": "Todo dia"
+    }
+  },
+  "profileMental": {
+    "title": "Seu nível de estresse habitual",
+    "subtitle": "O padrão de cada pessoa é diferente. Não há resposta errada.",
+    "stress": "Seu nível de estresse típico",
+    "stressOpt": {
+      "very-low": "Muito baixo",
+      "low": "Baixo",
+      "moderate": "Moderado",
+      "high": "Alto",
+      "very-high": "Muito alto"
+    }
+  },
+  "profileHelpsAndHopes": {
+    "title": "O que você está buscando?",
+    "subtitle": "Escolha tudo que fizer sentido."
+  },
+  "profileGoals": {
+    "title": "O que você está buscando?",
+    "subtitle": "Escolha tudo que fizer sentido.",
+    "groupLabel": "Seus objetivos",
+    "a11yLabel": "Objetivos",
+    "options": {
+      "understand-emotions": "Entender meus padrões de humor",
+      "reduce-stress": "Reduzir o estresse",
+      "improve-sleep": "Melhorar o sono",
+      "track-energy": "Acompanhar minha energia",
+      "self-awareness": "Desenvolver autoconhecimento",
+      "mood-patterns": "Perceber padrões de humor"
+    }
+  },
+  "reflection": {
+    "headline": "Aqui está o que percebemos.",
+    "subtitle": "Três coisas para preparar o terreno.",
+    "chipSleep": "Sono · {{value}}",
+    "chipStress": "Estresse · {{value}}",
+    "chipGoal": "Objetivo · {{value}}",
+    "tieLine": "É exatamente para isso que o Kibun foi feito — pequenos check-ins diários que revelam seus padrões."
+  },
+  "notificationPermission": {
+    "title": "Mantenha o ritmo",
+    "subtitle": "O Kibun funciona melhor com check-ins diários. Escolha seus horários de lembrete.",
+    "groupLabel": "Horários dos lembretes",
+    "ctaEnable": "Ativar lembretes",
+    "ctaSkip": "Talvez depois",
+    "slotOpt": {
+      "morning": { "label": "Manhã", "hint": "por volta das 9h" },
+      "afternoon": { "label": "Tarde", "hint": "por volta das 14h" },
+      "evening": { "label": "Noite", "hint": "por volta das 19h" },
+      "pre-sleep": { "label": "Antes de dormir", "hint": "por volta das 22h" }
+    }
+  },
+  "analyzing": {
+    "title": "Personalizando seu Kibun",
+    "subtitle": "Ajustando o app ao que você compartilhou.",
+    "steps": {
+      "profile": "Lendo seu perfil",
+      "reminders": "Alinhando seus lembretes",
+      "insights": "Preparando seus insights",
+      "plan": "Montando seu plano diário"
+    },
+    "stepsPersonal": {
+      "profile": "Lido: {{sleep}} · {{exercise}}",
+      "insights": "Observando: {{goal}}"
+    }
+  },
+  "planSnapshot": {
+    "title": "Seu plano do Kibun está pronto",
+    "subtitle": "Veja o que vamos acompanhar nos seus primeiros 14 dias.",
+    "rowsHeader": "Seus hábitos iniciais — edite quando quiser",
+    "tagline": "Desbloqueie para começar a acompanhar seus padrões.",
+    "cta": "Desbloquear meu plano"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "happy":      { "label": "Glücklich",    "response": "Wunderbar! Halten wir dieses Gefühl fest." },
+  "excited":    { "label": "Aufgeregt",    "response": "Große Energie! Etwas Gutes passiert gerade." },
+  "grateful":   { "label": "Dankbar",      "response": "Dankbarkeit ist kraftvoll — und du übst sie gerade schon." },
+  "bright":     { "label": "Strahlend",    "response": "Du fühlst dich gerade leicht und klar. Das ist es wert, bemerkt zu werden." },
+  "cheeky":     { "label": "Frech",        "response": "Verspielte Energie kann schwere Momente leichter machen." },
+  "loved":      { "label": "Geliebt",      "response": "Sich umsorgt zu fühlen, kann dir tief Halt geben." },
+  "surprised":  { "label": "Überrascht",   "response": "Unerwartete Momente können deinen ganzen Tag verändern." },
+  "calm":       { "label": "Ruhig",        "response": "Friedliche Momente sind es wert, bemerkt zu werden." },
+  "tired":      { "label": "Müde",         "response": "Ruhe ist produktiv. Dein Körper sagt dir etwas." },
+  "bored":      { "label": "Gelangweilt",  "response": "Langeweile ist Kreativität, die auf einen Funken wartet." },
+  "confused":   { "label": "Verwirrt",     "response": "Unsicherheit bedeutet, dass du nachdenkst — ein gutes Zeichen." },
+  "sad":        { "label": "Traurig",      "response": "Es ist okay, sich so zu fühlen. Du bist nicht allein." },
+  "worried":    { "label": "Besorgt",      "response": "Ein kleiner Schritt nach dem anderen. Du musst nicht alles jetzt lösen." },
+  "scared":     { "label": "Ängstlich",    "response": "Angst kann schwer sein. Du zeigst dich trotzdem, und das zählt." },
+  "frustrated": { "label": "Frustriert",   "response": "Reibung zeigt, dass es dir wichtig ist. Das zählt." },
+  "angry":      { "label": "Wütend",       "response": "Starke Gefühle verdienen Raum. Halten wir sie fest." },
+  "melancholy": { "label": "Melancholisch","response": "Ein leiser Schmerz — manchmal schwer zu benennen, immer gültig." },
+  "lonely":     { "label": "Einsam",       "response": "Verbindung braucht Mut. Das Gefühl zu bemerken, ist der erste Schritt." },
+  "groups": {
+    "green":      "Positiv",
+    "neutral":    "Nachdenklich",
+    "red-orange": "Intensiv",
+    "blue":       "Sanft"
+  }
+}

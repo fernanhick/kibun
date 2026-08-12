@@ -17,7 +17,21 @@ import esMoods from './locales/es/moods.json';
 import esDates from './locales/es/dates.json';
 import esNotifications from './locales/es/notifications.json';
 
-export const SUPPORTED_LANGUAGES = ['en', 'es'] as const;
+import ptCommon from './locales/pt/common.json';
+import ptOnboarding from './locales/pt/onboarding.json';
+import ptScreens from './locales/pt/screens.json';
+import ptMoods from './locales/pt/moods.json';
+import ptDates from './locales/pt/dates.json';
+import ptNotifications from './locales/pt/notifications.json';
+
+import deCommon from './locales/de/common.json';
+import deOnboarding from './locales/de/onboarding.json';
+import deScreens from './locales/de/screens.json';
+import deMoods from './locales/de/moods.json';
+import deDates from './locales/de/dates.json';
+import deNotifications from './locales/de/notifications.json';
+
+export const SUPPORTED_LANGUAGES = ['en', 'es', 'pt', 'de'] as const;
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 const resources = {
@@ -36,6 +50,22 @@ const resources = {
     moods: esMoods,
     dates: esDates,
     notifications: esNotifications,
+  },
+  pt: {
+    common: ptCommon,
+    onboarding: ptOnboarding,
+    screens: ptScreens,
+    moods: ptMoods,
+    dates: ptDates,
+    notifications: ptNotifications,
+  },
+  de: {
+    common: deCommon,
+    onboarding: deOnboarding,
+    screens: deScreens,
+    moods: deMoods,
+    dates: deDates,
+    notifications: deNotifications,
   },
 } as const;
 

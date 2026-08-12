@@ -5,6 +5,8 @@ import i18n from './index';
 function currentLocale(): string {
   switch (i18n.language) {
     case 'es': return 'es-ES';
+    case 'pt': return 'pt-BR';
+    case 'de': return 'de-DE';
     case 'en':
     default:   return 'en-US';
   }

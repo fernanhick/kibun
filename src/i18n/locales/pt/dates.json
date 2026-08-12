@@ -1,0 +1,32 @@
+{
+  "weekday": {
+    "sunday":    "Domingo",
+    "monday":    "Segunda-feira",
+    "tuesday":   "Terça-feira",
+    "wednesday": "Quarta-feira",
+    "thursday":  "Quinta-feira",
+    "friday":    "Sexta-feira",
+    "saturday":  "Sábado"
+  },
+  "weekdayShort": {
+    "sun": "Dom",
+    "mon": "Seg",
+    "tue": "Ter",
+    "wed": "Qua",
+    "thu": "Qui",
+    "fri": "Sex",
+    "sat": "Sáb"
+  },
+  "weekdayInitial": ["D", "S", "T", "Q", "Q", "S", "S"],
+  "slot": {
+    "morning":   "de manhã",
+    "afternoon": "à tarde",
+    "night":     "à noite",
+    "pre_sleep": "antes de dormir"
+  },
+  "relative": {
+    "today":     "Hoje",
+    "yesterday": "Ontem",
+    "tomorrow":  "Amanhã"
+  }
+}

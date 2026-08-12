@@ -1,0 +1,26 @@
+{
+  "happy":      { "label": "Feliz",      "response": "Que maravilha! Vamos guardar esse sentimento." },
+  "excited":    { "label": "Empolgado",  "response": "Muita energia! Algo bom está acontecendo." },
+  "grateful":   { "label": "Grato",      "response": "A gratidão é poderosa — e você já está praticando." },
+  "bright":     { "label": "Radiante",   "response": "Você se sente leve e com a mente clara agora. Vale a pena notar isso." },
+  "cheeky":     { "label": "Brincalhão", "response": "Um toque de brincadeira deixa os momentos difíceis mais leves." },
+  "loved":      { "label": "Amado",      "response": "Sentir-se cuidado pode ser profundamente reconfortante." },
+  "surprised":  { "label": "Surpreso",   "response": "Momentos inesperados podem mudar o seu dia inteiro." },
+  "calm":       { "label": "Calmo",      "response": "Momentos de paz merecem ser notados." },
+  "tired":      { "label": "Cansado",    "response": "Descansar é produtivo. Seu corpo está te dizendo algo." },
+  "bored":      { "label": "Entediado",  "response": "O tédio é a criatividade esperando uma faísca." },
+  "confused":   { "label": "Confuso",    "response": "A incerteza significa que você está pensando — é um bom sinal." },
+  "sad":        { "label": "Triste",     "response": "Tudo bem se sentir assim. Você não está sozinho." },
+  "worried":    { "label": "Preocupado", "response": "Um pequeno passo de cada vez. Você não precisa resolver tudo agora." },
+  "scared":     { "label": "Com medo",   "response": "O medo pode pesar. Mesmo assim você está aqui, e isso conta." },
+  "frustrated": { "label": "Frustrado",  "response": "O atrito mostra que você se importa. Isso importa." },
+  "angry":      { "label": "Com raiva",  "response": "Sentimentos fortes merecem espaço. Vamos registrá-los." },
+  "melancholy": { "label": "Melancólico","response": "Uma dorzinha silenciosa — às vezes difícil de nomear, sempre válida." },
+  "lonely":     { "label": "Sozinho",    "response": "Conectar-se exige coragem. Notar o sentimento já é o primeiro passo." },
+  "groups": {
+    "green":      "Positivo",
+    "neutral":    "Reflexivo",
+    "red-orange": "Intenso",
+    "blue":       "Sensível"
+  }
+}

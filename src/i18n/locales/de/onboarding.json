@@ -1,0 +1,141 @@
+{
+  "a11y": {
+    "goBack": "Zurück",
+    "reminderHint": "{{label}}-Erinnerung, {{hint}}"
+  },
+  "disclaimer": {
+    "title": "Bevor wir beginnen…",
+    "subtitle": "Nur ein paar Dinge, die du über Kibun wissen solltest",
+    "cardTitle": "Kibun ist ein Wohlfühl-Tool",
+    "body": "Kibun hilft dir bei der Selbstreflexion und dabei, deine Stimmung festzuhalten — und zeigt dir behutsam, welche täglichen Gewohnheiten dein Befinden zu verändern scheinen. Sieh es als einen gemütlichen Tagebuch-Begleiter.",
+    "notSection": "Was Kibun NICHT ist:",
+    "bullets": {
+      "medicalDevice": "Ein medizinisches Gerät oder eine medizinische App",
+      "medicalAdvice": "Medizinischer Rat oder eine Diagnose",
+      "treatment": "Eine Behandlung für irgendeine Erkrankung",
+      "professionalCare": "Ein Ersatz für professionelle psychologische Betreuung",
+      "emergency": "Ein Notdienst"
+    },
+    "crisisTitle": "Wenn du in einer Krise bist",
+    "crisisBody": "Bitte wende dich sofort an den örtlichen Notdienst oder eine lizenzierte Fachkraft. Du bist wichtig.",
+    "checkbox": "Ich verstehe, dass Kibun nur dem Wohlbefinden dient",
+    "cta": "Los geht's!",
+    "loginLink": "Schon ein Konto? Melde dich an und überspringe die Einführung",
+    "personalizationNote": "Hinweis: Diese Antworten verbessern später deine Zusammenfassungen."
+  },
+  "firstMood": {
+    "headline": "Wie fühlst du dich?",
+    "subline": "Wähle die Stimmung, die gerade am besten passt.",
+    "cta": "Los geht's"
+  },
+  "moodResponse": {
+    "greeting": "Hallo"
+  },
+  "profilePhysical": {
+    "title": "Deine körperliche Routine",
+    "subtitle": "Schlaf und Bewegung haben großen Einfluss darauf, wie wir uns fühlen.",
+    "sleep": "Schlaf pro Nacht (Durchschnitt)",
+    "exercise": "Häufigkeit von Bewegung",
+    "sleepOpt": {
+      "under-5": "<5h",
+      "5-6": "5–6h",
+      "6-7": "6–7h",
+      "7-8": "7–8h",
+      "8-9": "8–9h",
+      "over-9": "9h+"
+    },
+    "exerciseOpt": {
+      "never": "Nie",
+      "1-2-week": "1–2×/Woche",
+      "3-4-week": "3–4×/Woche",
+      "daily": "Täglich"
+    }
+  },
+  "profileLife": {
+    "title": "Wie läuft es außerhalb der Arbeit?",
+    "subtitle": "Zwei kurze Dinge — sozialer Rhythmus und Stress-Normalniveau."
+  },
+  "profileSocial": {
+    "title": "Dein soziales Leben",
+    "subtitle": "Soziale Verbindung prägt, wie wir uns Tag für Tag fühlen.",
+    "frequency": "Wie oft bist du unter Menschen?",
+    "frequencyOpt": {
+      "rarely": "Selten",
+      "few-times-week": "Ein paar Mal pro Woche",
+      "most-days": "Fast täglich",
+      "daily": "Täglich"
+    }
+  },
+  "profileMental": {
+    "title": "Dein Stress-Normalniveau",
+    "subtitle": "Jeder hat ein anderes Normalniveau. Es gibt keine falsche Antwort.",
+    "stress": "Dein typisches Stresslevel",
+    "stressOpt": {
+      "very-low": "Sehr niedrig",
+      "low": "Niedrig",
+      "moderate": "Mittel",
+      "high": "Hoch",
+      "very-high": "Sehr hoch"
+    }
+  },
+  "profileHelpsAndHopes": {
+    "title": "Was erhoffst du dir?",
+    "subtitle": "Wähle alles, was sich richtig anfühlt."
+  },
+  "profileGoals": {
+    "title": "Was erhoffst du dir?",
+    "subtitle": "Wähle alles, was sich richtig anfühlt.",
+    "groupLabel": "Deine Ziele",
+    "a11yLabel": "Ziele",
+    "options": {
+      "understand-emotions": "Meine Stimmungsmuster verstehen",
+      "reduce-stress": "Stress reduzieren",
+      "improve-sleep": "Besser schlafen",
+      "track-energy": "Meine Energie verfolgen",
+      "self-awareness": "Selbstwahrnehmung stärken",
+      "mood-patterns": "Stimmungsmuster erkennen"
+    }
+  },
+  "reflection": {
+    "headline": "Das ist uns aufgefallen.",
+    "subtitle": "Drei Dinge, um den Rahmen zu setzen.",
+    "chipSleep": "Schlaf · {{value}}",
+    "chipStress": "Stress · {{value}}",
+    "chipGoal": "Ziel · {{value}}",
+    "tieLine": "Genau dafür ist Kibun gemacht — kleine tägliche Check-ins, die deine Muster sichtbar machen."
+  },
+  "notificationPermission": {
+    "title": "Bleib dabei",
+    "subtitle": "Kibun funktioniert am besten mit täglichen Check-ins. Wähle deine Erinnerungszeiten.",
+    "groupLabel": "Erinnerungszeiten",
+    "ctaEnable": "Erinnerungen aktivieren",
+    "ctaSkip": "Vielleicht später",
+    "slotOpt": {
+      "morning": { "label": "Morgens", "hint": "gegen 9 Uhr" },
+      "afternoon": { "label": "Nachmittags", "hint": "gegen 14 Uhr" },
+      "evening": { "label": "Abends", "hint": "gegen 19 Uhr" },
+      "pre-sleep": { "label": "Vor dem Schlafen", "hint": "gegen 22 Uhr" }
+    }
+  },
+  "analyzing": {
+    "title": "Kibun wird personalisiert",
+    "subtitle": "Wir stimmen die App auf das ab, was du geteilt hast.",
+    "steps": {
+      "profile": "Dein Profil wird gelesen",
+      "reminders": "Deine Erinnerungen werden abgestimmt",
+      "insights": "Deine Insights werden vorbereitet",
+      "plan": "Dein Tagesplan wird entworfen"
+    },
+    "stepsPersonal": {
+      "profile": "Gelesen: {{sleep}} · {{exercise}}",
+      "insights": "Im Blick: {{goal}}"
+    }
+  },
+  "planSnapshot": {
+    "title": "Dein Kibun-Plan ist fertig",
+    "subtitle": "Das begleiten wir in deinen ersten 14 Tagen.",
+    "rowsHeader": "Deine Start-Gewohnheiten — jederzeit anpassbar",
+    "tagline": "Schalte frei, um deine Muster zu verfolgen.",
+    "cta": "Plan freischalten"
+  }
+}

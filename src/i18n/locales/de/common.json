@@ -1,0 +1,27 @@
+{
+  "actions": {
+    "continue": "Weiter",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "back": "Zurück",
+    "next": "Weiter",
+    "skip": "Überspringen",
+    "done": "Fertig",
+    "close": "Schließen",
+    "retry": "Erneut versuchen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "confirm": "Bestätigen",
+    "ok": "OK"
+  },
+  "errors": {
+    "somethingWentWrong": "Etwas ist schiefgelaufen",
+    "restartApp": "App neu starten",
+    "tryAgain": "Erneut versuchen",
+    "noConnection": "Keine Verbindung. Prüfe dein Netzwerk und versuche es erneut."
+  },
+  "placeholders": {
+    "loading": "Wird geladen…",
+    "empty": "Hier ist noch nichts."
+  }
+}

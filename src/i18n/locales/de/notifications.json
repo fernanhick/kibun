@@ -1,0 +1,14 @@
+{
+  "report": {
+    "ready": {
+      "title": "Deine Stimmungsübersicht ist fertig",
+      "body": "Deine {{type}} Stimmungsübersicht wartet auf dich"
+    }
+  },
+  "streak": {
+    "nudge": {
+      "title": "Bleib bei deiner Serie",
+      "body": "Ein kurzer Check-in hält deine Serie am Leben."
+    }
+  }
+}

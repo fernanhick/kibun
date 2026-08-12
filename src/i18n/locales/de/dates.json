@@ -1,0 +1,32 @@
+{
+  "weekday": {
+    "sunday":    "Sonntag",
+    "monday":    "Montag",
+    "tuesday":   "Dienstag",
+    "wednesday": "Mittwoch",
+    "thursday":  "Donnerstag",
+    "friday":    "Freitag",
+    "saturday":  "Samstag"
+  },
+  "weekdayShort": {
+    "sun": "So",
+    "mon": "Mo",
+    "tue": "Di",
+    "wed": "Mi",
+    "thu": "Do",
+    "fri": "Fr",
+    "sat": "Sa"
+  },
+  "weekdayInitial": ["S", "M", "D", "M", "D", "F", "S"],
+  "slot": {
+    "morning":   "am Morgen",
+    "afternoon": "am Nachmittag",
+    "night":     "am Abend",
+    "pre_sleep": "vor dem Schlafen"
+  },
+  "relative": {
+    "today":     "Heute",
+    "yesterday": "Gestern",
+    "tomorrow":  "Morgen"
+  }
+}

@@ -1,0 +1,1132 @@
+{
+  "appErrors": {
+    "title": "Algo deu errado",
+    "restart": "Reiniciar o app"
+  },
+  "tabs": {
+    "home": "Início",
+    "history": "Histórico",
+    "insights": "Insights",
+    "settings": "Ajustes",
+    "logMoodA11y": "Registrar humor",
+    "mascotA11y": "Brincar com o mascote"
+  },
+  "home": {
+    "anonBanner": {
+      "text": "Seus dados estão só neste dispositivo.",
+      "link": "Cadastre-se para sincronizar →",
+      "a11ySignup": "Cadastre-se para salvar seus dados",
+      "a11yHint": "Seus dados de humor ficam só neste dispositivo. Toque para criar uma conta.",
+      "a11yDismiss": "Dispensar aviso"
+    },
+    "greeting": {
+      "morning": "Bom dia",
+      "afternoon": "Boa tarde",
+      "evening": "Boa noite",
+      "windDown": "Hora de desacelerar"
+    },
+    "streak": "Sequência de {{count}} dias",
+    "streakA11y": "Sequência atual: {{count}} dias",
+    "logMoodCta": "Registrar humor",
+    "todayHeader": "Hoje",
+    "todayHeaderCount": "Hoje ({{count}})",
+    "achievementsHeader": "Conquistas",
+    "achievementA11y": "{{label}}: {{description}}",
+    "habitsHeader": "Hábitos",
+    "habitsManage": "Gerenciar",
+    "habitsManageA11y": "Gerenciar hábitos",
+    "habitsTrackDaily": "Acompanhe hábitos diários",
+    "habitsEmptyA11y": "Configure hábitos para acompanhar junto com seu humor",
+    "habitDoneA11y": "{{name}}: feito, toque para desmarcar",
+    "habitNotDoneA11y": "{{name}}: não feito, toque para marcar",
+    "habitLevelA11y": "{{name}} nível {{n}}",
+    "entryA11y": "{{mood}} às {{time}}. Toque para ver detalhes.",
+    "slot": {
+      "morning": "Manhã",
+      "afternoon": "Tarde",
+      "night": "Noite",
+      "pre_sleep": "Madrugada"
+    },
+    "insightHeader": "Insight de hoje",
+    "insightLoading": "Personalizando seu insight…",
+    "tipLogTitle": "Registre como você está se sentindo",
+    "tipLogSub": "Toque em \"Registrar humor\" acima — leva só alguns segundos.",
+    "tipLogA11y": "Registre seu primeiro humor do dia",
+    "tipHabitsTitle": "Acompanhe hábitos diários",
+    "tipHabitsSub": "Adicione sono, água ou movimento para descobrir o que te anima.",
+    "tipHabitsA11y": "Configure hábitos diários para acompanhar",
+    "motivational": {
+      "positive": [
+        "Você está embalado — mantenha essa energia!",
+        "Ontem foi um bom dia. Vamos construir em cima disso!",
+        "Boas vibrações por todo lado. Você consegue!",
+        "Sua positividade está brilhando. Continue assim!",
+        "Ontem foi radiante — que hoje seja ainda melhor.",
+        "Você está num ótimo fluxo. Aproveite cada momento.",
+        "Surfando na onda boa — siga nela!",
+        "Dias bons merecem ser celebrados. Você foi bem!"
+      ],
+      "struggling": [
+        "Todo dia é um recomeço. Você consegue.",
+        "Tudo bem não estar bem — vá um fôlego de cada vez.",
+        "Seja gentil consigo hoje. Você está melhor do que pensa.",
+        "Momentos difíceis constroem resiliência. Estamos aqui com você.",
+        "Você apareceu — e é isso que conta.",
+        "Tempos difíceis não duram. Você é mais forte do que imagina.",
+        "Até a menor vitória conta hoje. Qual foi uma coisa boa?",
+        "Você não está sozinho nisso. Respire — você dá conta de hoje.",
+        "A cura não é linear. Cada passo adiante importa."
+      ],
+      "neutral": [
+        "Faça um check-in com você — cada momento conta.",
+        "Um novo dia, um novo capítulo. Como você está se sentindo?",
+        "Seus sentimentos importam. Vamos explorá-los juntos.",
+        "Pronto para se sintonizar? Vamos ver como você está.",
+        "Pequenos check-ins levam a um grande autoconhecimento.",
+        "Como está seu mundo interior hoje?",
+        "Reserve um momento — como você está se sentindo de verdade?",
+        "Hoje é um ótimo dia para se entender melhor."
+      ]
+    },
+    "emptyVariants": {
+      "positive": [
+        {
+          "imageKey": "welcome-back",
+          "title": "Bem-vindo de volta",
+          "body": "Os últimos dias foram radiantes. Quer manter essa boa energia?",
+          "affirmation": "Hoje é seu dia de brilhar."
+        },
+        {
+          "imageKey": "glad-you-are-here",
+          "title": "Que bom te ver",
+          "body": "Você está numa sequência linda. Um check-in rápido mantém o ritmo.",
+          "affirmation": "Pequenos momentos, grandes vitórias."
+        },
+        {
+          "imageKey": "keep-it-going",
+          "title": "Continue assim",
+          "body": "As coisas têm ido bem ultimamente. Registre como hoje está te tratando.",
+          "affirmation": "Sua luz importa."
+        }
+      ],
+      "struggling": [
+        {
+          "imageKey": "we-are-here-with-you",
+          "title": "Estamos aqui com você",
+          "body": "Os últimos dias foram pesados. Até um pequeno check-in ajuda a entender o que você precisa.",
+          "affirmation": "Você é mais forte do que imagina."
+        },
+        {
+          "imageKey": "one-breadth",
+          "title": "Um fôlego de cada vez",
+          "body": "Momentos difíceis não duram para sempre. Registrar como você se sente é um ato silencioso de autocuidado.",
+          "affirmation": "Seja gentil consigo hoje."
+        },
+        {
+          "imageKey": "you-showed-up",
+          "title": "Você apareceu",
+          "body": "E isso basta. Acompanhar seu humor, mesmo nos dias difíceis, é como você começa a se enxergar com clareza.",
+          "affirmation": "A cura não é linear — cada passo conta."
+        }
+      ],
+      "neutral": [
+        {
+          "imageKey": "you-matter",
+          "title": "Você importa",
+          "body": "Nenhum humor registrado ainda — e tudo bem. Só de aparecer aqui você já faz algo gentil por você.",
+          "affirmation": "Seja gentil consigo hoje."
+        },
+        {
+          "imageKey": "a-fresh-page",
+          "title": "Uma página em branco",
+          "body": "Cada dia é um novo capítulo. Reserve um momento para fazer um check-in com você.",
+          "affirmation": "Seus sentimentos são válidos — sejam quais forem."
+        },
+        {
+          "imageKey": "glad-you-are-here",
+          "title": "Oi, você",
+          "body": "Como está seu mundo interior hoje? Um registro rápido ajuda a perceber padrões com o tempo.",
+          "affirmation": "Você merece atenção."
+        }
+      ]
+    },
+    "insightCards": {
+      "positiveCorrelation": {
+        "title": "{{habit}} parece elevar seu humor",
+        "body": "Nos dias em que você registra {{habit}}, seu humor fica {{strength}} mais alto na média. Vale a pena proteger.",
+        "imageKey": "keep-it-going"
+      },
+      "lowMoodNudge": {
+        "personalisedTitle": "Um empurrãozinho gentil: {{habit}}",
+        "personalisedBody": "Nos dias mais pesados, {{habit}} tem sido um dos seus apoios confiáveis. Até uma marcação pequena conta.",
+        "genericTitle": "Uma pequena âncora para hoje",
+        "genericBody": "Hoje está um pouco pesado. Um pequeno hábito, mesmo imperfeito, já basta.",
+        "imageKey": "we-are-here-with-you"
+      },
+      "strength": {
+        "weak": "levemente",
+        "moderate": "moderadamente",
+        "strong": "visivelmente"
+      }
+    }
+  },
+  "insights": {
+    "patterns": {
+      "dayOfWeek": "Você costuma se sentir {{mood}} às {{day}}",
+      "timeOfDay": "Você tende a se sentir {{mood}} {{slot}}",
+      "trendUp": "Seu humor tem melhorado ultimamente",
+      "trendDown": "Seu humor tem caído recentemente"
+    },
+    "hero": {
+      "title": "Insights",
+      "subtitle": "Acompanhe seus padrões de humor ao longo do tempo",
+      "badge": "História do humor"
+    },
+    "period": {
+      "label": "{{n}}d",
+      "a11y": "Mostrar últimos {{n}} dias"
+    },
+    "tabs": {
+      "overview": "Visão geral",
+      "patterns": "Padrões",
+      "reports": "Relatórios"
+    },
+    "stats": {
+      "streak": "dias de sequência",
+      "streakA11y": "sequência de {{count}} dias",
+      "checkIns": "check-ins",
+      "checkInsA11y": "{{count}} check-ins",
+      "activeDays": "dias ativos",
+      "activeDaysA11y": "{{count}} dias ativos",
+      "streakHero": {
+        "label": "Sequência atual",
+        "subActive": "Continue aparecendo",
+        "subZero": "Registre hoje para começar"
+      }
+    },
+    "sections": {
+      "topMoods": "Principais humores",
+      "trend": "Tendência do humor",
+      "patterns": "Padrões",
+      "habitsAndMood": "Hábitos & Humor",
+      "reports": "Relatórios"
+    },
+    "charts": {
+      "barA11y": "Gráfico de frequência mostrando os {{count}} principais humores",
+      "trendA11y": "Gráfico de linha da tendência do humor ao longo de {{count}} dias"
+    },
+    "patternsHint": "Registre mais check-ins para ver padrões",
+    "resilienceCard": {
+      "title": "Pontuação de recuperação",
+      "scoreA11y": "Pontuação de recuperação: {{score}} de 100",
+      "lockedTitle": "Pontuação de recuperação",
+      "lockedSubtitle": "Veja com que rapidez você se recupera de humores difíceis. Recurso Pro.",
+      "lockedA11y": "Assine o Pro para desbloquear a Pontuação de recuperação",
+      "empty": "Registre mais humores — inclusive alguns difíceis — para ver sua pontuação de resiliência.",
+      "recoveryMinutes": "{{n}}min de recuperação média",
+      "recoveryHours": "{{n}}h de recuperação média",
+      "recoveryDays": "{{n}}d de recuperação média",
+      "basedOn_one": "com base em {{count}} recuperação",
+      "basedOn_other": "com base em {{count}} recuperações"
+    },
+    "correlationsCard": {
+      "title": "Humor por horário × dia",
+      "lockedTitle": "Mapa de humor por horário e dia",
+      "lockedSubtitle": "Veja em quais horários e dias você se sente melhor. Recurso Pro.",
+      "lockedA11y": "Assine o Pro para desbloquear as Correlações",
+      "heatmapA11y": "Mapa de calor mostrando o humor médio por horário do dia e dia da semana",
+      "cellA11y": "pontuação {{score}}",
+      "noDataA11y": "sem dados",
+      "slotShort": {
+        "morning": "Manhã",
+        "afternoon": "Tarde",
+        "night": "Noite",
+        "pre_sleep": "Madr."
+      },
+      "legend": {
+        "low": "Baixo",
+        "mixed": "Misto",
+        "good": "Bom",
+        "great": "Ótimo",
+        "noData": "Sem dados"
+      }
+    },
+    "habitCorrelations": {
+      "lockedTitle": "Correlações Hábito × Humor",
+      "lockedSubtitle": "Veja quais hábitos mais influenciam seu humor. Recurso Pro.",
+      "lockedA11y": "Assine o Pro para desbloquear as Correlações de Hábitos",
+      "needsMoreTitle": "Ainda não há dados suficientes",
+      "needsMoreSubtitle": "Registre hábitos por pelo menos 5 dias para ver correlações.",
+      "rowA11y": "{{habit}}: {{label}}",
+      "seeAllPro": "Veja todos os sinais hábito-humor com o Pro",
+      "seeAllProA11y": "Assine o Pro para ver todas as correlações hábito-humor",
+      "strength": {
+        "strongPositive": "Eleva o humor",
+        "strongNegative": "Piora o humor",
+        "moderatePositive": "Melhora o humor",
+        "moderateNegative": "Abaixa o humor",
+        "weakPositive": "Leve alta",
+        "weakNegative": "Leve queda",
+        "none": "Sem padrão ainda"
+      }
+    },
+    "aiReport": {
+      "title": "Resumo semanal e mensal",
+      "subtitle": "Revise seu histórico de humor recente",
+      "a11y": "Ver resumo do seu histórico de humor"
+    },
+    "yearInMood": {
+      "title": "{{year}} em Humor",
+      "subtitle": "Seu resumo anual de humor",
+      "a11y": "Ver seu relatório anual Ano em Humor"
+    },
+    "proBadge": "Pro",
+    "empty": {
+      "title": "Nenhum humor registrado ainda",
+      "subtitle": "Comece a fazer check-ins para ver seus padrões aqui"
+    }
+  },
+  "history": {
+    "header": {
+      "badge": "Calendário de humor",
+      "monthYear": "{{month}} {{year}}",
+      "prevMonthA11y": "Mês anterior",
+      "nextMonthA11y": "Próximo mês"
+    },
+    "actions": {
+      "event": "Evento",
+      "eventA11y": "Registrar um evento de vida",
+      "export": "Exportar",
+      "exportA11y": "Exportar histórico de humor como CSV",
+      "exportLockedA11y": "Assine o Pro para exportar o histórico de humor"
+    },
+    "exportTitle": "Exportação de humor do Kibun",
+    "calendar": {
+      "today": "hoje",
+      "tapToLog": "toque para registrar humor",
+      "noEntries": "sem registros",
+      "cellA11y": "{{month}} {{day}}"
+    },
+    "snapshot": {
+      "badge": "Resumo mensal",
+      "emptyTitle": "Nenhum humor ainda em {{month}}",
+      "emptySubtitle": "Toque em um dia acima para registrar como você se sente.",
+      "moodsLogged": "humores registrados",
+      "activeDays": "dias ativos",
+      "topMood": "principal: {{mood}}"
+    }
+  },
+  "register": {
+    "hero": {
+      "registerTitle": "Crie sua conta",
+      "loginTitle": "Bem-vindo de volta!",
+      "registerSubtitle": "Vincule seus dados a uma conta para nunca perdê-los",
+      "loginSubtitle": "Entre para continuar de onde parou",
+      "fromOnboardingNote": "Você pode pular a introdução agora. Responder essas perguntas depois ajuda a personalizar seus insights."
+    },
+    "social": {
+      "apple": "Continuar com Apple",
+      "google": "Continuar com Google"
+    },
+    "divider": "ou",
+    "form": {
+      "emailLabel": "E-mail",
+      "emailA11y": "Endereço de e-mail",
+      "emailPlaceholder": "voce@exemplo.com",
+      "passwordLabel": "Senha",
+      "passwordA11y": "Senha",
+      "passwordPlaceholderRegister": "Mín. 8 caracteres",
+      "passwordPlaceholderLogin": "Sua senha",
+      "submitRegister": "Criar conta",
+      "submitLogin": "Entrar",
+      "forgot": "Esqueceu a senha?",
+      "forgotA11y": "Esqueceu a senha",
+      "legalIntro": "Ao criar uma conta, você concorda com nossos ",
+      "legalAnd": " e ",
+      "legalSuffix": ".",
+      "termsOfUse": "Termos de Uso",
+      "privacyPolicy": "Política de Privacidade"
+    },
+    "toggle": {
+      "haveAccount": "Já tem uma conta? ",
+      "noAccount": "Não tem uma conta? ",
+      "linkLogin": "Entrar",
+      "linkRegister": "Criar uma"
+    },
+    "skip": "Pular por agora",
+    "skipA11yHint": "Continuar sem criar uma conta",
+    "errors": {
+      "configMissing": "Erro de configuração: o Supabase não está definido nesta versão.",
+      "differentPassword": "Escolha uma senha diferente e tente de novo.",
+      "alreadyRegistered": "Já existe uma conta com este e-mail. Tente entrar.",
+      "incorrectCredentials": "E-mail ou senha incorretos.",
+      "confirmFirst": "Verifique sua caixa de entrada e confirme seu e-mail primeiro.",
+      "signupDisabled": "A criação de contas está temporariamente indisponível. Tente mais tarde.",
+      "tooManyRequests": "Tentativas demais. Aguarde um momento e tente de novo.",
+      "networkError": "Erro de conexão. Verifique sua internet e tente de novo.",
+      "passwordTooShort": "A senha deve ter pelo menos 8 caracteres.",
+      "invalidEmail": "Digite um endereço de e-mail válido.",
+      "enterEmailFirst": "Digite seu endereço de e-mail acima primeiro.",
+      "oauthUnavailable": "Entrar com {{provider}} indisponível",
+      "oauthFailedGoogle": "Falha ao entrar com o Google. Tente de novo.",
+      "oauthFailedApple": "Falha ao entrar com a Apple. Tente de novo.",
+      "signInIncomplete": "Não foi possível concluir o login. Tente de novo."
+    },
+    "info": {
+      "accountCreated": "Conta criada. Confirme seu e-mail e depois entre.",
+      "confirmBeforeSignIn": "Verifique sua caixa de entrada e confirme seu e-mail antes de entrar.",
+      "confirmFirstThenSignIn": "Confirme seu e-mail primeiro e depois entre.",
+      "resetEmailSent": "E-mail de redefinição de senha enviado. Verifique sua caixa de entrada."
+    }
+  },
+  "account": {
+    "title": "Conta",
+    "anonymous": {
+      "title": "Não conectado",
+      "subtitle": "Seus dados de humor ficam só neste dispositivo. Crie uma conta para mantê-los seguros em vários dispositivos.",
+      "createAccount": "Criar conta"
+    },
+    "connected": "Conta conectada",
+    "sections": {
+      "subscription": "ASSINATURA",
+      "security": "SEGURANÇA",
+      "privacy": "PRIVACIDADE",
+      "danger": "ZONA DE PERIGO"
+    },
+    "subscription": {
+      "statusLabel": "Status",
+      "manage": "Gerenciar assinatura",
+      "manageA11y": "Gerenciar assinatura",
+      "badge": {
+        "trial": "Teste grátis",
+        "active": "Ativa",
+        "expired": "Expirada",
+        "none": "Sem plano"
+      }
+    },
+    "security": {
+      "change": "Alterar senha",
+      "set": "Definir uma senha",
+      "setHint": "Adicione uma senha como backup do login com Google ou Apple.",
+      "changeA11y": "Alterar senha",
+      "setA11y": "Definir uma senha"
+    },
+    "signOut": {
+      "label": "Sair",
+      "loading": "Saindo...",
+      "hint": "Sair encerrará sua sessão. Seus dados de humor permanecerão neste dispositivo."
+    },
+    "export": {
+      "label": "Exportar meus dados",
+      "loading": "Preparando exportação...",
+      "hint": "Baixe uma cópia em JSON dos seus humores, diários, hábitos e perfil.",
+      "a11y": "Exportar meus dados",
+      "savedTitle": "Exportação salva",
+      "savedFallback": "O compartilhamento não está disponível neste dispositivo. Arquivo: {{uri}}",
+      "dialogTitle": "Exportar dados do Kibun",
+      "failedTitle": "Falha na exportação",
+      "failedBody": "Não foi possível exportar seus dados. Tente de novo."
+    },
+    "deleteData": {
+      "title": "Excluir meus dados",
+      "loading": "Excluindo dados...",
+      "subtitle": "Remove o histórico de humor e o perfil, mantém a conta",
+      "a11y": "Excluir meus dados",
+      "confirmTitle": "Excluir meus dados",
+      "confirmBody": "Isso excluirá permanentemente todos os seus registros de humor, resumos e informações de perfil. Sua conta permanecerá ativa. Isso não pode ser desfeito.",
+      "confirmAction": "Excluir dados",
+      "errorTitle": "Erro",
+      "errorBody": "Falha ao excluir os dados. Tente de novo."
+    },
+    "deleteAccount": {
+      "title": "Excluir conta",
+      "loading": "Excluindo...",
+      "subtitle": "Remove permanentemente a conta e todos os dados",
+      "a11y": "Excluir conta",
+      "confirmTitle": "Excluir conta",
+      "confirmBody": "Isso excluirá permanentemente sua conta e todos os seus dados de humor. Esta ação não pode ser desfeita.",
+      "confirmAction": "Excluir",
+      "errorTitle": "Erro",
+      "errorBody": "Falha ao excluir a conta. Tente de novo."
+    },
+    "common": {
+      "cancel": "Cancelar"
+    }
+  },
+  "changePassword": {
+    "titleChange": "Alterar senha",
+    "titleSet": "Definir uma senha",
+    "ineligible": "O login por senha precisa de um e-mail cadastrado nesta conta. Entre em contato com o suporte se precisar de ajuda.",
+    "goBack": "Voltar",
+    "setSubtitle": "Adicione uma senha para poder entrar com seu e-mail como backup do login com Google ou Apple.",
+    "fields": {
+      "currentLabel": "Senha atual",
+      "currentA11y": "Senha atual",
+      "currentPlaceholder": "Digite a senha atual",
+      "newLabel": "Nova senha",
+      "newA11y": "Nova senha",
+      "newPlaceholder": "Mín. 8 caracteres",
+      "confirmLabel": "Confirmar nova senha",
+      "confirmA11y": "Confirmar nova senha",
+      "confirmPlaceholder": "Digite a nova senha de novo"
+    },
+    "submitChange": "Atualizar senha",
+    "submitSet": "Definir senha",
+    "forgot": "Esqueceu a senha atual?",
+    "forgotA11y": "Esqueceu a senha atual",
+    "errors": {
+      "incorrectCurrent": "Senha atual incorreta.",
+      "mustDiffer": "A nova senha deve ser diferente da atual.",
+      "tooShort": "A senha deve ter pelo menos 8 caracteres.",
+      "tooManyRequests": "Tentativas demais. Aguarde um momento e tente de novo.",
+      "networkError": "Erro de conexão. Verifique sua internet e tente de novo.",
+      "enterCurrent": "Digite sua senha atual.",
+      "fillBoth": "Preencha os dois campos de senha.",
+      "noMatch": "As senhas não coincidem."
+    },
+    "info": {
+      "passwordSet": "Senha definida. Agora você pode entrar com {{email}} e esta senha.",
+      "updated": "Senha atualizada.",
+      "resetEmailSent": "E-mail de redefinição de senha enviado. Verifique sua caixa de entrada."
+    }
+  },
+  "checkIn": {
+    "title": "Como você está se sentindo?",
+    "subtitlePick": "Escolha o humor que combina com este momento.",
+    "subtitleBackdate": "Registrando para {{date}}",
+    "groupHeading": "Humores {{group}}",
+    "customSection": "Seus humores",
+    "manage": "Gerenciar",
+    "create": "+ Criar",
+    "createFirst": "Crie um humor personalizado",
+    "seeMore": "Ver mais",
+    "seeLess": "Ver menos",
+    "manageMoods": "Gerenciar humores",
+    "a11yCancel": "Cancelar",
+    "a11yManageCustom": "Gerenciar humores personalizados",
+    "a11yCreateFirst": "Crie seu primeiro humor personalizado"
+  },
+  "moodConfirm": {
+    "vibeToday": "Seu astral de hoje",
+    "loggingFor": "Registrando para {{date}}",
+    "moodSubLabel": "Este sentimento importa. Vamos registrá-lo.",
+    "savedTitle": "Registrado",
+    "savedSubtitle": "Quer ir um pouco mais fundo?",
+    "done": "Pronto",
+    "reflect": "Refletir no diário",
+    "noteLabel": "Adicionar uma nota",
+    "notePlaceholder": "Como você está se sentindo? (opcional)",
+    "noteA11y": "Nota de humor",
+    "closeA11y": "Fechar sem salvar",
+    "sentiment": {
+      "positive": "Parece positivo",
+      "neutral": "Parece neutro",
+      "negative": "Parece difícil"
+    },
+    "alignmentHintGreen": "A nota parece difícil — tudo bem sentir isso.",
+    "alignmentHintNegative": "A nota parece esperançosa — vale a pena notar.",
+    "energy": {
+      "title": "Energia & Foco",
+      "subtitle": "Opcional — ajuda a revelar padrões mais profundos",
+      "energy": "Energia",
+      "focus": "Foco",
+      "level": "{{label}} nível {{n}}",
+      "clear": "Limpar {{label}}"
+    },
+    "energyTeaser": "Acompanhe níveis de energia e foco",
+    "energyTeaserA11y": "Acompanhe níveis de energia e foco — recurso Pro",
+    "exercises": {
+      "green": {
+        "title": "Aproveite a onda!",
+        "subtitle": "Capture essa boa energia enquanto ela dura."
+      },
+      "neutral": {
+        "title": "Um empurrãozinho gentil",
+        "subtitle": "Pequenas mudanças podem transformar seu dia."
+      },
+      "red-orange": {
+        "title": "Precisa de um momento?",
+        "subtitle": "Experimente um exercício rápido para se recompor."
+      },
+      "blue": {
+        "title": "Você não está sozinho",
+        "subtitle": "Às vezes, só acolher o sentimento já basta."
+      },
+      "options": {
+        "gratitude": "Gratidão",
+        "joy_capture": "Captura de alegria",
+        "savoring": "Saborear",
+        "energy_boost": "Impulso de energia",
+        "curiosity": "Faísca de curiosidade",
+        "mindful_pause": "Pausa consciente",
+        "box_breathing": "Respiração quadrada",
+        "grounding": "Cinco sentidos",
+        "body_scan": "Escaneamento corporal",
+        "self_compassion": "Autocompaixão",
+        "comfort_list": "Lista de conforto"
+      },
+      "requiresPro": "{{label}} — requer Pro",
+      "unlockPro": "Desbloquear com o Pro",
+      "unlockProA11y": "Desbloquear exercícios com o Pro"
+    },
+    "save": "Salvar",
+    "changeMood": "Mudar humor",
+    "proBadge": "Pro"
+  },
+  "journalReflect": {
+    "promptLabel": "Refletir",
+    "placeholder": "Escreva livremente — isto é só para você.",
+    "a11y": "Resposta do diário",
+    "save": "Salvar reflexão",
+    "skip": "Pular por agora"
+  },
+  "exercise": {
+    "closeA11y": "Fechar",
+    "step": "Passo {{n}} de {{total}}",
+    "next": "Avançar",
+    "continue": "Continuar",
+    "finish": "Concluir",
+    "done": "Pronto",
+    "boxBreathing": {
+      "phases": {
+        "inhale": "Inspire",
+        "hold": "Segure",
+        "exhale": "Expire"
+      },
+      "description": "Siga o círculo. Respire no ritmo — {{count}} ciclos.",
+      "cycle": "Ciclo {{n}} / {{total}}",
+      "doneTitle": "Muito bem!",
+      "doneSubtitle": "Você completou {{count}} ciclos de respiração quadrada."
+    },
+    "grounding": {
+      "description": "Use seus sentidos para voltar com gentileza ao momento presente.",
+      "steps": [
+        "Nomeie 5 coisas que você consegue ver agora.",
+        "Nomeie 4 coisas que você consegue tocar.",
+        "Nomeie 3 coisas que você consegue ouvir.",
+        "Nomeie 2 coisas que você consegue cheirar.",
+        "Nomeie 1 coisa que você consegue saborear."
+      ]
+    },
+    "gratitude": {
+      "description": "Liste três coisas pelas quais você é grato agora.",
+      "prompts": [
+        "Algo que te fez sorrir hoje.",
+        "Uma pessoa que te traz conforto.",
+        "Algo no seu corpo que está funcionando bem."
+      ],
+      "itemA11y": "Item de gratidão {{n}}"
+    },
+    "joyCapture": {
+      "description": "Capture o que está te deixando feliz. Escrever ajuda a fixar.",
+      "prompts": [
+        "O que te fez sorrir ou rir hoje?",
+        "Com o que você está mais empolgado agora?",
+        "Quem te trouxe alegria recentemente?"
+      ],
+      "itemA11y": "Item de alegria {{n}}"
+    },
+    "savoring": {
+      "description": "Saborear ajuda a segurar as emoções positivas ao desacelerar e percebê-las.",
+      "steps": [
+        "Feche os olhos. Reviva um momento feliz de hoje nos mínimos detalhes.",
+        "Perceba como seu corpo se sente agora — calor, leveza, tranquilidade.",
+        "Sorria de leve. Deixe o sentimento durar um pouco mais."
+      ]
+    },
+    "energyBoost": {
+      "description": "Reinícios físicos rápidos para espantar a névoa e recuperar sua energia.",
+      "steps": [
+        "Levante-se e estique os braços acima da cabeça por 10 segundos.",
+        "Faça 5 respirações profundas — pelo nariz, solte pela boca.",
+        "Sacuda as mãos e gire os ombros para trás.",
+        "Jogue água fria no rosto ou segure um cubo de gelo."
+      ]
+    },
+    "curiosity": {
+      "description": "A curiosidade te tira do piloto automático. Responda para se reconectar com o mundo.",
+      "prompts": [
+        "O que você gostaria de aprender mais hoje?",
+        "O que ao seu redor você nunca olhou de perto de verdade?",
+        "Se pudesse fazer uma pergunta a qualquer pessoa agora, qual seria?"
+      ],
+      "itemA11y": "Item de curiosidade {{n}}"
+    },
+    "mindfulPause": {
+      "description": "Um reinício rápido para te trazer de volta ao momento presente.",
+      "steps": [
+        "Pause o que estiver fazendo. Fique parado por um instante.",
+        "Perceba três sons ao seu redor sem julgá-los.",
+        "Sinta o peso do seu corpo na cadeira ou no chão.",
+        "Faça uma respiração lenta e profunda e solte com calma."
+      ]
+    },
+    "bodyScan": {
+      "description": "Escaneie o corpo devagar, da cabeça aos pés. Solte a tensão onde encontrá-la.",
+      "steps": [
+        "Feche os olhos. Comece pelo topo da cabeça. Perceba qualquer tensão.",
+        "Leve a atenção ao rosto e à mandíbula. Deixe-os relaxar.",
+        "Solte os ombros. Deixe os braços ficarem pesados.",
+        "Perceba o peito e a barriga. Deixe a respiração desacelerar naturalmente.",
+        "Escaneie até as pernas e os pés. Sinta-os firmes no chão."
+      ]
+    },
+    "selfCompassion": {
+      "description": "Prática de autocompaixão de Kristin Neff — seja seu próprio melhor amigo por um momento.",
+      "steps": [
+        "Coloque a mão no peito. Reconheça: \"Este é um momento difícil.\"",
+        "Lembre-se: \"O sofrimento faz parte de ser humano. Não estou sozinho nisso.\"",
+        "Diga a si mesmo: \"Que eu seja gentil comigo agora.\"",
+        "Respire devagar e deixe-se sentir o que vier."
+      ]
+    },
+    "comfortList": {
+      "description": "Monte um kit de conforto. Saber o que ajuda torna os momentos difíceis mais fáceis.",
+      "prompts": [
+        "Um lugar onde você se sente seguro.",
+        "Uma música, série ou livro que te conforta.",
+        "Algo pequeno que você pode fazer por você hoje."
+      ],
+      "itemA11y": "Item de conforto {{n}}"
+    }
+  },
+  "settings": {
+    "hero": {
+      "title": "Ajustes",
+      "subtitle": "Ajuste lembretes e seu fluxo diário"
+    },
+    "sections": {
+      "account": "CONTA",
+      "reminderTimes": "HORÁRIOS DOS LEMBRETES",
+      "customTimes": "HORÁRIOS PERSONALIZADOS",
+      "streakReminder": "LEMBRETE DE SEQUÊNCIA",
+      "smartTiming": "HORÁRIO INTELIGENTE",
+      "appearance": "APARÊNCIA",
+      "language": "IDIOMA",
+      "about": "SOBRE"
+    },
+    "tabs": {
+      "reminders": "Lembretes",
+      "general": "Geral",
+      "about": "Sobre"
+    },
+    "groups": {
+      "dailyReminders": "LEMBRETES DIÁRIOS",
+      "more": "MAIS",
+      "legal": "LEGAL",
+      "achievements": "CONQUISTAS"
+    },
+    "achievements": {
+      "progress": "{{count}} de {{total}} desbloqueadas"
+    },
+    "account": {
+      "label": "Conta",
+      "notSignedIn": "Não conectado",
+      "manage": "Gerenciar conta e assinatura",
+      "a11y": "Gerenciar conta"
+    },
+    "permissionBanner": {
+      "text": "As notificações estão desativadas. Ative-as nos Ajustes para receber lembretes.",
+      "link": "Abrir Ajustes",
+      "a11yHint": "Abre os ajustes do dispositivo para ativar notificações"
+    },
+    "slots": {
+      "morning": {
+        "label": "Manhã",
+        "hint": "Por volta das 9h"
+      },
+      "afternoon": {
+        "label": "Tarde",
+        "hint": "Por volta das 14h"
+      },
+      "evening": {
+        "label": "Noite",
+        "hint": "Por volta das 19h"
+      },
+      "preSleep": {
+        "label": "Antes de dormir",
+        "hint": "Por volta das 22h"
+      }
+    },
+    "reminders": {
+      "rowA11y": "Lembrete de {{label}} às {{hint}}"
+    },
+    "customTimes": {
+      "setTo": "Definido para {{time}}",
+      "placeholder": "HH:MM",
+      "inputA11y": "Horário personalizado para o lembrete de {{label}}",
+      "inputA11yHint": "Digite o horário em formato 24h HH:MM",
+      "empty": "Ative os lembretes acima para definir horários personalizados."
+    },
+    "streak": {
+      "label": "Aviso noturno",
+      "hint": "Lembra você às 20h se ainda não registrou hoje",
+      "a11y": "Lembrete noturno de sequência às 20h"
+    },
+    "smartTiming": {
+      "label": "Lembretes adaptativos",
+      "hint": "Ajusta os horários dos lembretes para quando você costuma fazer check-in",
+      "a11y": "Ativar horário adaptativo de lembretes",
+      "overridden": "O horário personalizado substitui o horário inteligente ({{time}} calculado)",
+      "smartTime": "Horário inteligente: {{time}}",
+      "active": "Ativo",
+      "auto": "Auto",
+      "needsMore": "Registre mais check-ins para ativar o horário inteligente.",
+      "lockedHint": "Aprende quando você realmente faz check-in e ajusta os horários dos lembretes. Recurso Pro.",
+      "proBadge": "Pro",
+      "lockedA11y": "Assine o Pro para desbloquear o Horário Inteligente"
+    },
+    "appearance": {
+      "label": "Tema",
+      "hint": "Segue seu dispositivo quando definido como sistema",
+      "options": {
+        "system": "Padrão do sistema",
+        "light": "Claro",
+        "dark": "Escuro"
+      },
+      "optionA11y": "Definir tema como {{label}}"
+    },
+    "language": {
+      "label": "Idioma do app",
+      "hint": "As mudanças se aplicam imediatamente",
+      "options": {
+        "system": "Padrão do sistema",
+        "en": "English",
+        "es": "Español",
+        "pt": "Português",
+        "de": "Deutsch"
+      },
+      "optionA11y": "Definir idioma como {{label}}"
+    },
+    "about": {
+      "version": "Versão",
+      "restore": "Restaurar compras",
+      "restoreA11y": "Restaurar compras",
+      "restored": "Assinatura restaurada.",
+      "restoreNone": "Nenhuma compra anterior encontrada.",
+      "manageSubscription": "Gerenciar assinatura",
+      "manageSubscriptionA11y": "Gerenciar assinatura",
+      "rate": "Avaliar o kibun ⭐",
+      "rateA11y": "Avaliar o kibun",
+      "feedback": "Enviar feedback",
+      "feedbackA11y": "Enviar feedback",
+      "terms": "Termos de Uso",
+      "termsA11y": "Termos de Uso",
+      "privacy": "Política de Privacidade",
+      "privacyA11y": "Política de Privacidade"
+    }
+  },
+  "paywall": {
+    "hero": {
+      "title": "kibun Premium",
+      "subtitle": "Seus sentimentos merecem o quadro completo.\nVamos entendê-los juntos."
+    },
+    "comparison": {
+      "header": {
+        "feature": "Recurso",
+        "free": "Grátis",
+        "premium": "Premium"
+      },
+      "rows": {
+        "aiPrompts": "Sugestões personalizadas",
+        "customMoods": "Humores personalizados",
+        "breathing": "Exercícios de respiração",
+        "correlations": "Correlações de hábitos e vida",
+        "aiReports": "Relatórios de humor",
+        "customReminders": "Horários de lembrete personalizados",
+        "achievements": "Conquistas e congelar sequência"
+      },
+      "includedA11y": "incluído",
+      "notIncludedA11y": "não incluído"
+    },
+    "trust": {
+      "tagline": "Cancele quando quiser · Sem compromisso",
+      "privacy": "Privado por padrão · Sem anúncios, nunca"
+    },
+    "price": {
+      "both": "{{monthly}} / mês ou {{yearly}} / ano",
+      "monthlyOnly": "{{monthly}} / mês",
+      "yearlyOnly": "{{yearly}} / ano",
+      "fallbackMonthly": "$5.99",
+      "fallbackYearly": "$34.99",
+      "trial": "Inclui teste grátis de 7 dias · Cancele quando quiser"
+    },
+    "plan": {
+      "monthly": {
+        "label": "Mensal",
+        "period": "por mês"
+      },
+      "annual": {
+        "label": "Anual",
+        "period": "por ano"
+      },
+      "save": "ECONOMIZE {{percent}}%",
+      "bestValue": "MELHOR VALOR",
+      "perMonth": "{{price}}/mês",
+      "billedYearly": "{{price}} cobrados por ano após o teste",
+      "billedMonthly": "{{price}} cobrados por mês após o teste",
+      "selectedA11y": "selecionado",
+      "a11yHint": "Seleciona o plano {{plan}}",
+      "billedYearlyNoTrial": "{{price}} cobrados por ano",
+      "billedMonthlyNoTrial": "{{price}} cobrados por mês"
+    },
+    "cta": {
+      "subscribe": "Assinar — 7 dias grátis",
+      "subscribeA11yHint": "Inicia sua assinatura com 7 dias grátis. Cancele quando quiser nos ajustes da conta.",
+      "skip": "Talvez depois",
+      "skipA11yHint": "Pular assinatura e continuar com recursos limitados",
+      "subscribeNoTrial": "Assinar",
+      "subscribeA11yHintNoTrial": "Inicia sua assinatura. Cancele quando quiser nos ajustes da conta."
+    },
+    "disclosure": "O pagamento é cobrado na sua conta ao confirmar a compra. Sua assinatura se renova automaticamente a menos que seja cancelada pelo menos 24 horas antes do fim do período atual. Gerencie ou cancele quando quiser nos ajustes da conta.",
+    "restore": {
+      "label": "Restaurar compras",
+      "loading": "Restaurando…",
+      "a11y": "Restaurar compras anteriores"
+    },
+    "legal": {
+      "terms": "Termos de Uso",
+      "termsA11y": "Termos de Uso",
+      "privacy": "Política de Privacidade",
+      "privacyA11y": "Política de Privacidade"
+    },
+    "errors": {
+      "notConfigured": "O Premium não está configurado. Tente mais tarde.",
+      "loadFailed": "Falha ao carregar o paywall. Tente de novo.",
+      "noEntitlement": "Compra concluída, mas o direito não foi encontrado. Entre em contato com o suporte.",
+      "nativeMissing": "A interface Premium não está disponível nesta versão. Atualize o app e tente de novo.",
+      "billingUnavailable": "As compras no app não estão disponíveis neste dispositivo. Verifique se você está conectado ao Google Play.",
+      "generic": "Algo deu errado. Tente de novo.",
+      "noPriorPurchases": "Nenhuma compra anterior encontrada para esta conta."
+    }
+  },
+  "event": {
+    "category": {
+      "work": "Trabalho",
+      "social": "Social",
+      "health": "Saúde",
+      "travel": "Viagem",
+      "relationship": "Relacionamento",
+      "personal": "Pessoal"
+    }
+  },
+  "sentiment": {
+    "positive": "Positivo",
+    "neutral": "Neutro",
+    "negative": "Difícil"
+  },
+  "dayDetail": {
+    "deleteEntryTitle": "Excluir registro",
+    "deleteEntryMessage": "Tem certeza de que deseja excluir este registro de \"{{moodLabel}}\"? Isso não pode ser desfeito.",
+    "deleteAction": "Excluir",
+    "lifeEvents": "Eventos de vida",
+    "deleteEventTitle": "Excluir evento",
+    "deleteEventMessage": "Excluir \"{{title}}\"?",
+    "deleteEventA11y": "Excluir evento",
+    "empty": "Nenhum humor registrado neste dia",
+    "entryA11y": "{{mood}} às {{time}}{{note}}. Toque para {{action}}.",
+    "expand": "expandir",
+    "collapse": "recolher",
+    "slot": {
+      "morning": "Manhã",
+      "afternoon": "Tarde",
+      "night": "Noite",
+      "pre_sleep": "Madrugada"
+    },
+    "note": "Nota",
+    "noNote": "Nenhuma nota adicionada",
+    "sentimentLabel": "Tom da nota",
+    "sentiment": {
+      "positive": "Positivo",
+      "neutral": "Neutro",
+      "negative": "Difícil"
+    },
+    "journalPrompt": "Sugestão de diário",
+    "yourReflection": "Sua reflexão",
+    "energyFocus": "Energia & Foco",
+    "energyValue": "Energia {{value}}/5",
+    "focusValue": "Foco {{value}}/5",
+    "deleteEntryA11y": "Excluir este registro",
+    "deleteEntryAction": "Excluir registro",
+    "logAnother": "Registrar outro humor",
+    "logAnotherA11y": "Registrar outro humor para este dia"
+  },
+  "logEvent": {
+    "closeA11y": "Fechar",
+    "heroTitle": "Registrar um evento de vida",
+    "heroSubtitle": "Marque momentos que moldam seus padrões de humor",
+    "whatHappened": "O que aconteceu?",
+    "titlePlaceholder": "ex.: Grande apresentação, Primeiro encontro, Consulta médica",
+    "titleA11y": "Título do evento",
+    "category": "Categoria",
+    "notes": "Notas (opcional)",
+    "notesPlaceholder": "Qualquer contexto extra...",
+    "notesA11y": "Notas do evento",
+    "save": "Salvar evento",
+    "cancel": "Cancelar"
+  },
+  "aiReport": {
+    "premiumTitle": "Recurso Premium",
+    "premiumSubtitle": "Receba resumos de humor semanais e mensais",
+    "startTrial": "Começar teste grátis",
+    "title": "Resumo",
+    "weekly": "Semanal",
+    "monthly": "Mensal",
+    "reportTypeA11y": "Relatório {{label}}",
+    "generating": "Preparando seu resumo...",
+    "loadErrorTitle": "Não foi possível carregar o relatório",
+    "loadErrorSubtitle": "Verifique sua conexão e tente de novo",
+    "tryAgain": "Tentar de novo",
+    "notEnoughData": "Ainda não há dados suficientes",
+    "noEntriesSubtitle": "Registre seu humor por alguns dias e depois volte para gerar seu relatório.",
+    "subscriptionErrorTitle": "Assinatura não verificada",
+    "subscriptionErrorSubtitle": "Não foi possível confirmar sua assinatura no servidor. Tente fechar e reabrir o app. Se o problema persistir, restaure sua compra.",
+    "noReportYet": "Ainda não há relatório {{period}}",
+    "noReportSubtitle": "Gere seu primeiro resumo {{period}}",
+    "generateMyReport": "Gerar resumo",
+    "periodA11y": "Período do relatório: {{period}}",
+    "moodSummary": "Resumo de humor",
+    "checkInsA11y": "{{count}} check-ins",
+    "checkIns": "check-ins",
+    "perDayA11y": "média de {{value}} por dia",
+    "perDayAvg": "média por dia",
+    "moodTimesA11y": "{{moodId}}, {{count}} vezes",
+    "generated": "Gerado em {{date}}",
+    "generateNewReport": "Gerar novo resumo",
+    "patterns": "Destaques",
+    "tone": {
+      "positive": "Mais radiante",
+      "neutral": "Estável",
+      "mixed": "Misto",
+      "tough": "Um período mais difícil"
+    }
+  },
+  "annualReport": {
+    "heroTitle": "{{year}} em Humor",
+    "notEnoughData": "Ainda não há dados suficientes",
+    "emptySubtitle": "Continue fazendo check-ins — sua história de {{year}} aparecerá aqui.",
+    "badge": "Retrospectiva do ano",
+    "heroSubtitle": "{{total}} momentos de autoconhecimento",
+    "statCheckIns": "Check-ins",
+    "streakDays": "{{days}}d",
+    "statBestStreak": "Melhor sequência",
+    "statMoodsUsed": "Humores usados",
+    "statBestMonth": "Melhor mês",
+    "topMoods": "Principais humores",
+    "timesCount": "{{count}}×",
+    "monthHighlights": "Destaques do mês",
+    "bestMonthHint": "Melhor mês",
+    "toughestMonthHint": "Mês mais difícil",
+    "yourStory": "Sua história",
+    "writingStory": "Escrevendo seu ano em palavras...",
+    "unlockStoryHint": "Registre pelo menos 10 check-ins neste ano para desbloquear sua história.",
+    "upgradeA11y": "Assine o Pro para desbloquear sua narrativa Ano em Palavras",
+    "upgradeTitle": "Seu ano em palavras",
+    "upgradeSubtitle": "Desbloqueie uma narrativa personalizada do seu {{year}}. Recurso Pro.",
+    "pro": "Pro",
+    "storyError": "Não foi possível gerar sua história. Tente mais tarde."
+  },
+  "customMoods": {
+    "deleteTitle": "Excluir humor",
+    "deleteMessage": "Remover \"{{name}}\" dos seus humores personalizados?",
+    "deleteAction": "Excluir",
+    "heroTitle": "Humores personalizados",
+    "heroSubtitle": "Crie até {{max}} humores com a sua cara",
+    "yourMoods": "Seus humores personalizados",
+    "deleteA11y": "Excluir {{name}}",
+    "createA11y": "Criar um novo humor personalizado",
+    "createMood": "Criar humor ({{count}}/{{max}})",
+    "limitReached": "Você atingiu o limite de {{max}} humores personalizados.",
+    "newMood": "Novo humor",
+    "nameLabel": "Nome (máx. 12 caracteres)",
+    "namePlaceholder": "ex.: Nostálgico",
+    "nameA11y": "Nome do humor",
+    "imageLabel": "Imagem do mascote",
+    "colour": "Cor",
+    "moodType": "Tipo de humor",
+    "preview": "Prévia:",
+    "saveA11y": "Salvar humor personalizado",
+    "saveMood": "Salvar humor",
+    "empty": {
+      "title": "Nenhum humor personalizado ainda",
+      "description": "Crie humores que combinem com o que você realmente sente — não só o básico.",
+      "cta": "Crie seu primeiro humor"
+    },
+    "group": {
+      "green": {
+        "label": "Positivo",
+        "hint": "Animador, boa energia"
+      },
+      "neutral": {
+        "label": "Neutro",
+        "hint": "Sentimentos mistos ou calmos"
+      },
+      "blue": {
+        "label": "Reflexivo",
+        "hint": "Introspectivo, quieto"
+      },
+      "red-orange": {
+        "label": "Difícil",
+        "hint": "Emoções desafiadoras"
+      }
+    }
+  },
+  "manageHabits": {
+    "deleteTitle": "Excluir hábito",
+    "deleteMessage": "Remover \"{{name}}\" e todos os seus registros?",
+    "deleteAction": "Excluir",
+    "heroTitle": "Meus hábitos",
+    "heroSubtitle": "Acompanhe comportamentos diários junto com seu humor",
+    "yourHabits": "Seus hábitos",
+    "scaleType": "Escala 1-5",
+    "booleanType": "Sim / Não",
+    "deleteA11y": "Excluir {{name}}",
+    "quickAdd": "Adição rápida",
+    "alreadyAddedA11y": "{{name}} já adicionado",
+    "addA11y": "Adicionar {{name}}",
+    "customHabit": "Hábito personalizado",
+    "addCustomA11y": "Adicionar um hábito personalizado",
+    "addCustom": "Adicionar hábito personalizado",
+    "iconA11y": "Selecionar ícone do hábito",
+    "chooseIcon": "Escolha um ícone",
+    "namePlaceholder": "Nome do hábito",
+    "nameA11y": "Nome do hábito",
+    "addHabitA11y": "Adicionar hábito",
+    "add": "Adicionar",
+    "empty": {
+      "title": "Nenhum hábito ainda",
+      "description": "Acompanhe comportamentos que moldam seu humor — sono, exercício, tempo social.",
+      "cta": "Adicione seu primeiro hábito"
+    },
+    "preset": {
+      "sleepQuality": "Qualidade do sono",
+      "exercise": "Exercício",
+      "meditated": "Meditei",
+      "socialised": "Socializei",
+      "alcohol": "Álcool"
+    }
+  },
+  "components": {
+    "backButton": {
+      "defaultLabel": "Início",
+      "a11y": "Ir para {{label}}"
+    },
+    "onboardingProgress": {
+      "a11y": "Passo {{current}} de {{total}}"
+    },
+    "wisdomScreen": {
+      "mascotA11y": "Mascote {{mascot}}"
+    },
+    "reviewPrompt": {
+      "dismissA11y": "Dispensar",
+      "title": "Como está sendo o kibun?",
+      "subtitle": "Sua resposta sincera ajuda a melhorá-lo.",
+      "ctaHappy": "Amando",
+      "ctaHappyA11y": "Amando",
+      "ctaUnhappy": "Nem tanto",
+      "ctaUnhappyA11y": "Nem tanto",
+      "ctaLater": "Talvez depois",
+      "ctaLaterA11y": "Talvez depois"
+    }
+  }
+}

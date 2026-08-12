@@ -1,0 +1,14 @@
+{
+  "report": {
+    "ready": {
+      "title": "Seu resumo de humor está pronto",
+      "body": "Seu resumo de humor {{type}} está esperando por você"
+    }
+  },
+  "streak": {
+    "nudge": {
+      "title": "Mantenha sua sequência",
+      "body": "Um check-in rápido mantém sua sequência viva."
+    }
+  }
+}

@@ -735,7 +735,9 @@
       "options": {
         "system": "Predeterminado del sistema",
         "en": "English",
-        "es": "Español"
+        "es": "Español",
+        "pt": "Português",
+        "de": "Deutsch"
       },
       "optionA11y": "Cambiar idioma a {{label}}"
     },
@@ -782,7 +784,7 @@
     },
     "trust": {
       "tagline": "Cancela cuando quieras · Sin compromiso",
-      "starsA11y": "5 de 5 estrellas"
+      "privacy": "Privado por defecto · Sin anuncios, nunca"
     },
     "price": {
       "both": "{{monthly}} / mes o {{yearly}} / año",

@@ -735,7 +735,9 @@
       "options": {
         "system": "System default",
         "en": "English",
-        "es": "Español"
+        "es": "Español",
+        "pt": "Português",
+        "de": "Deutsch"
       },
       "optionA11y": "Set language to {{label}}"
     },
@@ -782,7 +784,7 @@
     },
     "trust": {
       "tagline": "Cancel anytime · No commitment",
-      "starsA11y": "5 out of 5 stars"
+      "privacy": "Private by default · No ads, ever"
     },
     "price": {
       "both": "{{monthly}} / month or {{yearly}} / year",

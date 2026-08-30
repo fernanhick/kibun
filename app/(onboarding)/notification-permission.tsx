@@ -57,7 +57,8 @@ export default function NotificationPermissionScreen() {
     if (userId) saveProfileToSupabase(userId, profile);
 
     // Snapshot personalization for analyzing / plan-snapshot / paywall — survives
-    // app kills via AsyncStorage, so cold-start re-entry to /paywall stays personal.
+    // app kills via AsyncStorage. The paywall is deferred to the third check-in,
+    // so this may be read many launches later.
     setPersonalizationSnapshot({ profile, firstMoodId: persistedFirstMoodId });
     seedHabitsFromProfile(profile);
     setComplete();

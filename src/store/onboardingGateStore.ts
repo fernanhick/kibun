@@ -4,9 +4,10 @@
 // returning users to onboarding before AsyncStorage rehydration completes.
 //
 // personalizationSnapshot persists a small subset of onboarding answers so that
-// analyzing → plan-snapshot → paywall can stay personalized even if the user
-// kills the app between notification-permission and paywall (the gate then
-// redirects them back into /paywall on relaunch).
+// analyzing → plan-snapshot, and the paywall whenever it is eventually raised,
+// stay personalized. It has to survive app kills: onboarding now hands off
+// straight to the tabs, and the paywall does not appear until the third
+// check-in, which may be days later and several launches away.
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';

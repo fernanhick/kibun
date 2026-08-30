@@ -69,7 +69,7 @@ export default function PlanSnapshotScreen() {
 
       <Button
         label={t('onboarding:planSnapshot.cta')}
-        onPress={() => router.replace('/paywall')}
+        onPress={() => router.replace('/(tabs)')}
         variant="sunrise"
         fullWidth
       />

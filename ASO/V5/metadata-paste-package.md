@@ -8,6 +8,37 @@
 
 ---
 
+## ✅ Re-verified live on 2026-08-30
+
+Every field below was re-checked against the live stores before this package was declared ready. Three things changed since it was written on 2026-07-29.
+
+**1. Age rating is already `4+` — that item is done.** The iTunes lookup returns `contentAdvisoryRating: 4+`. §1's instruction to "re-run the questionnaire targeting 4+" is **stale; skip it**. (The `9+` recorded on 2026-07-29 is either fixed or was mismeasured.)
+
+**2. Everything else in §1–§4 is still pending, exactly as described:**
+
+| Field | Live on 2026-08-30 | Still to change |
+|---|---|---|
+| iOS name | `Kibun: Mood & Habits Tracker` | yes |
+| iOS categories | Lifestyle + **Productivity** | yes → Health & Fitness |
+| iOS listing languages | `EN` only | yes → add es-MX + es-ES |
+| Play title | `Kibun - Feeling & Habits Diary` | yes |
+| iOS ratings | **0** | — |
+| Min iOS / size | 16.4 / 105 MB | — |
+
+**3. The live Play description is worse than the docs recorded.** It was pulled in full (3,323 chars) and it is *not* merely "V2 and truncated" — it carries live compliance and accuracy defects:
+
+- ⛔ **`grounding` is live** — "Guided breathing & **grounding** exercise library". Tier 3 named technique.
+- ⛔ **`clinical` is live** — "Cozy daily ritual, not a **clinical** checklist". This is the exact word Apple flagged in the Guideline 1.1 rejection, *and it was flagged even as a positive contrast*, which is the same construction used here.
+- ❌ **"Soft blue-to-teal gradient design"** — the app has been sage/beige since 2026-06-17. The description advertises a theme that no longer exists.
+- ❌ **The free/Pro contradiction is live and self-contradicting inside one description.** Custom reminders, achievements/streaks, custom moods and breathing are listed as general features, then listed *again* under ★ KIBUN PRO ★.
+- ❌ **The tail is genuinely missing.** No ★ ABOUT KIBUN ★ section → no privacy link, no terms link, no contact email on the live Play listing.
+
+The V4 replacement copy was validated against all of this and is clean: 3,574 chars (under 4,000), zero Tier 3 terms, correct `kibun-app.com` domain, correct "18+ moods", privacy link and email present, and `mental health` used exactly once in permitted category framing ("a mental health journal that never feels like homework").
+
+**⛔ One hard blocker remains:** `https://www.kibun-app.com/terms` still returns **404** (privacy returns 200). The Play description's `Terms:` line must be deleted, or the page published, *before* pasting §3. Apple is unaffected — its copy points at Apple's Standard EULA.
+
+---
+
 ## Why the titles change
 
 The live titles abandoned the strategy and are the main reason the app ranks for nothing:
@@ -53,8 +84,8 @@ On `shiba` specifically: V4 cut it on the theory that Shiba traffic is crypto/ga
 
 Finch, Daylio, DailyBean and Tochi are *all* Lifestyle + Health & Fitness. Productivity shares no browse audience with mood tracking and is one of the most crowded categories on the store.
 
-### Age Rating
-Re-run the questionnaire targeting **4+**. Currently **9+**, which is stricter than all four competitors, inconsistent with your own Play rating (Everyone), and narrows family/teen browse eligibility for a product aimed at "teens, students, professionals."
+### Age Rating — ✅ **already done, skip**
+~~Re-run the questionnaire targeting **4+**.~~ Verified live 2026-08-30: the listing already returns **4+**. No action.
 
 ### Description
 Paste from `ASO/V4/apple-app-store-submission.md` (already corrected: accurate free/Pro split, `grounding` removed, correct domain).
@@ -99,11 +130,11 @@ Kibun: Cute Mood Tracker Diary
 
 Alternative if you want the mascot in the title (only if you also expect to win on brand): `Kibun: Cute Mood Diary & Shiba` **[30 / 30]**
 
-### Short description — 80 max *(unchanged)*
+### Short description — 80 max  ⚠ **this IS a change**
 ```
 Cute mood tracker & diary. Daily check-ins, breathing & your Shiba pet.
 ```
-**[71 / 80]**
+**[71 / 80]** — the *(unchanged)* label here was wrong. Live today is `Cute mood tracker & habits diary. Daily check-ins, breathing & your Shiba pet.` **[78 / 80]**. This value drops `habits`, which is deliberate and on-strategy — the same reasoning that removes `Habits` from the title — but it is a change, so treat it as one when attributing results.
 
 Queue these as **Store Listing Experiments** (free A/B testing you currently aren't using):
 

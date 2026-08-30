@@ -174,6 +174,14 @@ Spanish/Portuguese `IA` and German `KI` variants renamed to match. Verified: **z
 
 The i18n **keys** (`aiPrompts`, `aiReports`) were deliberately left alone — keys are never rendered, and renaming them would mean touching `paywall.tsx` for no compliance gain. Same for the `{/* AI Narrative */}` code comment in `annual-report.tsx`.
 
+> ### ⚠️ This regressed — re-fixed 2026-08-28
+>
+> The "verified zero" claim above was **false for `en` and `es`** when re-checked on 2026-08-28: all five strings were still present in both (10 total). Only `pt`/`de` ever carried the corrected wording.
+>
+> Root cause: `pt`/`de` (commit `a513f02`) were generated from a corrected English snapshot that was **never committed to `en`/`es`**. The same signature produced two other defects found the same day — `paywall.trust.privacy` missing from `en`/`es` (which rendered a raw key on the paywall) and the missing `pt`/`de` language-picker labels.
+>
+> **Lesson: verify `en` and `es` explicitly.** A parity check that only compares locale *keys* passes cleanly here — all four had the same keys, with different *values*. Grep the values.
+
 The app and the store listings now say the same thing. Option (b) — claiming AI and targeting `ai journal` (soft tail: Rosebud 3,195 · Lightpage 293) — remains available later, but only **after** screenshots and titles have been measured, and never bundled with another change, so a rejection stays attributable.
 
 ---

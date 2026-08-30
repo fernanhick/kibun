@@ -771,11 +771,11 @@
         "premium": "Premium"
       },
       "rows": {
-        "aiPrompts": "AI journaling prompts",
+        "aiPrompts": "Personalised prompts",
         "customMoods": "Custom moods",
         "breathing": "Breathing exercises",
         "correlations": "Habit & life correlations",
-        "aiReports": "AI mood reports",
+        "aiReports": "Mood reports",
         "customReminders": "Custom reminder times",
         "achievements": "Achievements & streak freeze"
       },
@@ -962,10 +962,10 @@
     "toughestMonthHint": "Toughest month",
     "yourStory": "Your story",
     "writingStory": "Writing your year in words...",
-    "unlockStoryHint": "Log at least 10 check-ins this year to unlock your AI story.",
-    "upgradeA11y": "Upgrade to Pro to unlock your Year in Words AI narrative",
+    "unlockStoryHint": "Log at least 10 check-ins this year to unlock your story.",
+    "upgradeA11y": "Upgrade to Pro to unlock your Year in Words narrative",
     "upgradeTitle": "Your year in words",
-    "upgradeSubtitle": "Unlock a personalised AI narrative of your {{year}}. Pro feature.",
+    "upgradeSubtitle": "Unlock a personalised narrative of your {{year}}. Pro feature.",
     "pro": "Pro",
     "storyError": "Could not generate your story. Try again later."
   },

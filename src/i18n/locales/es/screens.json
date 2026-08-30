@@ -771,11 +771,11 @@
         "premium": "Premium"
       },
       "rows": {
-        "aiPrompts": "Sugerencias de journaling con IA",
+        "aiPrompts": "Sugerencias personalizadas",
         "customMoods": "Ánimos personalizados",
         "breathing": "Ejercicios de respiración",
         "correlations": "Correlaciones de hábitos y vida",
-        "aiReports": "Reportes de ánimo con IA",
+        "aiReports": "Reportes de ánimo",
         "customReminders": "Recordatorios personalizados",
         "achievements": "Logros y escudo de racha"
       },
@@ -962,10 +962,10 @@
     "toughestMonthHint": "Mes más difícil",
     "yourStory": "Tu historia",
     "writingStory": "Escribiendo tu año en palabras...",
-    "unlockStoryHint": "Registra al menos 10 check-ins este año para desbloquear tu historia con IA.",
-    "upgradeA11y": "Mejora a Pro para desbloquear tu narrativa anual con IA",
+    "unlockStoryHint": "Registra al menos 10 check-ins este año para desbloquear tu historia.",
+    "upgradeA11y": "Mejora a Pro para desbloquear tu narrativa anual",
     "upgradeTitle": "Tu año en palabras",
-    "upgradeSubtitle": "Desbloquea una narrativa de IA personalizada de tu {{year}}. Función Pro.",
+    "upgradeSubtitle": "Desbloquea una narrativa personalizada de tu {{year}}. Función Pro.",
     "pro": "Pro",
     "storyError": "No se pudo generar tu historia. Inténtalo más tarde."
   },

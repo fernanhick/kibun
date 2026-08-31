@@ -71,7 +71,7 @@ export default function HomeScreen() {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
   const router = useRouter();
-  const { t } = useTranslation('screens');
+  const { t, i18n } = useTranslation('screens');
   const insets = useSafeAreaInsets();
   const responsive = useResponsive();
   const { onScroll } = useScreenScroll();
@@ -174,14 +174,17 @@ export default function HomeScreen() {
     });
     if (todayEntries14d.length < 3) return;
 
-    if (insightContent?.date === today) return;
+    // The insight body is model-generated in the user's language, so a cached
+    // one only counts as fresh if the language still matches. Entries stored
+    // before 2026-08-31 carry no language and re-fetch once.
+    if (insightContent?.date === today && insightContent.language === i18n.language) return;
 
     setInsightLoading(true);
     fetchDailyInsight({ profile }).then((text) => {
-      if (text) setInsight(today, text);
+      if (text) setInsight(today, i18n.language, text);
       setInsightLoading(false);
     });
-  }, [isPro, isAnonymous, insightHydrated, today]);
+  }, [isPro, isAnonymous, insightHydrated, today, i18n.language]);
 
   // Compute adaptive notification times from mood entry history (Pro only)
   useEffect(() => {

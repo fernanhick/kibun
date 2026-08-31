@@ -155,11 +155,15 @@ Deno.serve(async (req: Request) => {
     const periodCutoff = new Date();
     periodCutoff.setDate(periodCutoff.getDate() - periodDays);
 
+    // Language is part of the cache key: a report written in English is not a
+    // cache hit for a user now reading Spanish. Legacy rows have language NULL
+    // and deliberately match nothing, so they regenerate once.
     const { data: existingReport } = await adminClient
       .from("ai_reports")
       .select("*")
       .eq("user_id", userId)
       .eq("report_type", reportType)
+      .eq("language", language)
       .gte("created_at", periodCutoff.toISOString())
       .order("created_at", { ascending: false })
       .limit(1)
@@ -451,6 +455,7 @@ Deno.serve(async (req: Request) => {
         content: reportContent,
         structured,
         mood_summary: moodSummary,
+        language,
       })
       .select()
       .single();

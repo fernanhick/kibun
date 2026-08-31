@@ -8,6 +8,7 @@ import { Screen, Card, Button, BackButton } from '@components/index';
 import { useSessionStore } from '@store/sessionStore';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { requestReport, getLatestReport } from '@lib/aiReports';
+import i18n from '@i18n/index';
 import type { AIReport, AIReportStructured, AIReportTone } from '@models/index';
 import { typography, spacing, radius } from '@constants/theme';
 import { useTheme, type ThemePalette } from '@theme/ThemeContext';
@@ -37,7 +38,7 @@ export default function AIReportScreen() {
     if (!isSubscribed || !userId) return;
     setScreenState('loading');
     try {
-      const existing = await getLatestReport(userId, reportType);
+      const existing = await getLatestReport(userId, reportType, i18n.language);
       if (existing) {
         setReport(existing);
         setScreenState('has-report');
@@ -51,7 +52,9 @@ export default function AIReportScreen() {
       }
       setScreenState('error');
     }
-  }, [userId, reportType, isSubscribed]);
+    // i18n.language is a dependency: switching language must re-probe, or the
+    // screen keeps showing the previous language's cached report.
+  }, [userId, reportType, isSubscribed, i18n.language]);
 
   useEffect(() => {
     loadReport();

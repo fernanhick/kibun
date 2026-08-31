@@ -96,7 +96,13 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Return cached insight if one exists for today
+    // Body is parsed here rather than further down because language is part of
+    // the cache key below, and req.json() can only be consumed once.
+    const body = await req.json().catch(() => ({}));
+    const language = toSupportedLanguage(body?.language);
+
+    // Return cached insight if one exists for today *in this language*. Legacy
+    // rows have language NULL and match nothing, so they regenerate once.
     const today = new Date().toISOString().split("T")[0];
     const { data: cached } = await adminClient
       .from("ai_reports")
@@ -104,6 +110,7 @@ Deno.serve(async (req: Request) => {
       .eq("user_id", userId)
       .eq("report_type", "daily")
       .eq("period_start", today)
+      .eq("language", language)
       .maybeSingle();
 
     if (cached) {
@@ -151,10 +158,8 @@ Deno.serve(async (req: Request) => {
 
     const latestMood = entries[entries.length - 1]?.mood ?? "unknown";
 
-    // Profile context from request body
-    const body = await req.json().catch(() => ({}));
+    // Profile context from the body parsed above (before the cache check).
     const { profile } = body;
-    const language = toSupportedLanguage(body?.language);
     const profileLines = profile
       ? [
           profile.name ? `Name: ${profile.name}` : null,
@@ -343,6 +348,7 @@ Deno.serve(async (req: Request) => {
       period_end: today,
       content: insight,
       mood_summary: null,
+      language,
     });
 
     return new Response(

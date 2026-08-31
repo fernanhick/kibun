@@ -82,23 +82,8 @@ Deno.serve(async (req: Request) => {
     const today = new Date().toISOString().split('T')[0];
     const yearStart = `${today.split('-')[0]}-01-01`;
 
-    // Cache check: one annual report per year
-    const { data: cached } = await adminClient
-      .from('ai_reports')
-      .select('id, content')
-      .eq('user_id', userId)
-      .eq('report_type', 'annual')
-      .eq('period_start', yearStart)
-      .maybeSingle();
-
-    if (cached) {
-      return new Response(
-        JSON.stringify({ narrative: cached.content }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
-    }
-
-    // Parse client-computed stats from request body
+    // Parse the body before the cache check: language is part of the cache key,
+    // so we cannot probe the cache until we know which language was requested.
     const body = await req.json();
     const {
       totalCheckIns,
@@ -116,6 +101,26 @@ Deno.serve(async (req: Request) => {
       worstMonth: string;
     } = body;
     const language = toSupportedLanguage(body?.language);
+
+    // Cache check: one annual report per year *per language*. Without the
+    // language filter this cache is permanent for the year, so a user who
+    // switched languages could never see their narrative in the new one.
+    // Legacy rows have language NULL and match nothing, so they regenerate once.
+    const { data: cached } = await adminClient
+      .from('ai_reports')
+      .select('id, content')
+      .eq('user_id', userId)
+      .eq('report_type', 'annual')
+      .eq('period_start', yearStart)
+      .eq('language', language)
+      .maybeSingle();
+
+    if (cached) {
+      return new Response(
+        JSON.stringify({ narrative: cached.content }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
 
     if (!totalCheckIns || totalCheckIns < 10) {
       return new Response(
@@ -175,6 +180,7 @@ Deno.serve(async (req: Request) => {
       period_end: today,
       content: narrative,
       mood_summary: { totalEntries: totalCheckIns, topMoods, avgEntriesPerDay: 0 },
+      language,
     });
 
     if (insertError) {

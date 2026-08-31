@@ -101,11 +101,15 @@ export default function AnnualReportScreen() {
 
     const fetchNarrative = async () => {
       // Check cache first
+      // Language is part of the cache key. i18n.language is always one of
+      // SUPPORTED_LANGUAGES (getDeviceLanguage region-strips, and the settings
+      // override only stores those codes), so it matches the column directly.
       const { data: cached } = await supabase!
         .from('ai_reports')
         .select('content')
         .eq('report_type', 'annual')
         .eq('period_start', yearStart)
+        .eq('language', i18n.language)
         .maybeSingle();
 
       if (cached?.content) { setNarrative(cached.content); return; }

@@ -145,9 +145,13 @@ export async function getReports(userId: string): Promise<AIReport[]> {
   return (data ?? []).map(mapRow);
 }
 
+// Language is required, not optional: this is the display path, so returning a
+// report written in a language the user no longer reads is the whole bug. A
+// missing match simply yields null and the caller requests a fresh report.
 export async function getLatestReport(
   userId: string,
   reportType: 'weekly' | 'monthly',
+  language: string,
 ): Promise<AIReport | null> {
   if (!supabase) return null;
 
@@ -156,6 +160,7 @@ export async function getLatestReport(
     .select('*')
     .eq('user_id', userId)
     .eq('report_type', reportType)
+    .eq('language', language)
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();

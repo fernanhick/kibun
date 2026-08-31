@@ -39,16 +39,29 @@ set language = case
   -- these tests cannot cross-classify. Checked first for that reason.
   when content ~ '[ñÑ¿¡]'    then 'es'
   when content ~ '[ãõçÃÕÇ]'  then 'pt'
-  -- ü is deliberately absent from the German class: Spanish uses it too
-  -- (vergüenza, pingüino), so including it would misfile Spanish as German.
   when content ~ '[äößÄÖ]'   then 'de'
+
+  -- ü belongs to both German and Spanish, so it cannot be matched bare. It is
+  -- still usable because the two languages place it differently: per the RAE,
+  -- Spanish ü occurs *only* in the güe/güi clusters, so it always follows a g
+  -- (vergüenza, ambigüedad, pingüino, cigüeña, bilingüe, desagüe). German has
+  -- no such restriction — über, für, fünf, grün, Rückblick, Gefühle.
+  --
+  -- Matching ü in any position except directly after g therefore identifies
+  -- German without ever touching a Spanish word. German words that happen to
+  -- put ü after g (günstig, vergüten) are missed by this test alone, which is
+  -- the safe direction — they fall through to the function-word tier below.
+  when content ~ '(^|[^gG])[üÜ]' then 'de'
 
   -- Tier 2 — function words. Weaker than orthography, but each is absent from
   -- English and from the other two Romance locales. English words that merely
   -- look foreign (e.g. "muster") are excluded to avoid false positives.
   when content ~* '\m(und|dein|deine|deiner|woche|stimmung)\M' then 'de'
   when content ~* '\m(você|seus|não|padrões)\M'                then 'pt'
-  when content ~* '\m(tus|también|días|patrones)\M'             then 'es'
+  -- "ánimo" carries an acute accent in Spanish and a circumflex in Portuguese
+  -- ("ânimo"), so the accented form is es-specific — and since it is the Spanish
+  -- word for mood, it appears in effectively every Spanish report body.
+  when content ~* '\m(tus|también|días|patrones|ánimo)\M'       then 'es'
 
   else 'en'
 end

@@ -14,6 +14,10 @@ import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
 import { migrateHabitIcon } from '@lib/habitPresets';
 import { safeParseIsoDate } from '@lib/safeDate';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
+// Imported rather than reimplemented so the server-fallback key and MoodBubble's
+// own fallback can never drift apart. The module is already evaluated at startup
+// by prewarmMoodImages(), so this adds no load cost.
+import { normalizeMoodImageKey } from '@constants/moodImages';
 import type { Habit, HabitLog, CustomMood, LifeEvent, LifeEventCategory, HabitTrackingType, UserSession } from '@models/index';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
@@ -189,12 +193,20 @@ async function uploadLocalCustomMoodsToSupabase(userId: string): Promise<void> {
     label: m.label,
     color: m.color,
     mood_group: m.group,
+    image_key: m.imageKey,
   }));
 
+  // ignoreDuplicates was true, which skipped rows that already existed server
+  // side. That is what stranded image_key: rows created before the column
+  // existed could never be repaired from a device that still held the real
+  // value. Updating on conflict is safe here because custom moods are
+  // immutable after creation — the store exposes add, delete and merge, but no
+  // edit — so the only field that can actually differ is the one being
+  // repaired.
   const { error } = await withFreshAuth(() =>
     supabase!
       .from('custom_moods')
-      .upsert(rows, { onConflict: 'id', ignoreDuplicates: true })
+      .upsert(rows, { onConflict: 'id' })
   );
 
   if (error && __DEV__) {
@@ -353,7 +365,7 @@ async function syncCustomMoodsForUser(userId: string): Promise<void> {
   const { data, error } = await withFreshAuth(() =>
     supabase!
       .from('custom_moods')
-      .select('id,label,color,mood_group,created_at')
+      .select('id,label,color,mood_group,image_key,created_at')
       .eq('user_id', userId)
   );
 
@@ -369,6 +381,10 @@ async function syncCustomMoodsForUser(userId: string): Promise<void> {
     label: row.label,
     color: row.color,
     group: row.mood_group as CustomMood['group'],
+    // Rows written before image_key existed come back null. Deriving the key
+    // from the label mirrors MoodBubble's own fallback, so such a mood renders
+    // exactly as it does today rather than losing its face outright.
+    imageKey: row.image_key ?? normalizeMoodImageKey(row.label),
     createdAt: row.created_at,
   }));
 

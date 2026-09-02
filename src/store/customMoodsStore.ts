@@ -50,6 +50,7 @@ export const useCustomMoodsStore = create<CustomMoodsState>()(
                 label: mood.label,
                 color: mood.color,
                 mood_group: mood.group,
+                image_key: mood.imageKey,
               })
               .then(({ error }) => ({ error })),
             'custom-mood-insert',

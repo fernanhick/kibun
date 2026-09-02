@@ -6,7 +6,13 @@ import { Image as RNImage } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { Asset } from 'expo-asset';
 
-export const MOOD_IMAGES: Partial<Record<string, ReturnType<typeof require>>> = {
+// React Native's require() on a static asset returns an opaque numeric module
+// id at runtime. `ReturnType<typeof require>` resolves to `unknown` under this
+// tsconfig, which made every consumer of this map fail to typecheck — the value
+// is not assignable to ImageSource, and `cond && MOOD_IMAGES[k] && <Image/>`
+// yields `unknown` rather than a ReactNode. `number` is both accurate and what
+// expo-image and RNImage.resolveAssetSource accept directly.
+export const MOOD_IMAGES: Partial<Record<string, number>> = {
   angry: require('../../assets/emotions/angry.png'),
   bored: require('../../assets/emotions/bored.png'),
   bright: require('../../assets/emotions/bright.png'),
@@ -36,6 +42,7 @@ export function prewarmMoodImages(): Promise<void> {
   if (prewarmPromise) return prewarmPromise;
 
   const modules = Object.values(MOOD_IMAGES).filter(Boolean) as number[];
+  // (cast retained only to drop `undefined` from the Partial's value type)
 
   prewarmPromise = (async () => {
     // Step 1 — make sure the bundled PNG bytes exist on disk. In production

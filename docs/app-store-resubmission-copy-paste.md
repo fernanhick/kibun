@@ -1,7 +1,24 @@
 # Kibun - App Store Resubmission Copy-Paste Pack
 
-Last updated: 2026-05-11
-Use this file as your single source for App Store Connect resubmission fields and reviewer communication.
+> ## ⛔ HISTORICAL RECORD — DO NOT PASTE FROM THIS FILE
+>
+> Kept for the reviewer correspondence in §5, which is still an accurate record of
+> what was said to Apple during the Guideline 1.1 appeal. **Every metadata field
+> above it is out of date and two of them are actively harmful:**
+>
+> - **`support@kibun.app` (§4)** — `kibun.app` belongs to an unrelated company.
+>   Our domain is `kibun-app.com`; the support address is `fernanhick@gmail.com`.
+> - **"Custom notification times for exact reminders" listed as Pro (§3)** — false.
+>   `settings.tsx` gates only *smart/adaptive* timing behind `isPro`; setting exact
+>   per-slot times is free. The in-app paywall has been correct since the July
+>   pass (`paywall.tsx`, `customReminders: free: true`); this file was never
+>   updated to match.
+>
+> **Current metadata lives in `ASO/V6` (names, subtitles, keywords, titles, short
+> descriptions) and `ASO/V4` (descriptions).** Read `ASO/README.md` first.
+
+Last updated: 2026-05-11 · superseded 2026-09-03
+Historical record of the App Store Connect resubmission fields and reviewer communication used for the Guideline 1.1 appeal.
 
 ---
 

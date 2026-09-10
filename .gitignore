@@ -45,7 +45,36 @@ __pycache__/
 api-project-146169649450-a4493526d571.json
 supabase/.temp/
 
-## PAUL framework runtime (keep .paul/ tracked — it is project state)
 
 # Pricing tooling: raw API snapshots, regenerable via scripts/pricing/fetch-*.js
 docs/pricing/data/
+
+## ─── Internal, deliberately NOT published ───────────────────────────────────
+## This repository is PUBLIC (github.com/fernanhick/kibun). Everything tracked
+## here is world-readable, so commercial strategy and internal planning stay
+## local. These files still exist on disk — they are just not published.
+## NOTE: untracking does not remove them from git history; earlier commits
+## still contain them.
+
+## Commercial strategy — keyword targeting, competitor analysis, growth
+## diagnosis, pricing. Publishing this hands it to competitors.
+ASO/
+market-analysis/
+docs/growth/
+docs/pricing/
+
+## Internal planning + roadmap
+.paul/
+PLANNING.md
+MOBILE-MODERNIZE.md
+
+## Store submission copy, QA account notes, monetization spec
+docs/testing-accounts.md
+docs/app-store-submission.md
+docs/app-store-resubmission-copy-paste.md
+docs/revenuecat-paywall-spec.md
+docs/onboarding/
+
+## Local agent/editor state
+.claude/settings.local.json
+.claude/scheduled_tasks.lock

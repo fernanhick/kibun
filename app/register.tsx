@@ -16,6 +16,12 @@ import { typography, spacing, radius } from '@constants/theme';
 import { useTheme, type ThemePalette } from '@theme/ThemeContext';
 import { useThemedStyles } from '@hooks/useThemedStyles';
 
+
+// Dev tester login, read from .env so nothing lands in tracked source. Both are
+// undefined in a fresh clone, which hides the button rather than breaking it.
+const DEV_TESTER_EMAIL = process.env.EXPO_PUBLIC_DEV_TESTER_EMAIL;
+const DEV_TESTER_PASSWORD = process.env.EXPO_PUBLIC_DEV_TESTER_PASSWORD;
+
 // Required by expo-web-browser to complete any pending auth sessions on mount.
 WebBrowser.maybeCompleteAuthSession();
 
@@ -492,8 +498,10 @@ export default function RegistrationScreen() {
         />
       </View>
 
-      {/* Dev-only: quick tester login */}
-      {__DEV__ && (
+      {/* Dev-only: quick tester login. Credentials come from .env — they were
+          once hardcoded here, which published them on a public repo. Renders
+          only when both are set, so a fresh clone shows nothing. */}
+      {__DEV__ && DEV_TESTER_EMAIL && DEV_TESTER_PASSWORD && (
         <Pressable
           onPress={async () => {
             if (!supabase) return;
@@ -501,8 +509,8 @@ export default function RegistrationScreen() {
             setInfoMessage(null);
             setSubmitting(true);
             const { error: devErr } = await supabase.auth.signInWithPassword({
-              email: 'fernanhick+kibun-review@gmail.com',
-              password: 'Kibun-Review-2026!Sakura',
+              email: DEV_TESTER_EMAIL,
+              password: DEV_TESTER_PASSWORD,
             });
             setSubmitting(false);
             if (devErr) {
@@ -544,7 +552,9 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     gap: spacing.md,
   },
   title: {
+    fontFamily: typography.fonts.display,
     fontSize: typography.sizes.xxl,
+    letterSpacing: -0.7,
     fontWeight: typography.weights.bold,
     color: colors.textInverse,
   },

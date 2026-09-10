@@ -23,11 +23,19 @@ loadEnv();
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
-const EMAIL = 'fernanhick+kibun-review@gmail.com';
-const PASSWORD = 'Kibun-Review-2026!Sakura';
+const EMAIL = process.env.EXPO_PUBLIC_DEV_TESTER_EMAIL;
+const PASSWORD = process.env.EXPO_PUBLIC_DEV_TESTER_PASSWORD;
 
 if (!SUPABASE_URL || !ANON_KEY) {
   console.error('Missing EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_ANON_KEY in .env');
+  process.exit(1);
+}
+
+if (!EMAIL || !PASSWORD) {
+  console.error(
+    'Missing EXPO_PUBLIC_DEV_TESTER_EMAIL / EXPO_PUBLIC_DEV_TESTER_PASSWORD in .env. ' +
+      'These used to be hardcoded here; see docs/testing-accounts.md.',
+  );
   process.exit(1);
 }
 

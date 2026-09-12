@@ -1,0 +1,27 @@
+{
+  "_comment": "Store screenshot set. build_set.py composes every frame for each locale x target. Paths are relative to the repo root. Swap a frame's colour by changing its plate (see gen_background.py --list). Captures share file names across locales and devices; only the folder changes.",
+  "bg": "#B0496A",
+  "tint": 0,
+  "status_bar": { "phone": 62, "ipad": 40 },
+  "capture_dirs": {
+    "en": { "phone": "screenshots/captures",    "ipad": "screenshots/captures/ipad" },
+    "es": { "phone": "screenshots/captures/es", "ipad": "screenshots/captures/es/ipad" },
+    "pt": { "phone": "screenshots/captures/pt", "ipad": "screenshots/captures/pt/ipad" },
+    "de": { "phone": "screenshots/captures/de", "ipad": "screenshots/captures/de/ipad" }
+  },
+  "frames": [
+    { "id": "01-pick",  "capture": "01-moods.png",        "plate": "screenshots/backgrounds/bloom-sky-52000.png",
+      "copy": { "en": ["PICK", "FROM 18 SHIBA MOODS"],   "es": ["ELIGE", "ENTRE 18 ÁNIMOS SHIBA"],   "pt": ["ESCOLHA", "ENTRE 18 HUMORES SHIBA"],   "de": ["WÄHLE", "AUS 18 SHIBA-STIMMUNGEN"] } },
+    { "id": "02-track", "capture": "02-home.png",         "plate": "screenshots/backgrounds/bloom-sunset-52000.png",
+      "copy": { "en": ["TRACK", "YOUR MOOD IN SECONDS"], "es": ["REGISTRA", "TU ÁNIMO EN SEGUNDOS"], "pt": ["REGISTRE", "SEU HUMOR EM SEGUNDOS"], "de": ["TRACKE", "DEINE STIMMUNG IN SEKUNDEN"] } },
+    { "id": "03-find",  "capture": "03-insights.png",     "plate": "screenshots/backgrounds/bloom-lilac-52000.png",
+      "copy": { "en": ["FIND", "WHAT LIFTS YOUR MOOD"],  "es": ["DESCUBRE", "QUÉ MEJORA TU ÁNIMO"],  "pt": ["DESCUBRA", "O QUE MELHORA SEU HUMOR"], "de": ["ENTDECKE", "WAS DEINE STIMMUNG HEBT"] } },
+    { "id": "04-keep",  "capture": "04-history.png",      "plate": "screenshots/backgrounds/bloom-mint-52977.png",
+      "copy": { "en": ["KEEP", "YOUR DIARY PRIVATE"],    "es": ["GUARDA", "TU DIARIO EN PRIVADO"],  "pt": ["GUARDE", "SEU DIÁRIO PRIVADO"],       "de": ["BEHALTE", "DEIN TAGEBUCH PRIVAT"] } },
+    { "id": "05-write", "capture": "05-journal.png",      "plate": "screenshots/backgrounds/bloom-sunny-52977.png",      "copy": { "en": ["WRITE", "WITH GENTLE PROMPTS"],  "es": ["ESCRIBE", "CON PREGUNTAS AMABLES"], "pt": ["ESCREVA", "COM PERGUNTAS GENTIS"],   "de": ["SCHREIB", "MIT SANFTEN IMPULSEN"] } },
+    { "id": "06-make",  "capture": "07-custom-moods.png", "plate": "screenshots/backgrounds/bloom-meadow-52000.png",
+      "copy": { "en": ["MAKE", "YOUR OWN MOODS"],        "es": ["CREA", "TUS PROPIOS ÁNIMOS"],      "pt": ["CRIE", "SEUS PRÓPRIOS HUMORES"],      "de": ["ERSTELLE", "DEINE EIGENEN STIMMUNGEN"] } },
+    { "id": "07-see",   "capture": "08-year-in-mood.png", "plate": "screenshots/backgrounds/bloom-night-52000.png",
+      "copy": { "en": ["SEE", "YOUR YEAR IN MOODS"],     "es": ["MIRA", "TU AÑO EN ÁNIMOS"],        "pt": ["VEJA", "SEU ANO EM HUMOR"],           "de": ["SIEH", "DEIN JAHR IN STIMMUNGEN"] } }
+  ]
+}

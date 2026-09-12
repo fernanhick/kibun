@@ -1,5 +1,7 @@
 # Working versions — only final/ is worth keeping in git
 _smoketest/
+_preview/
+backgrounds/
 */v[0-9].jpg
 */v[0-9]-resized.jpg
 */scaffold.png

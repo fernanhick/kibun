@@ -5,3 +5,6 @@ backgrounds/
 */v[0-9].jpg
 */v[0-9]-resized.jpg
 */scaffold.png
+
+# Raw device captures: the source for final/, kept local (43 MB, rebuildable)
+captures/

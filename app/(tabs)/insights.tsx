@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Screen, Card, AnimatedNumber, HabitIcon } from '@components/index';
 import { EmptyState } from '@components/EmptyState';
 import { SparkleOverlay } from '@components/SparkleOverlay';
+import { Stagger } from '@components/Stagger';
 import { TabletSplit } from '@components/TabletSplit';
 import { useMoodEntryStore, useSessionStore } from '@store/index';
 import { useHabitsStore } from '@store/habitsStore';
@@ -375,13 +376,13 @@ export default function InsightsScreen() {
             {t('insights.sections.patterns')}
           </Text>
           <View style={styles.patternList}>
-            {patterns.map((p) => (
-              <View key={p.id} accessibilityLabel={p.text}>
+            {patterns.map((p, index) => (
+              <Stagger key={p.id} index={index} accessibilityLabel={p.text}>
                 <Card style={styles.patternCard}>
                   <Ionicons name={p.icon} size={18} color={colors.primary} style={styles.patternIcon} />
                   <Text style={styles.patternText}>{p.text}</Text>
                 </Card>
-              </View>
+              </Stagger>
             ))}
           </View>
         </View>
@@ -578,13 +579,14 @@ function HabitCorrelationList({ correlations }: { correlations: HabitCorrelation
   const { t } = useTranslation('screens');
   return (
     <View style={corrStyles.container}>
-      {correlations.map(({ habit, correlation, strength }) => {
+      {correlations.map(({ habit, correlation, strength }, index) => {
         const barWidth = Math.abs(correlation) * 100;
         const color = correlationColor(correlation);
         const label = t(`insights.habitCorrelations.strength.${strength}`);
         return (
-          <View
+          <Stagger
             key={habit.id}
+            index={index}
             style={corrStyles.row}
             accessibilityLabel={t('insights.habitCorrelations.rowA11y', { habit: habit.name, label })}
           >
@@ -598,7 +600,7 @@ function HabitCorrelationList({ correlations }: { correlations: HabitCorrelation
                 <View style={[corrStyles.barFill, { width: `${Math.max(barWidth, 4)}%` as any, backgroundColor: color }]} />
               </View>
             </View>
-          </View>
+          </Stagger>
         );
       })}
     </View>
@@ -655,8 +657,13 @@ const DOW_ORDER = [1, 2, 3, 4, 5, 6, 0]; // Mon...Sun
 
 const SLOT_ORDER: MoodSlot[] = ['morning', 'afternoon', 'night', 'pre_sleep'];
 
-function scoreToColor(score: number | null): string {
-  if (score === null) return '#F0F0F0';
+// The four score hues are deliberate data-viz colours drawn from the mood
+// palette, and they read correctly on both a light and a dark ground, so they
+// stay hardcoded. The EMPTY case does not: '#F0F0F0' is a near-white that
+// vanished into the light background and glared on the dark one, so it has to
+// come from the theme.
+function scoreToColor(score: number | null, emptyColor: string): string {
+  if (score === null) return emptyColor;
   if (score >= 3.5) return '#66BB6A';
   if (score >= 2.5) return '#80DEEA';
   if (score >= 1.5) return '#FFD54F';
@@ -679,7 +686,7 @@ function CorrelationHeatmap({
     { color: '#FFD54F', key: 'mixed' },
     { color: '#80DEEA', key: 'good' },
     { color: '#66BB6A', key: 'great' },
-    { color: '#F0F0F0', key: 'noData' },
+    { color: colors.borderLight, key: 'noData' },
   ];
   return (
     <View
@@ -714,7 +721,7 @@ function CorrelationHeatmap({
             return (
               <View key={i} style={heatmapStyles.cell}>
                 <View
-                  style={[heatmapStyles.dot, { backgroundColor: scoreToColor(avg) }]}
+                  style={[heatmapStyles.dot, { backgroundColor: scoreToColor(avg, colors.borderLight) }]}
                   accessibilityLabel={avg !== null
                     ? t('screens:insights.correlationsCard.cellA11y', { score: avg.toFixed(1) })
                     : t('screens:insights.correlationsCard.noDataA11y')}
@@ -780,7 +787,7 @@ const createHeatmapStyles = (colors: ThemePalette) => StyleSheet.create({
   dot: {
     width: 26,
     height: 26,
-    borderRadius: 6,
+    borderRadius: radius.sm,
   },
   legend: {
     flexDirection: 'row',
@@ -969,9 +976,7 @@ function PeriodToggle({
 const createStyles = (colors: ThemePalette) => StyleSheet.create({
   heroCard: {
     ...shadows.md,
-    borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.35)',
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     marginTop: spacing.sm,
@@ -1076,8 +1081,6 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
     marginBottom: spacing.sm,
-    borderWidth: 1.2,
-    borderColor: colors.accentBorder,
     shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.16,

@@ -14,6 +14,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { getMascotSource } from '@constants/mascotAnimations';
 import { typography, spacing } from '@constants/theme';
+import { useReducedMotion } from '@hooks/useReducedMotion';
 
 interface SplashScreenViewProps {
   onFinish: () => void;
@@ -33,8 +34,18 @@ function Sparkle({ x, y, size, delay, baseOpacity }: {
 }) {
   const scale = useSharedValue(0.5);
   const opacity = useSharedValue(0);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
+    // The opacity shimmer is a cross-fade and stays — Reduce Motion substitutes
+    // fades for motion rather than banning all change. The SCALE pulse is
+    // motion, repeats forever, and is the first thing the user sees on launch,
+    // so it is held at rest instead.
+    if (reducedMotion) {
+      scale.value = 1;
+      opacity.value = withDelay(delay, withTiming(baseOpacity, { duration: 900 }));
+      return;
+    }
     opacity.value = withDelay(delay, withRepeat(
       withSequence(
         withTiming(baseOpacity, { duration: 900, easing: Easing.inOut(Easing.ease) }),
@@ -51,7 +62,7 @@ function Sparkle({ x, y, size, delay, baseOpacity }: {
       -1,
       true,
     ));
-  }, []);
+  }, [reducedMotion]);
 
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,

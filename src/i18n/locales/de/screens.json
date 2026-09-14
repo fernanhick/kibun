@@ -571,7 +571,9 @@
     },
     "save": "Speichern",
     "changeMood": "Stimmung ändern",
-    "proBadge": "Pro"
+    "proBadge": "Pro",
+    "levelA11y": "{{label}} Stufe {{n}}",
+    "clearA11y": "{{label}} zurücksetzen"
   },
   "journalReflect": {
     "promptLabel": "Reflektieren",
@@ -1106,6 +1108,21 @@
       "alcohol": "Alkohol"
     }
   },
+  "achievements": {
+    "first_week": { "label": "Erste Woche", "description": "7 Tage in Folge deine Stimmung erfasst." },
+    "month_warrior": { "label": "Monatsheld", "description": "Eine 30-Tage-Serie gehalten." },
+    "mood_explorer": { "label": "Stimmungsforscher", "description": "Jede verfügbare Stimmung mindestens einmal erfasst." },
+    "reflector": { "label": "Nachdenklich", "description": "10 Tagebuch-Reflexionen geschrieben." },
+    "early_bird": { "label": "Frühaufsteher", "description": "7 Mal morgens eingecheckt." },
+    "night_owl": { "label": "Nachteule", "description": "7 Mal vor dem Schlafen eingecheckt." },
+    "consistent": { "label": "Beständig", "description": "Insgesamt 30 Einträge erfasst." }
+  },
+  "achievementUnlocked": {
+    "title": "Erfolg freigeschaltet!",
+    "more_one": "+{{count}} weitere Auszeichnung",
+    "more_other": "+{{count}} weitere Auszeichnungen",
+    "cta": "Super!"
+  },
   "components": {
     "backButton": {
       "defaultLabel": "Start",
@@ -1116,17 +1133,6 @@
     },
     "wisdomScreen": {
       "mascotA11y": "Maskottchen {{mascot}}"
-    },
-    "reviewPrompt": {
-      "dismissA11y": "Schließen",
-      "title": "Wie läuft's mit kibun?",
-      "subtitle": "Deine ehrliche Antwort hilft uns, es besser zu machen.",
-      "ctaHappy": "Liebe es",
-      "ctaHappyA11y": "Liebe es",
-      "ctaUnhappy": "Nicht so",
-      "ctaUnhappyA11y": "Nicht so",
-      "ctaLater": "Vielleicht später",
-      "ctaLaterA11y": "Vielleicht später"
     }
   }
 }

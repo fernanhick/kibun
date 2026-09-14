@@ -253,7 +253,7 @@ export default function PaywallScreen() {
     <Screen scrollable contentContainerStyle={styles.content}>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <LinearGradient
-        colors={['#BC6B7A', '#9E6E97']}
+        colors={[colors.skyStart, colors.skyEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.heroCard}
@@ -299,7 +299,7 @@ export default function PaywallScreen() {
           </Text>
           <View style={[styles.premiumCol, styles.premiumHeaderCell]}>
             <LinearGradient
-              colors={['#BC6B7A', '#9E6E97']}
+              colors={[colors.warmCtaStart, colors.warmCtaEnd]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.premiumHeaderBadge}
@@ -452,9 +452,11 @@ export default function PaywallScreen() {
   );
 }
 
-const PINK = '#BC6B7A';
-const PINK_BORDER = 'rgba(188, 107, 122, 0.20)';
-
+// `PINK`/`PINK_BORDER` used to be module-level constants pinned to the retired
+// mauve accent #BC6B7A. Module scope meant they could not read the theme, so
+// the paywall — the app's highest-stakes screen — was the last place still
+// rendering the previous brand colour, in both light and dark mode. They are
+// now derived from the palette inside createStyles.
 const createStyles = (colors: ThemePalette) => StyleSheet.create({
   content: {
     gap: spacing.md,
@@ -468,8 +470,6 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     paddingTop: spacing.sm,
     paddingBottom: spacing.lg,
     gap: spacing.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.28)',
     overflow: 'hidden',
   },
   heroSheen: {
@@ -537,7 +537,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.xs + 2,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: PINK_BORDER,
+    borderBottomColor: colors.accentBorder,
   },
   tableHeaderCell: {
     fontSize: typography.sizes.xs,
@@ -597,7 +597,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: radius.lg,
-    backgroundColor: PINK,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -645,10 +645,9 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     borderColor: colors.border,
     paddingBottom: spacing.md,
     overflow: 'hidden',
-    ...shadows.sm,
   },
   planCardSelected: {
-    borderColor: PINK,
+    borderColor: colors.primary,
     backgroundColor: colors.pinkLight,
   },
   planBadge: {
@@ -659,7 +658,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     paddingVertical: 3,
   },
   planBadgeSelected: {
-    backgroundColor: PINK,
+    backgroundColor: colors.primary,
   },
   planBadgeSpacer: {
     height: 22,
@@ -690,8 +689,8 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     marginBottom: spacing.xs,
   },
   planRadioSelected: {
-    borderColor: PINK,
-    backgroundColor: PINK,
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
   },
   planLabel: {
     fontSize: typography.sizes.sm,
@@ -723,7 +722,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   errorText: {
     fontSize: typography.sizes.sm,
-    color: colors.error ?? '#E53E3E',
+    color: colors.error,
     textAlign: 'center',
     marginTop: spacing.sm,
   },

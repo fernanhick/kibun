@@ -21,12 +21,12 @@ import { useScreenScroll } from '@hooks/useScreenScroll';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useSessionStore } from '@store/sessionStore';
 import { useAchievementsStore } from '@store/index';
-import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_BADGE_IMAGES } from '@lib/achievements';
-import { useUiPrefsStore, type LanguagePref } from '@store/uiPrefsStore';
+import { ACHIEVEMENT_IDS, ACHIEVEMENT_BADGE_IMAGES } from '@lib/achievements';
+import { useUiPrefsStore, type LanguagePref, type ThemePref } from '@store/uiPrefsStore';
 import { scheduleSlotNotifications } from '@lib/notifications';
 import { restorePurchases } from '@lib/revenuecat';
 import { syncSubscriptionStatusToSupabase } from '@lib/profileSync';
-import { requestStoreReviewDirect, openSupportFeedback } from '@lib/reviewPrompt';
+import { openWriteReviewPage, openSupportFeedback } from '@lib/reviewPrompt';
 import type { NotificationSlot } from '@models/index';
 import {
   PRIVACY_POLICY_URL,
@@ -55,6 +55,7 @@ const DEFAULT_SLOT_TIME: Record<NotificationSlot, string> = {
 };
 
 const LANGUAGE_OPTIONS: LanguagePref[] = ['system', 'en', 'es', 'pt', 'de'];
+const THEME_OPTIONS: ThemePref[] = ['system', 'light', 'dark'];
 
 type TabKey = 'reminders' | 'general' | 'about';
 const TABS: TabKey[] = ['reminders', 'general', 'about'];
@@ -78,10 +79,12 @@ export default function SettingsScreen() {
   const isAnonymous = !session || session.authStatus === 'anonymous';
 
   const unlockedIds = useAchievementsStore((s) => s.unlockedIds);
-  const unlockedCount = ACHIEVEMENT_DEFINITIONS.filter((d) => unlockedIds.includes(d.id)).length;
+  const unlockedCount = ACHIEVEMENT_IDS.filter((id) => unlockedIds.includes(id)).length;
 
   const language = useUiPrefsStore((s) => s.language);
   const setLanguage = useUiPrefsStore((s) => s.setLanguage);
+  const themePreference = useUiPrefsStore((s) => s.themePreference);
+  const setThemePreference = useUiPrefsStore((s) => s.setThemePreference);
 
   const slotRows = SLOT_KEYS.map(({ slot, i18nKey }) => ({
     slot,
@@ -389,20 +392,27 @@ export default function SettingsScreen() {
           <Text style={styles.groupHeader}>{t('settings.groups.achievements')}</Text>
           <View style={styles.section}>
             <View style={styles.achievementsGrid}>
-              {ACHIEVEMENT_DEFINITIONS.map((def) => {
-                const unlocked = unlockedIds.includes(def.id);
+              {ACHIEVEMENT_IDS.map((id) => {
+                const unlocked = unlockedIds.includes(id);
                 return (
                   <View
-                    key={def.id}
+                    key={id}
                     style={styles.achievementItem}
-                    accessibilityLabel={t('home.achievementA11y', { label: def.label, description: def.description })}
+                    accessibilityLabel={t('home.achievementA11y', {
+                      label: t(`achievements.${id}.label`),
+                      description: t(`achievements.${id}.description`),
+                    })}
                   >
                     <Image
-                      source={ACHIEVEMENT_BADGE_IMAGES[def.id]}
+                      source={ACHIEVEMENT_BADGE_IMAGES[id]}
                       style={[styles.achievementBadge, !unlocked && styles.achievementBadgeLocked]}
                     />
-                    <Text style={[styles.achievementLabel, !unlocked && styles.textDisabled]} numberOfLines={1}>
-                      {def.label}
+                    <Text
+                      style={[styles.achievementLabel, !unlocked && styles.textDisabled]}
+                      maxFontSizeMultiplier={1.2}
+                      numberOfLines={1}
+                    >
+                      {t(`achievements.${id}.label`)}
                     </Text>
                   </View>
                 );
@@ -410,8 +420,30 @@ export default function SettingsScreen() {
             </View>
           </View>
           <Text style={styles.groupFooter}>
-            {t('settings.achievements.progress', { count: unlockedCount, total: ACHIEVEMENT_DEFINITIONS.length })}
+            {t('settings.achievements.progress', { count: unlockedCount, total: ACHIEVEMENT_IDS.length })}
           </Text>
+
+          <Text style={styles.groupHeader}>{t('settings.sections.appearance')}</Text>
+          <View style={styles.section}>
+            {THEME_OPTIONS.map((option, i) => {
+              const isSelected = themePreference === option;
+              const optionLabel = t(`settings.appearance.options.${option}`);
+              return (
+                <SpringPressable
+                  key={option}
+                  style={[styles.row, i === THEME_OPTIONS.length - 1 && styles.rowLast]}
+                  onPress={() => setThemePreference(option)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: isSelected }}
+                  accessibilityLabel={t('settings.appearance.optionA11y', { label: optionLabel })}
+                >
+                  <Text style={styles.rowLabel}>{optionLabel}</Text>
+                  {isSelected && <Ionicons name="checkmark" size={20} color={colors.accent} />}
+                </SpringPressable>
+              );
+            })}
+          </View>
+          <Text style={styles.groupFooter}>{t('settings.appearance.hint')}</Text>
 
           <Text style={styles.groupHeader}>{t('settings.sections.language')}</Text>
           <View style={styles.section}>
@@ -481,12 +513,12 @@ export default function SettingsScreen() {
           <View style={styles.section}>
             <SpringPressable
               style={styles.row}
-              onPress={() => requestStoreReviewDirect('settings')}
-              accessibilityRole="button"
+              onPress={() => openWriteReviewPage('settings')}
+              accessibilityRole="link"
               accessibilityLabel={t('settings.about.rateA11y')}
             >
               <Text style={styles.rowLabel}>{t('settings.about.rate')}</Text>
-              <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
+              <Ionicons name="open-outline" size={18} color={colors.textSecondary} />
             </SpringPressable>
             <SpringPressable
               style={[styles.row, styles.rowLast]}
@@ -536,9 +568,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   heroCard: {
     ...shadows.md,
-    borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.35)',
+    borderRadius: radius.xxl,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginTop: spacing.sm,

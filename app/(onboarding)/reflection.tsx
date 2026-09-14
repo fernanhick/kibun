@@ -132,6 +132,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   title: {
     fontFamily: typography.fonts.display,
     fontSize: typography.sizes.xxl,
+    letterSpacing: -0.7,
     color: colors.textInverse,
     textAlign: 'center',
     marginBottom: spacing.xs,

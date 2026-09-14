@@ -4,26 +4,42 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Card } from '@components/Card';
 import { SpringPressable } from '@components/SpringPressable';
-import { colors, radius, spacing, typography } from '@constants/theme';
+import { radius, spacing, typography } from '@constants/theme';
+import { useTheme, type ThemeValue } from '@theme/ThemeContext';
 import { INSIGHT_CARD_IMAGES } from '@lib/achievements';
 import type { InsightCard as InsightCardData } from '@lib/correlationInsights';
 
+// ─── InsightCard ──────────────────────────────────────────────────────────────
+// This component used to import `colors` STATICALLY from @constants/theme rather
+// than through useTheme(), which pinned every one of its colours to the light
+// palette — it would have rendered dark text on a pale green card in dark mode.
+// It was the only component in the app with that bug (app/_layout.tsx also
+// imports the static palette, but only for the ErrorBoundary fallback, which
+// deliberately renders ABOVE ThemeProvider and so cannot read the context).
+//
+// The two hardcoded pastel accents (#AED581/#F1F8E9 and #F8BBD0/#FFF5F9) are now
+// palette tints, which also puts them on the app's one-accent system:
+//   positiveCorrelation → secondary (sage: growth, "this habit is working")
+//   lowMoodNudge        → primary   (rose: care, "here's something to try")
 interface InsightCardProps {
   card: InsightCardData;
 }
 
-const ACCENTS: Record<InsightCardData['kind'], { border: string; tint: string }> = {
-  positiveCorrelation: { border: '#AED581', tint: '#F1F8E9' },
-  lowMoodNudge: { border: '#F8BBD0', tint: '#FFF5F9' },
-};
-
 export function InsightCard({ card }: InsightCardProps) {
   const router = useRouter();
-  const accent = ACCENTS[card.kind];
+  const theme = useTheme();
+  const styles = React.useMemo(() => createStyles(theme), [theme]);
+
+  const tint =
+    card.kind === 'positiveCorrelation'
+      ? theme.colors.secondaryLight
+      : theme.colors.primaryLight;
 
   const inner = (
     <Card
-      style={[styles.card, { borderColor: accent.border, backgroundColor: accent.tint }]}
+      variant="tinted"
+      tint={tint}
+      style={styles.card}
       accessibilityRole={card.habitId ? 'button' : undefined}
       accessibilityLabel={`${card.title}. ${card.body}`}
     >
@@ -50,16 +66,18 @@ export function InsightCard({ card }: InsightCardProps) {
   return <View style={styles.pressable}>{inner}</View>;
 }
 
-const styles = StyleSheet.create({
+const createStyles = ({ colors }: ThemeValue) => StyleSheet.create({
   pressable: {
     marginBottom: spacing.sm,
   },
+  // No border: `tinted` carries the surface on fill alone. The old version had
+  // a 0.5px border AND a tint, which is the double-cue pattern the redesign
+  // removed everywhere else.
   card: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: spacing.md,
     borderRadius: radius.card,
-    borderWidth: 0.5,
   },
   illustration: {
     width: 56,
@@ -70,8 +88,8 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   title: {
-    fontFamily: typography.fonts.ui,
-    fontSize: typography.sizes.body,
+    fontFamily: typography.fonts.bodyBold,
+    fontSize: typography.sizes.md,
     color: colors.text,
   },
   bodyText: {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTheme } from '@theme/ThemeContext';
 
 interface SparkleOverlayProps {
   variant?: 'hero' | 'card' | 'screen';
@@ -27,6 +28,7 @@ function pct(value: number): `${number}%` {
 }
 
 export function SparkleOverlay({ variant = 'hero', count }: SparkleOverlayProps) {
+  const { isDark } = useTheme();
   const cfg = VARIANT[variant];
   const sparkleCount = Math.min(count ?? cfg.defaultCount, cfg.cap);
   const sparkles = React.useMemo(
@@ -42,12 +44,22 @@ export function SparkleOverlay({ variant = 'hero', count }: SparkleOverlayProps)
     [sparkleCount, variant]
   );
 
-  const tintStyle =
-    variant === 'card'
-      ? styles.cardSparkle
-      : variant === 'screen'
-        ? styles.screenSparkle
-        : styles.heroSparkle;
+  // Sparkle tint has to follow the theme. The old values were hardcoded to the
+  // retired sage brand (rgba(76,122,106,…)), which meant the `screen` and
+  // `card` sparkles were both the wrong hue AND invisible in dark mode — dark
+  // sage on a dark plum ground. `hero` inverts too, because the hero gradient
+  // itself inverts: dark rose in light mode, light rose in dark mode.
+  const tint = isDark
+    ? {
+        hero: 'rgba(46,24,34,0.34)',
+        card: 'rgba(240,143,173,0.20)',
+        screen: 'rgba(240,143,173,0.16)',
+      }[variant]
+    : {
+        hero: 'rgba(255,255,255,0.50)',
+        card: 'rgba(176,73,106,0.20)',
+        screen: 'rgba(176,73,106,0.14)',
+      }[variant];
 
   return (
     <View
@@ -61,8 +73,8 @@ export function SparkleOverlay({ variant = 'hero', count }: SparkleOverlayProps)
           key={s.id}
           style={[
             styles.sparkle,
-            tintStyle,
             {
+              color: tint,
               top: s.top,
               left: s.left,
               fontSize: s.size,
@@ -79,20 +91,10 @@ export function SparkleOverlay({ variant = 'hero', count }: SparkleOverlayProps)
 
 const styles = StyleSheet.create({
   wrap: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   sparkle: {
     position: 'absolute',
-    color: 'rgba(255,255,255,0.5)',
     fontWeight: '600',
-  },
-  heroSparkle: {
-    color: 'rgba(255,255,255,0.5)',
-  },
-  cardSparkle: {
-    color: 'rgba(76,122,106,0.22)',
-  },
-  screenSparkle: {
-    color: 'rgba(76,122,106,0.16)',
   },
 });

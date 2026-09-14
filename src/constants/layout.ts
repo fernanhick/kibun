@@ -1,24 +1,33 @@
 import { breakpoints } from './breakpoints';
 
-// Phone-correct base geometry. Tablet sizing is applied via getKawaiiTabScale
-// at render time — do NOT bump these "to make tablets look bigger" because
-// these values dictate phone layout (icons clip at the screen edge if larger).
-export const KAWAII_TAB_BAR_HEIGHT = 72;
-export const KAWAII_TAB_NOTCH_RADIUS = 52;
-export const KAWAII_TAB_CURVE_DEPTH = 14;
-export const KAWAII_TAB_MASCOT_SIZE = 110;
+// ─── Floating tab bar geometry ────────────────────────────────────────────────
+// This replaced the "Kawaii" shelf tab bar, which cost 149dp of PERMANENT
+// bottom chrome (72 bar + 14 notch curve + 63 mascot overlap) — roughly 18% of
+// an iPhone viewport, on every screen, forever. The mascot moved to the home
+// hero, where it can be large and expressive instead of acting as chrome.
+//
+// The pill floats: it is inset from all three edges and content scrolls
+// beneath it, per the iOS 26 Liquid Glass treatment.
+export const TAB_BAR_HEIGHT = 64;
+/** Inset from the left/right screen edges. */
+export const TAB_BAR_MARGIN = 16;
+/** Gap between the bottom of the pill and the safe-area edge. */
+export const TAB_BAR_BOTTOM_GAP = 10;
 
-// The mascot is vertically centered in the tab row and shifted upward with a negative margin.
-// This resolves to ~63px of visual overlap above the tab bar container top.
-// Screen.tsx scales this by getKawaiiTabScale on tablets.
-export const KAWAII_TAB_MASCOT_OVERLAP = 63;
+// On Android the system nav bar is hidden (sticky immersive, see app/_layout),
+// so insets.bottom fluctuates when the user swipes to reveal it. A fixed value
+// keeps the pill from jumping. On iOS the real safe-area inset is used.
+export const TAB_BAR_SAFE_BOTTOM_MIN = 8;
+export const TAB_BAR_SAFE_BOTTOM_ANDROID = 10;
 
-// Total vertical area that can cover scroll content above the bottom edge.
-export const KAWAII_TAB_VISUAL_OBSTRUCTION =
-  KAWAII_TAB_BAR_HEIGHT + KAWAII_TAB_CURVE_DEPTH + KAWAII_TAB_MASCOT_OVERLAP;
-
-export const KAWAII_TAB_SAFE_BOTTOM_MIN = 8;
-export const KAWAII_TAB_SAFE_BOTTOM_ANDROID = 8;
+/**
+ * Total vertical area the floating bar can cover, measured from the safe-area
+ * edge. Screens add this to their scroll `paddingBottom` so the last row of
+ * content can always clear the pill.
+ *
+ * Was 149. Now 74 + the platform safe inset.
+ */
+export const TAB_BAR_VISUAL_OBSTRUCTION = TAB_BAR_HEIGHT + TAB_BAR_BOTTOM_GAP;
 
 // Canonical phone-vs-tablet scale factor for content (mood bubbles, mascots,
 // tab-bar geometry). Window-derived via useResponsive/useWindowDimensions so
@@ -34,8 +43,14 @@ export function getContentScale(width: number): number {
   return 1;
 }
 
-// Width-based scale for tab bar geometry. Tab icons and the mascot would
-// otherwise look dwarfed on tablet viewports — bump them proportionally.
-export function getKawaiiTabScale(width: number): number {
-  return getContentScale(width);
+/**
+ * Scale for tab-bar geometry. Deliberately gentler than getContentScale — the
+ * old bar scaled 1:1 with content, which on a 13" iPad produced a 100dp-tall
+ * bar with 224px mascot. A floating pill only needs to grow enough to stay
+ * proportionate, and it is width-clamped on tablets anyway.
+ */
+export function getTabBarScale(width: number): number {
+  if (width >= breakpoints.tabletLg) return 1.2;
+  if (width >= breakpoints.tablet) return 1.1;
+  return 1;
 }

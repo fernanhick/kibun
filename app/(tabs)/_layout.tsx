@@ -2,7 +2,7 @@ import { Tabs, Redirect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useMoodEntryStore } from '@store/moodEntryStore';
-import { KawaiiTabBar } from '@components/KawaiiTabBar';
+import { FloatingTabBar } from '@components/FloatingTabBar';
 import { TabBarVisibilityProvider } from '@hooks/useScreenScroll';
 
 // The paywall waits until the user has felt the product work. Onboarding hands
@@ -28,7 +28,7 @@ export default function TabLayout() {
   return (
     <TabBarVisibilityProvider>
       <Tabs
-        tabBar={(props) => <KawaiiTabBar {...props} />}
+        tabBar={(props) => <FloatingTabBar {...props} />}
         screenOptions={{ headerShown: false }}
       >
         <Tabs.Screen name="index" options={{ title: t('tabs.home') }} />

@@ -1,16 +1,21 @@
-import type { MoodEntry, AchievementId, AchievementDefinition } from '@models/index';
+import type { MoodEntry, AchievementId } from '@models/index';
 import { MOODS } from '@constants/moods';
 
 // ─── Achievement Definitions ──────────────────────────────────────────────────
 
-export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
-  { id: 'first_week',    label: 'First Week',    description: 'Logged moods every day for 7 days in a row.' },
-  { id: 'month_warrior', label: 'Month Warrior', description: 'Kept a 30-day check-in streak.' },
-  { id: 'mood_explorer', label: 'Mood Explorer', description: 'Logged every available mood at least once.' },
-  { id: 'reflector',     label: 'Reflector',     description: 'Wrote 10 journal reflections.' },
-  { id: 'early_bird',    label: 'Early Bird',    description: 'Logged morning check-ins 7 times.' },
-  { id: 'night_owl',     label: 'Night Owl',     description: 'Logged pre-sleep check-ins 7 times.' },
-  { id: 'consistent',    label: 'Consistent',    description: 'Logged 30 mood entries in total.' },
+// Display order for the badge grid, and the source of truth for which
+// achievements exist. Labels and descriptions live in i18n under
+// `screens:achievements.<id>` — they used to be hardcoded English here and were
+// rendered untranslated to all four locales. The unlock criteria are not
+// restated in prose either; `checkAchievements` below is the only statement.
+export const ACHIEVEMENT_IDS: AchievementId[] = [
+  'first_week',
+  'month_warrior',
+  'mood_explorer',
+  'reflector',
+  'early_bird',
+  'night_owl',
+  'consistent',
 ];
 
 // Achievement badge image mapping (AchievementId → bundled PNG).
@@ -103,3 +108,21 @@ export function checkAchievements(
 
   return newlyUnlocked;
 }
+
+// ─── Unlock events ────────────────────────────────────────────────────────────
+// Lets the root-mounted celebration react to an unlock without the stores
+// reaching into the view tree. Emitted once per saved entry with every id that
+// landed on it, so a check-in that unlocks two does not fire twice.
+type UnlockListener = (ids: AchievementId[]) => void;
+const unlockListeners = new Set<UnlockListener>();
+
+export const achievementEvents = {
+  subscribe(listener: UnlockListener): () => void {
+    unlockListeners.add(listener);
+    return () => unlockListeners.delete(listener);
+  },
+  emit(ids: AchievementId[]): void {
+    if (ids.length === 0) return;
+    for (const l of unlockListeners) l(ids);
+  },
+};

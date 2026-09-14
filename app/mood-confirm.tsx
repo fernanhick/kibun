@@ -5,12 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { Screen, Button } from '@components/index';
 import { MoodBubble } from '@components/MoodBubble';
 import { SparkleOverlay } from '@components/SparkleOverlay';
 import { MoodGroup } from '@constants/moods';
 import { EXERCISE_CHIP_IMAGES, type ExerciseType } from '@constants/exercises';
-import { typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius, motion } from '@constants/theme';
 import { useTheme, type ThemePalette } from '@theme/ThemeContext';
 import { useThemedStyles } from '@hooks/useThemedStyles';
 import { useMoodEntryStore, useSessionStore, useCustomMoodsStore } from '@store/index';
@@ -149,10 +150,21 @@ export default function MoodPostSaveScreen() {
       >
         <SparkleOverlay count={20} />
         <View style={styles.headerRow}>
-          <View style={styles.savedBadge}>
+          {/* This screen IS the reward for checking in, and it was arriving
+              fully formed — the confirmation had no moment. Two beats now: the
+              badge confirms, then the mood pops in behind it.
+
+              The badge enters fast and with no delay on purpose. A confirmation
+              that eases in reads as the app thinking about it rather than as an
+              answer. The mood display gets the overshoot instead — that is the
+              beat worth celebrating, so it uses the `celebrate` spring. */}
+          <Animated.View
+            style={styles.savedBadge}
+            entering={FadeInDown.duration(motion.timing.fast)}
+          >
             <Ionicons name="checkmark-circle" size={14} color={colors.textInverse} />
             <Text style={styles.savedBadgeText}>{t('moodConfirm.savedTitle')}</Text>
-          </View>
+          </Animated.View>
           <Pressable
             onPress={goHome}
             accessibilityRole="button"
@@ -162,13 +174,19 @@ export default function MoodPostSaveScreen() {
             <Ionicons name="close" size={22} color={colors.textInverse} />
           </Pressable>
         </View>
-        <View style={styles.moodDisplay}>
+        <Animated.View
+          style={styles.moodDisplay}
+          entering={ZoomIn.delay(90)
+            .springify()
+            .damping(motion.spring.celebrate.damping)
+            .stiffness(motion.spring.celebrate.stiffness)}
+        >
           <MoodBubble mood={mood} size="xl" showLabel={false} showGradient={false} />
           <View style={styles.titleColumn}>
             <Text style={styles.moodLabel}>{mood.label}</Text>
             <Text style={styles.moodSubLabel}>{t('moodConfirm.savedSubtitle')}</Text>
           </View>
-        </View>
+        </Animated.View>
       </LinearGradient>
 
       {/* Energy & Focus — Pro feature */}
@@ -308,6 +326,7 @@ function DotPicker({
   activeColor: string;
 }) {
   const { colors } = useTheme();
+  const { t } = useTranslation('screens');
   const dotStyles = useThemedStyles(createDotStyles);
   return (
     <View style={dotStyles.row}>
@@ -320,7 +339,8 @@ function DotPicker({
           <TouchableOpacity
             key={n}
             onPress={() => onChange(n)}
-            accessibilityLabel={`${label} level ${n}`}
+            hitSlop={8}
+            accessibilityLabel={t('moodConfirm.levelA11y', { label, n })}
             accessibilityRole="button"
             accessibilityState={{ selected: value === n }}
             style={[
@@ -337,7 +357,12 @@ function DotPicker({
         ))}
       </View>
       {value !== null && (
-        <TouchableOpacity onPress={() => onChange(null)} hitSlop={8} accessibilityLabel={`Clear ${label}`}>
+        <TouchableOpacity
+          onPress={() => onChange(null)}
+          hitSlop={14}
+          accessibilityRole="button"
+          accessibilityLabel={t('moodConfirm.clearA11y', { label })}
+        >
           <Ionicons name="close-circle-outline" size={16} color={colors.textSecondary} />
         </TouchableOpacity>
       )}
@@ -370,7 +395,7 @@ const createDotStyles = (colors: ThemePalette) => StyleSheet.create({
   dot: {
     width: 28,
     height: 28,
-    borderRadius: 14,
+    borderRadius: radius.full,
     borderWidth: 1.5,
     borderColor: colors.border,
     backgroundColor: colors.primaryLight,

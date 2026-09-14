@@ -503,7 +503,11 @@ function MonthSnapshot({ monthLabel, summary, r }: MonthSnapshotProps) {
                 styles.topMoodBubble,
                 { backgroundColor: topMood.bubbleColor, width: r.topMoodBubble, height: r.topMoodBubble },
               ]} />
-              <Text style={[styles.statLabel, { fontSize: r.statLabel }]} numberOfLines={1}>
+              <Text
+                style={[styles.statLabel, { fontSize: r.statLabel }]}
+                maxFontSizeMultiplier={1.3}
+                numberOfLines={1}
+              >
                 {t('history.snapshot.topMood', { mood: getMoodLabel(topMoodId).toLowerCase() })}
               </Text>
             </View>
@@ -678,12 +682,10 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   calendarPanel: {
     ...shadows.sm,
     marginTop: spacing.md,
-    borderRadius: 14,
+    borderRadius: radius.card,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: 'rgba(255, 218, 218, 0.94)',
+    backgroundColor: colors.surfaceElevated,
   },
   calendarGrid: {
     gap: spacing.xs,
@@ -721,7 +723,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   eventDot: {
     width: 5,
     height: 5,
-    borderRadius: 3,
+    borderRadius: radius.full,
     backgroundColor: colors.accent,
     marginTop: 1,
   },
@@ -743,8 +745,6 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
-    borderWidth: 1.2,
-    borderColor: colors.border,
     backgroundColor: colors.surfaceElevated,
     gap: spacing.sm,
   },

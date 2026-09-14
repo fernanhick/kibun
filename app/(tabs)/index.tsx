@@ -4,15 +4,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useSessionStore, useMoodEntryStore, useDailyInsightStore } from '@store/index';
 import { useUiPrefsStore } from '@store/uiPrefsStore';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { useHabitsStore } from '@store/habitsStore';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
 import { useCustomMoodsStore } from '@store/customMoodsStore';
-import { Card, HabitIcon, InsightCard, MoodBubble, MoodLogger, Screen } from '@components/index';
-import { SparkleOverlay } from '@components/SparkleOverlay';
+import { Card, HabitIcon, InsightCard, MoodBubble, MoodLogger, Screen, Stagger } from '@components/index';
+import { HomeHero } from '@components/HomeHero';
 import { SpringPressable } from '@components/SpringPressable';
 import { MOOD_MAP, type MoodId } from '@constants/moods';
 import { getMoodDef } from '@lib/moodUtils';
@@ -255,26 +254,12 @@ export default function HomeScreen() {
       )}
 
       <Screen scrollable={true} onScroll={onScroll}>
-        <LinearGradient
-          colors={[colors.skyStart, colors.skyEnd]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.heroCard}
-        >
-          <SparkleOverlay count={20} />
-          <View style={styles.heroTextCol}>
-            <Text style={styles.greeting}>{getGreeting()}</Text>
-            <Text style={styles.greetingSub}>{motivationalMessage}</Text>
-            {streak > 0 && (
-              <Text
-                style={styles.streakBadge}
-                accessibilityLabel={t('home.streakA11y', { count: streak })}
-              >
-                {t('home.streak', { count: streak })}
-              </Text>
-            )}
-          </View>
-        </LinearGradient>
+        <HomeHero
+          greeting={getGreeting()}
+          message={motivationalMessage}
+          streak={streak}
+          lastMoodId={entries[0]?.moodId}
+        />
 
         <View style={styles.loggerCard}>
           <Text style={styles.loggerTitle} accessibilityRole="header">
@@ -308,16 +293,17 @@ export default function HomeScreen() {
         )}
 
         <View style={styles.todaySection}>
-          <View style={styles.sectionHeaderChip}>
-            <Text
-              style={styles.sectionHeader}
-              accessibilityRole="header"
-            >
-              {todayEntries.length > 0
-                ? t('home.todayHeaderCount', { count: todayEntries.length })
-                : t('home.todayHeader')}
-            </Text>
-          </View>
+          {/*
+            Was a bordered pill chip. Section headers are labels, not badges —
+            wrapping every one in a tinted, bordered capsule ("chip-itis") adds
+            chrome without adding meaning and was one of the loudest dated
+            signals in the audit.
+          */}
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            {todayEntries.length > 0
+              ? t('home.todayHeaderCount', { count: todayEntries.length })
+              : t('home.todayHeader')}
+          </Text>
 
           {todayEntries.length === 0 ? (
             <View style={styles.emptyState}>
@@ -508,9 +494,7 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
     <View style={habitStyles.wrapper}>
       <View style={habitStyles.headerRow}>
         <View style={habitStyles.headerLeft}>
-          <View style={styles.sectionHeaderChip}>
-            <Text style={styles.sectionHeader}>{t('home.habitsHeader')}</Text>
-          </View>
+          <Text style={styles.sectionHeader}>{t('home.habitsHeader')}</Text>
           {progress.total > 0 && (
             <View style={habitStyles.progressChip}>
               <Text style={habitStyles.progressChipText}>
@@ -524,15 +508,17 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
         </Pressable>
       </View>
       <View style={habitStyles.grid}>
-        {orderedHabits.map((h) => {
+        {orderedHabits.map((h, index) => {
           const log = todayLogs.find((l) => l.habitId === h.id);
           if (h.trackingType === 'boolean') {
             const done = log?.value === 1;
             return (
               <SpringPressable
                 key={h.id}
+                staggerIndex={index}
                 style={[habitStyles.card, done && habitStyles.cardDone]}
                 onPress={() => done ? onClear(h.id, today) : onLog(h.id, today, 1)}
+                celebrateOn={done}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: done }}
                 accessibilityLabel={done ? t('home.habitDoneA11y', { name: h.name }) : t('home.habitNotDoneA11y', { name: h.name })}
@@ -556,10 +542,16 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
           // scale habit: 1–5 dots, stacked below name for compactness
           const currentValue = log?.value ?? 0;
           return (
-            <View key={h.id} style={habitStyles.card}>
+            <Stagger key={h.id} index={index} style={habitStyles.card}>
               <View style={habitStyles.cardRow}>
                 <HabitIcon icon={h.icon} size={18} color={colors.primary} circle circleSize={30} />
-                <Text style={habitStyles.cardName} numberOfLines={1}>{h.name}</Text>
+                <Text
+                  style={habitStyles.cardName}
+                  maxFontSizeMultiplier={1.3}
+                  numberOfLines={1}
+                >
+                  {h.name}
+                </Text>
               </View>
               <View style={habitStyles.scaleRow}>
                 {[1, 2, 3, 4, 5].map((v) => (
@@ -567,14 +559,22 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
                     key={v}
                     onPress={() => currentValue === v ? onClear(h.id, today) : onLog(h.id, today, v)}
                     style={[habitStyles.scaleDot, currentValue >= v && habitStyles.scaleDotActive]}
-                    hitSlop={6}
+                    // The dot is 14dp; hitSlop 6 gave a 26dp target, well under
+                    // the 44dp WCAG 2.5.5 / iOS HIG minimum. Five dots share the
+                    // ~150dp inner width of a half-width tile, so each can claim
+                    // ~34dp horizontally (its 14dp plus half of each 20dp gap) —
+                    // full 44dp WIDTH is not reachable without redesigning the
+                    // scale itself. Height has room, so this takes the target to
+                    // 34x44: compliant vertically, and a large improvement
+                    // horizontally.
+                    hitSlop={{ top: 15, bottom: 15, left: 10, right: 10 }}
                     accessibilityRole="button"
                     accessibilityLabel={t('home.habitLevelA11y', { name: h.name, n: v })}
                     accessibilityState={{ selected: currentValue >= v }}
                   />
                 ))}
               </View>
-            </View>
+            </Stagger>
           );
         })}
       </View>
@@ -598,17 +598,15 @@ const createHabitStyles = (colors: ThemePalette) => StyleSheet.create({
     gap: spacing.sm,
   },
   progressChip: {
-    backgroundColor: colors.successLight,
-    borderWidth: 1,
-    borderColor: colors.successBorder,
-    borderRadius: 999,
+    backgroundColor: colors.secondaryLight,
+    borderRadius: radius.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
   },
   progressChipText: {
     fontSize: typography.sizes.xs,
-    fontFamily: typography.fonts.ui,
-    color: colors.successText,
+    fontFamily: typography.fonts.bodyBold,
+    color: colors.secondaryDark,
   },
   manageLink: {
     fontSize: typography.sizes.sm,
@@ -620,13 +618,13 @@ const createHabitStyles = (colors: ThemePalette) => StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     marginTop: spacing.md,
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: spacing.md,
     borderWidth: 1.5,
     borderColor: colors.border,
     borderRadius: radius.lg,
     borderStyle: 'dashed',
-    backgroundColor: colors.surface,
+    backgroundColor: 'transparent',
   },
   emptyText: {
     fontSize: typography.sizes.sm,
@@ -642,13 +640,13 @@ const createHabitStyles = (colors: ThemePalette) => StyleSheet.create({
     ...shadows.sm,
     width: '48%',
     backgroundColor: colors.surfaceElevated,
-    borderRadius: radius.md,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    borderRadius: radius.lg,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
     gap: 6,
   },
   cardDone: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.secondaryLight,
   },
   cardRow: {
     flexDirection: 'row',
@@ -662,20 +660,20 @@ const createHabitStyles = (colors: ThemePalette) => StyleSheet.create({
     color: colors.text,
   },
   cardNameDone: {
-    color: colors.primaryDark,
+    color: colors.secondaryDark,
   },
   checkBox: {
-    width: 20,
-    height: 20,
-    borderRadius: radius.md,
+    width: 22,
+    height: 22,
+    borderRadius: radius.sm,
     borderWidth: 2,
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkBoxDone: {
-    borderColor: colors.success,
-    backgroundColor: colors.success,
+    borderColor: colors.secondary,
+    backgroundColor: colors.secondary,
   },
   scaleRow: {
     flexDirection: 'row',
@@ -687,14 +685,14 @@ const createHabitStyles = (colors: ThemePalette) => StyleSheet.create({
   scaleDot: {
     width: 14,
     height: 14,
-    borderRadius: 7,
+    borderRadius: radius.full,
     borderWidth: 1.5,
     borderColor: colors.border,
     backgroundColor: colors.background,
   },
   scaleDotActive: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primary,
+    borderColor: colors.secondary,
+    backgroundColor: colors.secondary,
   },
 });
 
@@ -789,50 +787,10 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     fontWeight: typography.weights.semibold,
     color: colors.primary,
   },
-  heroCard: {
-    ...shadows.md,
-    borderRadius: radius.xxl,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.32)',
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-    marginTop: spacing.xs,
-  },
-  heroTextCol: {
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  greeting: {
-    fontSize: typography.sizes.xxl,
-    fontFamily: typography.fonts.display,
-    color: colors.textInverse,
-    letterSpacing: -0.6,
-    lineHeight: 34,
-  },
-  greetingSub: {
-    fontSize: typography.sizes.body,
-    color: colors.sparkle,
-    textAlign: 'center',
-    paddingHorizontal: spacing.sm,
-  },
-  streakBadge: {
-    fontSize: typography.sizes.xs,
-    fontWeight: typography.weights.semibold,
-    color: colors.accent,
-    backgroundColor: colors.accentLight,
-    borderWidth: 1,
-    borderColor: colors.accentBorder,
-    borderRadius: 999,
-    paddingVertical: 3,
-    paddingHorizontal: spacing.sm,
-  },
   loggerCard: {
     ...shadows.sm,
     backgroundColor: colors.surfaceElevated,
     borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
     marginTop: spacing.md,
     paddingHorizontal: 0,
     paddingVertical: spacing.md,
@@ -852,19 +810,13 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   insightCardsWrapper: {
     marginTop: spacing.md,
   },
-  sectionHeaderChip: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.accentLight,
-    borderWidth: 1,
-    borderColor: colors.accentBorder,
-    borderRadius: 999,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
+  // Plain label. Uppercase + tracked, the iOS grouped-list convention.
   sectionHeader: {
-    fontSize: typography.sizes.md,
-    fontFamily: typography.fonts.ui,
-    color: colors.accent,
+    ...typography.styles.label,
+    fontFamily: typography.fonts.bodyBold,
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    marginLeft: 2,
   },
   emptyState: {
     ...shadows.sm,
@@ -938,7 +890,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   entryCard: {
     ...shadows.sm,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     backgroundColor: colors.surfaceElevated,
     paddingHorizontal: spacing.sm,
     paddingVertical: 10,

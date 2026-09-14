@@ -111,8 +111,6 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     ...shadows.sm,
     backgroundColor: colors.surface,
     borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
     paddingHorizontal: spacing.md,
     paddingTop: spacing.md,
     paddingBottom: spacing.xs,

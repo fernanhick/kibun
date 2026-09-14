@@ -3,7 +3,6 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from 'react-native';
 import { supabase } from '@lib/supabase';
-import { maybePromptReview } from '@lib/reviewPrompt';
 import { useSessionStore } from './sessionStore';
 
 interface AchievementsState {
@@ -78,9 +77,9 @@ export const useAchievementsStore = create<AchievementsState>()(
               });
           }
 
-          // Surface a non-intrusive review prompt after a positive moment.
-          // Delay lets any celebration UI breathe before the modal appears.
-          setTimeout(() => maybePromptReview('achievement_unlock'), 1500);
+          // NOTE: the review prompt is deliberately NOT triggered here. One
+          // check-in can unlock several achievements at once, so the ask is
+          // raised once per entry from `moodEntryStore.addEntry` instead.
         }
       },
       hydrateFromServer: (ids) =>

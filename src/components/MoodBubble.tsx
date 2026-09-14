@@ -1,15 +1,21 @@
-import { memo, useRef, useEffect } from 'react';
-import { Animated, Image, Pressable, Text, View, StyleSheet } from 'react-native';
+import { memo, useEffect } from 'react';
+import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { MoodDefinition, MOOD_MAP, MOODS, MoodGroup } from '@constants/moods';
 import { MOOD_IMAGES, normalizeMoodImageKey } from '@constants/moodImages';
-import { typography, spacing, radius } from '@constants/theme';
+import { typography, spacing, radius, motion } from '@constants/theme';
 import { useTheme } from '@theme/ThemeContext';
 import { getContentScale } from '@constants/layout';
 import { useResponsive } from '@hooks/useResponsive';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { haptics } from '@lib/haptics';
+import { staggerEntering } from './Stagger';
 
 interface MoodBubbleProps {
   mood: MoodDefinition;
@@ -22,6 +28,12 @@ interface MoodBubbleProps {
   labelColor?: string;
   /** Explicit pixel size (width + image) — bypasses the size token + tablet scale. */
   sizeOverride?: number;
+  /**
+   * Position in a mood grid. Supplying it gives the bubble a staggered entrance
+   * on mount. Applied to this component's OWN root rather than by wrapping it in
+   * a `<Stagger>`, so an 18-cell grid does not gain 18 extra layout nodes.
+   */
+  staggerIndex?: number;
 }
 
 const BONE_SIZES = {
@@ -54,6 +66,9 @@ const GROUP_GRADIENTS: Record<MoodGroup, string[]> = {
   // Tender: deep violet -> soft purple
   blue: ['#2E1065', '#A855F7'],
 };
+
+/** How far a picked bubble lifts out of the grid. */
+const SELECTED_SCALE = 1.16;
 
 const GROUP_MOOD_ORDER: Record<MoodGroup, string[]> = {
   green: MOODS.filter((m) => m.group === 'green').map((m) => m.id),
@@ -143,30 +158,34 @@ export function MoodBubble({
   showGradient = true,
   labelColor,
   sizeOverride,
+  staggerIndex,
 }: MoodBubbleProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { width: winWidth } = useResponsive();
   // Built-in moods resolve through i18n; custom moods carry user-typed labels.
   const label = mood.id in MOOD_MAP ? t(`moods:${mood.id}.label`) : mood.label;
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+  // Reanimated rather than the legacy `Animated` API. This component renders 18
+  // times on the check-in grid, and the legacy version drove every one of those
+  // springs from the JS thread — so a re-render while picking a mood could stall
+  // the selection pop. A shared value runs the whole spring on the UI thread.
+  //
+  // The old config was `tension: 300, friction: 10`; RN's legacy spring maps
+  // those onto the same stiffness/damping physics, so `motion.spring.playful`
+  // (260/9) is the token that already matches it, to within a hair.
+  //
+  // No cleanup call replaces the old `animation.stop()`. A UI-thread animation
+  // is cancelled by the next write to the same shared value, and dies with the
+  // view on unmount — there is nothing left holding a JS-side handle.
+  const scale = useSharedValue(1);
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    const target = selected ? 1.16 : 1;
-    if (reducedMotion) {
-      scaleAnim.setValue(target);
-      return;
-    }
-    const animation = Animated.spring(scaleAnim, {
-      toValue: target,
-      useNativeDriver: true,
-      tension: 300,
-      friction: 10,
-    });
-    animation.start();
-    return () => animation.stop(); // Stop on unmount or before next effect run
-  }, [selected, reducedMotion, scaleAnim]);
+    const target = selected ? SELECTED_SCALE : 1;
+    scale.value = reducedMotion ? target : withSpring(target, motion.spring.playful);
+  }, [selected, reducedMotion, scale]);
+
+  const scaleStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   const baseSizes = BONE_SIZES[size];
   const contentScale = getContentScale(winWidth);
@@ -184,6 +203,7 @@ export function MoodBubble({
 
   return (
     <Animated.View
+      entering={staggerIndex === undefined ? undefined : staggerEntering(staggerIndex, motion.staggerDense)}
       style={[
         styles.wrapper,
         selected && {
@@ -195,7 +215,7 @@ export function MoodBubble({
           // a scale spring makes Android drop child content (the mood image blanks
           // and never redraws). iOS shadow props above are safe.
         },
-        { transform: [{ scale: scaleAnim }] },
+        scaleStyle,
       ]}
     >
       <Pressable

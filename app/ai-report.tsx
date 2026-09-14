@@ -8,6 +8,7 @@ import { Screen, Card, Button, BackButton } from '@components/index';
 import { useSessionStore } from '@store/sessionStore';
 import { useOnboardingStore } from '@store/onboardingStore';
 import { requestReport, getLatestReport } from '@lib/aiReports';
+import { maybePromptReview } from '@lib/reviewPrompt';
 import i18n from '@i18n/index';
 import type { AIReport, AIReportStructured, AIReportTone } from '@models/index';
 import { typography, spacing, radius } from '@constants/theme';
@@ -66,6 +67,9 @@ export default function AIReportScreen() {
     if (result.ok) {
       setReport(result.report);
       setScreenState('has-report');
+      // A freshly generated report is the clearest "we just gave you something"
+      // moment in the app, and it is subscriber-only — a good audience to ask.
+      maybePromptReview('ai_report_ready');
     } else if (result.reason === 'no_entries') {
       setScreenState('no-entries');
     } else if (result.reason === 'subscription_required') {
@@ -661,7 +665,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   patternBullet: {
     width: 6,
     height: 6,
-    borderRadius: 3,
+    borderRadius: radius.full,
     backgroundColor: colors.primary,
     marginTop: 8,
   },
@@ -684,7 +688,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   highlightIconWrap: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: radius.full,
     backgroundColor: colors.surfaceElevated,
     alignItems: 'center',
     justifyContent: 'center',

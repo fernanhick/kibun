@@ -1,96 +1,146 @@
 // ─── Colors ───────────────────────────────────────────────────────────────────
-// UI palette — "Grounded Calm". Low-arousal, biophilic wellness theme:
-// muted sage (growth/balance) + soft light-beige surfaces (safety) + a warm
-// rose-pink accent for action (replaced the original clay/brown). Desaturated
-// on purpose — bright/high-arousal hues raise arousal & cortisol, the opposite
-// of what a mood tool wants. Mood-specific colors live in src/constants/moods.ts.
-// Dark mode is currently disabled (ThemeContext forces the light palette).
+// UI palette — "Kibun Bloom". Kawaii-forward: the chrome is raised to meet the
+// mood hues instead of fighting them.
 //
-// Contrast (verified WCAG 2.1, white text on solid fills):
-//   white on primary       4.88:1  ✓ AA   white on primaryDark 7.07:1  ✓ AA
-//   white on skyEnd        5.07:1  ✓ AA   (Button primary gradient end)
-//   white on warmCtaStart  5.41:1  ✓ AA   white on warmCtaEnd  5.73:1  ✓ AA
-//   white on accent        4.81:1  ✓ AA   (clay accent — also safe as text on light)
-//   text on background    13.0:1   ✓ AA   textSecondary on bg  4.81:1  ✓ AA
-// PINK & STATUS are for icons / borders / fills and LARGE/heading text only —
-// not AA for normal-weight body text on light surfaces. For error body text,
-// use colors.text on colors.errorLight instead.
+// WHY THIS REPLACED "Grounded Calm":
+// The mood bubbles in src/constants/moods.ts are already bright and playful
+// (Material-400 hues — #66BB6A happy, #EF5350 angry, #FFB74D worried). The old
+// chrome was deliberately desaturated sage + beige, so the app read as two
+// different products stacked on each other, and the chrome won because it
+// covers more pixels. The store listing had already settled this argument:
+// ROSE #B0496A is the confirmed brand colour (DailyBean owns green, Finch owns
+// blue, Tochi owns cream — nobody owns rose, and it signals "cute"), and sage
+// #4C7A6A was explicitly rejected as "too muted". This palette brings the app
+// in line with its own storefront.
+//
+// STRUCTURE — one accent + neutrals. Do not add a fourth accent family.
+//   primary   ROSE   — brand. Every CTA, active state, link, focus ring.
+//   secondary SAGE   — growth/habits only (habit checks, streak rails).
+//   sunshine  AMBER  — celebration only (milestones, streak flames).
+//   mood hues        — owned by moods.ts. Never restyle them here.
+//
+// Contrast — every pair below was verified against WCAG 2.1 AA (4.5:1) with
+// src/lib/contrast.ts before being committed. Light mode:
+//   white on primary        5.24:1   white on warmCtaEnd     6.48:1
+//   white on skyStart       5.24:1   white on skyEnd         5.96:1
+//   sparkle on skyStart     4.72:1   sparkle on skyEnd       5.36:1
+//   white on secondary      4.94:1   white on sunshine       4.70:1
+//   text on background     14.97:1   textSecondary on bg     5.94:1
+//   primaryDark on primaryLight 6.17:1
+// Dark mode ("Kibun Night") is verified to the same bar in ThemeContext.
+//
+// `textDisabled` is intentionally sub-AA — disabled controls are WCAG-exempt.
 export const colors = {
-  // Brand — muted sage
-  primary: '#4C7A6A',
-  primaryLight: '#E7EFEA',
-  primaryDark: '#3A6051',
-  skyStart: '#4C7A6A',
-  skyEnd: '#44786A',
-  sparkle: '#FBF7F1',
-  // CTA — warm rose-pink (replaces the old clay). Deep enough that white text
-  // and pink-as-text both clear WCAG AA on light surfaces.
-  warmCtaStart: '#BE5276',
-  warmCtaEnd: '#AC4869',
-  chipSurface: 'rgba(255, 255, 255, 0.95)',
-  chipBorder: 'rgba(76, 122, 106, 0.22)',
-  // Accent — rose-pink (was clay/brown). Doubles as fill + text, so kept deep.
+  // ─── Brand — rose (the ASO-confirmed brand colour) ──────────────────────
+  primary: '#B0496A',
+  primaryLight: '#FCE7EE',
+  primaryDark: '#8E3A55',
+  // Hero gradient — rose → plum. Plum appears ONLY as a gradient terminus; it
+  // is not a standalone accent. Darkened from the first draft (#C2567B), which
+  // measured 4.28:1 against white and missed AA.
+  skyStart: '#AE4A6E',
+  skyEnd: '#8B4E85',
+  // On-gradient secondary text. Named `sparkle` for backwards compatibility
+  // with existing call sites; it is really "the muted ink for hero surfaces",
+  // so in dark mode it flips to a dark value (the hero gradient inverts).
+  sparkle: '#FFEFF5',
+  // ─── CTA — solid brand rose, the deepest tone in the system so it always
+  // reads as the strongest affordance on screen. ───────────────────────────
+  warmCtaStart: '#B0496A',
+  warmCtaEnd: '#9A3F5D',
+  chipSurface: 'rgba(255, 255, 255, 0.92)',
+  chipBorder: 'rgba(176, 73, 106, 0.22)',
+  // ─── Accent — an alias of the brand rose. Kept as its own key because ~40
+  // call sites use `accent*`; collapsing it onto primary is the point — it
+  // removes the old rose-vs-sage-vs-mauve split. ──────────────────────────
   accent: '#B0496A',
-  accentLight: '#FBE7EF',
-  accentBorder: '#F2C7D7',
-  // Rose accent (emotional / personal screens) — muted, not candy
-  pink: '#BC6B7A',
-  pinkEnd: '#9E6E97',
-  pinkLight: 'rgba(188, 107, 122, 0.10)',
-  pinkBorder: 'rgba(188, 107, 122, 0.25)',
-  // Background — soft light beige
-  background: '#F4EEE2',
-  surface: '#FBF6EC',
+  accentLight: '#FCE7EE',
+  accentBorder: '#F3C9D8',
+  // ─── Secondary — sage. Growth / habits only. ────────────────────────────
+  secondary: '#2F7D68',
+  secondaryLight: '#E3F3EE',
+  secondaryDark: '#2A6E5C',
+  secondaryBorder: '#BFE0D6',
+  // ─── Sunshine — amber. Celebration only (milestones, streak flames). ────
+  sunshine: '#A8631C',
+  sunshineLight: '#FFF1DA',
+  sunshineText: '#8A5406',
+  sunshineBorder: '#F5D9A8',
+  // ─── `pink*` — legacy keys, now folded into the rose family. Previously a
+  // third competing accent (mauve #BC6B7A). Aliasing rather than deleting
+  // keeps ~25 call sites compiling; they now render as brand rose. ────────
+  pink: '#B0496A',
+  pinkEnd: '#8B4E85',
+  pinkLight: 'rgba(176, 73, 106, 0.09)',
+  pinkBorder: 'rgba(176, 73, 106, 0.24)',
+  // ─── Background — warm blush cream (was flat beige #F4EEE2) ─────────────
+  background: '#FFF7F1',
+  surface: '#FFFCF9',
   surfaceElevated: '#FFFFFF',
-  // Text — warm ink, not pure black
-  text: '#2A2A26',
-  textSecondary: '#6E6B63',
-  textDisabled: '#AEACA4', // Intentionally low contrast — disabled elements are WCAG-exempt
+  // ─── Text — warm ink with a rose undertone, never pure black ────────────
+  text: '#2B1F24',
+  textSecondary: '#6E5B62',
+  textDisabled: '#B3A2A8', // Sub-AA on purpose — disabled elements are WCAG-exempt
   textInverse: '#FFFFFF',
-  // Border — warm
-  border: '#E5E0D6',
-  borderLight: '#F0EBE1',
-  // Status (icons/borders/fills/large text only — see annotation above)
-  success: '#5E9E73',
-  warning: '#E0A23E',
-  error: '#D9594E',
-  errorLight: '#F7E4E1',
-  // Semantic tint surfaces — for status chips / banners. Pairs a soft tint bg
-  // with readable text + border. Light mode = pastels; dark mode (ThemeContext)
-  // = deep tints with light text. (Blue/"info" banners map to sage primary*.)
-  successLight: '#E8F5E9',
-  successText: '#2E7D32',
-  successBorder: '#A5D6A7',
-  warningLight: '#FFF4DF',
-  warningText: '#8A5A00',
-  warningBorder: '#FFD8B0',
-  errorText: '#B23B30',
-  errorBorder: '#E8B0AA',
-  // Overlay
-  overlay: 'rgba(42, 42, 38, 0.5)',
+  // `onPrimary` is the correct label for "text sitting on a primary fill".
+  // Prefer it over textInverse at new call sites — in dark mode they diverge.
+  onPrimary: '#FFFFFF',
+  // ─── Border ─────────────────────────────────────────────────────────────
+  border: '#EBD9DE',
+  borderLight: '#F5E9EC',
+  // True 1px separator inside cards/lists. Lighter than `border` on purpose —
+  // a divider should not read as strongly as a container edge.
+  hairline: '#F3E4E8',
+  // ─── Glass (Liquid Glass chrome: tab bar, scroll-aware headers) ─────────
+  glassTint: 'rgba(255, 247, 241, 0.72)',
+  glassBorder: 'rgba(176, 73, 106, 0.14)',
+  // ─── Status ─────────────────────────────────────────────────────────────
+  // These three are for ICONS / BORDERS / FILLS and large text only — they are
+  // verified against the 3:1 WCAG bar for non-text UI components, not the 4.5:1
+  // body-text bar. For status body copy use `successText` / `warningText` /
+  // `errorText` on their matching `*Light` tint. (`warning` was #D08A12, which
+  // measured only 2.71:1 on the background and failed even the 3:1 bar.)
+  success: '#2F9E5A', // 3.22:1 on background
+  warning: '#B0740C', // 3.71:1 on background
+  error: '#D24236',   // 4.34:1 on background
+  errorLight: '#FDE6E3',
+  successLight: '#E4F6E8',
+  successText: '#1F6B3C',
+  successBorder: '#AFE0BF',
+  warningLight: '#FFF1DA',
+  warningText: '#7A4E06',
+  warningBorder: '#F5D9A8',
+  errorText: '#A8322B',
+  errorBorder: '#F3BDB6',
+  // ─── Overlay ────────────────────────────────────────────────────────────
+  overlay: 'rgba(43, 31, 36, 0.55)',
 } as const;
 
 // ─── Typography ───────────────────────────────────────────────────────────────
 export const typography = {
   fonts: {
-    // Fredoka (rounded display face) is reserved for big titles/headers — it
-    // carries the warm brand personality without making body copy look childish.
-    // UI labels & body run on Nunito Sans, a humanist sans that reads calmer and
-    // more grown-up. Named weight files: fontWeight in styles is cosmetic only.
+    // Fredoka (rounded display face) carries the kawaii personality and is
+    // reserved for titles/headers. UI labels & body run on Nunito Sans, a
+    // humanist sans that keeps long-form copy readable. Named weight files:
+    // `fontWeight` in styles is cosmetic only.
     display: 'Fredoka_700Bold',
     ui: 'NunitoSans_600SemiBold',
     body: 'NunitoSans_400Regular',
     bodyBold: 'NunitoSans_700Bold',
   },
+  // Scale bumped one step across the board. The audit found `sm`(13) used 121×
+  // and `xs`(11) 57× against `display`(36) exactly ONCE — the app had no
+  // hierarchy, it just whispered everywhere. Raising the scale here lifts all
+  // ~340 token call sites at once.
   sizes: {
-    xs: 11,
-    sm: 13,
-    md: 15,
-    body: 16,
-    lg: 18,
-    xl: 22,
-    xxl: 28,
-    display: 36,
+    xs: 12,      // was 11 — badges, timestamps. Never body copy.
+    sm: 14,      // was 13
+    md: 16,      // was 15
+    body: 17,    // was 16 — default reading size
+    lg: 20,      // was 18
+    xl: 24,      // was 22
+    xxl: 30,     // was 28
+    display: 38, // was 36
   },
   weights: {
     regular: '400' as const,
@@ -102,6 +152,20 @@ export const typography = {
     tight: 1.2,
     normal: 1.5,
     relaxed: 1.75,
+  },
+  // Ready-made text roles. Prefer these over assembling size+weight+spacing by
+  // hand — negative tracking on large type is what separates "designed" from
+  // "default", and it is the thing most often forgotten at the call site.
+  styles: {
+    display:  { fontSize: 38, lineHeight: 42, letterSpacing: -1.1 },
+    title:    { fontSize: 30, lineHeight: 35, letterSpacing: -0.7 },
+    heading:  { fontSize: 24, lineHeight: 29, letterSpacing: -0.4 },
+    subtitle: { fontSize: 20, lineHeight: 26, letterSpacing: -0.2 },
+    headline: { fontSize: 17, lineHeight: 23, letterSpacing: -0.1 },
+    body:     { fontSize: 17, lineHeight: 25, letterSpacing: 0 },
+    callout:  { fontSize: 16, lineHeight: 23, letterSpacing: 0 },
+    caption:  { fontSize: 14, lineHeight: 19, letterSpacing: 0 },
+    label:    { fontSize: 12, lineHeight: 15, letterSpacing: 0.7 },
   },
 } as const;
 
@@ -125,24 +189,26 @@ export const spacing = {
   lg: 20,
   xl: 28,
   xxl: 40,
-  screenPadding: 16,
+  screenPadding: 18,
 } as const;
 
 // ─── Border Radius ────────────────────────────────────────────────────────────
-// "Tight & crisp" scale — intentionally restrained corners read sharper and more
-// professional than soft/pill rounding, while still pairing with the rounded
-// Fredoka display face. `full`/`bubble` stay circular (avatars, mood bubbles).
+// Rebuilt for 2026. The old scale was both too tight (card 12 / md 6 / lg 8) and
+// self-contradictory — `lg` (8) was SMALLER than `card` (12), which guaranteed
+// inconsistency at the call site and explains the 150 hardcoded borderRadius
+// values found in the audit. This scale is monotonic, so `lg > md > sm` always
+// holds, and it is pitched for a soft kawaii product rather than a Material-1 one.
 export const radius = {
   none: 0,
-  sm: 3,
-  md: 6,
-  lg: 8,
-  xl: 12,
-  xxl: 14,
+  sm: 8,    // was 3  — chips, checkboxes, tiny inline tags
+  md: 12,   // was 6  — inputs, small tiles, list rows
+  lg: 16,   // was 8  — standard interactive surfaces
+  xl: 20,   // was 12 — cards
+  xxl: 28,  // was 14 — heroes, sheets, feature panels
   full: 9999,
   // Specific UI patterns
-  button: 8,
-  card: 12,
+  button: 16, // was 8
+  card: 20,   // was 12
   bubble: 9999,
 } as const;
 
@@ -150,11 +216,19 @@ export const radius = {
 // Spring presets feed react-native-reanimated's `withSpring(value, preset)`.
 // Timing values are in ms — use for `withTiming` / fade durations.
 // Scale values are press-state targets for SpringPressable.
+//
+// Kawaii-forward tuning: presses go a little deeper and springs carry a little
+// more bounce than a "calm" app would use. `playful` and `celebrate` exist for
+// moments of reward (mood logged, habit completed, streak milestone) — do NOT
+// reach for them on ordinary navigation, or the whole app reads as jittery.
+// Every consumer must gate on useReducedMotion().
 export const motion = {
   spring: {
     gentle: { damping: 18, stiffness: 120 },
     snappy: { damping: 14, stiffness: 180 },
     bouncy: { damping: 10, stiffness: 220 },
+    playful: { damping: 9, stiffness: 260 },
+    celebrate: { damping: 7, stiffness: 200 },
   },
   timing: {
     fast: 180,
@@ -162,16 +236,51 @@ export const motion = {
     slow: 420,
   },
   scale: {
-    pressed: 0.96,
-    pressedSmall: 0.94,
+    pressed: 0.94,
+    pressedSmall: 0.92,
+    // Overshoot target for reward moments — withSequence(pop → 1).
+    pop: 1.06,
   },
+  // Cascade delay when mounting a collection. 60–110ms is the readable band.
+  stagger: 70,
+  // Dense variant for grids of ~12+ cells (the 18-mood picker). At the full
+  // 70ms step the last cell of that grid would land 1.2s after the first, which
+  // stops reading as a cascade and starts reading as a slow screen. A shorter
+  // step keeps it a single sweep across the grid.
+  staggerDense: 28,
 } as const;
 
+// ─── Elevation ────────────────────────────────────────────────────────────────
+// Prefer `elevation(tier, isDark)` over the `shadows` object below.
+//
+// Two reasons it is a function. (1) Shadows are nearly invisible on a dark
+// background, so dark mode needs its opacities multiplied up — a static object
+// cannot know the theme. (2) It takes a tier number, which makes an elevation
+// HIERARCHY expressible: the audit found `Card` defaulting to the heavy `md`
+// tier, so every card floated equally and nothing read as more important.
+//
+// Tier guide:  0 flat (use a border instead) · 1 resting card · 2 raised /
+// interactive · 3 floating chrome (tab bar, sheets).
+export function elevation(tier: 0 | 1 | 2 | 3, isDark = false) {
+  const offsets = [0, 3, 8, 14];
+  const radiuses = [0, 10, 18, 28];
+  const opacities = [0, 0.055, 0.09, 0.13];
+  const mult = isDark ? 1.9 : 1;
+  return {
+    // Warm-tinted rather than pure black — a neutral #000 shadow over a blush
+    // background turns grey and dirties the whole surface.
+    shadowColor: isDark ? '#000000' : '#5C2A3A',
+    shadowOffset: { width: 0, height: offsets[tier]! },
+    shadowOpacity: opacities[tier]! * mult,
+    shadowRadius: radiuses[tier]!,
+    elevation: tier * 3,
+  };
+}
+
 // ─── Shadows (cross-platform) ─────────────────────────────────────────────────
-// iOS uses shadowColor/shadowOffset/shadowOpacity/shadowRadius.
-// Android uses elevation.
-// Tiers follow modern soft-elevation: wider radii + larger y-offsets at very
-// low opacities. Each tier roughly doubles perceived lift over the previous.
+// DEPRECATED — kept so the ~29 existing `shadows.*` call sites keep compiling
+// while the Phase 2 surface sweep migrates them. New code uses elevation().
+// Values are the light-mode output of elevation() at the matching tier.
 export const shadows = {
   none: {
     shadowColor: 'transparent',
@@ -181,24 +290,24 @@ export const shadows = {
     elevation: 0,
   },
   sm: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
+    shadowColor: '#5C2A3A',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.055,
+    shadowRadius: 10,
     elevation: 3,
   },
   md: {
-    shadowColor: '#000000',
+    shadowColor: '#5C2A3A',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.10,
+    shadowOpacity: 0.09,
     shadowRadius: 18,
     elevation: 6,
   },
   lg: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.14,
-    shadowRadius: 24,
+    shadowColor: '#5C2A3A',
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.13,
+    shadowRadius: 28,
     elevation: 9,
   },
 } as const;

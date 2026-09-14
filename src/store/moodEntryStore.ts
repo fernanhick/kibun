@@ -5,7 +5,8 @@ import * as Crypto from 'expo-crypto';
 import { MoodEntry } from '@models/index';
 import { MOOD_MAP, MoodId } from '@constants/moods';
 import { supabase } from '@lib/supabase';
-import { checkAchievements } from '@lib/achievements';
+import { checkAchievements, achievementEvents } from '@lib/achievements';
+import { notifyEntryLogged } from '@lib/reviewPrompt';
 import { withRetry } from '@lib/syncRetry';
 import { useSessionStore } from './sessionStore';
 import { useAchievementsStore } from './achievementsStore';
@@ -61,7 +62,21 @@ export const useMoodEntryStore = create<MoodEntryState>()(
         const newlyUnlocked = checkAchievements(entries, unlockedIds);
         for (const id of newlyUnlocked) { addUnlocked(id); }
 
-        // 3. Fire-and-forget Supabase sync for registered users
+        // 3. At most one interruption per saved entry. When something
+        //    unlocked, the celebration takes it and raises the rating ask on
+        //    dismissal instead — reward first, then ask. Emitting per unlock
+        //    (as this once did, from inside `addUnlocked`) fired twice for a
+        //    day-7 morning entry, which unlocks first_week AND early_bird.
+        if (newlyUnlocked.length > 0) {
+          achievementEvents.emit(newlyUnlocked);
+        } else {
+          notifyEntryLogged({
+            entryCount: entries.length,
+            streakDays: get().getStreak(),
+          });
+        }
+
+        // 4. Fire-and-forget Supabase sync for registered users
         const session = useSessionStore.getState().session;
         if (session?.authStatus === 'registered' && supabase) {
           const mood = MOOD_MAP[entry.moodId as MoodId];

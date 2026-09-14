@@ -198,7 +198,7 @@ export default function ChangePasswordScreen() {
               color={colors.textSecondary}
               accessibilityElementsHidden
             />
-            <Text style={styles.accountEmail} numberOfLines={1}>
+            <Text style={styles.accountEmail} maxFontSizeMultiplier={1.3} numberOfLines={1}>
               {email}
             </Text>
           </View>

@@ -571,7 +571,9 @@
     },
     "save": "Salvar",
     "changeMood": "Mudar humor",
-    "proBadge": "Pro"
+    "proBadge": "Pro",
+    "levelA11y": "{{label}} nível {{n}}",
+    "clearA11y": "Limpar {{label}}"
   },
   "journalReflect": {
     "promptLabel": "Refletir",
@@ -1106,6 +1108,21 @@
       "alcohol": "Álcool"
     }
   },
+  "achievements": {
+    "first_week": { "label": "Primeira semana", "description": "Registrou seu humor 7 dias seguidos." },
+    "month_warrior": { "label": "Guerreiro do mês", "description": "Manteve uma sequência de 30 dias." },
+    "mood_explorer": { "label": "Explorador de humores", "description": "Registrou cada humor disponível pelo menos uma vez." },
+    "reflector": { "label": "Reflexivo", "description": "Escreveu 10 reflexões no diário." },
+    "early_bird": { "label": "Madrugador", "description": "Fez 7 check-ins pela manhã." },
+    "night_owl": { "label": "Coruja", "description": "Fez 7 check-ins antes de dormir." },
+    "consistent": { "label": "Consistente", "description": "Registrou 30 humores no total." }
+  },
+  "achievementUnlocked": {
+    "title": "Conquista desbloqueada!",
+    "more_one": "+{{count}} distintivo a mais",
+    "more_other": "+{{count}} distintivos a mais",
+    "cta": "Boa!"
+  },
   "components": {
     "backButton": {
       "defaultLabel": "Início",
@@ -1116,17 +1133,6 @@
     },
     "wisdomScreen": {
       "mascotA11y": "Mascote {{mascot}}"
-    },
-    "reviewPrompt": {
-      "dismissA11y": "Dispensar",
-      "title": "Como está sendo o kibun?",
-      "subtitle": "Sua resposta sincera ajuda a melhorá-lo.",
-      "ctaHappy": "Amando",
-      "ctaHappyA11y": "Amando",
-      "ctaUnhappy": "Nem tanto",
-      "ctaUnhappyA11y": "Nem tanto",
-      "ctaLater": "Talvez depois",
-      "ctaLaterA11y": "Talvez depois"
     }
   }
 }

@@ -526,7 +526,9 @@
     },
     "save": "Guardar",
     "changeMood": "Cambiar ánimo",
-    "proBadge": "Pro"
+    "proBadge": "Pro",
+    "levelA11y": "{{label}} nivel {{n}}",
+    "clearA11y": "Borrar {{label}}"
   },
   "journalReflect": {
     "promptLabel": "Reflexiona",
@@ -1049,6 +1051,21 @@
       "alcohol": "Alcohol"
     }
   },
+  "achievements": {
+    "first_week": { "label": "Primera semana", "description": "Registraste tu ánimo 7 días seguidos." },
+    "month_warrior": { "label": "Guerrero del mes", "description": "Mantuviste una racha de 30 días." },
+    "mood_explorer": { "label": "Explorador de ánimos", "description": "Registraste cada ánimo disponible al menos una vez." },
+    "reflector": { "label": "Reflexivo", "description": "Escribiste 10 reflexiones en el diario." },
+    "early_bird": { "label": "Madrugador", "description": "Hiciste 7 registros por la mañana." },
+    "night_owl": { "label": "Ave nocturna", "description": "Hiciste 7 registros antes de dormir." },
+    "consistent": { "label": "Constante", "description": "Registraste 30 estados de ánimo en total." }
+  },
+  "achievementUnlocked": {
+    "title": "¡Logro desbloqueado!",
+    "more_one": "+{{count}} insignia más",
+    "more_other": "+{{count}} insignias más",
+    "cta": "¡Genial!"
+  },
   "components": {
     "backButton": {
       "defaultLabel": "Inicio",
@@ -1059,17 +1076,6 @@
     },
     "wisdomScreen": {
       "mascotA11y": "Mascota {{mascot}}"
-    },
-    "reviewPrompt": {
-      "dismissA11y": "Cerrar",
-      "title": "¿Cómo va kibun?",
-      "subtitle": "Tu respuesta honesta nos ayuda a mejorarlo.",
-      "ctaHappy": "Me encanta",
-      "ctaHappyA11y": "Me encanta",
-      "ctaUnhappy": "No mucho",
-      "ctaUnhappyA11y": "No mucho",
-      "ctaLater": "Quizá más tarde",
-      "ctaLaterA11y": "Quizá más tarde"
     }
   }
 }

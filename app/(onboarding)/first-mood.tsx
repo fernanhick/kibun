@@ -72,8 +72,6 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   heroCard: {
     ...shadows.md,
     borderRadius: radius.xxl,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.32)',
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
@@ -112,8 +110,6 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     ...shadows.sm,
     backgroundColor: colors.surfaceElevated,
     borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
     marginTop: spacing.md,
     paddingVertical: spacing.md,
     gap: spacing.sm,

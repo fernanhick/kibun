@@ -67,6 +67,7 @@ export default function DisclaimerScreen() {
           <Pressable
             style={[styles.checkbox, acknowledged && styles.checkboxChecked]}
             onPress={() => setAcknowledged(!acknowledged)}
+            hitSlop={9}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: acknowledged }}
           >
@@ -133,6 +134,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   title: {
     fontFamily: typography.fonts.display,
     fontSize: typography.sizes.xxl,
+    letterSpacing: -0.7,
     color: colors.text,
     textAlign: 'center',
     marginBottom: spacing.xs,

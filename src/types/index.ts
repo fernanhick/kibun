@@ -105,12 +105,6 @@ export type AchievementId =
   | 'night_owl'
   | 'consistent';
 
-export interface AchievementDefinition {
-  id: AchievementId;
-  label: string;
-  description: string;
-}
-
 // ─── Custom Moods ─────────────────────────────────────────────────────────────
 
 export interface CustomMood {

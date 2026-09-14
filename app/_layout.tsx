@@ -14,6 +14,7 @@ import * as Notifications from 'expo-notifications';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
+import * as SystemUI from 'expo-system-ui';
 import { prewarmMoodImages } from '@constants/moodImages';
 import { colors } from '@constants/theme';
 import { ThemeProvider, useTheme } from '@theme/ThemeContext';
@@ -21,7 +22,8 @@ import { useAuth } from '@hooks/useAuth';
 import { SplashScreenView } from '@components/SplashScreenView';
 import { PersistentMascotOverlay } from '@components/PersistentMascotOverlay';
 import { MoodImageWarmer } from '@components/MoodImageWarmer';
-import { ReviewPromptModal } from '@components/ReviewPromptModal';
+import { ReviewPromptGate } from '@components/ReviewPromptGate';
+import { AchievementCelebration } from '@components/AchievementCelebration';
 import { initPurchases, refreshSubscriptionStatus } from '@lib/revenuecat';
 import { configureNotificationHandler, scheduleSlotNotifications } from '@lib/notifications';
 import { useNotificationPrefsStore } from '@store/notificationPrefsStore';
@@ -134,10 +136,18 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-// Status bar glyph color must track the active theme. Lives inside ThemeProvider
-// (RootLayout itself renders above the provider, so it can't read useTheme).
-function ThemedStatusBar() {
-  const { isDark } = useTheme();
+// Status bar glyph color must track the active theme, and so must the native
+// window background — without the latter the OS paints its default light ground
+// behind the React tree, which flashes white on every navigation in dark mode.
+// Lives inside ThemeProvider (RootLayout itself renders above the provider, so
+// it can't read useTheme).
+function ThemedSystemChrome() {
+  const { isDark, colors: themeColors } = useTheme();
+
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(themeColors.background);
+  }, [themeColors.background]);
+
   return <StatusBar style={isDark ? 'light' : 'dark'} />;
 }
 
@@ -306,7 +316,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ErrorBoundary>
           <ThemeProvider>
-            <ThemedStatusBar />
+            <ThemedSystemChrome />
             <View style={styles.appShell}>
             <Stack initialRouteName="(tabs)">
               <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
@@ -327,7 +337,8 @@ export default function RootLayout() {
               <Stack.Screen name="annual-report" options={{ headerShown: false }} />
             </Stack>
             <PersistentMascotOverlay />
-            <ReviewPromptModal />
+            <AchievementCelebration />
+            <ReviewPromptGate />
             <MoodImageWarmer />
           </View>
           </ThemeProvider>

@@ -26,6 +26,21 @@ import { useThemedStyles } from '@hooks/useThemedStyles';
 import { EXERCISE_CHIP_IMAGES, type ExerciseType } from '@constants/exercises';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { haptics } from '@lib/haptics';
+import { maybePromptReview } from '@lib/reviewPrompt';
+
+/**
+ * Every exercise ends by popping back to the screen that pushed it. Finishing
+ * one is a delight moment, so route the three completion buttons through here
+ * rather than calling `router.back()` directly. The ask itself waits for the
+ * user to reach the tabs — see ReviewPromptGate.
+ */
+function useFinishExercise() {
+  const router = useRouter();
+  return useCallback(() => {
+    maybePromptReview('exercise_complete');
+    router.back();
+  }, [router]);
+}
 
 // ─── Box Breathing ────────────────────────────────────────────────────────────
 
@@ -42,7 +57,7 @@ function BoxBreathing() {
   const [cycle, setCycle] = useState(1);
   const [done, setDone] = useState(false);
   const TOTAL_CYCLES = 4;
-  const router = useRouter();
+  const finish = useFinishExercise();
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -115,7 +130,7 @@ function BoxBreathing() {
         <Text style={styles.doneSubtitle}>
           {t('exercise.boxBreathing.doneSubtitle', { count: TOTAL_CYCLES })}
         </Text>
-        <Button label={t('exercise.continue')} onPress={() => router.back()} variant="sunrise" fullWidth />
+        <Button label={t('exercise.continue')} onPress={finish} variant="sunrise" fullWidth />
       </View>
     );
   }
@@ -151,7 +166,7 @@ function StepListExercise({ i18nKey, showCount = false, countMode = 'index' }: S
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation('screens');
   const [step, setStep] = useState(0);
-  const router = useRouter();
+  const finish = useFinishExercise();
 
   const steps = t(`${i18nKey}.steps`, { returnObjects: true }) as string[];
   const isLast = step === steps.length - 1;
@@ -170,7 +185,7 @@ function StepListExercise({ i18nKey, showCount = false, countMode = 'index' }: S
       <Button
         label={isLast ? t('exercise.finish') : t('exercise.continue')}
         onPress={() => {
-          if (isLast) router.back();
+          if (isLast) finish();
           else setStep((s) => s + 1);
         }}
         variant="sunrise"
@@ -190,7 +205,7 @@ function PromptListExercise({ i18nKey }: PromptListExerciseProps) {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation('screens');
-  const router = useRouter();
+  const finish = useFinishExercise();
   const prompts = t(`${i18nKey}.prompts`, { returnObjects: true }) as string[];
   const [values, setValues] = useState<string[]>(() => prompts.map(() => ''));
 
@@ -220,7 +235,7 @@ function PromptListExercise({ i18nKey }: PromptListExerciseProps) {
           />
         </View>
       ))}
-      <Button label={t('exercise.done')} onPress={() => router.back()} variant="sunrise" disabled={!allFilled} fullWidth />
+      <Button label={t('exercise.done')} onPress={finish} variant="sunrise" disabled={!allFilled} fullWidth />
     </View>
   );
 }

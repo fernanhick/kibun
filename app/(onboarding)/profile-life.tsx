@@ -110,7 +110,9 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     marginBottom: spacing.lg,
   },
   title: {
+    fontFamily: typography.fonts.display,
     fontSize: typography.sizes.xxl,
+    letterSpacing: -0.7,
     fontWeight: typography.weights.semibold,
     color: colors.textInverse,
     marginBottom: spacing.xs,

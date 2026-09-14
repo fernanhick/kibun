@@ -5,11 +5,20 @@ import {
   StyleSheet,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { typography, spacing, radius, shadows } from '@constants/theme';
-import { useTheme, type ThemePalette } from '@theme/ThemeContext';
-import { useThemedStyles } from '@hooks/useThemedStyles';
+import { typography, spacing, radius, elevation } from '@constants/theme';
+import { useTheme, type ThemeValue } from '@theme/ThemeContext';
 import { SpringPressable } from '@components/SpringPressable';
 
+// ─── Button ───────────────────────────────────────────────────────────────────
+// One styling cue per variant (see Card.tsx for the rationale):
+//   primary / sunrise — gradient fill + shadow. NO border. The old version put
+//                       a `rgba(255,255,255,0.35)` hairline on top of the
+//                       gradient AND a shadow, which is the classic 2017 stack.
+//   secondary         — tinted fill, no border, no shadow.
+//   ghost             — border only, no fill, no shadow.
+//
+// Sizes are up one step (min-heights 48/54/60) to sit comfortably above the
+// 44pt iOS / 48dp Android touch-target floor at the larger type scale.
 interface ButtonProps {
   label: string;
   onPress: () => void;
@@ -31,8 +40,9 @@ export function Button({
   fullWidth = false,
   accessibilityHint,
 }: ButtonProps) {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(createStyles);
+  const theme = useTheme();
+  const { colors } = theme;
+  const styles = React.useMemo(() => createStyles(theme), [theme]);
   const isBlocked = disabled || loading;
   const isGradient = variant === 'primary' || variant === 'sunrise';
 
@@ -44,9 +54,11 @@ export function Button({
     isBlocked && styles.blocked,
   ];
 
+  // `onPrimary` rather than `textInverse`: in dark mode the brand fill is a
+  // light rose, so the label on it must go dark. The two tokens diverge there.
   const textColor =
-    variant === 'primary' || variant === 'sunrise'
-      ? colors.textInverse
+    isGradient
+      ? colors.onPrimary
       : variant === 'secondary'
         ? colors.primaryDark
         : colors.primary;
@@ -94,35 +106,30 @@ export function Button({
   );
 }
 
-const createStyles = (colors: ThemePalette) => StyleSheet.create({
+const createStyles = ({ colors, isDark }: ThemeValue) => StyleSheet.create({
   base: {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.button,
-    minHeight: 44,
-    ...shadows.sm,
+    minHeight: 48,
     overflow: 'hidden',
   },
   // ─── Variants ───────────────────────────────────────────────────────────
   primary: {
     backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.35)',
+    ...elevation(2, isDark),
   },
   secondary: {
     backgroundColor: colors.primaryLight,
-    borderWidth: 1,
-    borderColor: colors.chipBorder,
   },
   ghost: {
-    backgroundColor: colors.chipSurface,
+    backgroundColor: 'transparent',
     borderWidth: 1.5,
     borderColor: colors.primary,
   },
   sunrise: {
     backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#D9A06F',
+    ...elevation(2, isDark),
   },
   gradientFill: {
     width: '100%',
@@ -131,28 +138,28 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     justifyContent: 'center',
   },
   lgGradient: {
-    minHeight: 54,
+    minHeight: 60,
     paddingHorizontal: spacing.xl,
   },
   mdGradient: {
-    minHeight: 48,
+    minHeight: 54,
     paddingHorizontal: spacing.lg,
   },
   smGradient: {
-    minHeight: 40,
+    minHeight: 48,
     paddingHorizontal: spacing.md,
   },
   // ─── Sizes ──────────────────────────────────────────────────────────────
   lg: {
-    paddingVertical: 15,
+    paddingVertical: 17,
     paddingHorizontal: spacing.xl,
   },
   md: {
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: spacing.lg,
   },
   sm: {
-    paddingVertical: 9,
+    paddingVertical: 11,
     paddingHorizontal: spacing.md,
   },
   // ─── States ─────────────────────────────────────────────────────────────
@@ -160,12 +167,13 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     width: '100%',
   },
   blocked: {
-    opacity: 0.5,
+    opacity: 0.45,
   },
   // ─── Labels ─────────────────────────────────────────────────────────────
   label: {
     fontFamily: typography.fonts.ui,
-    fontWeight: typography.weights.semibold,
+    fontWeight: typography.weights.bold,
+    letterSpacing: -0.2,
   },
   lgLabel: {
     fontSize: typography.sizes.lg,
@@ -174,6 +182,6 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     fontSize: typography.sizes.body,
   },
   smLabel: {
-    fontSize: typography.sizes.sm,
+    fontSize: typography.sizes.md,
   },
 });

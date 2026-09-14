@@ -331,6 +331,7 @@ const createReportStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   heroTitle: {
     fontSize: typography.sizes.xxl,
+    letterSpacing: -0.7,
     fontFamily: typography.fonts.display,
     color: colors.textInverse,
     textAlign: 'center',

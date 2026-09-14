@@ -135,7 +135,11 @@ export function MoodLogger({ date, variant = 'screen', onLogged }: MoodLoggerPro
     setSubmitting(false);
   };
 
-  const renderBubble = (mood: MoodDefinition) => (
+  // `staggerIndex` only ever affects a bubble's MOUNT, so the cascade plays once
+  // when the picker appears and again for whichever bubbles are newly revealed
+  // by "see more" — the six already on screen keep their identity (keyed by
+  // mood id), stay mounted, and correctly do not replay.
+  const renderBubble = (mood: MoodDefinition, index: number) => (
     <MoodBubble
       key={mood.id}
       mood={mood}
@@ -145,19 +149,20 @@ export function MoodLogger({ date, variant = 'screen', onLogged }: MoodLoggerPro
       onPress={handleSelect}
       showGradient={false}
       labelColor={variant === 'hero' ? colors.textInverse : undefined}
+      staggerIndex={index}
     />
   );
 
   return (
     <View style={styles.wrap}>
       <View style={styles.grid}>
-        {visibleMoods.map(renderBubble)}
-        {showSelectedExtra && selectedMood && renderBubble(selectedMood)}
+        {visibleMoods.map((mood, index) => renderBubble(mood, index))}
+        {showSelectedExtra && selectedMood && renderBubble(selectedMood, visibleMoods.length)}
         {expanded &&
           isPro &&
-          customMoods.map((cm) => {
+          customMoods.map((cm, index) => {
             const def = getMoodDef(cm.id, customMoods);
-            return def ? renderBubble(def) : null;
+            return def ? renderBubble(def, visibleMoods.length + index) : null;
           })}
       </View>
 
@@ -275,15 +280,20 @@ const createScreenStyles = (colors: ThemePalette) => StyleSheet.create({
 
 const createHeroStyles = (colors: ThemePalette) => StyleSheet.create({
   ...sharedStyles,
+  // The wash and hairline are derived from `textInverse` (8-digit hex alpha)
+  // rather than hardcoded to white. The hero gradient INVERTS between themes —
+  // deep rose in light mode, light rose in dark — so a fixed white overlay
+  // would wash out the dark-mode hero and leave the field barely visible. Tying
+  // both to the same token that flips the text colour keeps them in step.
   noteInput: {
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.4)',
+    borderColor: colors.textInverse + '66',
     borderRadius: radius.lg,
     paddingVertical: 10,
     paddingHorizontal: spacing.md,
     fontSize: typography.sizes.md,
     color: colors.textInverse,
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: colors.textInverse + '2E',
     minHeight: 56,
     maxHeight: 96,
   },

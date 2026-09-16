@@ -202,22 +202,35 @@ export function MoodBubble({
   const gradR = Math.max(width * 0.32, imageSize * gradientIntensity.radiusScale);
 
   return (
+    // Two nodes on purpose. Reanimated warns — loudly, once per mounted bubble —
+    // that "Property `transform` of AnimatedComponent(View) may be overwritten by
+    // a layout animation" when an `entering` animation and an animated style
+    // touch the SAME component. This grid renders 18×, so it was the bulk of that
+    // warning in the Metro log, and the cost is that the stagger cascade can be
+    // clobbered by the selection spring on mount.
+    //
+    // The outer view carries the entrance and NOTHING else; the inner carries the
+    // scale. `styles.wrapper` (alignSelf: flex-start) moves inward with the rest,
+    // so the outer node stays layout-neutral — safe here because the inner
+    // Pressable sizes itself from an explicit numeric `width`, not a percentage.
     <Animated.View
       entering={staggerIndex === undefined ? undefined : staggerEntering(staggerIndex, motion.staggerDense)}
-      style={[
-        styles.wrapper,
-        selected && {
-          shadowColor: mood.bubbleColor,
-          shadowOffset: { width: 0, height: 6 },
-          shadowOpacity: 0.35,
-          shadowRadius: 18,
-          // NOTE: no Android `elevation` here. Elevation on a view that also runs
-          // a scale spring makes Android drop child content (the mood image blanks
-          // and never redraws). iOS shadow props above are safe.
-        },
-        scaleStyle,
-      ]}
     >
+      <Animated.View
+        style={[
+          styles.wrapper,
+          selected && {
+            shadowColor: mood.bubbleColor,
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.35,
+            shadowRadius: 18,
+            // NOTE: no Android `elevation` here. Elevation on a view that also runs
+            // a scale spring makes Android drop child content (the mood image blanks
+            // and never redraws). iOS shadow props above are safe.
+          },
+          scaleStyle,
+        ]}
+      >
       <Pressable
         onPress={
           disabled
@@ -295,7 +308,8 @@ export function MoodBubble({
             {label}
           </Text>
         )}
-      </Pressable>
+        </Pressable>
+      </Animated.View>
     </Animated.View>
   );
 }

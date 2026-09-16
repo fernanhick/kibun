@@ -513,9 +513,17 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
           if (h.trackingType === 'boolean') {
             const done = log?.value === 1;
             return (
+              // The entrance lives on a <Stagger> wrapper, not on the
+              // SpringPressable itself. Reanimated overwrites an element's
+              // `transform` when a layout animation and an animated style target
+              // the SAME component, and SpringPressable's whole job is a press
+              // scale — so `entering` there fought the spring and logged
+              // "AnimatedComponent(Pressable)" warnings. The wrapper takes the
+              // grid layout (`cardOuter`, whose 48% resolves against the row);
+              // the visuals stay on the pressable so pressing still scales the
+              // visible card.
+              <Stagger key={h.id} index={index} style={habitStyles.cardOuter}>
               <SpringPressable
-                key={h.id}
-                staggerIndex={index}
                 style={[habitStyles.card, done && habitStyles.cardDone]}
                 onPress={() => done ? onClear(h.id, today) : onLog(h.id, today, 1)}
                 celebrateOn={done}
@@ -537,12 +545,13 @@ function HabitsSection({ habits, todayLogs, today, progress, onLog, onClear, onM
                   </View>
                 </View>
               </SpringPressable>
+              </Stagger>
             );
           }
           // scale habit: 1–5 dots, stacked below name for compactness
           const currentValue = log?.value ?? 0;
           return (
-            <Stagger key={h.id} index={index} style={habitStyles.card}>
+            <Stagger key={h.id} index={index} style={[habitStyles.cardOuter, habitStyles.card]}>
               <View style={habitStyles.cardRow}>
                 <HabitIcon icon={h.icon} size={18} color={colors.primary} circle circleSize={30} />
                 <Text
@@ -636,9 +645,20 @@ const createHabitStyles = (colors: ThemePalette) => StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.sm,
   },
+  // Split into layout and visual halves 2026-09-16.
+  //
+  // `width: '48%'` resolves against the grid ROW, so it must sit on whichever
+  // element is the row's direct child — i.e. the stagger wrapper. The visuals
+  // must stay on the element that actually scales, or the press spring scales
+  // the content while the card behind it stays put. Holding both in one style
+  // made it impossible to give the habit cards an entrance wrapper without
+  // breaking one or the other, which is why the Reanimated `transform` warning
+  // on SpringPressable could not be fixed the same way MoodBubble's was.
+  cardOuter: {
+    width: '48%',
+  },
   card: {
     ...shadows.sm,
-    width: '48%',
     backgroundColor: colors.surfaceElevated,
     borderRadius: radius.lg,
     paddingVertical: 12,

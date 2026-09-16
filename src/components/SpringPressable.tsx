@@ -12,7 +12,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { motion } from '@constants/theme';
-import { staggerEntering } from './Stagger';
 import { haptics } from '@lib/haptics';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 
@@ -30,11 +29,12 @@ interface SpringPressableProps extends PressableProps {
    */
   celebrateOn?: boolean;
   /**
-   * Position in a collection. Supplying it gives this surface a staggered
-   * entrance on mount. Applied to the pressable's OWN root — it is already a
-   * Reanimated component — so a grid does not gain a wrapper node per item.
+   * NOTE: there is deliberately no `staggerIndex` here any more. It used to put
+   * an `entering` animation on this component's own root to avoid a wrapper node
+   * per grid item — but Reanimated overwrites an element's `transform` when a
+   * layout animation and an animated style target the SAME component, and the
+   * press scale IS this component's transform. Wrap in <Stagger> instead.
    */
-  staggerIndex?: number;
   children?: React.ReactNode;
 }
 
@@ -43,7 +43,6 @@ export function SpringPressable({
   pressedScale = motion.scale.pressed,
   springPreset = 'snappy',
   celebrateOn,
-  staggerIndex,
   onPressIn,
   onPressOut,
   disabled,
@@ -95,9 +94,15 @@ export function SpringPressable({
   );
 
   return (
+    // No `entering` here, deliberately. Reanimated overwrites an element's
+    // `transform` when a layout animation and an animated style target the SAME
+    // component, and this component exists to animate `transform` on press — so
+    // an entrance on this node fought the spring and logged
+    // "Property `transform` of AnimatedComponent(Pressable) may be overwritten
+    // by a layout animation". Callers that want a staggered entrance wrap this
+    // in <Stagger>, which is a bare Animated.View with no transform of its own.
     <AnimatedPressable
       {...rest}
-      entering={staggerIndex === undefined ? undefined : staggerEntering(staggerIndex)}
       disabled={disabled}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}

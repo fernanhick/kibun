@@ -70,7 +70,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   chip: {
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
   },
   chipSelected: {
     backgroundColor: colors.warmCtaStart,

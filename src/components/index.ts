@@ -4,7 +4,7 @@ export { Button } from './Button';
 export { Card } from './Card';
 export { HabitIcon } from './HabitIcon';
 export { InsightCard } from './InsightCard';
-export { FloatingTabBar } from './FloatingTabBar';
+export { BottomTabBar } from './BottomTabBar';
 export { MoodBubble } from './MoodBubble';
 export { MoodLogger } from './MoodLogger';
 export { OptionPicker } from './OptionPicker';

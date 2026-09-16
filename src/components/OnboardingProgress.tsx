@@ -15,8 +15,13 @@ export function OnboardingProgress({ current, total, tone = 'light', style }: Pr
   const { t } = useTranslation('screens');
   const { colors } = useTheme();
   const filledColor = tone === 'light' ? colors.textInverse : colors.primary;
+  // The on-background empty dot was hardcoded `rgba(76,122,106,0.25)` — the
+  // RETIRED sage brand (#4C7A6A), the same literal SparkleOverlay was caught
+  // holding and purged. It never tracked the theme, so it read as a muddy
+  // green-grey on the blush-cream ground and all but vanished in dark mode.
+  // `border` is the token for "present but subordinate" and resolves in both.
   const emptyColor =
-    tone === 'light' ? 'rgba(255,255,255,0.35)' : 'rgba(76,122,106,0.25)';
+    tone === 'light' ? 'rgba(255,255,255,0.35)' : colors.border;
 
   return (
     <View
@@ -47,8 +52,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dot: {
-    width: spacing.xs,
-    height: spacing.xs,
+    // Explicit px rather than spacing.xs: a dot's DIAMETER is a size, not a
+    // gap, and borrowing the spacing scale for it left a six-step pager
+    // rendering as near-invisible specks. 8dp is the smallest that still reads
+    // as a step at arm's length.
+    width: 8,
+    height: 8,
     borderRadius: radius.full,
   },
 });

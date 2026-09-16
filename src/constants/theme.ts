@@ -132,15 +132,24 @@ export const typography = {
   // and `xs`(11) 57× against `display`(36) exactly ONCE — the app had no
   // hierarchy, it just whispered everywhere. Raising the scale here lifts all
   // ~340 token call sites at once.
+  // Brought back down 2026-09-16. The bump above was the right call when the
+  // app "whispered everywhere", but it overshot: paired with generous spacing it
+  // made every component read as oversized, and it is the reason tightening
+  // padding and radius alone never felt like enough — the boxes shrank while the
+  // text inside them stayed inflated.
+  //
+  // `body` stays at 15, comfortably above the ~14 floor for reading copy, and
+  // nothing here drops below 11. NOTE: `styles` below duplicates these numbers
+  // rather than deriving from them — the two scales must move together.
   sizes: {
-    xs: 12,      // was 11 — badges, timestamps. Never body copy.
-    sm: 14,      // was 13
-    md: 16,      // was 15
-    body: 17,    // was 16 — default reading size
-    lg: 20,      // was 18
-    xl: 24,      // was 22
-    xxl: 30,     // was 28
-    display: 38, // was 36
+    xs: 11,      // was 12 — badges, timestamps. Never body copy.
+    sm: 12,      // was 14
+    md: 14,      // was 16
+    body: 15,    // was 17 — default reading size
+    lg: 17,      // was 20
+    xl: 20,      // was 24
+    xxl: 25,     // was 30
+    display: 31, // was 38
   },
   weights: {
     regular: '400' as const,
@@ -156,16 +165,20 @@ export const typography = {
   // Ready-made text roles. Prefer these over assembling size+weight+spacing by
   // hand — negative tracking on large type is what separates "designed" from
   // "default", and it is the thing most often forgotten at the call site.
+  // Kept in lockstep with `sizes` above — these hardcode their own numbers
+  // rather than deriving, so changing one scale without the other leaves half
+  // the app at the old size. Line heights come down proportionally; the
+  // negative tracking on large type is preserved, just scaled back with it.
   styles: {
-    display:  { fontSize: 38, lineHeight: 42, letterSpacing: -1.1 },
-    title:    { fontSize: 30, lineHeight: 35, letterSpacing: -0.7 },
-    heading:  { fontSize: 24, lineHeight: 29, letterSpacing: -0.4 },
-    subtitle: { fontSize: 20, lineHeight: 26, letterSpacing: -0.2 },
-    headline: { fontSize: 17, lineHeight: 23, letterSpacing: -0.1 },
-    body:     { fontSize: 17, lineHeight: 25, letterSpacing: 0 },
-    callout:  { fontSize: 16, lineHeight: 23, letterSpacing: 0 },
-    caption:  { fontSize: 14, lineHeight: 19, letterSpacing: 0 },
-    label:    { fontSize: 12, lineHeight: 15, letterSpacing: 0.7 },
+    display:  { fontSize: 31, lineHeight: 35, letterSpacing: -0.9 },
+    title:    { fontSize: 25, lineHeight: 30, letterSpacing: -0.6 },
+    heading:  { fontSize: 20, lineHeight: 25, letterSpacing: -0.3 },
+    subtitle: { fontSize: 17, lineHeight: 22, letterSpacing: -0.2 },
+    headline: { fontSize: 15, lineHeight: 20, letterSpacing: -0.1 },
+    body:     { fontSize: 15, lineHeight: 22, letterSpacing: 0 },
+    callout:  { fontSize: 14, lineHeight: 20, letterSpacing: 0 },
+    caption:  { fontSize: 12, lineHeight: 17, letterSpacing: 0 },
+    label:    { fontSize: 11, lineHeight: 14, letterSpacing: 0.7 },
   },
 } as const;
 
@@ -182,14 +195,23 @@ export const spacing = {
   10: 40,
   12: 48,
   16: 64,
-  // Named aliases for common use
+  // Named aliases for common use.
+  //
+  // Tightened 2026-09-16. The numeric keys above are a literal 4pt grid and are
+  // NOT touched — `spacing[4]` must stay 16 or the name lies. The aliases are
+  // where almost all real padding and gaps come from, so they carry the change.
+  //
+  // The old values were pitched for an airy, spacious layout; on a device that
+  // read as components eating the screen, worst on Insights where a streak card,
+  // two stat tiles and a chart could not share a viewport. Card defaults to
+  // `padding="md"`, so md alone tightens every card in the app.
   xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 20,
-  xl: 28,
-  xxl: 40,
-  screenPadding: 18,
+  sm: 6,   // was 8
+  md: 12,  // was 16 — default Card padding
+  lg: 16,  // was 20
+  xl: 20,  // was 28
+  xxl: 28, // was 40
+  screenPadding: 14, // was 18
 } as const;
 
 // ─── Border Radius ────────────────────────────────────────────────────────────
@@ -198,18 +220,41 @@ export const spacing = {
 // inconsistency at the call site and explains the 150 hardcoded borderRadius
 // values found in the audit. This scale is monotonic, so `lg > md > sm` always
 // holds, and it is pitched for a soft kawaii product rather than a Material-1 one.
+// ─── Sharpened 2026-09-16 ─────────────────────────────────────────────────────
+// The scale above these values (sm 8 / md 12 / lg 16 / xl 20 / xxl 28) was set
+// during the kawaii redesign, when the brief was "soft". Seen on a device the
+// whole app read as pillowy: 20dp cards and 28dp heroes meant almost nothing had
+// a corner, and the roundness — not the palette — was doing most of the talking.
+//
+// Roughly halved. Still monotonic (lg > md > sm always holds), and nothing drops
+// to 0, so surfaces stay friendly rather than Material-1 sharp. ~153 token call
+// sites across 39 files move with this; the remaining hardcoded numeric radii
+// are swept separately.
+//
+// `full`/`bubble` are deliberately untouched: those are pills and circles by
+// intent — mood bubbles, the streak chip, time-of-day badges — not corners.
 export const radius = {
   none: 0,
-  sm: 8,    // was 3  — chips, checkboxes, tiny inline tags
-  md: 12,   // was 6  — inputs, small tiles, list rows
-  lg: 16,   // was 8  — standard interactive surfaces
-  xl: 20,   // was 12 — cards
-  xxl: 28,  // was 14 — heroes, sheets, feature panels
+  // Second sharpening pass — halved once from 8/12/16/20/28, now stepped down
+  // again. This is close to the floor: below these, surfaces stop reading as
+  // rounded at all and the product loses the last of its softness.
+  sm: 3,    // was 4  (orig 8)  — chips, checkboxes, tiny inline tags
+  md: 4,    // was 6  (orig 12) — inputs, small tiles, list rows
+  lg: 6,    // was 8  (orig 16) — standard interactive surfaces
+  xl: 8,    // was 10 (orig 20) — cards
+  xxl: 10,  // was 14 (orig 28) — heroes, sheets, feature panels
   full: 9999,
   // Specific UI patterns
-  button: 16, // was 8
-  card: 20,   // was 12
+  button: 8, // was 16
+  card: 10,  // was 20
   bubble: 9999,
+  // Text badges and chips — "Night", "0/2", "MONTHLY SNAPSHOT", "Pro", the
+  // streak chip. These were full pills, which stood out once the surfaces
+  // around them were sharpened: the roundness read as leftover rather than
+  // intentional. `full` is kept for shapes that are genuinely circular —
+  // mood bubbles, legend dots, avatars, progress dots, switch tracks — so the
+  // brand's round forms survive while its *corners* do not.
+  badge: 6,
 } as const;
 
 // ─── Motion ───────────────────────────────────────────────────────────────────

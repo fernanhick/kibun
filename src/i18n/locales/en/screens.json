@@ -26,7 +26,8 @@
       "windDown": "Time to wind down"
     },
     "streak": "{{count}} day streak",
-    "streakA11y": "Current streak: {{count}} days",
+    "streakA11y_one": "Current streak: {{count}} day",
+    "streakA11y_other": "Current streak: {{count}} days",
     "logMoodCta": "Log mood",
     "todayHeader": "Today",
     "todayHeaderCount": "Today ({{count}})",

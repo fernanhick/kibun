@@ -589,7 +589,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.36)',
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
   },
@@ -608,7 +608,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.15)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.36)',
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.sm,
     paddingVertical: 6,
   },
@@ -618,7 +618,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   proLockBadge: {
     backgroundColor: 'rgba(0,0,0,0.2)',
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
@@ -639,7 +639,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   headerBadge: {
     alignSelf: 'flex-start',
     backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
     borderWidth: 1,
@@ -712,9 +712,14 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     opacity: 0.7,
   },
   emptyPastCell: {
+    // "Past day, nothing logged". The dash still carries that meaning — it is
+    // the only thing separating these from logged days once the mood tint is
+    // absent — but at `border` weight a month of them out-shouted the data.
+    // Dropped to `borderLight` so the grid reads as tinted days on a quiet
+    // ground rather than as two competing border treatments.
     borderStyle: 'dashed',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderLight,
   },
   dayNumber: {
     fontSize: typography.sizes.sm,
@@ -734,7 +739,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.36)',
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
   },
@@ -751,7 +756,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   snapshotBadge: {
     alignSelf: 'flex-start',
     backgroundColor: colors.pinkLight,
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
     borderWidth: 1,
@@ -803,7 +808,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   balanceBar: {
     flexDirection: 'row',
     height: 14,
-    borderRadius: 999,
+    borderRadius: radius.badge,
     backgroundColor: colors.borderLight,
     overflow: 'hidden',
     marginTop: spacing.xs,

@@ -44,8 +44,10 @@ interface ScreenProps {
   contentContainerStyle?: StyleProp<ViewStyle>;
   layout?: ScreenLayout;
   edgePadding?: EdgePadding;
-  // Reanimated scroll handler — pass the `onScroll` from useScreenScroll()
-  // when a tab screen should drive the hide-on-scroll tab bar.
+  // Reanimated scroll handler — pass the `onScroll` from useScreenScroll() to
+  // track scroll offset on the UI thread. It used to drive the floating bar's
+  // hide-on-scroll; the bar is docked now and never hides, so nothing reads the
+  // offset today and this wiring is inert.
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 }
 
@@ -69,9 +71,11 @@ export function Screen({
       ? TAB_BAR_SAFE_BOTTOM_ANDROID
       : Math.max(insets.bottom, TAB_BAR_SAFE_BOTTOM_MIN);
 
-  // Reserve room for the floating pill so bottom content can scroll clear of it.
-  // Keep this in lockstep with FloatingTabBar's own geometry. The old shelf bar
-  // reserved 149dp + inset here; the pill needs 74dp + inset.
+  // The tab bar is DOCKED (see BottomTabBar), so React Navigation already
+  // excludes it from the screen viewport and screens must not pad for it —
+  // TAB_BAR_VISUAL_OBSTRUCTION is 0 and this resolves to the safe inset alone.
+  // Historically this reserved 149dp for the Kawaii shelf, then 74dp for the
+  // floating pill, both of which drew ON TOP of content.
   const tabScale = getTabBarScale(responsive.width);
   const tabVisualObstruction = TAB_BAR_VISUAL_OBSTRUCTION * tabScale;
   const tabBottomInset = isTabRoute ? tabVisualObstruction + tabSafeBottom : 0;

@@ -316,7 +316,7 @@ const createReportStyles = (colors: ThemePalette) => StyleSheet.create({
     alignSelf: 'center',
     gap: 5,
     backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 999,
+    borderRadius: radius.badge,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.36)',
     paddingHorizontal: spacing.md,
@@ -488,7 +488,7 @@ const createReportStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   proBadge: {
     backgroundColor: colors.pink,
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
   },

@@ -69,6 +69,11 @@ export default function DisclaimerScreen() {
             onPress={() => setAcknowledged(!acknowledged)}
             hitSlop={9}
             accessibilityRole="checkbox"
+            // Without this the control is an unlabelled checkbox to a screen
+            // reader (uiautomator flags it NAF) — the visible text beside it is
+            // a separate node, so nothing conveys WHAT is being agreed to. This
+            // is the wellness-disclaimer gate, so that label is load-bearing.
+            accessibilityLabel={t('disclaimer.checkbox')}
             accessibilityState={{ checked: acknowledged }}
           >
             {acknowledged && (
@@ -83,6 +88,12 @@ export default function DisclaimerScreen() {
           </Text>
         </View>
 
+        {/* The CTA is disabled until the box is ticked, but nothing said so —
+            a dead primary button with no explanation reads as a broken screen
+            rather than a gate. Shown only while it is actually blocking. */}
+        {!acknowledged && (
+          <Text style={styles.ctaHint}>{t('disclaimer.ctaHint')}</Text>
+        )}
         <View style={styles.button}>
           <Button
             label={t('disclaimer.cta')}
@@ -240,7 +251,11 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   checkbox: {
     width: 26,
     height: 26,
-    borderRadius: radius.md,
+    // radius.md (12) on a 26px box is ~46% — it reads as a circle, which is the
+    // convention for a RADIO button (pick one of several) rather than a
+    // checkbox (independent opt-in). radius.sm keeps it unmistakably a
+    // checkbox. Touch target is already 44dp via the Pressable's hitSlop={9}.
+    borderRadius: radius.sm,
     borderWidth: 2,
     borderColor: colors.border,
     justifyContent: 'center',
@@ -258,6 +273,13 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     color: colors.text,
     flex: 1,
     lineHeight: 22,
+  },
+  ctaHint: {
+    fontFamily: typography.fonts.body,
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacing.xs,
   },
   button: {
     width: '100%',

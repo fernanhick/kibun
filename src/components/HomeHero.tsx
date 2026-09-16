@@ -172,7 +172,7 @@ const createStyles = ({ colors, isDark }: ThemeValue) =>
       marginTop: 2,
       paddingVertical: 5,
       paddingHorizontal: spacing.sm,
-      borderRadius: radius.full,
+      borderRadius: radius.badge,
       backgroundColor: isDark ? 'rgba(26,17,22,0.16)' : 'rgba(255,255,255,0.20)',
     },
     streakText: {

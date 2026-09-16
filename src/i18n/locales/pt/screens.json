@@ -26,7 +26,8 @@
       "windDown": "Hora de desacelerar"
     },
     "streak": "Sequência de {{count}} dias",
-    "streakA11y": "Sequência atual: {{count}} dias",
+    "streakA11y_one": "Sequência atual: {{count}} dia",
+    "streakA11y_other": "Sequência atual: {{count}} dias",
     "logMoodCta": "Registrar humor",
     "todayHeader": "Hoje",
     "todayHeaderCount": "Hoje ({{count}})",

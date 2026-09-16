@@ -1,18 +1,28 @@
 import { breakpoints } from './breakpoints';
 
-// ─── Floating tab bar geometry ────────────────────────────────────────────────
-// This replaced the "Kawaii" shelf tab bar, which cost 149dp of PERMANENT
-// bottom chrome (72 bar + 14 notch curve + 63 mascot overlap) — roughly 18% of
-// an iPhone viewport, on every screen, forever. The mascot moved to the home
-// hero, where it can be large and expressive instead of acting as chrome.
+// ─── Tab bar geometry ─────────────────────────────────────────────────────────
+// Lineage: the "Kawaii" shelf bar cost 149dp of PERMANENT bottom chrome (72 bar
+// + 14 notch curve + 63 mascot overlap) — roughly 18% of an iPhone viewport, on
+// every screen, forever. The mascot moved to the home hero, where it can be
+// large and expressive instead of acting as chrome.
 //
-// The pill floats: it is inset from all three edges and content scrolls
-// beneath it, per the iOS 26 Liquid Glass treatment.
-export const TAB_BAR_HEIGHT = 64;
-/** Inset from the left/right screen edges. */
-export const TAB_BAR_MARGIN = 16;
-/** Gap between the bottom of the pill and the safe-area edge. */
-export const TAB_BAR_BOTTOM_GAP = 10;
+// It was then replaced by a floating "Liquid Glass" pill, inset from all three
+// edges with content scrolling beneath it. That is now gone too: the bar is
+// DOCKED — full-bleed, flush to the bottom, opaque, laid out BELOW the screen
+// rather than over it. See BottomTabBar for why.
+//
+// TAB_BAR_MARGIN (16) and TAB_BAR_BOTTOM_GAP (10) were removed with the pill;
+// a docked bar has no edge insets to describe.
+/**
+ * Content height of the docked bar, excluding the safe-area padding below it.
+ *
+ * 64 was inherited from the floating pill, which needed the bulk to read as a
+ * discrete object hovering over content. A docked bar does not: at 64 the
+ * content (22 icon + 2 gap + ~13 label ≈ 37) left ~27dp of dead padding, which
+ * is what made the bar look oversized. 52 leaves ~15dp — tight but still a
+ * comfortable target, and the Pressable adds hitSlop on top.
+ */
+export const TAB_BAR_HEIGHT = 52;
 
 // On Android the system nav bar is hidden (sticky immersive, see app/_layout),
 // so insets.bottom fluctuates when the user swipes to reveal it. A fixed value
@@ -21,13 +31,19 @@ export const TAB_BAR_SAFE_BOTTOM_MIN = 8;
 export const TAB_BAR_SAFE_BOTTOM_ANDROID = 10;
 
 /**
- * Total vertical area the floating bar can cover, measured from the safe-area
- * edge. Screens add this to their scroll `paddingBottom` so the last row of
- * content can always clear the pill.
+ * Vertical area the tab bar covers that screens must pad around.
  *
- * Was 149. Now 74 + the platform safe inset.
+ * **Zero, deliberately.** The bar is docked now (see BottomTabBar): React
+ * Navigation lays it out below the screen, so the screen viewport already
+ * excludes it and nothing overlaps. Screens adding padding here would open a
+ * dead gap above the bar on every tab.
+ *
+ * History: 149 for the old Kawaii shelf, 74 for the floating pill (which DID
+ * overlap content — and the one screen that under-reserved it, Insights, ended
+ * up with its chart labels trapped behind the bar). Keep this the single place
+ * that decides the question.
  */
-export const TAB_BAR_VISUAL_OBSTRUCTION = TAB_BAR_HEIGHT + TAB_BAR_BOTTOM_GAP;
+export const TAB_BAR_VISUAL_OBSTRUCTION = 0;
 
 // Canonical phone-vs-tablet scale factor for content (mood bubbles, mascots,
 // tab-bar geometry). Window-derived via useResponsive/useWindowDimensions so

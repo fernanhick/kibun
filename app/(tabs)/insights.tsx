@@ -123,6 +123,19 @@ export default function InsightsScreen() {
     [filtered],
   );
 
+  // Bar-chart axis. Left to auto-scale, gifted-charts paired `noOfSections={4}`
+  // with a data-derived maximum and produced non-linear labels (10/7/5/2/0) on
+  // evenly spaced gridlines — so bar heights did not correspond to their values,
+  // and a max of 10 against real counts of ~2 flattened every bar to a stub.
+  // Deriving an integer step, and a max that is an exact multiple of it, keeps
+  // the axis linear and keeps small counts legible.
+  const barAxis = useMemo(() => {
+    const sections = 4;
+    const top = Math.max(1, ...frequency.slice(0, 6).map((f) => f.count));
+    const step = Math.max(1, Math.ceil(top / sections));
+    return { sections, step, max: step * sections };
+  }, [frequency]);
+
   const barData = useMemo(
     () =>
       frequency.slice(0, 6).map((item) => ({
@@ -244,29 +257,24 @@ export default function InsightsScreen() {
 
       {activeTab === 'overview' && (
         <>
-      <View style={styles.heroStatCard}>
-        <View style={styles.heroStatLeft}>
-          <Text style={styles.heroStatLabel} maxFontSizeMultiplier={1.3}>
-            {t('insights.stats.streakHero.label')}
-          </Text>
+      {/* Streak, check-ins and active days are three numbers. They used to be
+          spread across a 230px hero card and a 175px stat row — ~420px of
+          screen to show three digits, which is what made this tab feel heavy
+          relative to what it says. One 3-up row carries the same information.
+          The streak's encouragement line survives as a caption beneath the row
+          rather than as a card of its own, and the flame icon (decoration that
+          was also setting the card's height floor) is gone. Every a11y label
+          is preserved. */}
+      <View style={styles.statsRow}>
+        <Card style={styles.statCard}>
           <AnimatedNumber
             value={streak}
-            style={styles.heroStatValue}
+            style={styles.statValue}
             accessibilityLabel={t('insights.stats.streakA11y', { count: streak })}
-            maxFontSizeMultiplier={1.15}
+            maxFontSizeMultiplier={1.2}
           />
-          <Text style={styles.heroStatSub} maxFontSizeMultiplier={1.3}>
-            {streak > 0
-              ? t('insights.stats.streakHero.subActive')
-              : t('insights.stats.streakHero.subZero')}
-          </Text>
-        </View>
-        <View style={styles.heroStatIconWrap}>
-          <Ionicons name="flame" size={32} color={colors.accent} />
-        </View>
-      </View>
-
-      <View style={styles.statsRow}>
+          <Text style={styles.statLabel}>{t('insights.stats.streak')}</Text>
+        </Card>
         <Card style={styles.statCard}>
           <AnimatedNumber
             value={totalEntries}
@@ -286,6 +294,11 @@ export default function InsightsScreen() {
           <Text style={styles.statLabel}>{t('insights.stats.activeDays')}</Text>
         </Card>
       </View>
+      <Text style={styles.statsCaption} maxFontSizeMultiplier={1.3}>
+        {streak > 0
+          ? t('insights.stats.streakHero.subActive')
+          : t('insights.stats.streakHero.subZero')}
+      </Text>
 
       {(frequency.length > 0 || trendPointCount > 1) && (
         <TabletSplit
@@ -307,7 +320,13 @@ export default function InsightsScreen() {
                     parentWidth={barChartWidth}
                     adjustToWidth
                     disableScroll
-                    noOfSections={4}
+                    // No height was set, so gifted-charts used its default plot
+                    // area regardless of the data — ~190dp of chart for bars
+                    // that top out at 2. Pinned to something proportionate.
+                    height={110}
+                    noOfSections={barAxis.sections}
+                    maxValue={barAxis.max}
+                    stepValue={barAxis.step}
                     yAxisTextStyle={styles.axisText}
                     xAxisLabelTextStyle={styles.axisText}
                     hideRules={false}
@@ -339,6 +358,7 @@ export default function InsightsScreen() {
                     parentWidth={trendChartWidth}
                     adjustToWidth
                     disableScroll
+                    height={110}
                     color={colors.primary}
                     thickness={2}
                     dataPointsColor={colors.primary}
@@ -1018,10 +1038,10 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    gap: 6,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 6,
-    borderRadius: 999,
+    gap: 5,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: radius.badge,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.36)',
     backgroundColor: 'rgba(255,255,255,0.2)',
@@ -1050,9 +1070,9 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     marginTop: spacing.xs,
   },
   togglePill: {
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
   },
   toggleSelected: {
     backgroundColor: colors.warmCtaStart,
@@ -1072,69 +1092,22 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   toggleTextUnselected: {
     color: colors.textInverse,
   },
-  heroStatCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.surface,
-    borderRadius: radius.card,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-    marginBottom: spacing.sm,
-    shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.16,
-    shadowRadius: 22,
-    elevation: 5,
-  },
-  heroStatLeft: {
-    flex: 1,
-  },
-  heroStatLabel: {
-    fontSize: typography.sizes.xs,
-    fontFamily: typography.fonts.ui,
-    fontWeight: typography.weights.semibold,
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-    color: colors.textSecondary,
-    marginBottom: 6,
-  },
-  heroStatValue: {
-    fontSize: 52,
-    fontWeight: typography.weights.bold,
-    color: colors.text,
-    letterSpacing: -1.5,
-    lineHeight: 56,
-  },
-  heroStatSub: {
-    fontSize: typography.sizes.sm,
-    fontWeight: typography.weights.semibold,
-    color: colors.accent,
-    marginTop: 4,
-  },
-  heroStatIconWrap: {
-    width: 60,
-    height: 60,
-    borderRadius: radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: spacing.md,
-    backgroundColor: colors.accentLight,
-  },
   statsRow: {
     flexDirection: 'row',
     gap: spacing.sm,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xs,
   },
   statCard: {
     flex: 1,
     alignItems: 'center',
-    borderWidth: 1.2,
-    borderColor: colors.border,
+    // No border here. This is a <Card>, which defaults to `elevated` — i.e. it
+    // already carries a shadow — so adding a hairline made it border AND shadow
+    // on one surface, the exact double-cue Card.tsx's own header calls the most
+    // reliable "pre-2020" tell. The shadow is the cue; the border was noise.
     backgroundColor: colors.surfaceElevated,
   },
   statValue: {
-    fontSize: typography.sizes.xxl,
+    fontSize: typography.sizes.xl,
     fontWeight: typography.weights.bold,
     color: colors.text,
   },
@@ -1143,12 +1116,21 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 2,
   },
+  // What the streak card's sub-line became: one line under the whole row
+  // instead of a third text element inside a card built for one number.
+  statsCaption: {
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.semibold,
+    color: colors.accent,
+    textAlign: 'center',
+    marginBottom: spacing.md,
+  },
   sectionHeader: {
-    fontSize: typography.sizes.lg,
+    fontSize: typography.sizes.md,
     fontFamily: typography.fonts.ui,
     color: colors.primaryDark,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
+    marginTop: spacing.md,
+    marginBottom: spacing.xs,
   },
   chartContainer: {
     marginTop: spacing.sm,
@@ -1157,7 +1139,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     borderWidth: 1.2,
     borderColor: colors.border,
     paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm,
     overflow: 'hidden',
   },
   axisText: {
@@ -1249,7 +1231,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   proLockBadge: {
     backgroundColor: colors.pink,
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
   },

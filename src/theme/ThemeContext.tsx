@@ -36,9 +36,19 @@ const darkColors = {
   primary: '#F08FAD',
   primaryLight: '#3A222C',
   primaryDark: '#F7B3C8',
-  // Hero gradient inverts: light rose → light plum, with dark ink on top
-  skyStart: '#E9799C',
-  skyEnd: '#C08CD6',
+  // Hero gradient inverts: light rose → light plum, with dark ink on top.
+  //
+  // Toned down 2026-09-16 after seeing it on a device. The inversion itself is
+  // sound — dark ink on a light gradient is the only way this hue family keeps
+  // AA — but at lum 0.334/0.348 the hero was the brightest object on a near
+  // black screen, which is glare in exactly the low-light case dark mode exists
+  // for. These are the deepest values that still clear 4.5:1 against BOTH inks
+  // (sparkle #2E1822 → 4.82/4.97, onPrimary #1A1116 → 5.39/5.56), cutting
+  // luminance ~24% (0.334→0.256, 0.348→0.266) with no call-site changes.
+  // Going deeper requires flipping the inks to light, which means a dedicated
+  // on-hero token — textInverse has ~45 call sites and most are NOT gradients.
+  skyStart: '#D96486',
+  skyEnd: '#A97BC4',
   sparkle: '#2E1822',
   warmCtaStart: '#E9799C',
   warmCtaEnd: '#D96288',

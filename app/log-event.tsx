@@ -188,7 +188,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.4)',
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.md,
     paddingVertical: 5,
   },

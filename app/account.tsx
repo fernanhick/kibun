@@ -472,7 +472,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   badge: {
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
   },
   badgeText: {
     fontSize: typography.sizes.sm,

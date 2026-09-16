@@ -26,7 +26,8 @@
       "windDown": "Zeit zum Runterkommen"
     },
     "streak": "{{count}} Tage Serie",
-    "streakA11y": "Aktuelle Serie: {{count}} Tage",
+    "streakA11y_one": "Aktuelle Serie: {{count}} Tag",
+    "streakA11y_other": "Aktuelle Serie: {{count}} Tage",
     "logMoodCta": "Stimmung festhalten",
     "todayHeader": "Heute",
     "todayHeaderCount": "Heute ({{count}})",

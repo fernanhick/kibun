@@ -309,6 +309,11 @@ export default function SettingsScreen() {
                       onValueChange={() => handleSlotToggle(row.slot)}
                       disabled={isDisabled}
                       trackColor={{ false: colors.border, true: colors.accent }}
+                      // Android's default thumb is grey, which reads as "off" or
+                      // even "disabled" while sitting on a filled accent track.
+                      // `onPrimary` is by definition the ink that carries on an
+                      // accent fill, so it is right in both themes.
+                      thumbColor={isOn ? colors.onPrimary : undefined}
                       accessibilityRole="switch"
                       accessibilityLabel={t('settings.reminders.rowA11y', { label: row.label, hint: row.hint })}
                       accessibilityState={{ checked: isOn, disabled: isDisabled }}
@@ -336,6 +341,7 @@ export default function SettingsScreen() {
                 onValueChange={handleStreakToggle}
                 disabled={isDisabled}
                 trackColor={{ false: colors.border, true: colors.accent }}
+                thumbColor={streakNudgeEnabled ? colors.onPrimary : undefined}
                 accessibilityRole="switch"
                 accessibilityLabel={t('settings.streak.a11y')}
                 accessibilityState={{ checked: streakNudgeEnabled, disabled: isDisabled }}
@@ -619,7 +625,12 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   // ── Groups ────────────────────────────────────────────────────────
   groupHeader: {
-    fontSize: typography.sizes.xs,
+    // Was `xs` against a `body` row label — an 11-vs-17 gap that left the thing
+    // NAMING the group as the smallest text in it. Grouped-list headers are
+    // meant to be small uppercase eyebrows, so the fix is to close the gap
+    // (12 vs 14) and let the caps, tracking and weight carry the header role,
+    // not to make it bigger than its rows.
+    fontSize: typography.sizes.sm,
     fontFamily: typography.fonts.ui,
     fontWeight: typography.weights.semibold,
     color: colors.textSecondary,
@@ -684,7 +695,8 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     gap: spacing.sm,
   },
   rowLabel: {
-    fontSize: typography.sizes.body,
+    // `body` is reading-copy size; a settings row is a label, not a paragraph.
+    fontSize: typography.sizes.md,
     fontFamily: typography.fonts.ui,
     color: colors.text,
   },
@@ -724,7 +736,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   proLockBadge: {
     backgroundColor: colors.primary,
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
   },

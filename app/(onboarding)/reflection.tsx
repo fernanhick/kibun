@@ -154,7 +154,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   chip: {
     backgroundColor: colors.chipSurface,
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     alignSelf: 'flex-start',

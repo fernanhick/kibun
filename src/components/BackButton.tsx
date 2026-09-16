@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     paddingLeft: spacing.xs,
     paddingRight: spacing.sm,
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
     borderWidth: 1,
     alignSelf: 'flex-start',
   },

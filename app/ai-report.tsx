@@ -485,7 +485,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   togglePill: {
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
   },
   toggleSelected: { backgroundColor: colors.primary },
   toggleUnselected: {
@@ -602,7 +602,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
   },
@@ -629,7 +629,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     alignSelf: 'flex-start',
     paddingVertical: 4,
     paddingHorizontal: spacing.sm,
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
     borderWidth: 1,
   },
   toneChipText: {

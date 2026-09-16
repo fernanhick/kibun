@@ -599,7 +599,7 @@ const createHabitStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   progressChip: {
     backgroundColor: colors.secondaryLight,
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
   },
@@ -910,7 +910,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     fontSize: typography.sizes.xs,
     color: colors.primaryDark,
     backgroundColor: colors.primaryLight,
-    borderRadius: 999,
+    borderRadius: radius.badge,
     paddingHorizontal: 6,
     paddingVertical: 2,
     overflow: 'hidden',

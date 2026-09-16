@@ -2,8 +2,7 @@ import { Tabs, Redirect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useOnboardingGateStore } from '@store/onboardingGateStore';
 import { useMoodEntryStore } from '@store/moodEntryStore';
-import { FloatingTabBar } from '@components/FloatingTabBar';
-import { TabBarVisibilityProvider } from '@hooks/useScreenScroll';
+import { BottomTabBar } from '@components/BottomTabBar';
 
 // The paywall waits until the user has felt the product work. Onboarding hands
 // off straight to the tabs; this gate raises the paywall once, after the third
@@ -26,16 +25,14 @@ export default function TabLayout() {
   }
 
   return (
-    <TabBarVisibilityProvider>
-      <Tabs
-        tabBar={(props) => <FloatingTabBar {...props} />}
-        screenOptions={{ headerShown: false }}
-      >
-        <Tabs.Screen name="index" options={{ title: t('tabs.home') }} />
-        <Tabs.Screen name="history" options={{ title: t('tabs.history') }} />
-        <Tabs.Screen name="insights" options={{ title: t('tabs.insights') }} />
-        <Tabs.Screen name="settings" options={{ title: t('tabs.settings') }} />
-      </Tabs>
-    </TabBarVisibilityProvider>
+    <Tabs
+      tabBar={(props) => <BottomTabBar {...props} />}
+      screenOptions={{ headerShown: false }}
+    >
+      <Tabs.Screen name="index" options={{ title: t('tabs.home') }} />
+      <Tabs.Screen name="history" options={{ title: t('tabs.history') }} />
+      <Tabs.Screen name="insights" options={{ title: t('tabs.insights') }} />
+      <Tabs.Screen name="settings" options={{ title: t('tabs.settings') }} />
+    </Tabs>
   );
 }

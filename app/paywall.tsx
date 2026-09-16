@@ -490,7 +490,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     gap: 4,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
     backgroundColor: 'rgba(255,255,255,0.22)',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(255,255,255,0.4)',
@@ -550,7 +550,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
     alignItems: 'center',
   },
   premiumHeaderBadge: {
-    borderRadius: radius.full,
+    borderRadius: radius.badge,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
   },

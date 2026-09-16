@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   customMoodCircle: {
-    borderRadius: 999,
+    borderRadius: radius.full,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',

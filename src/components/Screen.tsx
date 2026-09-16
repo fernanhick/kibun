@@ -17,7 +17,7 @@ import { useSegments } from 'expo-router';
 // Using react-native's SafeAreaView bypasses the provider context and produces
 // incorrect insets on notched iOS devices (iPhone X+, Dynamic Island) silently.
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { spacing } from '@constants/theme';
+import { spacing, radius } from '@constants/theme';
 import { useTheme, type ThemePalette } from '@theme/ThemeContext';
 import { useThemedStyles } from '@hooks/useThemedStyles';
 import { SCREEN_MAX_WIDTH } from '@constants/breakpoints';
@@ -208,7 +208,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   // would cluster in the top-left corner on a wide canvas.
   blob: {
     position: 'absolute',
-    borderRadius: 9999,
+    borderRadius: radius.full,
   },
   blobTop: {
     width: '95%',

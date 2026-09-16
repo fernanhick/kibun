@@ -117,6 +117,24 @@ export const colors = {
 } as const;
 
 // ─── Typography ───────────────────────────────────────────────────────────────
+// Single source of truth for the type scale.
+//
+// `typography.styles` used to hardcode its own numbers in parallel with
+// `typography.sizes` — two scales holding the same values with nothing keeping
+// them in sync. Changing one without the other leaves half the app at the old
+// size, which is exactly the trap the 2026-09-16 pass walked into. Both now
+// read from here, so the scale can only be changed in one place.
+const fontSizes = {
+  xs: 11,
+  sm: 12,
+  md: 14,
+  body: 15,
+  lg: 17,
+  xl: 20,
+  xxl: 25,
+  display: 31,
+} as const;
+
 export const typography = {
   fonts: {
     // Fredoka (rounded display face) carries the kawaii personality and is
@@ -132,25 +150,14 @@ export const typography = {
   // and `xs`(11) 57× against `display`(36) exactly ONCE — the app had no
   // hierarchy, it just whispered everywhere. Raising the scale here lifts all
   // ~340 token call sites at once.
-  // Brought back down 2026-09-16. The bump above was the right call when the
-  // app "whispered everywhere", but it overshot: paired with generous spacing it
-  // made every component read as oversized, and it is the reason tightening
-  // padding and radius alone never felt like enough — the boxes shrank while the
-  // text inside them stayed inflated.
-  //
-  // `body` stays at 15, comfortably above the ~14 floor for reading copy, and
-  // nothing here drops below 11. NOTE: `styles` below duplicates these numbers
-  // rather than deriving from them — the two scales must move together.
-  sizes: {
-    xs: 11,      // was 12 — badges, timestamps. Never body copy.
-    sm: 12,      // was 14
-    md: 14,      // was 16
-    body: 15,    // was 17 — default reading size
-    lg: 17,      // was 20
-    xl: 20,      // was 24
-    xxl: 25,     // was 30
-    display: 31, // was 38
-  },
+  // Brought back down 2026-09-16 (was xs 12 / sm 14 / md 16 / body 17 / lg 20 /
+  // xl 24 / xxl 30 / display 38). The bump above was the right call when the app
+  // "whispered everywhere", but it overshot: paired with generous spacing it made
+  // every component read as oversized, and it is the reason tightening padding
+  // and radius alone never felt like enough — the boxes shrank while the text
+  // inside them stayed inflated. `body` stays at 15, comfortably above the ~14
+  // floor for reading copy, and nothing drops below 11.
+  sizes: fontSizes,
   weights: {
     regular: '400' as const,
     medium: '500' as const,
@@ -165,20 +172,20 @@ export const typography = {
   // Ready-made text roles. Prefer these over assembling size+weight+spacing by
   // hand — negative tracking on large type is what separates "designed" from
   // "default", and it is the thing most often forgotten at the call site.
-  // Kept in lockstep with `sizes` above — these hardcode their own numbers
-  // rather than deriving, so changing one scale without the other leaves half
-  // the app at the old size. Line heights come down proportionally; the
-  // negative tracking on large type is preserved, just scaled back with it.
+  // Derived from `fontSizes` — these no longer carry their own numbers, so the
+  // scale cannot drift between `sizes` and `styles`. Line heights stay explicit
+  // (they are not a fixed ratio of size) and the negative tracking on large type
+  // is what separates "designed" from "default".
   styles: {
-    display:  { fontSize: 31, lineHeight: 35, letterSpacing: -0.9 },
-    title:    { fontSize: 25, lineHeight: 30, letterSpacing: -0.6 },
-    heading:  { fontSize: 20, lineHeight: 25, letterSpacing: -0.3 },
-    subtitle: { fontSize: 17, lineHeight: 22, letterSpacing: -0.2 },
-    headline: { fontSize: 15, lineHeight: 20, letterSpacing: -0.1 },
-    body:     { fontSize: 15, lineHeight: 22, letterSpacing: 0 },
-    callout:  { fontSize: 14, lineHeight: 20, letterSpacing: 0 },
-    caption:  { fontSize: 12, lineHeight: 17, letterSpacing: 0 },
-    label:    { fontSize: 11, lineHeight: 14, letterSpacing: 0.7 },
+    display:  { fontSize: fontSizes.display, lineHeight: 35, letterSpacing: -0.9 },
+    title:    { fontSize: fontSizes.xxl,     lineHeight: 30, letterSpacing: -0.6 },
+    heading:  { fontSize: fontSizes.xl,      lineHeight: 25, letterSpacing: -0.3 },
+    subtitle: { fontSize: fontSizes.lg,      lineHeight: 22, letterSpacing: -0.2 },
+    headline: { fontSize: fontSizes.body,    lineHeight: 20, letterSpacing: -0.1 },
+    body:     { fontSize: fontSizes.body,    lineHeight: 22, letterSpacing: 0 },
+    callout:  { fontSize: fontSizes.md,      lineHeight: 20, letterSpacing: 0 },
+    caption:  { fontSize: fontSizes.sm,      lineHeight: 17, letterSpacing: 0 },
+    label:    { fontSize: fontSizes.xs,      lineHeight: 14, letterSpacing: 0.7 },
   },
 } as const;
 

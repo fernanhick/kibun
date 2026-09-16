@@ -801,7 +801,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   topMoodBubble: {
     width: 24,
     height: 24,
-    borderRadius: 999,
+    borderRadius: radius.full,
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.85)',
   },
@@ -828,7 +828,7 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   legendSwatch: {
     width: 10,
     height: 10,
-    borderRadius: 999,
+    borderRadius: radius.full,
   },
   legendLabel: {
     fontSize: typography.sizes.xs,
